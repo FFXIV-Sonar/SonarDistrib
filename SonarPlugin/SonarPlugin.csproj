@@ -25,12 +25,6 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <KnownFrameworkReference Update="Microsoft.WindowsDesktop.App" IsWindowsOnly="false" />
-    <KnownFrameworkReference Update="Microsoft.WindowsDesktop.App.WPF" IsWindowsOnly="false" />
-    <KnownFrameworkReference Update="Microsoft.WindowsDesktop.App.WindowsForms" IsWindowsOnly="false" />
-  </ItemGroup>
-
   <ItemGroup Condition="Exists('..\SonarPlugin.Dalamud\SonarPlugin.Dalamud.csproj')">
     <ProjectReference Include="..\SonarPlugin.Dalamud\SonarPlugin.Dalamud.csproj" />
   </ItemGroup>
