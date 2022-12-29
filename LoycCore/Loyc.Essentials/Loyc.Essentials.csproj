@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <OutputPath>..\Bin\$(Configuration)\</OutputPath>
+    <NoWarn>1591, 1573, 0419, 1587, 1574</NoWarn>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>true</Optimize>
+    
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Loyc.Interfaces\Loyc.Interfaces.csproj"/>
+    <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
+    <Compile Update="Collections\ExtensionMethods\LinqToLists.out.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LinqToLists.ecs</DependentUpon>
+    </Compile>
+    <None Update="Collections\ExtensionMethods\LinqToLists.ecs">
+      <Generator>LLLPG</Generator>
+      <LastGenOutput>LinqToLists.out.cs</LastGenOutput>
+    </None>
+    <Compile Update="Collections\HelperClasses\SelectListSource.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SelectListSource.ecs</DependentUpon>
+    </Compile>
+    <None Update="Collections\HelperClasses\SelectListSource.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>SelectListSource.out.cs</LastGenOutput>
+    </None>
+    <Compile Update="Collections\HelperClasses\SelectCollection.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SelectCollection.ecs</DependentUpon>
+    </Compile>
+    <None Update="Collections\HelperClasses\SelectCollection.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>SelectCollection.out.cs</LastGenOutput>
+    </None>
+    <Compile Update="Utilities\GRange.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GRange.ecs</DependentUpon>
+    </Compile>
+    <None Update="Utilities\GRange.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>GRange.out.cs</LastGenOutput>
+    </None>
+    <Compile Update="MessageSinks\MessageSink.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MessageSink.ecs</DependentUpon>
+    </Compile>
+    <None Update="MessageSinks\MessageSink.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>MessageSink.out.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+</Project>

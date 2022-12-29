@@ -1,0 +1,175 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Loyc.Collections;
+using Loyc.Utilities;
+using Loyc.MiniTest;
+using Loyc.Collections.Impl;
+using System.Diagnostics;
+
+namespace Loyc.Syntax
+{
+	/// <summary>
+	/// Helper class for mapping from indexes to SourcePos and back.
+	/// </summary><remarks>
+	/// This class's job is to keep track of the locations of line breaks in order
+	/// to map from indices to SourcePos objects or vice versa. Converting indexes 
+	/// to SourcePos is commonly needed for error reporting; lexers, parsers and 
+	/// code analyzers typically use indexes (simple integers) internally, but must
+	/// convert to SourcePos in order to communicate with the end user. Occasionally
+	/// one may wish to convert in the reverse direction also (SourcePos to index).
+	/// <para/>
+	/// Line breaks themselves are classified as being at the end of each line.
+	/// So if the file is "Bob\nJoe", <c>IndexToLine(3).Line == 1</c>, not 2.
+	/// <para/>
+	/// The outputs are immutable and this class assumes the input file never 
+	/// changes. However, this class is not entirly multi-thread-safe until the 
+	/// entire input file or string has been scanned, since the list of line breaks
+	/// is built on-demand, without locking.
+	/// </remarks>
+	/// <typeparam name="CharSource">A type that implements <c>IListSource(Char)</c>.
+	/// Originally this class did not have any type parameters and dealt with
+	/// <c>IListSource(Char)</c>, but it was made generic so that one could wrap
+	/// value types such as <c>UString</c> without boxing.
+	/// </typeparam>
+	public class IndexPositionMapper<CharSource> : IIndexPositionMapper 
+		where CharSource : IListSource<char>
+	{
+		protected CharSource _source;
+
+		/// <summary>Initializes CharIndexPositionMapper.</summary>
+		/// <param name="source">An immutable list of characters.</param>
+		/// <param name="startingPos">Optional. The first character of <c>source</c> 
+		/// will be considered to have the file name and line number specified by 
+		/// this object. If this is null, IndexToLine() will return a blank file 
+		/// name ("").</param>
+		public IndexPositionMapper(CharSource source, ILineColumnFile startingPos = null)
+		{
+			Reset(source, startingPos);
+		}
+		public IndexPositionMapper(CharSource source, string fileName)
+		{
+			Reset(source, fileName);
+		}
+
+		// This code computes the line boundaries lazily. 
+		// _lineOffsets contains the indices of the start of every line, so
+		// this[_lineOffsets[2]] would be the first character of the third line.
+		protected InternalList<int> _lineOffsets = InternalList<int>.Empty;
+		protected bool _offsetsComplete = false;
+		protected ILineColumnFile _startingPos = null;
+
+		/// <summary>Reinitializes the object (as though the constructor were called again).</summary>
+		protected void Reset(CharSource source, string fileName) { Reset(source, new LineColumnFile(fileName, 1, 1)); }
+		protected void Reset(CharSource source, ILineColumnFile startingPos = null)
+		{
+			_source = source;
+			_lineOffsets = InternalList<int>.Empty;
+			_lineOffsets.Add(0);
+			_startingPos = startingPos;
+		}
+
+		public string FileName
+		{
+			get { return _startingPos == null ? null : _startingPos.FileName; }
+		}
+
+		protected LineColumnFile NewSourcePos(int Line, int PosInLine)
+		{
+			if (_startingPos == null)
+				return new LineColumnFile(string.Empty, Line, PosInLine);
+			else if (Line <= 1)
+				return new LineColumnFile(_startingPos.FileName, _startingPos.Line, _startingPos.Column-1 + PosInLine);
+			else
+				return new LineColumnFile(_startingPos.FileName, _startingPos.Line + Line-1, PosInLine);
+		}
+
+		ILineColumnFile IIndexToLine.IndexToLine(int index) => IndexToLine(index);
+		public LineColumnFile IndexToLine(int index)
+		{
+			if (index < 0)
+				return NewSourcePos(index + 1, 1);
+			ReadUntilAfter(index);
+			
+			// Binary search
+			int line = _lineOffsets.BinarySearch(index);
+			if (line < 0)
+				line = ~line - 1;
+			
+			// Create LinePos using a one-based line number and position
+			return NewSourcePos(line + 1, index - _lineOffsets[line] + 1);
+		}
+
+		public int LineToIndex(int lineNo)
+		{
+			// Remove _startingPos bias and convert to zero-based index
+			if (_startingPos != null)
+				lineNo -= _startingPos.Line;
+			else
+				lineNo--; // Convert to zero-based index
+
+			while (_lineOffsets.Count <= lineNo && !_offsetsComplete)
+				ReadNextLine(_lineOffsets.Last);
+
+			if (lineNo < 0)
+				return -1;
+			else if (lineNo >= _lineOffsets.Count)
+				return _source.Count;
+			else
+				return _lineOffsets[lineNo];
+		}
+		public int LineToIndex(ILineAndColumn pos)
+		{
+			int lineIndex = LineToIndex(pos.Line);
+			if (pos.Column > 0)
+				lineIndex += pos.Column - 1;
+			if (_startingPos != null && pos.Line == _startingPos.Line)
+				return lineIndex + (_startingPos.Column - 1);
+			else
+				return lineIndex;
+		}
+		public int LineCount { get {
+			ReadUntilAfter(_source.Count);
+			return _lineOffsets.Count;
+		} }
+		protected void ReadUntilAfter(int toIndex)
+		{
+			int index = _lineOffsets.Last;
+			while (index < toIndex && !_offsetsComplete)
+				index = ReadNextLine(index);
+		}
+		private int ReadNextLine(int index)
+		{
+			if (AdvanceAfterNextNewline(ref index))
+				_lineOffsets.Add(index);
+			else
+				_offsetsComplete = true;
+			return index;
+		}
+		protected bool AdvanceAfterNextNewline(ref int index)
+		{
+			for(;;) {
+				bool fail;
+				char c = _source.TryGet(index, out fail);
+				if (fail)
+					return false;
+				if (c == '\r' || c == '\n')
+				{
+					index++;
+					if (c == '\r' && _source.TryGet(index, out fail) == '\n')
+						index++;
+					return true;
+				}
+				index++;
+			}
+		}
+	}
+
+	/// <summary>Synonym for <c>IndexPositionMapper&lt;IListSource&lt;char>></c>.</summary>
+	[Obsolete("Please use IndexPositionMapper<IListSource<char>> or IndexPositionMapper<UString> instead.")]
+	public class IndexPositionMapper : IndexPositionMapper<IListSource<char>>
+	{
+		public IndexPositionMapper(IListSource<char> source, SourcePos startingPos = null) : base(source, startingPos) {}
+		public IndexPositionMapper(IListSource<char> source, string fileName) : base(source, fileName) {}
+	}
+}

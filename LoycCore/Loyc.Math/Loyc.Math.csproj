@@ -1,0 +1,88 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <OutputPath>..\Bin\$(Configuration)\</OutputPath>
+    <NoWarn>1591, 1573, 0419</NoWarn>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>true</Optimize>
+    
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Loyc.Interfaces\Loyc.Interfaces.csproj" />
+    <ProjectReference Include="..\Loyc.Essentials\Loyc.Essentials.csproj" />
+    <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
+    <Compile Update="Range.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Range.ecs</DependentUpon>
+    </Compile>
+    
+    <None Update="Range.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>Range.out.cs</LastGenOutput>
+    </None>
+    
+    <Compile Update="Math\Maths.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Maths.tt</DependentUpon>
+    </Compile>
+    <None Update="Math\Maths.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Maths.cs</LastGenOutput>
+    </None>
+    <Compile Update="Math\FixedPoint.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FixedPoint.tt</DependentUpon>
+    </Compile>
+    <None Update="Math\FixedPoint.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FixedPoint.cs</LastGenOutput>
+    </None>
+    
+    <Compile Update="Geometry\BoundingBoxMathTT.cs">
+      <DependentUpon>BoundingBoxMathTT.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Geometry\LineMathTT.cs">
+      <DependentUpon>LineMathTT.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Geometry\PointMathTT.cs">
+      <DependentUpon>PointMathTT.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Geometry\PolygonMathTT.cs">
+      <DependentUpon>PolygonMathTT.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Update="Geometry\BoundingBoxMathTT.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BoundingBoxMathTT.cs</LastGenOutput>
+    </None>
+    <None Update="Geometry\LineMathTT.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LineMathTT.cs</LastGenOutput>
+    </None>
+    <None Update="Geometry\PointMathTT.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PointMathTT.cs</LastGenOutput>
+    </None>
+    <None Update="Geometry\PolygonMathTT.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PolygonMathTT.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+</Project>

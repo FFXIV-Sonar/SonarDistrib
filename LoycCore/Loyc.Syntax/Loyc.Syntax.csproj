@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <OutputPath>..\Bin\$(Configuration)\</OutputPath>
+    <NoWarn>1591, 1573, 0419</NoWarn>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>true</Optimize>
+    
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Loyc.Interfaces\Loyc.Interfaces.csproj"/>
+    <ProjectReference Include="..\Loyc.Essentials\Loyc.Essentials.csproj"/>
+    <ProjectReference Include="..\Loyc.Collections\Loyc.Collections.csproj"/>
+    <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
+
+    <None Update="LES\Les2LexerGrammar.les">
+      <Generator>LLLPG</Generator>
+      <LastGenOutput>Les2LexerGrammar.out.cs</LastGenOutput>
+    </None>
+    <None Update="LES\Les2ParserGrammar.les">
+      <Generator>LLLPG</Generator>
+      <LastGenOutput>Les2ParserGrammar.out.cs</LastGenOutput>
+    </None>
+    <Compile Update="LES\Les2LexerGrammar.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Les2LexerGrammar.les</DependentUpon>
+    </Compile>
+    <Compile Update="LES\Les2ParserGrammar.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Les2ParserGrammar.les</DependentUpon>
+    </Compile>
+    
+    <Compile Update="LES\Les3Lexer.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Les3Lexer.ecs</DependentUpon>
+    </Compile>
+    <None Update="LES\Les3Lexer.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>Les3Lexer.out.cs</LastGenOutput>
+    </None>
+    <Compile Update="LES\Les3Parser.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Les3Parser.ecs</DependentUpon>
+    </Compile>
+    <None Update="LES\Les3Parser.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>Les3Parser.out.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+</Project>

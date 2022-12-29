@@ -1,0 +1,289 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <!--Change path to "obj" folder to avoid a weird error when there is also a .NET Standard version. NOTE: reportedly, changing new-style project files in the same way doesn't work.-->
+    <BaseIntermediateOutputPath>..\Bin\obj.netfx\Loyc.Essentials</BaseIntermediateOutputPath>
+    <ProjectGuid>{DF642FB7-25EB-424D-8E92-6C046F42D4A9}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Loyc</RootNamespace>
+    <AssemblyName>Loyc.Essentials</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <FileAlignment>512</FileAlignment>
+    <NoWarn>1591, 1573, 0419</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' or '$(Configuration)' == 'Release' ">
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' or '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>..\Bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DebugType>None</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>..\Bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    
+    <DebugType>None</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug.NET45|AnyCPU'">
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>..\Bin\Debug.NET45\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DotNet45,CSharp4</DefineConstants>
+    <DebugType>None</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release.NET45|AnyCPU'">
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>..\Bin\Release.NET45\</OutputPath>
+    <DefineConstants>TRACE;DotNet45,CSharp4</DefineConstants>
+    
+    <DebugType>None</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Optimize>true</Optimize>
+  </PropertyGroup>-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Numerics" />
+    <Compile Include="..\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
+    </Compile>
+    <Compile Include="Collections\Adapters\DictionaryAsSink.cs" />
+    <Compile Include="Collections\Adapters\ListAsSink.cs" />
+    <Compile Include="Collections\Adapters\ReadOnlyListAsListSource.cs" />
+    <Compile Include="Collections\Adapters\ROLSlice.cs" />
+    <Compile Include="Collections\Adapters\SelectDictionaryFromKeys.cs" />
+    <Compile Include="Collections\Adapters\SparseListSourceSlice.cs" />
+    <Compile Include="Collections\BaseClasses\CollectionWrapper.cs" />
+    <Compile Include="Collections\ExtensionMethods\EnumerableExt.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EnumerableExt.ecs</DependentUpon>
+    </Compile>
+    <Compile Include="Collections\HelperClasses\DictionaryWithChangeEvents.cs" />
+    <Compile Include="Collections\BaseClasses\DictionaryWrapper.cs" />
+    <Compile Include="Collections\HelperClasses\ListWithChangeEvents.cs" />
+    <Compile Include="Collections\BaseClasses\ListWrapper.cs" />
+    <Compile Include="Collections\ExtensionMethods\IPush, IPop.cs" />
+    <Compile Include="Collections\ExtensionMethods\LinqToLists.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LinqToLists.ecs</DependentUpon>
+    </Compile>
+    <Compile Include="Collections\ExtensionMethods\ICollectionExt.cs" />
+    <Compile Include="Collections\HelperClasses\NumRange.cs" />
+    <Compile Include="Collections\HelperClasses\Repeated.cs" />
+    <Compile Include="Collections\HelperClasses\ReverseComparer.cs" />
+    <Compile Include="Collections\HelperClasses\SelectListSource.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SelectListSource.ecs</DependentUpon>
+    </Compile>
+    <None Include="Collections\ExtensionMethods\EnumerableExt.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>EnumerableExt.out.cs</LastGenOutput>
+    </None>
+    <None Include="Collections\HelperClasses\SelectCollection.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>SelectCollection.out.cs</LastGenOutput>
+    </None>
+    <Compile Include="Collections\HelperClasses\SelectCollection.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SelectCollection.ecs</DependentUpon>
+    </Compile>
+    <Compile Include="Collections\HelperClasses\CollectionWithChangeEvents.cs" />
+    <Compile Include="Collections\BaseClasses\SetWrapper.cs" />
+    <Compile Include="MessageSinks\LogMessage.cs" />
+    <Compile Include="MessageSinks\MessageHolder.cs" />
+    <Compile Include="MessageSinks\LogException.cs" />
+    <Compile Include="MessageSinks\WrapperSinks.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Collections\BaseClasses\EnumeratorBase.cs" />
+    <Compile Include="Collections\BaseClasses\ListExBase.cs" />
+    <Compile Include="Collections\BaseClasses\ListSourceBase.cs" />
+    <Compile Include="Collections\BaseClasses\ReadOnlyCollectionBase.cs" />
+    <Compile Include="Collections\CollectionDebugView.cs" />
+    <Compile Include="Collections\ExtensionMethods\DictionaryExt.cs" />
+    <Compile Include="Collections\ExtensionMethods\LCExtensions.cs" />
+    <Compile Include="Collections\ExtensionMethods\ListExt.cs" />
+    <Compile Include="Collections\Adapters\ListSourceAsSparse.cs" />
+    <Compile Include="Collections\ExtensionMethods\Range.cs" />
+    <Compile Include="Collections\Adapters\ArraySlice.cs" />
+    <Compile Include="Collections\Adapters\BufferedSequence.cs" />
+    <Compile Include="Collections\Adapters\CollectionAsSource.cs" />
+    <Compile Include="Collections\HelperClasses\EmptyArray.cs" />
+    <Compile Include="Collections\HelperClasses\EmptyEnumerator.cs" />
+    <Compile Include="Collections\HelperClasses\EmptyList.cs" />
+    <Compile Include="Collections\Adapters\ListAsListSource.cs" />
+    <Compile Include="Collections\Adapters\ListSlice.cs" />
+    <Compile Include="Collections\Adapters\ListSourceAsList.cs" />
+    <Compile Include="Collections\Adapters\NegList.cs" />
+    <Compile Include="Collections\Adapters\NegListSource.cs" />
+    <Compile Include="Collections\HelperClasses\RangeEnumerator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collections\Adapters\ReverseBinumerator.cs" />
+    <Compile Include="Collections\Adapters\ReversedList.cs" />
+    <Compile Include="Collections\Adapters\ReversedListSource.cs" />
+    <None Include="Collections\HelperClasses\SelectListSource.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>SelectListSource.out.cs</LastGenOutput>
+    </None>
+    <Compile Include="Collections\Adapters\Slice.cs" />
+    <Compile Include="Collections\Adapters\SourceAsCollection.cs" />
+    <Compile Include="Collections\Adapters\NegListSlice.cs" />
+    <Compile Include="Strings\StringBuilderExt.cs" />
+    <Compile Include="Collections\Implementations\DList.cs" />
+    <Compile Include="Collections\Implementations\InternalDList.cs" />
+    <Compile Include="Collections\Implementations\InternalList.cs" />
+    <Compile Include="Collections\Implementations\WeakKeyComparer.cs" />
+    <Compile Include="Collections\Implementations\WeakKeyDictionary.cs" />
+    <Compile Include="Utilities\ByteArrayInString.cs" />
+    <Compile Include="Utilities\G.cs" />
+    <Compile Include="Utilities\EzStopwatch.cs" />
+    <Compile Include="Utilities\Extensions.cs" />
+    <None Include="Utilities\GRange.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>GRange.out.cs</LastGenOutput>
+    </None>
+    <Compile Include="Utilities\GRange.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GRange.ecs</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\HashTags.cs" />
+    <Compile Include="Utilities\Holder.cs" />
+    <Compile Include="Utilities\IoC.cs" />
+    <None Include="MessageSinks\MessageSink.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>MessageSink.out.cs</LastGenOutput>
+    </None>
+    <Compile Include="MessageSinks\MessageSink.out.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MessageSink.ecs</DependentUpon>
+    </Compile>
+    <Compile Include="MessageSinks\BasicSinks.cs" />
+    <Compile Include="Utilities\MiniTest.cs" />
+    <Compile Include="Utilities\PrintHelpers.cs" />
+    <Compile Include="Utilities\SavedValue.cs" />
+    <Compile Include="Utilities\RunTests.cs" />
+    <Compile Include="Strings\StringExt.cs" />
+    <Compile Include="Utilities\ThreadEx.cs" />
+    <Compile Include="Utilities\Triplet.cs" />
+    <Compile Include="Utilities\ValueComparer.cs" />
+    <Compile Include="Compatibility\WeakReference.cs" />
+    <Compile Include="Utilities\WrapperBase.cs" />
+    <Compile Include="void.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Collections\ExtensionMethods\LinqToLists.ecs">
+      <Generator>LLLPG</Generator>
+      <LastGenOutput>LinqToLists.out.cs</LastGenOutput>
+    </None>
+    <None Include="OpenSourceKey.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Loyc.Interfaces\Loyc.Interfaces.net45.csproj">
+      <Project>{834f7631-149c-4172-83c2-c6bf9f8bf26b}</Project>
+      <Name>Loyc.Interfaces.net45</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+</Project>

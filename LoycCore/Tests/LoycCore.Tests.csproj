@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <OutputPath>..\Bin\$(Configuration)\</OutputPath>
+    <OutputType>Exe</OutputType>
+    <NoWarn>1591, 1573, 0419</NoWarn>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Loyc.Essentials\Loyc.Essentials.csproj"/>
+    <ProjectReference Include="..\Loyc.Collections\Loyc.Collections.csproj"/>
+    <ProjectReference Include="..\Loyc.Syntax\Loyc.Syntax.csproj"/>
+    <ProjectReference Include="..\Loyc.Math\Loyc.Math.csproj"/>
+    <ProjectReference Include="..\Loyc.Utilities\Loyc.Utilities.csproj"/>
+    <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
+    <Compile Update="Syntax\LexerSourceTest.out.cs">
+      <DependentUpon>LexerSourceTest.ecs</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Update="Syntax\LexerSourceTest.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>LexerSourceTest.out.cs</LastGenOutput>
+    </None>
+    <Compile Update="Syntax\ParserSourceTest.out.cs">
+      <DependentUpon>ParserSourceTest.ecs</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Update="Syntax\ParserSourceTest.ecs">
+      <Generator>LeMP</Generator>
+      <LastGenOutput>ParserSourceTest.out.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+</Project>

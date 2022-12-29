@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <AssemblyVersion>0.4.9.2</AssemblyVersion>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Nullable>enable</Nullable>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_")).Loader</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ConfigureAwait.Fody" Version="3.3.1" />
+    <PackageReference Include="Costura.Fody" Version="5.7.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive; compile</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="DalamudPackager" Version="2.1.8" />
+    <PackageReference Include="DryIoc.dll" Version="5.3.1" />
+    <PackageReference Include="Fody" Version="6.6.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <KnownFrameworkReference Update="Microsoft.WindowsDesktop.App" IsWindowsOnly="false" />
+    <KnownFrameworkReference Update="Microsoft.WindowsDesktop.App.WPF" IsWindowsOnly="false" />
+    <KnownFrameworkReference Update="Microsoft.WindowsDesktop.App.WindowsForms" IsWindowsOnly="false" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\SonarPlugin.Dalamud\SonarPlugin.Dalamud.csproj')">
+    <ProjectReference Include="..\SonarPlugin.Dalamud\SonarPlugin.Dalamud.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\SonarPlugin.Dalamud\SonarPlugin.Dalamud.csproj')">
+    <Reference Include="SonarPlugin.Dalamud">
+      <HintPath>libs\SonarPlugin.Dalamud.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Dalamud">
+      <HintPath>$(AppData)\XIVLauncher\addon\Hooks\dev\Dalamud.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="SonarPlugin.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))'">
+    <Exec Command="copy &quot;$(TargetPath)\..\Advanced Combat Tracker.exe&quot; &quot;$(TargetPath)\..\Advanced Combat Tracker.dll&quot; /Y&#xD;&#xA;del &quot;$(TargetPath)\..\*.xml&quot;&#xD;&#xA;&#xD;&#xA;echo Copying to DevPlugins&#xD;&#xA;mkdir &quot;%25appdata%25\XIVLauncher\devPlugins\SonarPlugin&quot;&#xD;&#xA;xcopy &quot;$(TargetPath)\..&quot; &quot;%25appdata%25\XIVLauncher\devPlugins\SonarPlugin&quot; /Y /E /C" />
+  </Target>
+
+  <Target Name="CleanupDebugAndDocs" BeforeTargets="PackagePlugin" Condition="'$(Configuration)' == 'Release'">
+    <ItemGroup>
+      <FilesToDelete Include="$(OutDir)*.pdb;$(OutDir)*.xml" />
+    </ItemGroup>
+    <Delete Files="@(FilesToDelete)" />
+  </Target>
+
+  <Target Name="PackagePlugin" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <DalamudPackager ProjectDir="$(ProjectDir)" OutputPath="$(OutputPath)" AssemblyName="$(AssemblyName)" MakeZip="true" Exclude="Collections.Pooled.pdb;DeviceId.Windows.Wmi.pdb;Sonar.pdb;SonarGUI.pdb;SonarPlugin.Dalamud.pdb;SonarPlugin.deps.json;SonarPlugin.pdb;System.Management.pdb" />
+  </Target>
+
+</Project>
