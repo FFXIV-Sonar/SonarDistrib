@@ -184,8 +184,8 @@
       },
       "NonBlocking": {
         "type": "Transitive",
-        "resolved": "2.1.0",
-        "contentHash": "Ih6NcB++JPLOPyFMSQjBpE5gSQZiuTIjZDOyxz5xWII03WKtA1H+6na29vkeihE+mWQf6KOjOIeCAXZxyFj2zg==",
+        "resolved": "2.1.1",
+        "contentHash": "wCfoF5muN8Qx9Mz3IBsCb0qlViH2fAWTwzpHWp+vSBTxy2U3/5xW5+niLtSG3dXook3bN3U8hdEWRGHM0+5f5Q==",
         "dependencies": {
           "System.Runtime.CompilerServices.Unsafe": "4.3.0"
         }
@@ -1109,7 +1109,7 @@
           "MessagePack": "[2.4.59, )",
           "MessagePack.Annotations": "[2.4.59, )",
           "Newtonsoft.Json": "[13.0.2, )",
-          "NonBlocking": "[2.1.0, )",
+          "NonBlocking": "[2.1.1, )",
           "System.Threading.Tasks.Dataflow": "[7.0.0, )"
         }
       },
