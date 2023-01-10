@@ -126,6 +126,28 @@
           "System.Security.Principal.Windows": "5.0.0"
         }
       },
+      "NAudio.Core": {
+        "type": "Transitive",
+        "resolved": "2.1.0",
+        "contentHash": "0iowfmolibU4KxjaC/s7lox/BeDg76UVvXtCuCzRiNpylVndqsxXxp+bVWFrpv0KzQDIKLxZrnDmYENlAI0u9g=="
+      },
+      "NAudio.Wasapi": {
+        "type": "Transitive",
+        "resolved": "2.1.0",
+        "contentHash": "Zp/8l79aYQEu7/HfzXWVpqyIwRUPgsvCj/Qx+pR6ykJxvwjqOoUfMiEG9US1wW4d7PEzT5ZBIL+cp90t6HNNiw==",
+        "dependencies": {
+          "NAudio.Core": "2.1.0"
+        }
+      },
+      "NAudio.WinMM": {
+        "type": "Transitive",
+        "resolved": "2.1.0",
+        "contentHash": "lUU5C+XNzKhFUIEafA/nJpbtjksFtbUd033fs27KeHlOM0r6rQFF3l75dqxg+rWkGu81MfkBbYrNpH9p8qmtBA==",
+        "dependencies": {
+          "Microsoft.Win32.Registry": "4.7.0",
+          "NAudio.Core": "2.1.0"
+        }
+      },
       "NETStandard.Library": {
         "type": "Transitive",
         "resolved": "1.6.1",
@@ -1116,14 +1138,17 @@
       "sonargui": {
         "type": "Project",
         "dependencies": {
-          "Sonar": "[0.4.9, )"
+          "Sonar": "[1.0.0, )"
         }
       },
       "sonarplugin.dalamud": {
         "type": "Project",
         "dependencies": {
           "DryIoc.dll": "[5.3.1, )",
-          "Sonar": "[0.4.9, )",
+          "NAudio.Core": "[2.1.0, )",
+          "NAudio.Wasapi": "[2.1.0, )",
+          "NAudio.WinMM": "[2.1.0, )",
+          "Sonar": "[1.0.0, )",
           "SonarGUI": "[1.0.0, )"
         }
       },
