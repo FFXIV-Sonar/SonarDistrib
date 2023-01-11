@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <AssemblyVersion>0.4.9.5</AssemblyVersion>
+    <AssemblyVersion>0.5.0.0</AssemblyVersion>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <Nullable>enable</Nullable>
@@ -13,12 +13,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ConfigureAwait.Fody" Version="3.3.1" />
+    <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" />
     <PackageReference Include="Costura.Fody" Version="5.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive; compile</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="DalamudPackager" Version="2.1.8" />
+    <PackageReference Include="DalamudPackager" Version="2.1.10" />
     <PackageReference Include="Fody" Version="6.6.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

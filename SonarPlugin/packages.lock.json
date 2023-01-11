@@ -1,14 +1,14 @@
 {
   "version": 1,
   "dependencies": {
-    "net6.0-windows7.0": {
+    "net7.0-windows7.0": {
       "ConfigureAwait.Fody": {
         "type": "Direct",
-        "requested": "[3.3.1, )",
-        "resolved": "3.3.1",
-        "contentHash": "R9PQYf0AT4RBZcUXm22xWkCpSmNHdTzQ0dOyLIsxIK6dwXH4S9pY/rZdXU/63i8vZvSzZ99sB1kP7xer8MCe6w==",
+        "requested": "[3.3.2, )",
+        "resolved": "3.3.2",
+        "contentHash": "vzGcpFU7uY4SbdB1Q68sFqv52HU5V1l39bF1rw6BIb7Os/DRLZa5ObV1yf/CNuTXj8IZjqJQ7PnTzSUiI/W49A==",
         "dependencies": {
-          "Fody": "6.0.2"
+          "Fody": "6.6.4"
         }
       },
       "Costura.Fody": {
@@ -23,9 +23,9 @@
       },
       "DalamudPackager": {
         "type": "Direct",
-        "requested": "[2.1.8, )",
-        "resolved": "2.1.8",
-        "contentHash": "YqagNXs9InxmqkXzq7kLveImxnodkBEicAhydMXVp7dFjC7xb76U6zGgAax4/BWIWfZeWzr5DJyQSev31kj81A=="
+        "requested": "[2.1.10, )",
+        "resolved": "2.1.10",
+        "contentHash": "S6NrvvOnLgT4GDdgwuKVJjbFo+8ZEj+JsEYk9ojjOR/MMfv1dIFpT8aRJQfI24rtDcw1uF+GnSSMN4WW1yt7fw=="
       },
       "Fody": {
         "type": "Direct",
