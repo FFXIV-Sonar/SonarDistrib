@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+
+    <PackageId>NonBlocking</PackageId>
+    <PackageVersion>2.1.1</PackageVersion>
+    <Authors>Vladimir Sadov</Authors> 
+    <Description>
+      Implementation of a lock-free dictionary on .Net
+
+      Included types:
+      === NonBlocking.ConcurrentDictionary
+      Lock-free, wait-free implementation of a dictionary.
+      - has the same API as System.Collections.Concurrent.ConcurrentDictionary.
+      - No locks are taken during any operation including Get, Add, Remove, internal resizes etc...
+      - While multiple threads accessing NonBlocking dictionary will help each other in operations such as table resizing, there is no dependency on such behavior. If any thread get unscheduled or delayed for whatever reason, other threads will be able to make progress independently.
+      - NonBlocking dictionary scales linearly with the number of active threads if hardware permits.
+
+      On most operations NonBlocking dictionary is faster than Concurrent, especially in write-heavy scenarios.
+
+      Core algorithms are based on NonBlockingHashMap, written and released to the public domain by Dr. Cliff Click. A good overview could be found here: https://www.youtube.com/watch?v=HJ-719EGIts
+
+      === Counter32
+      === Counter64
+      Low-overhead scalable counters.
+    </Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>
+        Minor bug fixes.
+    </PackageReleaseNotes>
+    <Summary>Implementation of a lock-free dictionary on .Net</Summary>
+    <Copyright>Copyright 2022 (c) Vladimir Sadov. All rights reserved.</Copyright>
+    <PackageTags>lock-free wait-free dictionary high-performance</PackageTags>
+    <PackageProjectUrl>https://github.com/VSadov/NonBlocking</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <IsTrimmable>true</IsTrimmable>
+    <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <LangVersion>9.0</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>9.0</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>

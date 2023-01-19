@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>DeviceId.Windows.Wmi</PackageId>
+    <Title>DeviceId (Windows / WMI)</Title>
+    <Description>Provides extra Windows-specific components (using WMI) for the DeviceId package.</Description>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <VersionPrefix>6.2.0</VersionPrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DeviceId" Version="6.3.0" />
+    <PackageReference Include="DeviceId.Windows" Version="6.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\System.Management\System.Management.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -204,14 +204,6 @@
         "resolved": "13.0.2",
         "contentHash": "R2pZ3B0UjeyHShm9vG+Tu0EBb2lC8b0dFzV9gVn50ofHXh9Smjk6kTn7A/FdAsC8B5cKib1OnGYOXxRBz5XQDg=="
       },
-      "NonBlocking": {
-        "type": "Transitive",
-        "resolved": "2.1.1",
-        "contentHash": "wCfoF5muN8Qx9Mz3IBsCb0qlViH2fAWTwzpHWp+vSBTxy2U3/5xW5+niLtSG3dXook3bN3U8hdEWRGHM0+5f5Q==",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "4.3.0"
-        }
-      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -1116,6 +1108,12 @@
       },
       "loyc.interfaces": {
         "type": "Project"
+      },
+      "nonblocking": {
+        "type": "Project",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "[4.3.0, )"
+        }
       },
       "sonar": {
         "type": "Project",
