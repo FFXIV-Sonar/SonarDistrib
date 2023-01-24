@@ -1,23 +1,17 @@
-﻿using System;
-using Dalamud.Plugin;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Reflection;
-using System.Linq;
-using System.IO.Compression;
-using System.Collections.Generic;
-using System.Runtime.Loader;
-using System.IO;
-using Dalamud.Logging;
-using System.ComponentModel;
-using Dalamud.Game.Command;
-using Dalamud.IoC;
+﻿using Dalamud.Game.Command;
 using Dalamud.Game.Gui;
-using System.Runtime.CompilerServices;
-#nullable enable
+using Dalamud.IoC;
+using Dalamud.Logging;
+using Dalamud.Plugin;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-
-namespace SonarPlugin.Loader
+namespace SonarPlugin
 {
     public sealed class SonarPluginStub : IDalamudPlugin
     {

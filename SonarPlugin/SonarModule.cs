@@ -14,7 +14,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.ComponentModel;
 
-namespace SonarPlugin.Loader
+namespace SonarPlugin
 {
     internal static class SonarModule
     {
@@ -29,7 +29,7 @@ namespace SonarPlugin.Loader
             }
             else
             {
-                Debugger.Break();
+                if (Debugger.IsAttached) Debugger.Break();
                 AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
             }
         }
@@ -37,7 +37,7 @@ namespace SonarPlugin.Loader
         private static Assembly? ResolveAssembly(object? sender, ResolveEventArgs args)
         {
             var assemblyName = args.Name; //new AssemblyName(args.Name); <-- just in case, I don't know what it has
-            Debugger.Break();
+            if (Debugger.IsAttached) Debugger.Break();
             if (assemblyName is null) return null;
             var resourceBytes = Assembly.GetExecutingAssembly().GetUncompressedManifestResourceBytes($"costura.{assemblyName.ToLowerInvariant()}.dll.compressed");
             if (resourceBytes is null) return null;
@@ -89,16 +89,16 @@ namespace SonarPlugin.Loader
         private static byte[]? GetUncompressedManifestResourceBytes(this Assembly assembly, string name)
         {
             using var stream = assembly.GetManifestResourceStream(name);
-            if (stream is null) return null;
+            if (stream is null) return null!;
             var bytes = new byte[stream.Length];
             stream.Read(bytes);
             return bytes;
         }
 
-        /// <summary>
-        /// DO NOT CALL THIS
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        internal static void MakeCosturaStopComplainingAboutNotCallingCosturaUtilityInitialize() => CosturaUtility.Initialize(); // Else this loads stuff into the Dalamud context...
+        ///// <summary>
+        ///// DO NOT CALL THIS
+        ///// </summary>
+        //[EditorBrowsable(EditorBrowsableState.Never)]
+        //internal static void MakeCosturaStopComplainingAboutNotCallingCosturaUtilityInitialize() => CosturaUtility.Initialize(); // Else this loads stuff into the Dalamud context...
     }
 }

@@ -35,7 +35,6 @@ using SonarPlugin.Game;
 using Sonar.Data;
 using Sonar.Logging;
 using SonarGUI;
-using Collections.Pooled;
 using Dalamud.Interface.Windowing;
 using System.Diagnostics;
 
