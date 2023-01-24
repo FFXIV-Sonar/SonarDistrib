@@ -93,10 +93,6 @@
     <PackageReference Include="NAudio.WinMM" Version="2.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SonarGUI\SonarGUI.csproj" />
-  </ItemGroup>
-
   <ItemGroup Condition="Exists('..\Sonar\Sonar.csproj')">
     <ProjectReference Include="..\Sonar\Sonar.csproj" />
   </ItemGroup>

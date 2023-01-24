@@ -34,7 +34,6 @@ using static Sonar.Constants;
 using SonarPlugin.Game;
 using Sonar.Data;
 using Sonar.Logging;
-using SonarGUI;
 using Dalamud.Interface.Windowing;
 using System.Diagnostics;
 
@@ -66,16 +65,12 @@ namespace SonarPlugin
 
         public WindowSystem Windows { get; } = new(nameof(SonarPlugin));
         public SonarConfiguration Configuration { get; private set; } = default!;
-        public SonarGUIService SonarGUI { get; private set; } = default!; // TODO: Remove this (after porting SupportWindow)
 
         public void Initialize()
         {
             this.LoadConfiguration();
             this.Localization.SetupLocalization(this.Configuration.Language);
 
-            this.SonarGUI = new(this.Client);
-            this.SonarGUI.LogMessage += this.GUILogHandler;
-            this.PluginInterface.UiBuilder.Draw += this.SonarGUI.Draw;
             this.PluginInterface.UiBuilder.Draw += this.Windows.Draw;
 
             // Set volume of alerts to current config, this also will initialize the Instance of the audio service
@@ -329,7 +324,6 @@ namespace SonarPlugin
         }
 
         private void ClientLogHandler(SonarClient source, LogLine log) => this.LogHandler(log);
-        private void GUILogHandler(SonarGUIService source, LogLine log) => this.LogHandler(new(log.Level, $"[GUI] {log.Message}"));
 
         private void LogHandler(LogLine log)
         {
@@ -364,12 +358,7 @@ namespace SonarPlugin
         private int _disposed; // Interlocked
         public bool IsDisposed => this._disposed != 0;
 
-        ~SonarPlugin()
-        {
-            try { this.Dispose(false); } catch (Exception ex) { PluginLog.Error(ex, string.Empty); }
-        }
-
-        private void Dispose(bool disposing)
+        public void Dispose()
         {
             if (Interlocked.CompareExchange(ref this._disposed, 1, 0) != 0) return;
             this.SaveConfiguration();
@@ -377,7 +366,6 @@ namespace SonarPlugin
             {
                 this.Client.Tick -= Ticker_OnTick;
             }
-            this.SonarGUI.LogMessage -= GUILogHandler;
 
             // Hunt and Fate Trackers
             if (this.Client is not null)
@@ -392,18 +380,11 @@ namespace SonarPlugin
             if (this.PluginInterface is not null)
             {
                 // Logged in / out handlers
-                this.PluginInterface.UiBuilder.Draw -= this.SonarGUI.Draw;
                 this.PluginInterface.UiBuilder.Draw -= UiBuilder_OnBuildUi;
                 this.PluginInterface.UiBuilder.Draw -= this.Windows.Draw;
                 this.Framework.Update -= Framework_OnUpdateEvent;
             }
 
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
         #endregion
     }

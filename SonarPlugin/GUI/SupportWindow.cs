@@ -5,7 +5,6 @@ using Sonar;
 using Sonar.Enums;
 using Sonar.Models;
 using Sonar.Numerics;
-using SonarGUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,11 +29,6 @@ namespace SonarPlugin.GUI
         private string? responseText;
         private string? responseException;
 
-        public bool Visible
-        {
-            get => this._visible;
-            internal set => this._visible = value; // Cannot be private because of OpenContactWindow extension
-        }
         public bool AddLogs
         {
             get => this._logsVisible;
@@ -59,6 +53,7 @@ namespace SonarPlugin.GUI
             this.Size = new(0, 0);
 
             this.Windows.AddWindow(this);
+            this.IsOpen = true;
         }
 
         public override void OnClose()
@@ -124,12 +119,12 @@ namespace SonarPlugin.GUI
                 this.Messaage.Logs = logs;
             }
 
-            //ImGui.SameLine();
+            ImGui.SameLine();
 
-            //if (ImGui.Button("Cancel"))
-            //{
-            //    this.IsOpen = false;
-            //}
+            if (ImGui.Button("Cancel"))
+            {
+                this.IsOpen = false;
+            }
 
             ImGui.Checkbox("Add Logs or Additional Text", ref this._logsVisible);
 

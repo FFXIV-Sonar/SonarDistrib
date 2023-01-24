@@ -103,6 +103,7 @@ namespace SonarPlugin
             this._container.RegisterDelegate(this.GetSonarClient, Reuse.Singleton);
             this._container.Register(Made.Of(r => ServiceInfo.Of<SonarClient>(), c => c.HuntTracker), Reuse.Singleton, Setup.With(preventDisposal: true));
             this._container.Register(Made.Of(r => ServiceInfo.Of<SonarClient>(), c => c.FateTracker), Reuse.Singleton, Setup.With(preventDisposal: true));
+            this._container.Register(Made.Of(r => ServiceInfo.Of<SonarPlugin>(), p => p.Windows), Reuse.Singleton, Setup.With(preventDisposal: true));
 
             // Additional Services
             this._container.RegisterDelegate(this.CreateFileDialogManager, Reuse.Singleton);

@@ -1,12 +1,13 @@
 ﻿using SonarPlugin.Attributes;
 using SonarPlugin.Managers;
 using System;
-using SonarGUI;
 using SonarPlugin.GUI;
 using Dalamud.Game.Command;
 using Dalamud.Logging;
 using System.Threading.Tasks;
 using System.Threading;
+using Dalamud.Interface.Windowing;
+using Sonar;
 
 namespace SonarPlugin
 {
@@ -15,13 +16,17 @@ namespace SonarPlugin
         private PluginCommandManager<SonarCommands> _commandManager;
 
         private SonarPlugin Plugin { get; }
+        private SonarClient Client { get; }
+        private WindowSystem Windows { get; }
         private SonarMainOverlay MainWindow { get; }
         private SonarConfigWindow ConfigWindow { get; }
         private CommandManager Commands { get; }
 
-        public SonarCommands(SonarPlugin plugin, SonarMainOverlay mainWindow, CommandManager commands, SonarConfigWindow configWindow)
+        public SonarCommands(SonarPlugin plugin, SonarClient client, WindowSystem windows, SonarMainOverlay mainWindow, CommandManager commands, SonarConfigWindow configWindow)
         {
             this.Plugin = plugin;
+            this.Client = client;
+            this.Windows = windows;
             this.MainWindow = mainWindow;
             this.Commands = commands;
             this.ConfigWindow = configWindow;
@@ -58,7 +63,7 @@ namespace SonarPlugin
         [ShowInHelp]
         private void SonarSupportCommand(string command, string args)
         {
-            this.Plugin.SonarGUI.OpenSupportWindow();
+            SupportWindow.CreateWindow(this.Windows, this.Client);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
