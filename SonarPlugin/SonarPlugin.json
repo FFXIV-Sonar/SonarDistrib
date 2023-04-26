@@ -20,7 +20,7 @@
   "CategoryTags": [
     "utility"
   ],
-  "RepoUrl": "https://discord.gg/K7y24Rr",
+  "RepoUrl": "https://discord.gg/K7y24Rr", "TODO1": "To be replaced once supportInfo is implemented DIP53: https://github.com/FFXIV-Sonar/SonarDistrib",
   "IconUrl": "https://assets.ffxivsonar.com/dalamud/logo.png",
   "ImageUrls": [
     "https://assets.ffxivsonar.com/dalamud/image1.png",
@@ -29,6 +29,11 @@
     "https://assets.ffxivsonar.com/dalamud/image4.png",
     "https://assets.ffxivsonar.com/dalamud/image5.png"
   ],
+  "supportInfo": {
+    "supportLink": "https://discord.gg/K7y24Rr",
+    "supportLinkLabel": "Sonar Support Discord",
+    "supportText": "Support is provided exclusively at the Sonar Support discord. You can also create a ticket if privacy is desired. To send feedback please do so via /sonarsupport or join the Discord."
+  },
   "AcceptsFeedback": false,
-  "FeedbackWebhook": "(not used)"
+  "AcceptsFeedbackComment": "To send feedback, type /sonarsupport to send feedback or let us know in the Sonar Support discord"
 }

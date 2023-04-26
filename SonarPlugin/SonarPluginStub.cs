@@ -3,6 +3,7 @@ using Dalamud.Game.Gui;
 using Dalamud.IoC;
 using Dalamud.Logging;
 using Dalamud.Plugin;
+using DryIoc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,18 +75,23 @@ namespace SonarPlugin
 
         private void InitializeSonar()
         {
-            if (this.IsDisposed) throw new ObjectDisposedException("SonarPlugin");
             if (this.Plugin is not null) return;
             try
             {
                 PluginLog.Debug("Starting Sonar");
                 this.ReinitDelay.Wait();
                 this.Plugin = new(this.PluginInterface);
+                this.Plugin.StartServices();
             }
             catch (Exception ex)
             {
                 PluginLog.Error(ex, string.Empty);
                 this.ShowError(ex, "initialized", true);
+
+                if (ex is ContainerException cex && this.Plugin is not null)
+                {
+                    PluginLog.Error(cex.TryGetDetails(this.Plugin.Container));
+                }
                 /* Swallow Exception */
             }
         }
@@ -96,6 +102,7 @@ namespace SonarPlugin
             try
             {
                 PluginLog.Debug("Stopping Sonar");
+                this.Plugin?.StopServices();
                 this.Plugin?.Dispose();
                 this.Plugin = null;
                 this.ReinitDelay = Task.Delay(5000);
@@ -104,6 +111,10 @@ namespace SonarPlugin
             {
                 this.ShowError(ex, "disposed", false);
                 PluginLog.Error(ex, string.Empty);
+                if (ex is ContainerException cex)
+                {
+                    PluginLog.Error(cex.TryGetDetails(this.Plugin!.Container));
+                }
                 /* Swallow Exception */
             }
         }
@@ -148,14 +159,9 @@ namespace SonarPlugin
             this.Chat.PrintError(contact);
         }
 
-        private int disposed;
-        public bool IsDisposed => this.disposed == 1;
-
-        private void Dispose(bool disposing)
+        public void Dispose()
         {
-            if (Interlocked.Exchange(ref this.disposed, 1) == 1) return;
-            if (!disposing) return;
-            this.DestroySonar();
+            this.SonarOffCommand();
 
             this.Commands.RemoveHandler("/sonaron");
             this.Commands.RemoveHandler("/sonarenable");
@@ -164,17 +170,13 @@ namespace SonarPlugin
             this.Commands.RemoveHandler("/sonardisable");
 
             this.Commands.RemoveHandler("/sonarreload");
-        }
 
-        public void Dispose()
-        {
-            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~SonarPluginStub()
         {
-            try { this.Dispose(false); } catch (Exception ex) { PluginLog.Error(ex, string.Empty); }
+            try { this.Dispose(); } catch (Exception ex) { PluginLog.Error(ex, string.Empty); }
         }
     }
 }

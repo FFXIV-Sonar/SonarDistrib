@@ -1,4 +1,5 @@
-﻿using Dalamud.Logging;
+﻿using Sonar.Extensions;
+using Dalamud.Logging;
 using CheapLoc;
 using SonarPlugin.Config;
 using Dalamud.Data;
@@ -30,12 +31,13 @@ using System.Net.WebSockets;
 using System.Threading;
 using SonarPlugin.Trackers;
 using SonarPlugin.Utility;
-using static Sonar.Constants;
+using static Sonar.SonarConstants;
 using SonarPlugin.Game;
 using Sonar.Data;
 using Sonar.Logging;
 using Dalamud.Interface.Windowing;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SonarPlugin
 {
@@ -51,7 +53,7 @@ namespace SonarPlugin
 
         public bool IsDuty { get; private set; }
 
-        public SonarPlugin(DalamudPluginInterface pluginInterface, SonarClient client, SonarAddressResolver address, Framework framework, Condition condition, Localization localization, AudioPlaybackEngine audio)
+        public SonarPlugin(DalamudPluginInterface pluginInterface, SonarClient client, Framework framework, Condition condition, Localization localization, AudioPlaybackEngine audio)
         {
             this.PluginInterface = pluginInterface;
             this.Client = client;
@@ -78,18 +80,11 @@ namespace SonarPlugin
 
             // Framework OnUpdateEvent handlers
             this.Framework.Update += this.Framework_OnUpdateEvent;
-            this.PluginInterface.UiBuilder.Draw += this.UiBuilder_OnBuildUi;
 
             // Start Sonar.NET client
             this.Client.ServerMessage += this.Events_OnSonarMessage;
             this.Client.LogMessage += this.ClientLogHandler;
-            this.Client.ClientConnected += this.Client_OnClientConnected;
-            this.Client.Ready += this.Client_OnReady;
-            this.Client.ClientDisconnected += this.Client_OnClientDisconnected;
             this.Client.Start();
-
-            // FrameworkTick
-            this.Client.Tick += this.Ticker_OnTick;
         }
 
         private void Events_OnSonarMessage(SonarClient source, string? message)
@@ -100,166 +95,32 @@ namespace SonarPlugin
 
         #region OnBuildUi and Framework event and tick manager
         public bool SafeToReadTables { get; private set; }
-        private int ProcessFramework; // Interlocked
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3264:Events should be invoked", Justification = "Invoked via GetInvocationList")]
-        public event ImGuiScene.RawDX11Scene.BuildUIDelegate? OnBuildUi;
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3217:\"Explicit\" conversions of \"foreach\" loops should not be used", Justification = "Event Handler")]
-        private void UiBuilder_OnBuildUi()
-        {
-            this.SafeToReadTables = !this.Condition[ConditionFlag.BetweenAreas51];
-            this.IsDuty = this.Condition[ConditionFlag.BoundByDuty56];
-            if (this.OnBuildUi != null)
-            {
-                foreach (ImGuiScene.RawDX11Scene.BuildUIDelegate del in this.OnBuildUi.GetInvocationList())
-                {
-                    string id = $"{del.Method.DeclaringType!.FullName}.{del.Method.Name}";
-                    try
-                    {
-                        ImGui.PushID(id);
-                        del.Invoke();
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex is AggregateException aex) ex = aex.Flatten();
-                        var exMessage = $"{ex}";
-                        PluginLog.LogError($"Error occurred during OnBuildUi event: {exMessage}");
-                        throw;
-                    }
-                    finally
-                    {
-                        ImGui.PopID();
-                    }
-                }
-            }
-            this.ProcessFramework = 1; // Not Interlocked here
-        }
-
-        // FrameworkOnce
-        private readonly object FrameworkOnceLock = new();
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3264:Events should be invoked", Justification = "Invoked via GetInvocationList")]
-        private event Framework.OnUpdateDelegate FrameworkOnceQueue;
-        public event Framework.OnUpdateDelegate OnFrameworkOnce
-        {
-            add
-            {
-                lock (this.FrameworkOnceLock)
-                {
-                    this.FrameworkOnceQueue += value;
-                }
-            }
-            remove
-            {
-                lock (this.FrameworkOnceLock)
-                {
-                    // The reason this is swallowed is because it may not be here anymore
-                    try { this.FrameworkOnceQueue -= value; } catch { /* Swallow */ }
-                }
-            }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3217:\"Explicit\" conversions of \"foreach\" loops should not be used", Justification = "Event Handler")]
-        private void FrameworkOnceHandler(Framework framework)
-        {
-            Delegate[] dels = null;
-            lock (this.FrameworkOnceLock)
-            {
-                if (this.FrameworkOnceQueue != null)
-                {
-                    dels = this.FrameworkOnceQueue.GetInvocationList();
-                    foreach (Framework.OnUpdateDelegate del in dels)
-                    {
-                        this.FrameworkOnceQueue -= del;
-                    }
-                }
-            }
-
-            if (dels != null)
-            {
-                foreach (Framework.OnUpdateDelegate del in dels)
-                {
-                    try
-                    {
-                        this.FrameworkOnceQueue -= del;
-                        del.Invoke(framework); // Nice proxy
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex is AggregateException aex) ex = aex.Flatten();
-                        PluginLog.LogError($"Error occurred during Framework once event: {ex}");
-                    }
-                }
-            }
-        }
 
         // FrameworkEvent
-        public event Framework.OnUpdateDelegate OnFrameworkEvent;
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3217:\"Explicit\" conversions of \"foreach\" loops should not be used", Justification = "Event Handler")]
-        private void FrameworkEventHandler(Framework framework)
-        {
-            if (this.OnFrameworkEvent != null)
-            {
-                Delegate[] dels = this.OnFrameworkEvent.GetInvocationList();
-                foreach (Framework.OnUpdateDelegate del in dels)
-                {
-                    try
-                    {
-                        del.Invoke(framework); // Nice proxy
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex is AggregateException aex) ex = aex.Flatten();
-                        PluginLog.LogError($"Error occurred during Framework event: {ex}");
-                    }
-                }
-            }
-        }
-
-        // FrameworkTick
-        private int DoFrameworkTick; // Interlocked
-        public event Framework.OnUpdateDelegate OnFrameworkTick;
-        private void FrameworkTickHandler(Framework framework)
-        {
-            if (this.OnFrameworkTick != null && Interlocked.Exchange(ref this.DoFrameworkTick, 0) != 0)
-            {
-                Delegate[] dels = this.OnFrameworkTick.GetInvocationList();
-                foreach (Framework.OnUpdateDelegate del in dels)
-                {
-                    try
-                    {
-                        del.Invoke(framework);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex is AggregateException aex) ex = aex.Flatten();
-                        PluginLog.LogError($"Error occurred during Framework tick event: {ex}");
-                    }
-                }
-            }
-        }
+        public event Action<Framework>? OnFrameworkEvent;
 
         private void Framework_OnUpdateEvent(Framework framework)
         {
-            if (Interlocked.Exchange(ref this.ProcessFramework, 1) == 0) return; // TODO: No effect for now
-            try { this.FrameworkOnceHandler(framework); } catch (Exception ex) { this.FrameworkErrorHandler(nameof(this.OnFrameworkOnce), ex); }
-            try { this.FrameworkEventHandler(framework); } catch (Exception ex) { this.FrameworkErrorHandler(nameof(this.OnFrameworkEvent), ex); }
-            try { this.FrameworkTickHandler(framework); } catch (Exception ex) { this.FrameworkErrorHandler(nameof(this.OnFrameworkTick), ex); }
+            this.SafeToReadTables = !this.Condition[ConditionFlag.BetweenAreas51]; // TODO: Move the condition checks to their respective places
+            this.IsDuty = this.Condition[ConditionFlag.BoundByDuty56];
+            DispatchFrameworkEvent(nameof(this.OnFrameworkEvent), this.OnFrameworkEvent, framework);
         }
 
-        private void FrameworkErrorHandler(string name, Exception ex)
+        private static void DispatchFrameworkEvent(string name, Action<Framework>? ev, Framework framework)
+        {
+            if (ev is null) return;
+            ev.SafeInvoke(framework, out var exceptions);
+            foreach (var ex in exceptions) FrameworkErrorHandler($"{name} Exception", ex);
+        }
+
+        private static void FrameworkErrorHandler(string name, Exception ex)
         {
             if (ex is AggregateException aex) ex = aex;
-            PluginLog.LogError($"Error occurred while invoking {name}: {ex}");
-        }
-
-        private void Ticker_OnTick(SonarClient source)
-        {
-            this.DoFrameworkTick = 1; // No need for Interlocked here
+            PluginLog.LogError(ex, $"{name} Exception");
         }
         #endregion
 
+        [SuppressMessage("Major Code Smell", "S112", Justification = "No suitable exception")]
         public void LoadConfiguration(bool isReset = false)
         {
             try
@@ -287,7 +148,7 @@ namespace SonarPlugin
             catch (Exception e)
             {
                 PluginLog.LogError($"Failed to load configuration: {e}");
-                this.ResetConfiguration();
+                this.ResetConfiguration(); // TODO: Potential infinite recursion
             }
         }
 
@@ -315,17 +176,9 @@ namespace SonarPlugin
             this.LoadConfiguration(true);
         }
 
-        private void Client_OnClientConnected(SonarClient sonar) => PluginLog.LogInformation($"Connected to Sonar");
-        private void Client_OnReady(SonarClient sonar) => PluginLog.LogInformation($"Sonar is ready");
+        private void ClientLogHandler(SonarClient source, SonarLogMessage log) => this.LogHandler(log);
 
-        private void Client_OnClientDisconnected(SonarClient source)
-        {
-            PluginLog.LogError($"Disconnected from Sonar");
-        }
-
-        private void ClientLogHandler(SonarClient source, LogLine log) => this.LogHandler(log);
-
-        private void LogHandler(LogLine log)
+        private void LogHandler(SonarLogMessage log)
         {
             var (level, message) = (log.Level, log.Message);
             switch (level)
@@ -362,29 +215,20 @@ namespace SonarPlugin
         {
             if (Interlocked.CompareExchange(ref this._disposed, 1, 0) != 0) return;
             this.SaveConfiguration();
-            if (this.Client is not null)
-            {
-                this.Client.Tick -= Ticker_OnTick;
-            }
 
             // Hunt and Fate Trackers
             if (this.Client is not null)
             {
                 this.Client.ServerMessage -= Events_OnSonarMessage;
                 this.Client.LogMessage -= ClientLogHandler;
-                this.Client.ClientConnected -= Client_OnClientConnected;
-                this.Client.Ready -= Client_OnReady;
-                this.Client.ClientDisconnected -= Client_OnClientDisconnected;
             }
 
             if (this.PluginInterface is not null)
             {
                 // Logged in / out handlers
-                this.PluginInterface.UiBuilder.Draw -= UiBuilder_OnBuildUi;
                 this.PluginInterface.UiBuilder.Draw -= this.Windows.Draw;
-                this.Framework.Update -= Framework_OnUpdateEvent;
+                this.Framework.Update -= this.Framework_OnUpdateEvent;
             }
-
         }
         #endregion
     }

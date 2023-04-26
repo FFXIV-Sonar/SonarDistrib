@@ -14,7 +14,7 @@ using System.Linq;
 using System.Numerics;
 using SonarPlugin.Utility;
 using static Sonar.Utilities.UnixTimeHelper;
-using static Sonar.Constants;
+using static Sonar.SonarConstants;
 using Sonar;
 using System.Threading;
 using SonarPlugin.Game;
@@ -478,7 +478,7 @@ namespace SonarPlugin.GUI
                 ImGui.PushID($"SonarHuntRemove_{relayKey}");
                 if (ImGui.Button(FontAwesomeExtensions.ToIconString(FontAwesomeIcon.Times), (new Vector2(40.0f, 0.0f)) * ImGui.GetIO().FontGlobalScale))
                 {
-                    this.Client.HuntTracker.Remove(relay);
+                    this.Client.Trackers.Hunts.Data.Remove(relay);
                 }
                 ImGui.PopID();
                 ImGui.PopStyleColor();
@@ -654,7 +654,7 @@ namespace SonarPlugin.GUI
                 ImGui.PushID($"SonarFateRemove_{relayKey}");
                 if (ImGui.Button(FontAwesomeExtensions.ToIconString(FontAwesomeIcon.Times), (new Vector2(40.0f, 0.0f)) * ImGui.GetIO().FontGlobalScale))
                 {
-                    this.Client.FateTracker.Remove(relay);
+                    this.Client.Trackers.Fates.Data.Remove(relay);
                 }
                 ImGui.PopID();
                 ImGui.PopStyleColor();

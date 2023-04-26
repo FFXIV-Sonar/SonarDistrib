@@ -38,6 +38,15 @@ namespace SonarPlugin.Trackers
             return addr != IntPtr.Zero ? MemoryHelper.Read<byte>(addr) : (byte)0;
         }
 
+        private unsafe int GetCurrentInstance2()
+        {
+            // TODO once its available and CN catches up
+            // https://github.com/goatcorp/Dalamud/pull/1078#issuecomment-1382729843
+            // using FFXIVClientStructs.FFXIV.Client.Game.UI; <-- move this out to the top of course
+            // UIState.Instance()->AreaInstance.Instance;
+            return this.GetCurrentInstance(); // Need to return something
+        }
+
         private void FrameworkTick(Framework framework)
         {
             // Don't proceed if the structures aren't ready

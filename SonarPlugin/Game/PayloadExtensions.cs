@@ -39,10 +39,11 @@ namespace SonarPlugin.Game
             return builder.Build();
         }
 
-        public static string GenerateInstanceString(uint instanceId)
+        public static string GenerateInstanceString(uint instanceId, string? i0Text = null)
         {
             return instanceId switch
             {
+                0 => i0Text ?? string.Empty,
                 1 => $"{(char)SeIconChar.Instance1}",
                 2 => $"{(char)SeIconChar.Instance2}",
                 3 => $"{(char)SeIconChar.Instance3}",

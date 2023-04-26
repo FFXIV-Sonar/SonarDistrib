@@ -33,7 +33,7 @@ namespace SonarPlugin.Utility
             }
             catch (Exception ex)
             {
-                PluginLog.LogError($"Failed to load icon image: {filename}, loading fallback");
+                PluginLog.LogError(ex, $"Failed to load icon image: {filename}, loading fallback");
                 return this.Ui.LoadImageRaw(new byte[] { 255, 0, 0, 127 }, 1, 1, 4);
             }
         }

@@ -21,6 +21,7 @@ namespace NonBlocking
 
         internal abstract void Clear();
         internal abstract int Count { get; }
+        internal abstract int EstimatedCount { get; }
 
         internal abstract object TryGetValue(TKey key);
         internal abstract bool PutIfMatch(TKey key, TValue newVal, ref TValue oldValue, ValueMatch match);

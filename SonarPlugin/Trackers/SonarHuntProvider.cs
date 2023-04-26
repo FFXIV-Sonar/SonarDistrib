@@ -50,13 +50,13 @@ namespace SonarPlugin.Trackers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.OnFrameworkTick += this.FrameworkTick;
+            this.Plugin.OnFrameworkEvent += this.FrameworkTick;
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.OnFrameworkTick -= this.FrameworkTick;
+            this.Plugin.OnFrameworkEvent -= this.FrameworkTick;
             return Task.CompletedTask;
         }
     }

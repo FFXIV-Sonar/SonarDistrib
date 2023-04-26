@@ -33,6 +33,7 @@ namespace SonarPlugin.Game
             //  var instanceNumberAddress = TargetModuleScanner.GetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? 0F B7 F0 E8 ?? ?? ?? ?? 8B D8 3B C6", 2) + 0x20;
             //  Marshal.ReadByte(instanceNumberAddress);
             //  https://discord.com/channels/205430339907223552/693223864741920788/925968924556800030
+            // NOTE: This Signature needs to stay until CN's CS catches up
 
             if (this.Scanner.TryGetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? 0F B7 F0 E8 ?? ?? ?? ?? 8B D8 3B C6", out var address, 2))
             {

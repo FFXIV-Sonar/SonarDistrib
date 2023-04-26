@@ -23,7 +23,9 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState;
 using System.IO;
 using Dalamud.Interface.ImGuiFileDialog;
-using System.Runtime.CompilerServices;
+using System.ComponentModel;
+using Container = DryIoc.Container;
+using Sonar.Trackers;
 
 namespace SonarPlugin
 {
@@ -33,6 +35,8 @@ namespace SonarPlugin
         private FileDialogManager? _fileDialogs;
 
         public DalamudPluginInterface PluginInterface { get; set; }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Container Container => this._container; // Only stub should access this
         [PluginService] private Framework Framework { get; set; } = default!;
         [PluginService] private Condition Condition { get; set; } = default!;
         [PluginService] private ClientState ClientState { get; set; } = default!;
@@ -50,7 +54,6 @@ namespace SonarPlugin
             pluginInterface.Inject(this);
             this.ConfigureServices();
             this.VersionCheck();
-            this.StartServices();
         }
 
         private void VersionCheck()
@@ -101,8 +104,9 @@ namespace SonarPlugin
 
             // Sonar Services
             this._container.RegisterDelegate(this.GetSonarClient, Reuse.Singleton);
-            this._container.Register(Made.Of(r => ServiceInfo.Of<SonarClient>(), c => c.HuntTracker), Reuse.Singleton, Setup.With(preventDisposal: true));
-            this._container.Register(Made.Of(r => ServiceInfo.Of<SonarClient>(), c => c.FateTracker), Reuse.Singleton, Setup.With(preventDisposal: true));
+            this._container.Register(Made.Of(r => ServiceInfo.Of<SonarClient>(), c => c.Trackers), Reuse.Singleton, Setup.With(preventDisposal: true));
+            this._container.Register(Made.Of(r => ServiceInfo.Of<RelayTrackers>(), c => c.Hunts), Reuse.Singleton, Setup.With(preventDisposal: true));
+            this._container.Register(Made.Of(r => ServiceInfo.Of<RelayTrackers>(), c => c.Fates), Reuse.Singleton, Setup.With(preventDisposal: true));
             this._container.Register(Made.Of(r => ServiceInfo.Of<SonarPlugin>(), p => p.Windows), Reuse.Singleton, Setup.With(preventDisposal: true));
 
             // Additional Services
@@ -126,8 +130,15 @@ namespace SonarPlugin
             this._container.Register(Made.Of(r => ServiceInfo.Of<DataManager>(), d => d.GameData), Reuse.Singleton, Setup.With(preventDisposal: true));
 
 #if DEBUG
+            PluginLog.LogInformation("Registered services");
+            foreach (var service in this._container.GetServiceRegistrations())
+            {
+                PluginLog.LogInformation($" - {service}");
+            }
+
             PluginLog.LogInformation("Validating DryIoC");
             var exceptions = this._container.Validate();
+
             foreach (var (service, exception) in exceptions)
             {
                 PluginLog.LogError(exception, $"Exception in {service.ServiceType.Name}");
@@ -177,7 +188,6 @@ namespace SonarPlugin
 
         public void Dispose()
         {
-            this.StopServices();
             this._container.Dispose(); // All singleton disposables are disposed here
             if (this._fileDialogs is not null) this.PluginInterface.UiBuilder.Draw -= this._fileDialogs.Draw;
         }

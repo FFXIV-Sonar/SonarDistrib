@@ -22,7 +22,7 @@ namespace NonBlocking
 
             public bool IsSynchronized => false;
 
-            public object SyncRoot => this._dictionary;
+            public object SyncRoot => ((ICollection)this._dictionary).SyncRoot;
 
             public void Add(TKey item) => throw new NotSupportedException();
 

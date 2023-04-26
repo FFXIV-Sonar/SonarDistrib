@@ -13,16 +13,17 @@ namespace SonarPlugin
 {
     public sealed class SonarCommands : IHostedService
     {
-        private PluginCommandManager<SonarCommands> _commandManager;
+        private PluginCommandManager<SonarCommands>? _commandManager;
 
         private SonarPlugin Plugin { get; }
         private SonarClient Client { get; }
         private WindowSystem Windows { get; }
         private SonarMainOverlay MainWindow { get; }
         private SonarConfigWindow ConfigWindow { get; }
+        private SonarTrackerWindow TrackerWindow { get; }
         private CommandManager Commands { get; }
 
-        public SonarCommands(SonarPlugin plugin, SonarClient client, WindowSystem windows, SonarMainOverlay mainWindow, CommandManager commands, SonarConfigWindow configWindow)
+        public SonarCommands(SonarPlugin plugin, SonarClient client, WindowSystem windows, SonarMainOverlay mainWindow, CommandManager commands, SonarConfigWindow configWindow, SonarTrackerWindow trackerWindow)
         {
             this.Plugin = plugin;
             this.Client = client;
@@ -30,6 +31,7 @@ namespace SonarPlugin
             this.MainWindow = mainWindow;
             this.Commands = commands;
             this.ConfigWindow = configWindow;
+            this.TrackerWindow = trackerWindow;
             PluginLog.LogInformation("Sonar Commands Initialized");
         }
 
@@ -48,6 +50,14 @@ namespace SonarPlugin
         private void ToggleConfigWindowCommand(string command, string args)
         {
             this.ConfigWindow.Toggle();
+        }
+
+        [Command("/sonartracker")]
+        [HelpMessage("Open/close Sonar's tracker")]
+        [DoNotShowInHelp]
+        private void ToggleTrackerWindowCommand(string command, string args)
+        {
+            this.TrackerWindow.Toggle();
         }
 
         [Command("/sonarerror")]

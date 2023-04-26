@@ -108,7 +108,7 @@ namespace SonarPlugin.GUI
                 if (!this.AddLogs) this.Messaage.Logs = string.Empty; // Respect user not wanting to add logs
                 try
                 {
-                    this.Client.Send(this.Messaage, this.ResultCallback);
+                    this.Client.ContactSupport(this.Messaage, this.ResultCallback);
                 }
                 catch (Exception ex)
                 {

@@ -61,7 +61,7 @@ namespace SonarPlugin.Trackers
             var missingFates = this._lastFateKeys.Except(currentFateKeys);
             if (missingFates.Any())
             {
-                var fateStates = this.Tracker.States;
+                var fateStates = this.Tracker.Data.States;
                 foreach (var fateKey in missingFates)
                 {
                     var fateState = fateStates.GetValueOrDefault(fateKey);

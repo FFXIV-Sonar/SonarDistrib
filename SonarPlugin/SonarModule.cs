@@ -45,7 +45,9 @@ namespace SonarPlugin
             {
                 return Assembly.Load(resourceBytes);
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
 #if DEBUG
                 File.AppendAllText(@"C:\SonarModuleError.log", $"[{DateTime.UtcNow:u}] {ex}\n\n");
@@ -65,7 +67,9 @@ namespace SonarPlugin
             {
                 return context.LoadFromStream(resourceStream);
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
 #if DEBUG
                 File.AppendAllText(@"C:\SonarModuleError.log", $"[{DateTime.UtcNow:u}] {ex}\n\n");

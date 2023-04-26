@@ -17,7 +17,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using SonarPlugin.Game;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using System.Diagnostics;
-using static Sonar.Constants;
+using static Sonar.SonarConstants;
 
 namespace SonarPlugin.Notifiers
 {

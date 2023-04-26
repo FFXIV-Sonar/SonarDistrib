@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Sonar.Models;
 using SonarPlugin.Attributes;
 using Sonar.Utilities;
+using Sonar.Trackers;
 
 namespace SonarPlugin.Config
 {

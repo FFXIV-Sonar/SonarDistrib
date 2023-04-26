@@ -659,6 +659,17 @@ namespace NonBlocking
         public int Count => _table.Count;
 
         /// <summary>
+        /// Gets the approximate number of key/value pairs contained in the <see
+        /// cref="ConcurrentDictionary{TKey,TValue}"/>.
+        /// </summary>
+        /// <exception cref="OverflowException">The dictionary contains too many
+        /// elements.</exception>
+        /// <value>The number of key/value pairs contained in the <see
+        /// cref="ConcurrentDictionary{TKey,TValue}"/>.</value>
+        /// <remarks>EstimatedCount could be significantly cheaper to obtain, but may be slightly delayed.</remarks>
+        public int EstimatedCount => _table.EstimatedCount;
+
+        /// <summary>
         /// Adds a key/value pair to the <see cref="ConcurrentDictionary{TKey,TValue}"/>
         /// if the key does not already exist.
         /// </summary>

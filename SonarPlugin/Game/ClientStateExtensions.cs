@@ -2,7 +2,7 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using Sonar.Enums;
 using Sonar.Models;
-using static Sonar.Constants;
+using static Sonar.SonarConstants;
 
 namespace SonarPlugin.Game
 {

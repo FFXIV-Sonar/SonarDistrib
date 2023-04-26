@@ -24,6 +24,7 @@ using static SonarPlugin.Utility.ShellUtils;
 using Dalamud.Data;
 using Dalamud.Plugin;
 using Dalamud.Interface.ImGuiFileDialog;
+using System.Runtime;
 
 namespace SonarPlugin.GUI
 {
@@ -31,6 +32,8 @@ namespace SonarPlugin.GUI
     public sealed class SonarConfigWindow : Window, IDisposable
     {
         private bool _visible;
+        private Task _debugHuntTask = Task.CompletedTask;
+        private Task _debugFateTask = Task.CompletedTask;
         public bool IsVisible
         {
             get { return this._visible; }
@@ -225,7 +228,11 @@ namespace SonarPlugin.GUI
             ImGui.Separator();
             ImGui.Spacing();
 
-            this._save |= ImGui.SliderFloat($"{Loc.Localize("AlertVolumeConfig", "Alert Volume")}##volumeSlider", ref this.Plugin.Configuration.SoundVolume, 0.0f, 1.0f);
+            if (ImGui.SliderFloat($"{Loc.Localize("AlertVolumeConfig", "Alert Volume")}##volumeSlider", ref this.Plugin.Configuration.SoundVolume, 0.0f, 1.0f))
+            {
+                this.Audio.Volume = this.Plugin.Configuration.SoundVolume;
+                this._save = true;
+            }
 
             // TODO: Add language combo when we add resource files and change text
 
@@ -941,7 +948,7 @@ namespace SonarPlugin.GUI
                 ImGui.Spacing(); ImGui.Separator(); ImGui.Spacing();
 
                 ImGui.Text($"{Loc.Localize("SonarStatus", "Sonar Status")}: "); ImGui.SameLine();
-                if (this.Client.IsConnected)
+                if (this.Client.Connection.IsConnected)
                 {
                     ImGui.PushStyleColor(ImGuiCol.Text, 0xff00ff33);
                     ImGui.Text($"{Loc.Localize("SonarConnected", "Connected")}");
@@ -959,7 +966,7 @@ namespace SonarPlugin.GUI
                 ImGui.SameLine();
                 if (ImGui.Button($"{Loc.Localize("SonarReconnect", "Reconnect")}"))
                 {
-                    this.Client.Reconnect(ReconnectMode.AttemptProxies);
+                    this.Client.Connection.Reconnect();
                 }
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip($"{Loc.Localize("SonarReconnectTooltip", "Signal Sonar to attempt reconnecting to server")}");
             }
@@ -993,16 +1000,52 @@ namespace SonarPlugin.GUI
                 ImGui.Text("Hunts Tracker");
                 ImGui.BeginChild("##DebugHuntTracker", new Vector2(0, 80 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
-                    ImGui.Text($"Hunts tracked: {this.Client.HuntTracker.Count}");
+                    ImGui.Text($"Count: {this.Client.Trackers.Hunts.Data.Count} | Index: {this.Client.Trackers.Hunts.Data.IndexCount}");
 
                     ImGui.Spacing();
                     ImGui.Separator();
                     ImGui.Spacing();
 
-                    if (ImGui.Button("Reset Hunt Tracker##DebugResetHuntTrackerButton"))
+                    if (this._debugHuntTask.IsCompleted)
                     {
-                        this.Client.HuntTracker.Reset();
-                        PluginLog.LogInformation("Hunts Tracker Reset");
+                        if (ImGui.Button("Clear"))
+                        {
+                            this.Client.Trackers.Hunts.Data.Clear();
+                            PluginLog.LogInformation("Hunts Tracker Reset");
+                        }
+                        ImGui.SameLine();
+                        if (ImGui.Button("Check"))
+                        {
+                            this._debugHuntTask = Task.Run(() =>
+                            {
+                                PluginLog.LogInformation("Hunt index consistency check started");
+                                var result = this.Client.Trackers.Hunts.Data.DebugIndexConsistencyCheck();
+                                if (!result.Any())
+                                {
+                                    PluginLog.LogInformation($"Hunt index debug consistency check successful");
+                                }
+                                else
+                                {
+                                    PluginLog.LogWarning($"Hunt index consistency check failed!\n{string.Join("\n", result)}");
+                                }
+                            });
+                        }
+                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Perform a consistency check of the index\nOutput will be at /xllog");
+                        ImGui.SameLine();
+                        if (ImGui.Button("Rebuild"))
+                        {
+                            this._debugHuntTask = Task.Run(() =>
+                            {
+                                PluginLog.LogInformation("Hunt index debug rebuild started");
+                                this.Client.Trackers.Hunts.Data.DebugRebuildIndex();
+                                PluginLog.LogInformation("Hunt index debug rebuild complete");
+                            });
+                        }
+                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Rebuild index\nOutput will be at /xllog\n\nWarning: You may experience stuttering");
+                    }
+                    else
+                    {
+                        ImGui.Text("Busy");
                     }
                 }
                 ImGui.EndChild(); // debugHuntTracker
@@ -1011,16 +1054,52 @@ namespace SonarPlugin.GUI
                 ImGui.Text("Fates Tracker");
                 ImGui.BeginChild("##DebugFateTracker", new Vector2(0, 80 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
-                    ImGui.Text($"Fates tracked: {this.Client.FateTracker.Count}");
+                    ImGui.Text($"Count: {this.Client.Trackers.Fates.Data.Count} | Index: {this.Client.Trackers.Fates.Data.IndexCount}");
 
                     ImGui.Spacing();
                     ImGui.Separator();
                     ImGui.Spacing();
 
-                    if (ImGui.Button("Reset Fate Tracker##DebugResetHuntTrackerButton"))
+                    if (this._debugFateTask.IsCompleted)
                     {
-                        this.Client.FateTracker.Reset();
-                        PluginLog.LogInformation("Fates Tracker Reset");
+                        if (ImGui.Button("Clear"))
+                        {
+                            this.Client.Trackers.Fates.Data.Clear();
+                            PluginLog.LogInformation("Fates Tracker Reset");
+                        }
+                        ImGui.SameLine();
+                        if (ImGui.Button("Check"))
+                        {
+                            this._debugFateTask = Task.Run(() =>
+                            {
+                                PluginLog.LogInformation("Fate index debug consistency check started");
+                                var result = this.Client.Trackers.Fates.Data.DebugIndexConsistencyCheck();
+                                if (!result.Any())
+                                {
+                                    PluginLog.LogInformation($"Fate index consistency check successful");
+                                }
+                                else
+                                {
+                                    PluginLog.LogWarning($"Fate consistency check failed!\n{string.Join("\n", result)}");
+                                }
+                            });
+                        }
+                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Perform a consistency check of the index\nOutput will be at /xllog");
+                        ImGui.SameLine();
+                        if (ImGui.Button("Rebuild"))
+                        {
+                            this._debugFateTask = Task.Run(() =>
+                            {
+                                PluginLog.LogInformation("Fate index debug rebuild started");
+                                this.Client.Trackers.Fates.Data.DebugRebuildIndex();
+                                PluginLog.LogInformation("Fate index debug rebuild complete");
+                            });
+                        }
+                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Rebuild index\nOutput will be at /xllog\n\nWarning: You may experience stuttering");
+                    }
+                    else
+                    {
+                        ImGui.Text("Busy");
                     }
                 }
                 ImGui.EndChild(); // debugFateTracker
@@ -1049,6 +1128,26 @@ namespace SonarPlugin.GUI
                 this._save = this._server = true;
                 this.Client.LogLevel = this.logLevelCombo.Keys.ToList()[index]; // This also updates configuration
             }
+
+            #if DEBUG
+            #pragma warning disable S1215
+            #pragma warning disable S125
+            if (ImGui.Button("GC.Collect"))
+            {
+                GC.Collect();
+            }
+            ImGui.SameLine();
+            if (ImGui.Button("Hard GC.Collect"))
+            {
+                GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                GC.Collect(2, GCCollectionMode.Forced, true, true);
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+            }
+            #pragma warning restore S125
+            #pragma warning restore S1215
+            #endif
+
             ImGui.EndChild(); // debugTabScrollRegion
         }
 
