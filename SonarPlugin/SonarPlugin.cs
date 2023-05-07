@@ -47,17 +47,19 @@ namespace SonarPlugin
         private DalamudPluginInterface PluginInterface { get; }
         private SonarClient Client { get; }
         private Framework Framework { get; }
+        private ChatGui Chat { get; }
         private Condition Condition { get; }
         private Localization Localization { get; }
         private AudioPlaybackEngine Audio { get; }
 
         public bool IsDuty { get; private set; }
 
-        public SonarPlugin(DalamudPluginInterface pluginInterface, SonarClient client, Framework framework, Condition condition, Localization localization, AudioPlaybackEngine audio)
+        public SonarPlugin(DalamudPluginInterface pluginInterface, SonarClient client, Framework framework, ChatGui chat, Condition condition, Localization localization, AudioPlaybackEngine audio)
         {
             this.PluginInterface = pluginInterface;
             this.Client = client;
             this.Framework = framework;
+            this.Chat = chat;
             this.Condition = condition;
             this.Localization = localization;
             this.Audio = audio;
@@ -89,8 +91,14 @@ namespace SonarPlugin
 
         private void Events_OnSonarMessage(SonarClient source, string? message)
         {
-            /* TODO */
-            PluginLog.LogWarning("Events_OnSonarMessage not implemented, received: {message}");
+            if (message is null) return;
+            this.Chat.PrintChat(new()
+            {
+                Type = this.Configuration.HuntOutputChannel,
+                Name = "Sonar",
+                Message = message
+            });
+            PluginLog.LogInformation("Sonar Message Received: {message}");
         }
 
         #region OnBuildUi and Framework event and tick manager
