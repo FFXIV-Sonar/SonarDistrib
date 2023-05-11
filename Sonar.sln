@@ -22,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		plogonbuild.sh = plogonbuild.sh
 		post-build.sh = post-build.sh
 		pre-build.sh = pre-build.sh
+		Private notes.txt = Private notes.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Collections.Pooled", "Collections.Pooled\Collections.Pooled.csproj", "{C5FB0CC2-5853-4653-8AB1-35EDD5A415F4}"
