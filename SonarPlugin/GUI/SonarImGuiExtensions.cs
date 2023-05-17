@@ -2,7 +2,7 @@
 using Dalamud.Game.Text;
 using Sonar.Data;
 using Sonar.Data.Extensions;
-using Sonar.Models;
+using Sonar.Relays;
 using SonarPlugin.Game;
 using System;
 using System.Collections.Generic;

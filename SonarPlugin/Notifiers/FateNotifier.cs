@@ -2,7 +2,6 @@
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Game.Text.SeStringHandling;
-using Sonar.Models;
 using Sonar.Trackers;
 using SonarPlugin.Config;
 using SonarPlugin.Trackers;
@@ -16,6 +15,7 @@ using System.Threading.Tasks;
 using SonarPlugin.Game;
 using Sonar.Data.Extensions;
 using Dalamud.Logging;
+using Sonar.Relays;
 
 namespace SonarPlugin.Notifiers
 {

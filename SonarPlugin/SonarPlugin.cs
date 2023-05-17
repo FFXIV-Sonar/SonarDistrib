@@ -49,19 +49,17 @@ namespace SonarPlugin
         private Framework Framework { get; }
         private ChatGui Chat { get; }
         private Condition Condition { get; }
-        private Localization Localization { get; }
         private AudioPlaybackEngine Audio { get; }
 
         public bool IsDuty { get; private set; }
 
-        public SonarPlugin(DalamudPluginInterface pluginInterface, SonarClient client, Framework framework, ChatGui chat, Condition condition, Localization localization, AudioPlaybackEngine audio)
+        public SonarPlugin(DalamudPluginInterface pluginInterface, SonarClient client, Framework framework, ChatGui chat, Condition condition, AudioPlaybackEngine audio)
         {
             this.PluginInterface = pluginInterface;
             this.Client = client;
             this.Framework = framework;
             this.Chat = chat;
             this.Condition = condition;
-            this.Localization = localization;
             this.Audio = audio;
 
             this.Initialize();
@@ -73,7 +71,7 @@ namespace SonarPlugin
         public void Initialize()
         {
             this.LoadConfiguration();
-            this.Localization.SetupLocalization(this.Configuration.Language);
+            Loc.SetupWithFallbacks();
 
             this.PluginInterface.UiBuilder.Draw += this.Windows.Draw;
 
@@ -184,9 +182,9 @@ namespace SonarPlugin
             this.LoadConfiguration(true);
         }
 
-        private void ClientLogHandler(SonarClient source, SonarLogMessage log) => this.LogHandler(log);
+        private void ClientLogHandler(SonarClient source, SonarLogMessage log) => LogHandler(log);
 
-        private void LogHandler(SonarLogMessage log)
+        private static void LogHandler(SonarLogMessage log)
         {
             var (level, message) = (log.Level, log.Message);
             switch (level)

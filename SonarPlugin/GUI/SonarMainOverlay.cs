@@ -24,6 +24,7 @@ using SonarPlugin.Notifiers;
 using System.Threading.Tasks;
 using Dalamud.Logging;
 using Dalamud.Game.Gui;
+using Sonar.Relays;
 
 namespace SonarPlugin.GUI
 {
