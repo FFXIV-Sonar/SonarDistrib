@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
     <LangVersion>9.0</LangVersion>
-    <AssemblyVersion>0.5.1.1</AssemblyVersion>
+    <AssemblyVersion>0.5.2.0</AssemblyVersion>
     <OutputType>Library</OutputType>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <None Remove="Resources\Icons\redflag.png" />
+    <None Remove="Resources\Secret.data" />
     <None Remove="Resources\Sounds\FFXIV_Enter_Chat.mp3" />
     <None Remove="Resources\Sounds\FFXIV_Fanfare.mp3" />
     <None Remove="Resources\Sounds\FFXIV_Feature_Unlocked.mp3" />
@@ -162,5 +163,17 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="Secrets" BeforeTargets="PrepareForBuild" Condition="'$(PLOGON_SECRET_PLUGIN)' != ''">
+    <Warning Text="Adding Secret: PLOGON_SECRET_PLUGIN" />
+    <WriteLinesToFile File="Resources\Secret.data" Lines="$(PLOGON_SECRET_PLUGIN)" Overwrite="true" />
+  </Target>
+
+  <Target Name="EmbedSecrets" BeforeTargets="PrepareForBuild" AfterTargets="Secrets">
+    <Warning Text="Embedding Secret: PLOGON_SECRET_PLUGIN" />
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\Secret.data" />
+    </ItemGroup>
+  </Target>
 
 </Project>

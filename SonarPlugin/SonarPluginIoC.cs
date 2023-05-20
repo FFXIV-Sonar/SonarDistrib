@@ -26,6 +26,7 @@ using Dalamud.Interface.ImGuiFileDialog;
 using System.ComponentModel;
 using Container = DryIoc.Container;
 using Sonar.Trackers;
+using Sonar.Models;
 
 namespace SonarPlugin
 {
@@ -68,7 +69,12 @@ namespace SonarPlugin
         private SonarClient GetSonarClient()
         {
             PluginLog.LogInformation("Initializing Sonar");
-            var startInfo = new SonarStartInfo() { WorkingDirectory = Path.Join(this.PluginInterface.GetPluginConfigDirectory(), "Sonar") };
+            var startInfo = new SonarStartInfo()
+            {
+                WorkingDirectory = Path.Join(this.PluginInterface.GetPluginConfigDirectory(), "Sonar"),
+                PluginSecret = ClientSecret.ReadEmbeddedSecret(typeof(SonarPluginIoC).Assembly, "SonarPlugin.Resources.Secret.data"),
+            };
+
             var versionInfo = VersionUtils.GetSonarVersionModel(this.Data);
             var client = new SonarClient(startInfo) { VersionInfo = versionInfo };
             Database.DefaultLanguage = this.Data.Language switch
