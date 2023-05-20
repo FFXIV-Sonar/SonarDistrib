@@ -1,0 +1,2350 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sonar.NET</name>
+    </assembly>
+    <members>
+        <member name="T:Sonar.Collections.ListHashDictionary`2">
+            <summary>
+            A hybrid dictionary consisting of a list and an index dictionary. This dictionary is optimized for fast enumeration of the values by using the Values property. All other forms of enumeration are slower. Additions and modifications are approximately O(2) relative to a normal dictionary. Removals are O(n)
+            </summary>
+            <typeparam name="TKey">Key type</typeparam>
+            <typeparam name="TValue">Value type</typeparam>
+        </member>
+        <member name="P:Sonar.Collections.ListHashDictionary`2.Keys">
+            <summary>
+            ListHashDictionary keys O(1) (through Dictionary)
+            </summary>
+        </member>
+        <member name="P:Sonar.Collections.ListHashDictionary`2.Values">
+            <summary>
+            ListHashDictionary values O(1) (you get the list itself)
+            </summary>
+        </member>
+        <member name="P:Sonar.Collections.ListHashDictionary`2.Count">
+            <summary>
+            Dictionary count O(1)
+            </summary>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.ConsistencyCheck">
+            <summary>
+            Check this ListHashDictionary for consistency
+            </summary>
+            <returns>Consistency result</returns>
+        </member>
+        <member name="P:Sonar.Collections.ListHashDictionary`2.IsReadOnly">
+            <summary>
+            False
+            </summary>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.AddKernel(`0,`1)">
+            <summary>
+            Internal function for adding a key-value pair
+            </summary>
+            <param name="key">Key</param>
+            <param name="value">Value</param>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.Add(`0,`1)">
+            <summary>
+            Add a key-value pair O(2) relative to Dictionary?
+            </summary>
+            <param name="key">Key</param>
+            <param name="value">Value</param>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.Add(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Add a key-value pair O(2) relative to Dictionary?
+            </summary>
+            <param name="item">Item</param>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.Clear">
+            <summary>
+            Clear list and dictionary
+            </summary>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.Contains(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Check item's key for existence O(1)
+            </summary>
+            <param name="item">Item</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.ContainsKey(`0)">
+            <summary>
+            Check key for existence O(1)
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.CopyTo(System.Collections.Generic.KeyValuePair{`0,`1}[],System.Int32)">
+            <summary>
+            Copy pairs to array O(n*2) relative to Dictionary
+            </summary>
+            <param name="array">Array to copy into</param>
+            <param name="arrayIndex">Array index</param>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.GetEnumerator">
+            <summary>
+            Ordinary enumerator (slow)
+            </summary>
+            <returns>Enumerator</returns>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Ordinary enumerator (slow)
+            </summary>
+            <returns>Enumerator</returns>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.Remove(`0)">
+            <summary>
+            Remove the key from the dictionary and list. This can be a slow operation O(n) worst case.
+            </summary>
+            <param name="key">Key to remove</param>
+            <returns>Successful</returns>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.Remove(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Remove an item from the dictionary and list. This can be a slow operation O(n).
+            </summary>
+            <param name="item">Item to remove</param>
+            <returns>Successful</returns>
+        </member>
+        <member name="M:Sonar.Collections.ListHashDictionary`2.TryGetValue(`0,`1@)">
+            <summary>
+            Try get a value O(2) relative to Dictionary?
+            </summary>
+            <param name="key">Key</param>
+            <param name="value">Value</param>
+            <returns>Existence</returns>
+        </member>
+        <member name="P:Sonar.Config.FateConfig.DefaultJurisdiction">
+            <summary>
+            Default Jurisdiction
+            </summary>
+        </member>
+        <member name="P:Sonar.Config.FateConfig.Jurisdiction">
+            <summary>
+            Jurisdictions
+            </summary>
+        </member>
+        <member name="M:Sonar.Config.FateConfig.GetJurisdiction(System.UInt32)">
+            <summary>
+            Get report jurisdiction for a specific expansion and rank
+            </summary>
+            <param name="id">Fate ID</param>
+            <returns>Report jurisdiction</returns>
+        </member>
+        <member name="M:Sonar.Config.FateConfig.GetJurisdictions">
+            <summary>
+            Get all non-default jurisdictions
+            </summary>
+            <returns>Jurisdictions</returns>
+        </member>
+        <member name="M:Sonar.Config.FateConfig.SetJurisdictions(System.Collections.Generic.Dictionary{System.UInt32,Sonar.Enums.SonarJurisdiction})">
+            <summary>
+            Set all jurisdictions in the provided dictionary
+            </summary>
+            <returns>Jurisdictions</returns>
+        </member>
+        <member name="M:Sonar.Config.FateConfig.SetJurisdiction(System.UInt32,Sonar.Enums.SonarJurisdiction)">
+            <summary>
+            Set report jurisdiction for a specific fate
+            </summary>
+            <param name="id">Fate ID</param>
+            <param name="jurisdiction">Jurisdiction</param>
+        </member>
+        <member name="M:Sonar.Config.FateConfig.RemoveJurisdiction(System.UInt32)">
+            <summary>
+            Remove a report jurisdiction for a specific ID
+            </summary>
+            <param name="id">Fate ID</param>
+        </member>
+        <member name="M:Sonar.Config.FateConfig.ResetJurisdictions">
+            <summary>
+            Remove all report jurisdiction
+            </summary>
+        </member>
+        <member name="M:Sonar.Config.FateConfig.GetReportJurisdictionImpl(System.UInt32)">
+            <summary>
+            Main jurisdiction check function
+            </summary>
+        </member>
+        <member name="M:Sonar.Config.FateConfig.Sanitize(System.Boolean,System.Boolean)">
+            <summary>
+            Sanitize configuration
+            </summary>
+            <param name="repair">Allow repairs</param>
+            <param name="debug">Output debug messages to console</param>
+            <returns>Sanitized status</returns>
+        </member>
+        <member name="P:Sonar.Config.HuntConfig.Jurisdiction">
+            <summary>
+            Jurisdictions
+            </summary>
+        </member>
+        <member name="P:Sonar.Config.HuntConfig.JurisdictionOverride">
+            <summary>
+            Jurisdiction Overrides
+            </summary>
+        </member>
+        <member name="M:Sonar.Config.HuntConfig.GetJurisdiction(Sonar.Enums.ExpansionPack,Sonar.Enums.HuntRank)">
+            <summary>
+            Get report jurisdiction for a specific expansion and rank
+            </summary>
+            <param name="expansion"></param>
+            <param name="rank"></param>
+            <returns>Report jurisdiction</returns>
+        </member>
+        <member name="M:Sonar.Config.HuntConfig.SetJurisdiction(Sonar.Enums.ExpansionPack,Sonar.Enums.HuntRank,Sonar.Enums.SonarJurisdiction)">
+            <summary>
+            Set report jurisdiction for a specific expansion and rank
+            </summary>
+            <param name="expansion">Expansion Pack</param>
+            <param name="rank">Hunt Rank</param>
+            <param name="jurisdiction">Jurisdiction to receive reports from</param>
+        </member>
+        <member name="M:Sonar.Config.HuntConfig.GetJurisdictionOverride(System.UInt32)">
+            <summary>
+            Get jurisdiction override for a specific ID
+            </summary>
+            <param name="id">ID to set the report jurisdiction for</param>
+            <param name="jurisdiction">Jurisdiction to receive reports from</param>
+        </member>
+        <member name="M:Sonar.Config.HuntConfig.SetJurisdictionOverride(System.UInt32,Sonar.Enums.SonarJurisdiction)">
+            <summary>
+            Override report jurisdiction for a spefiic ID
+            </summary>
+            <param name="id">ID to set the report jurisdiction for</param>
+            <param name="jurisdiction">Jurisdiction to receive reports from</param>
+        </member>
+        <member name="M:Sonar.Config.HuntConfig.RemoveJurisdictionOverride(System.UInt32)">
+            <summary>
+            Remove a report jurisdiction override for a specific ID
+            </summary>
+        </member>
+        <member name="M:Sonar.Config.HuntConfig.RemoveAllJurisdictionOverrides">
+            <summary>
+            Remove all jurisdiction overrides
+            </summary>
+        </member>
+        <member name="M:Sonar.Config.HuntConfig.GetJurisdictionOverrides">
+            <summary>
+            Get all jurisdiction overrides
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sonar.Config.HuntConfig.GetReportJurisdictionImpl(System.UInt32)">
+            <summary>
+            Main jurisdiction check function
+            </summary>
+        </member>
+        <member name="M:Sonar.Config.HuntConfig.Sanitize(System.Boolean,System.Boolean)">
+            <summary>
+            Sanitize configuration
+            </summary>
+            <param name="repair">Allow repairs</param>
+            <param name="debug">Output debug messages to console</param>
+            <returns>Sanitized status</returns>
+        </member>
+        <member name="M:Sonar.Config.RelayConfig.GetReportJurisdictionImpl(System.UInt32)">
+            <summary>
+            Get Report Jurisdiction Implementation
+            </summary>
+        </member>
+        <member name="P:Sonar.Config.RelayConfig.Contribute">
+            <summary>
+            Contribute reports
+            </summary>
+        </member>
+        <member name="P:Sonar.Config.RelayConfig.TrackAll">
+            <summary>
+            True: Track all hunts including those outside of the configured jurisdictions
+            False: Track hunts within configured jurisdictions only
+            </summary>
+        </member>
+        <member name="M:Sonar.Config.RelayConfig.GetReportJurisdiction(System.UInt32,System.Boolean)">
+            <summary>
+            Main jurisdiction check function
+            </summary>
+        </member>
+        <member name="P:Sonar.Config.SonarConfig.LogLevel">
+            <summary>
+            Server side log level
+            </summary>
+        </member>
+        <member name="P:Sonar.Config.SonarConfig.HuntConfig">
+            <summary>
+            Hunt reporting configuration
+            </summary>
+        </member>
+        <member name="P:Sonar.Config.SonarConfig.FateConfig">
+            <summary>
+            Faate reporting configuration
+            </summary>
+        </member>
+        <member name="M:Sonar.Config.SonarConfig.Sanitize(System.Boolean,System.Boolean)">
+            <summary>
+            Sanitize all configuration
+            </summary>
+            <param name="repair">Allow repairs</param>
+            <param name="debug">Output debug messages to console</param>
+            <returns>Sanitized status</returns>
+        </member>
+        <member name="M:Sonar.Config.SonarConfig.GetRelayTrackerConfig``1">
+            <summary>
+            Get a specific Relay Tracker Configuration
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.SonarVersion">
+            <summary>
+            Sonar.NET Protocol Version
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.Environment">
+            <summary>
+            Sonar.NET Compilation Environment
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.Debug">
+            <summary>
+            Is this a debug release?
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.InvalidActorId">
+            <summary>
+            Represents an invalid Actor ID
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.SonarTick">
+            <summary>
+            Represent a Sonar Tick in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EarthSecond">
+            <summary>
+            Represents an earth second in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EarthMinute">
+            <summary>
+            Represents an earth minute in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EarthHour">
+            <summary>
+            Represents an earth hour in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EarthDay">
+            <summary>
+            Represents an earth day in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EarthWeek">
+            <summary>
+            Represents an earth week in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EarthYear">
+            <summary>
+            Represents an earth year (approximately 365.2425 days) in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EarthMonth">
+            <summary>
+            Represents an earth month (EarthYear / 12) in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EorzeanMinute">
+            <summary>
+            Represents an eorzean minute (2 11/12 seconds) in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EorzeanSecond">
+            <summary>
+            Represents an eorzean second in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EorzeanHour">
+            <summary>
+            Represents an eorzean hour (bell) in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EorzeanDay">
+            <summary>
+            Represents an eorzean day (sun) in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EorzeanWeek">
+            <summary>
+            Represents an eorzean week in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EorzeanMonth">
+            <summary>
+            Represents an eorzean month (moon) in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EorzeanYear">
+            <summary>
+            Represents an eorzean year in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EorzeanBell">
+            <summary>
+            Represents an eorzean bell (hour) in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EorzeanSun">
+            <summary>
+            Repressents an eorzean day (sun) in milliseconds
+            </summary>
+        </member>
+        <member name="F:Sonar.Constants.EorzeanMoon">
+            <summary>
+            Represents an eorzean moon (month) in milliseconds
+            </summary>
+        </member>
+        <member name="M:Sonar.Data.Db.InitializeData``1(System.Boolean)">
+            <summary>
+            Initialize a specific dictionary
+            </summary>
+            <typeparam name="T">IDataRow corresponding to the dictionary to initialize</typeparam>
+        </member>
+        <member name="M:Sonar.Data.Db.Initialize(System.Boolean)">
+            <summary>
+            Initialize database
+            </summary>
+        </member>
+        <member name="M:Sonar.Data.Extensions.SonarDataExtensions.ToFlagString(Sonar.Numerics.SonarVector3,Sonar.Data.MapFlagFormatFlags)">
+            <summary>
+            Get a flag string for this vector (assumes vector is a flag)
+            </summary>
+        </member>
+        <member name="M:Sonar.Data.LanguageStrings.ResolveLanguage(Sonar.Enums.LanguageEnum)">
+            <summary>
+            Resolve which language to return (in case not all languages are supported)
+            </summary>
+            <param name="lang"></param>
+            <returns>Resolved language, if any</returns>
+        </member>
+        <member name="M:Sonar.Data.LanguageStrings.ToString(Sonar.Enums.LanguageEnum)">
+            <summary>
+            Return a string of the specified language
+            </summary>
+            <param name="lang">Language of the string</param>
+            <returns>String</returns>
+        </member>
+        <member name="M:Sonar.Data.LanguageStrings.ToString">
+            <summary>
+            Return a string of the specified language
+            </summary>
+            <returns>String</returns>
+        </member>
+        <member name="P:Sonar.Data.LanguageStrings.Item(Sonar.Enums.LanguageEnum)">
+            <summary>
+            ToString() array style accessor alternative
+            </summary>
+            <param name="lang"></param>
+            <returns>String</returns>
+        </member>
+        <member name="T:Sonar.Data.MapFlagUtils">
+            <summary>
+            Utility functions for converting raw game coordinates into flags and map pixel positions
+            </summary>
+        </member>
+        <member name="M:Sonar.Data.MapFlagUtils.RawToFlag(System.Single,Sonar.Numerics.SonarVector3,Sonar.Numerics.SonarVector3)">
+            <summary>
+            Converts raw coordinates to a flag
+            </summary>
+        </member>
+        <member name="M:Sonar.Data.MapFlagUtils.FlagToRaw(System.Single,Sonar.Numerics.SonarVector3,Sonar.Numerics.SonarVector3)">
+            <summary>
+            Converts a flag to raw coordinates
+            </summary>
+        </member>
+        <member name="P:Sonar.Data.MapFlagUtils.DefaultFlagFormat">
+            <summary>
+            Default flag format to use
+            </summary>
+        </member>
+        <member name="M:Sonar.Data.MapFlagUtils.FlagToString(Sonar.Numerics.SonarVector3,Sonar.Data.MapFlagFormatFlags)">
+            <summary>
+            Converts a flag coordinates into a string
+            </summary>
+            <param name="flag">Flag vector to convert</param>
+            <param name="format">Format to use</param>
+            <returns>Flag coordinates as a string</returns>
+        </member>
+        <member name="T:Sonar.Data.Rows.DatacenterRow">
+            <summary>
+            Data Center data row
+            </summary>
+        </member>
+        <member name="T:Sonar.Data.Rows.FateRow">
+            <summary>
+            Fate data row
+            </summary>
+        </member>
+        <member name="T:Sonar.Data.Rows.HuntRow">
+            <summary>
+            Hunt data row
+            </summary>
+        </member>
+        <member name="T:Sonar.Data.Rows.MapRow">
+            <summary>
+            Zone (TerritoryType) data row
+            </summary>
+        </member>
+        <member name="T:Sonar.Data.Rows.WorldRow">
+            <summary>
+            World data row
+            </summary>
+        </member>
+        <member name="T:Sonar.Data.Rows.ZoneRow">
+            <summary>
+            Zone (TerritoryType) data row
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.MapImageSize.Tiny">
+            <summary>
+            256x256
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.MapImageSize.Small">
+            <summary>
+            512x512
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.MapImageSize.Medium">
+            <summary>
+            1024x1024
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.MapImageSize.Large">
+            <summary>
+            2048x2048
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.UrlFlags.IncludeBase">
+            <summary>
+            https://assets.ffxivsonar.com
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.UrlFlags.IncludePath">
+            <summary>
+            Directory path
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.UrlFlags.Default">
+            <summary>
+            IncludeBase + IncludePath
+            </summary>
+        </member>
+        <member name="T:Sonar.Data.Web.WebExtensions">
+            <summary>
+            Web related extensions (in development)
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.WebExtensions.UrlBase">
+            <summary>
+            Base Assets URL
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.WebExtensions.MapPath">
+            <summary>
+            Maps Path
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.WebExtensions.DataPath">
+            <summary>
+            Data Path
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.WebExtensions.MapFilePrefix">
+            <summary>
+            Map filename prefix
+            </summary>
+        </member>
+        <member name="F:Sonar.Data.Web.WebExtensions.ZonneFilePrefix">
+            <summary>
+            Map filename prefix
+            </summary>
+        </member>
+        <member name="M:Sonar.Data.Web.WebExtensions.GetImageURL(Sonar.Data.Rows.ZoneRow,Sonar.Data.Web.MapImageSize,Sonar.Data.Web.ImageFormat,Sonar.Data.Web.UrlFlags)">
+            <summary>
+            Get Zone Image URL
+            </summary>
+            <param name="zone">Zone</param>
+            <param name="size">Size</param>
+            <param name="format">Format</param>
+            <param name="flags">Flags</param>
+            <returns>Zone Image URL</returns>
+        </member>
+        <member name="M:Sonar.Data.Web.WebExtensions.GetImageURL(Sonar.Data.Rows.MapRow,Sonar.Data.Web.MapImageSize,Sonar.Data.Web.ImageFormat,Sonar.Data.Web.UrlFlags)">
+            <summary>
+            Get Map Image URL
+            </summary>
+            <param name="map">Map</param>
+            <param name="size">Size</param>
+            <param name="format">Format</param>
+            <param name="flags">Flags</param>
+            <returns>Map Image URL</returns>
+        </member>
+        <member name="M:Sonar.Data.Web.WebExtensions.GetJsonDataUrl(Sonar.Data.Web.JsonDataFile,Sonar.Data.Web.UrlFlags)">
+            <summary>
+            Get JSON Data URL
+            </summary>
+            <param name="json">JSON data</param>
+            <param name="flags">Flags</param>
+            <returns>JSON Data URL</returns>
+        </member>
+        <member name="F:Sonar.Enums.AuthResult.Unknown">
+            <summary>
+            Should not happen
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.AuthResult.LoginSuccess">
+            <summary>
+            Login Successful
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.AuthResult.LoginFailure">
+            <summary>
+            Login failed
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.AuthResult.RegisterSuccess">
+            <summary>
+            Registration successful
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.AuthResult.RegisterFailure">
+            <summary>
+            Registration failed
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.AuthResult.Error">
+            <summary>
+            An error occured
+            </summary>
+        </member>
+        <member name="T:Sonar.Enums.SonarCommandEnum">
+            <summary>
+            Sonar commands enum (NOT IMPLEMENTED)
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.GetCurrentZoneHunts">
+            <summary>
+            Get hunts in the current zone
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.GetCurrentWorldHunts">
+            <summary>
+            Get hunts in the current world
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.GetCurrentDatacenterHunts">
+            <summary>
+            Get hunts in the current datacenter
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.GetAllHunts">
+            <summary>
+            Get all hunts
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.AdminResetZone">
+            <summary>
+            Reset everything in the current zone (do this after a zone maintenance)
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.AdminResetWorld">
+            <summary>
+            Reset everything in the current world (do this after a world maintenance)
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.AdminResetDatacenter">
+            <summary>
+            Reset everything in the current datacenter (do this after a datacenter maintenance)
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.AdminResetAll">
+            <summary>
+            Reset everything everywhere (do this after a global maintenance)
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.AdminGetSessions">
+            <summary>
+            Get currently active sessions
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.AdminDisconnectSession">
+            <summary>
+            Disconnect a session
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.AdminDisconnectAll">
+            <summary>
+            Disconnects everyone from Sonar
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.AdminShutdownServer">
+            <summary>
+            Shuts down the server
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarCommandEnum.AdminRestartServer">
+            <summary>
+            Restarts the server
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarJurisdiction.Default">
+            <summary>
+            Default jurisdiction
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarJurisdiction.None">
+            <summary>
+            None
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarJurisdiction.Instance">
+            <summary>
+            Current Instance
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarJurisdiction.Zone">
+            <summary>
+            Current Zone
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarJurisdiction.World">
+            <summary>
+            Current World
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarJurisdiction.Datacenter">
+            <summary>
+            Current Datacenter
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarJurisdiction.Region">
+            <summary>
+            Current RegionId
+            </summary>
+        </member>
+        <member name="F:Sonar.Enums.SonarJurisdiction.All">
+            <summary>
+            Everything
+            </summary>
+        </member>
+        <member name="M:Sonar.Messages.MessageList.#ctor">
+            <inheritdoc></inheritdoc>
+        </member>
+        <member name="M:Sonar.Messages.MessageList.#ctor(System.Collections.Generic.IEnumerable{Sonar.Messages.IMessage})">
+            <inheritdoc></inheritdoc>
+        </member>
+        <member name="M:Sonar.Messages.MessageList.#ctor(System.Int32)">
+            <inheritdoc></inheritdoc>
+        </member>
+        <member name="M:Sonar.Messages.MessageList.CreateFrom``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Create a MessageList from an IEnumerable
+            </summary>
+        </member>
+        <member name="P:Sonar.Messages.TimeSyncMessage.UnixTime">
+            <summary>
+            Unix Epoch time
+            </summary>
+        </member>
+        <member name="M:Sonar.Messages.TimeSyncMessage.#ctor">
+            <summary>
+            Construct a new epoch time
+            </summary>
+        </member>
+        <member name="T:Sonar.Models.AuthBase">
+            <summary>
+            Authentication Base Class
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.AuthBase.Username">
+            <summary>
+            Username. Please set the password afterwards.
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.AuthBase.PasswordDk">
+            <summary>
+            Password derived key
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.AuthBase.Password">
+            <summary>
+            Password. Please set the username first.
+            </summary>
+        </member>
+        <member name="T:Sonar.Models.FateRelay">
+            <summary>
+            Represents a Fate relay
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.FateRelay.Progress">
+            <summary>
+            Fate Progress (0-100)
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.FateRelay.Status">
+            <summary>
+            Fate status
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.FateRelay.StartTime">
+            <summary>
+            Fate start time
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.FateRelay.Duration">
+            <summary>
+            Fate duration
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.FateRelay.EndTime">
+            <summary>
+            Fate's ending time
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.IsCompleted">
+            <summary>
+            Is fate completed?
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.IsFailed">
+            <summary>
+            Is fate failed?
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.InProgress">
+            <summary>
+            Is fate in progress?
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.InPreparation">
+            <summary>
+            Is fate in progress?
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.IsAlive">
+            <summary>
+            Check if this fate is alive
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.FateRelay.RemainingTime">
+            <summary>
+            Remaining time in milliseconds
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.GetRemainingTimeAndProgressString">
+            <summary>
+            Get remaining time and progress or completed / failed
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.GetRemainingTimeString">
+            <summary>
+            Get remaining time in MM:SS
+            </summary>
+            <returns>MM:SS</returns>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.IsSame(Sonar.Models.FateRelay)">
+            <summary>
+            Check if another relay regards the same fate (only Start time is checked)
+            </summary>
+            <param name="relay">Relay to check</param>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.IsSame(Sonar.Models.Relay)">
+            <summary>
+            Check if another relay regards the same fate (only Start time is checked)
+            </summary>
+            <param name="relay">Relay to check</param>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.IsSimilarTo(Sonar.Models.FateRelay)">
+            <summary>
+            Check if another relay is similar (only Progress, Coords, Status and Start time are checked)
+            </summary>
+            <param name="relay">Relay to check</param>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.IsSimilarTo(Sonar.Models.Relay)">
+            <summary>
+            Check if another relay is similar (only Progress, Coords, Status and Start time are checked)
+            </summary>
+            <param name="relay">Relay to check</param>
+        </member>
+        <member name="M:Sonar.Models.FateRelay.IsTouched">
+            <summary>
+            Check if this fate is being progressed
+            </summary>
+        </member>
+        <member name="T:Sonar.Models.GamePlace">
+            <summary>
+            Represent a game place (World, Zone and Instance)
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.GamePlace.WorldId">
+            <summary>
+            World ID
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.GamePlace.ZoneId">
+            <summary>
+            Zone ID
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.GamePlace.InstanceId">
+            <summary>
+            Instance ID
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.GamePlace.IsValid">
+            <summary>
+            Check if the place represented is valid
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.GamePlace.IsValidInstance(System.UInt32)">
+            <summary>
+            Check if the instance ID is valid (not checked in GamePlace.IsValid())
+            </summary>
+        </member>
+        <member name="T:Sonar.Models.GamePosition">
+            <summary>
+            Represent a game position (World, Zone, Instance and Coords)
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.GamePosition.Coords">
+            <summary>
+            Game coordinates
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.GamePosition.GetDistanceTo(Sonar.Numerics.SonarVector3)">
+            <summary>
+            Calculate distannce to another position
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.GamePosition.GetDistanceTo(Sonar.Models.GamePosition)">
+            <summary>
+            Calculate distannce to another position
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.GamePosition.GetHorizontalDistanceTo(Sonar.Numerics.SonarVector2)">
+            <summary>
+            Calculate horizontal distannce to another position
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.GamePosition.GetHorizontalDistanceTo(Sonar.Numerics.SonarVector3)">
+            <summary>
+            Calculate horizontal distannce to another position
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.GamePosition.GetHorizontalDistanceTo(Sonar.Models.GamePosition)">
+            <summary>
+            Calculate horizontal distannce to another position
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.GamePosition.GetDistanceTo(Sonar.Numerics.SonarVector2)">
+            <summary>
+            Calculate horizontal* distannce to another position
+            </summary>
+        </member>
+        <member name="T:Sonar.Models.HuntRelay">
+            <summary>
+            Represent a Hunt relay
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.HuntRelay.ActorId">
+            <summary>
+            Actor ID
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.HuntRelay.CurrentHp">
+            <summary>
+            Current HP
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.HuntRelay.MaxHp">
+            <summary>
+            Max Hp
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.HuntRelay.HpPercent">
+            <summary>
+            HP Percentage
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.HuntRelay.Progress">
+            <summary>
+            Kill Progress
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.HuntRelay.IsMaxHp">
+            <summary>
+            Check if hunt is unharmed
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.HuntRelay.IsPulled">
+            <summary>
+            Check if hunt is pulled (or harmed in this case)
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.HuntRelay.Players">
+            <summary>
+            Nearby Player Count
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.HuntRelay.IsAlive">
+            <summary>
+            Check if this hunt is alive
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.HuntRelay.IsSame(Sonar.Models.HuntRelay)">
+            <summary>
+            Check if another relay regards the same hunt (only Actor ID is checked)
+            </summary>
+            <param name="relay">Relay to check</param>
+        </member>
+        <member name="M:Sonar.Models.HuntRelay.IsSame(Sonar.Models.Relay)">
+            <summary>
+            Check if another relay regards the same hunt (only Actor ID is checked)
+            </summary>
+            <param name="relay">Relay to check</param>
+        </member>
+        <member name="M:Sonar.Models.HuntRelay.IsSimilarTo(Sonar.Models.HuntRelay)">
+            <summary>
+            Check if another relay is similar (only HP, Coords and Actor ID are checked)
+            </summary>
+            <param name="relay">Relay to check</param>
+        </member>
+        <member name="M:Sonar.Models.HuntRelay.IsSimilarTo(Sonar.Models.Relay)">
+            <summary>
+            Check if another relay is similar (only HP, Coords and Actor ID are checked)
+            </summary>
+            <param name="relay"></param>
+        </member>
+        <member name="M:Sonar.Models.HuntRelay.IsTouched">
+            <summary>
+            Check if this hunt is under attack
+            </summary>
+        </member>
+        <member name="T:Sonar.Models.ManualRelay">
+            <summary>
+            Represent a parsed player relay
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.ManualRelay.Player">
+            <summary>
+            Player that sent this relay
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.ManualRelay.Message">
+            <summary>
+            Message that triggered this relay
+            </summary>
+        </member>
+        <member name="T:Sonar.Models.PlayerInfo">
+            <summary>
+            Represents Player Information
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.PlayerInfo.Name">
+            <summary>
+            Player Full Name
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.PlayerInfo.HomeWorldId">
+            <summary>
+            Player Home World ID
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.PlayerInfo.SpaceAt">
+            <summary>
+            Helper function for First and Last name getters
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.PlayerInfo.First">
+            <summary>
+            Player First Name
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.PlayerInfo.Last">
+            <summary>
+            Player Last Name
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.PlayerInfo.ValidCharacters">
+            <summary>
+            Array of valid characters
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.PlayerInfo.IsNameValid">
+            <summary>
+            Check name validity based on game constraints:
+            - Both first and last names must be between 2 and 15 characters and not total more than 20 characters combined
+            - Only letters, hyphens and apostrophes can be used.
+            - The first character must be a letter (upper case).
+            - Hyphens cannot be used in succession or placed before or after apostrophes
+            </summary>
+            <returns>Validity of the name</returns>
+        </member>
+        <member name="P:Sonar.Models.Relay.Id">
+            <summary>
+            Relay ID (Hunt ID, Fate ID, Player ID)
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.Relay.Type">
+            <summary>
+            Relay type
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.Relay.IsSame(Sonar.Models.Relay)">
+            <summary>
+            Check if another relay regards the same thing
+            </summary>
+            <param name="relay">Relay to check</param>
+        </member>
+        <member name="M:Sonar.Models.Relay.IsSimilarTo(Sonar.Models.Relay)">
+            <summary>
+            Check if another relay is similar
+            </summary>
+            <param name="relay">Relay to check</param>
+        </member>
+        <member name="M:Sonar.Models.Relay.IsAlive">
+            <summary>
+            Check if this relay is alive
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.Relay.IsTouched">
+            <summary>
+            Check if this relay is touched (pulled, under attack, etc)
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.Relay.DuplicateThreshold">
+            <summary>
+            Duplicate threshold in milliseconds
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.Relay.IsDead">
+            <summary>
+            Check if this relay is dead
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.Relay.IsUntouched">
+            <summary>
+            Check if this relay is untouched (not pulled yet)
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.Relay.CopyFrom(Sonar.Models.Relay)">
+            <summary>
+            Copy a relay information from another
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.Relay.UpdateWith(Sonar.Models.Relay)">
+            <summary>
+            Update this relay with another
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.Relay.IsValid">
+            <summary>
+            Check if this is a valid relay
+            </summary>
+        </member>
+        <member name="T:Sonar.Models.RelayData`1">
+            <inheritdoc></inheritdoc>
+        </member>
+        <member name="M:Sonar.Models.RelayData`1.#ctor">
+            <inheritdoc></inheritdoc>
+        </member>
+        <member name="M:Sonar.Models.RelayData`1.#ctor(System.Collections.Generic.IEnumerable{Sonar.Models.RelayState{`0}})">
+            <inheritdoc></inheritdoc>
+        </member>
+        <member name="M:Sonar.Models.RelayData`1.#ctor(System.Int32)">
+            <inheritdoc></inheritdoc>
+        </member>
+        <member name="T:Sonar.Models.RelayState">
+            <summary>
+            Represents a relay with state information
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.LastSeen">
+            <summary>
+            Last Seen
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.LastFound">
+            <summary>
+            Last Found
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.LastKilled">
+            <summary>
+            Last Killed
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.LastUpdated">
+            <summary>
+            Last Updated
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.LastUntouched">
+            <summary>
+            Last Untouched
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.LastSeenAgo">
+            <summary>
+            Last Seen Ago
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.LastFoundAgo">
+            <summary>
+            Last Found Ago
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.LastKilledAgo">
+            <summary>
+            Last Killed Ago
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.LastUpdatedAgo">
+            <summary>
+            Last Updated Ago
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.LastUntouchedAgo">
+            <summary>
+            Last Untouched Ago
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState.DpsTime">
+            <summary>
+            DPS Time
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.RelayState.GotSeen">
+            <summary>
+            Signal that this hunt have been seen
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.RelayState.GotSeen(System.Double)">
+            <summary>
+            Signal that this hunt have been seen
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.RelayState.GotKilled">
+            <summary>
+            Signal that this hunt have been killed
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.RelayState.GotKilled(System.Double)">
+            <summary>
+            Signal that this hunt have been killed
+            </summary>
+        </member>
+        <member name="T:Sonar.Models.RelayState`1">
+            <summary>
+            Represents a relay with state information
+            </summary>
+        </member>
+        <member name="P:Sonar.Models.RelayState`1.Relay">
+            <summary>
+            Relay this state is for
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.RelayState`1.UpdateWith(Sonar.Models.RelayState{`0})">
+            <summary>
+            Update the state with another state
+            </summary>
+        </member>
+        <member name="M:Sonar.Models.RelayStateExtensions.GetEstimatedTimeToDeath(Sonar.Models.RelayState{Sonar.Models.HuntRelay})">
+            <summary>
+            Get the Estimated Time To Death
+            </summary>
+        </member>
+        <member name="F:Sonar.Models.ReleaseMode.Normal">
+            <summary>
+            Release normally
+            </summary>
+        </member>
+        <member name="F:Sonar.Models.ReleaseMode.Hold">
+            <summary>
+            Hold for some time longer
+            </summary>
+        </member>
+        <member name="F:Sonar.Models.ReleaseMode.Forced">
+            <summary>
+            Release instantly
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.SByte,System.SByte,System.SByte)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.Int16,System.Int16,System.Int16)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.UInt16,System.UInt16,System.UInt16)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.UInt32,System.UInt32,System.UInt32)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.Int64,System.Int64,System.Int64)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.Single,System.Single,System.Single)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.Double,System.Double,System.Double)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.Clamp(System.Char,System.Char,System.Char)">
+            <summary>
+            Clamps the value between a minimum and maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.SByte,System.SByte)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.Byte,System.Byte)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.Int16,System.Int16)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.UInt16,System.UInt16)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.Int32,System.Int32)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.UInt32,System.UInt32)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.Int64,System.Int64)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.UInt64,System.UInt64)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.Single,System.Single)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.Double,System.Double)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.Decimal,System.Decimal)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMin(System.Char,System.Char)">
+            <summary>
+            Clamps the value with a minimum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.SByte,System.SByte)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.Byte,System.Byte)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.Int16,System.Int16)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.UInt16,System.UInt16)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.Int32,System.Int32)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.UInt32,System.UInt32)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.Int64,System.Int64)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.UInt64,System.UInt64)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.Single,System.Single)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.Double,System.Double)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.Decimal,System.Decimal)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="M:Sonar.Numerics.BasicTypesExtensions.ClampMax(System.Char,System.Char)">
+            <summary>
+            Clamps the value with a maximum value
+            </summary>
+        </member>
+        <member name="T:Sonar.Services.FateTracker">
+            <summary>
+            Handles, receives and relay fate tracking information
+            </summary>
+        </member>
+        <member name="T:Sonar.Services.HuntTracker">
+            <summary>
+            Handles, receives and relay hunt tracking information
+            </summary>
+        </member>
+        <member name="T:Sonar.Services.RandomService">
+            <summary>
+            Random Service based on System.Random
+            </summary>
+        </member>
+        <member name="M:Sonar.Services.RandomService.#ctor">
+            <summary>
+            Construct a RandomService with the default seed
+            </summary>
+        </member>
+        <member name="M:Sonar.Services.RandomService.#ctor(System.Int32)">
+            <summary>
+            Construct a RandomService with the specified seed
+            </summary>
+            <param name="seed">Seed</param>
+        </member>
+        <member name="M:Sonar.Services.RandomService.#ctor(System.Random)">
+            <summary>
+            Construct a RandomService with the specified Random object
+            </summary>
+            <param name="random">Random</param>
+        </member>
+        <member name="T:Sonar.Services.RandomServiceTS">
+            <summary>
+            Random Service based on System.Random (Thread-safe)
+            </summary>
+        </member>
+        <member name="M:Sonar.Services.RandomServiceTS.#ctor">
+            <summary>
+            Construct a RandomService with the default seed
+            </summary>
+        </member>
+        <member name="M:Sonar.Services.RandomServiceTS.#ctor(System.Int32)">
+            <summary>
+            Construct a RandomService with the specified seed
+            </summary>
+            <param name="seed">Seed</param>
+        </member>
+        <member name="M:Sonar.Services.RandomServiceTS.#ctor(System.Random)">
+            <summary>
+            Construct a RandomService with the specified Random object
+            </summary>
+            <param name="random">Random</param>
+        </member>
+        <member name="T:Sonar.Services.RelayTracker`1">
+            <summary>
+            Handles, receives and relay hunt tracking information
+            </summary>
+        </member>
+        <member name="P:Sonar.Services.RelayTracker`1.Config">
+            <summary>
+            Relay Tracker Configuration
+            </summary>
+        </member>
+        <member name="M:Sonar.Services.RelayTracker`1.FeedRelay(`0)">
+            <summary>
+            Feed relay information into the tracker
+            </summary>
+            <param name="newRelay">Relay</param>
+        </member>
+        <member name="M:Sonar.Services.RelayTracker`1.FeedRelays(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Feed relays information into the tracker
+            </summary>
+            <param name="relays">Relays</param>
+        </member>
+        <member name="E:Sonar.Services.RelayTracker`1.OnRelayFound">
+            <summary>
+            Fires once a relay is found
+            </summary>
+        </member>
+        <member name="E:Sonar.Services.RelayTracker`1.OnRelayUpdated">
+            <summary>
+            Fires once a relay is updated
+            </summary>
+        </member>
+        <member name="E:Sonar.Services.RelayTracker`1.OnRelayDead">
+            <summary>
+            Fires once a relay is dead
+            </summary>
+        </member>
+        <member name="E:Sonar.Services.RelayTracker`1.All">
+            <summary>
+            Fires once a relay is found, updated or dead
+            </summary>
+        </member>
+        <member name="E:Sonar.Services.RelayTracker`1.OnUpdate">
+            <summary>
+            Fires on server update tick
+            </summary>
+        </member>
+        <member name="P:Sonar.Services.TickerService.Tasker">
+            <summary>
+            All tick events are sent through this Tasker object
+            </summary>
+        </member>
+        <member name="M:Sonar.Services.TickerService.#ctor(System.Double)">
+            <summary>
+            Initializes a TickerService with a specified tick size
+            </summary>
+            <param name="tickMs">Tick size in milliseconds</param>
+        </member>
+        <member name="T:Sonar.Services.TickerService.TickDelegate">
+            <summary>
+            Timer tick delegate
+            </summary>
+            <param name="ticker">Ticker object</param>
+            <param name="tickId">Tick id</param>
+        </member>
+        <member name="E:Sonar.Services.TickerService.OnTick">
+            <summary>
+            Ticks every raw tick
+            </summary>
+        </member>
+        <member name="E:Sonar.Services.TickerService.OnSecond">
+            <summary>
+            Ticks every second
+            </summary>
+        </member>
+        <member name="E:Sonar.Services.TickerService.OnMinute">
+            <summary>
+            Ticks every minute
+            </summary>
+        </member>
+        <member name="E:Sonar.Services.TickerService.OnHour">
+            <summary>
+            Ticks every hour
+            </summary>
+        </member>
+        <member name="E:Sonar.Services.TickerService.OnDay">
+            <summary>
+            Ticks every day
+            </summary>
+        </member>
+        <member name="P:Sonar.Services.TickerService.IsDisposed">
+            <summary>
+            Disposed status
+            </summary>
+        </member>
+        <member name="M:Sonar.Services.TickerService.Dispose">
+            <summary>
+            Dispose Ticker
+            </summary>
+        </member>
+        <member name="F:Sonar.SonarBrotliExtensions.MinimalBufferSize">
+            <summary>
+            Buffer Size cannot be any smaller than this
+            </summary>
+        </member>
+        <member name="F:Sonar.SonarBrotliExtensions.MaximalBufferSize">
+            <summary>
+            Larger Buffer Size serves little purpose
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarBrotliExtensions.DefaultBufferSizeMin">
+            <summary>
+            Default Min Buffer Size
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarBrotliExtensions.DefaultBufferSizeMax">
+            <summary>
+            Default Max Buffer Size
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarClient.CancelToken">
+            <summary>
+            Cancellation Token
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarClient.PlayerInfo">
+            <summary>
+            Player Information
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarClient.PlayerPlace">
+            <summary>
+            Player Place
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarClient.Configuration">
+            <summary>
+            Sonar Client Configuration
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarClient.Version">
+            <summary>
+            Sonar Version Information
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarClient.GetTracker``1">
+            <summary>
+            Get a specific tracker
+            </summary>
+            <typeparam name="T">Tracker relay type</typeparam>
+        </member>
+        <member name="P:Sonar.SonarClient.HuntTracker">
+            <summary>
+            Sonar Hunt Tracker
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarClient.FateTracker">
+            <summary>
+            Sonar Fate Tracker
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarClient.Ticker">
+            <summary>
+            Ticker service
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarClient.IsConnected">
+            <summary>
+            WebSocket connectivity status
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarClient.Ping">
+            <summary>
+            Ping Latency
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarClient.SetPlayerInfo(Sonar.Models.PlayerInfo)">
+            <summary>
+            Update Player Information
+            </summary>
+            <param name="info">Player Information</param>
+        </member>
+        <member name="M:Sonar.SonarClient.PlayerInfoUpdated">
+            <summary>
+            Called whenever the player information is updated
+            </summary>
+            <param name="info"></param>
+        </member>
+        <member name="M:Sonar.SonarClient.SetPlayerPlace(Sonar.Models.PlayerPlace)">
+            <summary>
+            Update Player Place
+            </summary>
+            <param name="place">Player Place</param>
+        </member>
+        <member name="M:Sonar.SonarClient.PlayerPlaceUpdated">
+            <summary>
+            Called whenever player place is updated
+            </summary>
+            <param name="place"></param>
+        </member>
+        <member name="M:Sonar.SonarClient.ConfigUpdated">
+            <summary>
+            Called whenever UpdateConfig() is called
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarClient.VersionUpdated">
+            <summary>
+            Called whenever UpdateVersion() is called
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarClient.UpdateConfig">
+            <summary>
+            Propagate configuration changes to the server
+            </summary>
+            <param name="config"></param>
+        </member>
+        <member name="T:Sonar.SonarClientLogger">
+            <summary>
+            Sonar Client Logger
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarClientLogger.OnLog">
+            <summary>
+            Sonar log event listener (Async)
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarClientWebSocket.#ctor">
+            <summary>
+            Construct a new SonarClient object
+            </summary>
+            <param name="config">Sonar Client configuration</param>
+        </member>
+        <member name="P:Sonar.SonarClientWebSocket.Websocket">
+            <summary>
+            WebSocket client
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarClientWebSocket.Start">
+            <summary>
+            Starts the client
+            </summary>
+            <param name="Token">Client Token</param>
+        </member>
+        <member name="M:Sonar.SonarClientWebSocket.Send(System.Byte[])">
+            <summary>
+            Send a message to the server
+            </summary>
+            <param name="message">Message to send</param>
+            <returns>Task that completes once the message is queued</returns>
+        </member>
+        <member name="T:Sonar.SonarEvents">
+            <summary>
+            Sonar Events. All events are run asynchronously.
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnUnhandledException">
+            <summary>
+            Occurs when an unhandled exception occurs in an event handler. (Exceptions are swallowed if not handled)
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnUnhandledExceptionBad">
+            <summary>
+            Occurs when an unhandled exception occurs again in the unhandled exception handler. (This one runs synchronously, further exceptions here are swallowed)
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnClientConnected">
+            <summary>
+            Connected to Sonar Server
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnClientDisconnected">
+            <summary>
+            Disconnected from Sonar Server (Sonar will keep retrying)
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnLogMessage">
+            <summary>
+            On log message (server logs can be seen here)
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnPong">
+            <summary>
+            Ping Pong
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnSonarMessage">
+            <summary>
+            Sonar messages (not yet implemented)
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnSonarTick">
+            <summary>
+            Sonar tick 
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnHuntFound">
+            <summary>
+            Hunt is found
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnHuntUpdated">
+            <summary>
+            Hunt information updated
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnHuntDead">
+            <summary>
+            Hunt is killed
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnHuntUpdatedAll">
+            <summary>
+            Hunt is found, updated or killed
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnHuntTrackerTick">
+            <summary>
+            Occurs every sonar tick
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnFateFound">
+            <summary>
+            Fate is found
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnFateUpdated">
+            <summary>
+            Fate information updated
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnFateDead">
+            <summary>
+            Fate is killed
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnFateUpdatedAll">
+            <summary>
+            Fate is found, updated or killed
+            </summary>
+        </member>
+        <member name="E:Sonar.SonarEvents.OnFateTrackerTick">
+            <summary>
+            Occurs every sonar tick
+            </summary>
+        </member>
+        <member name="T:Sonar.SonarInternal">
+            <summary>
+            Contain utility functions for crossing application domains
+            </summary>
+        </member>
+        <member name="F:Sonar.SonarLoader`1.DebugFirstChanceExceptions">
+            <summary>
+            First Chance Exceptions Debugging
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarLoader`1.DebugAssemblyResolve">
+            <summary>
+            Debug Assembly Resolve to C:\Sonar.log
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarLoader`1.DebugUnhandledExceptions">
+            <summary>
+            Debug Unhandled Exceptions to C:\Sonar.log
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarLoader`1.IsSonarAppDomain">
+            <summary>
+            Is Sonar running in its own domain?
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarLoader`1.SonarDomainName">
+            <summary>
+            Sonar domain friendly name
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarLoader`1.SonarRef">
+            <summary>
+            Object Handle to Sonar
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarLoader`1.Sonar">
+            <summary>
+            Main Sonar Object
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarLoader`1.Events">
+            <summary>
+            Sonar Events
+            </summary>
+        </member>
+        <member name="P:Sonar.SonarLoader`1.Something">
+            <summary>
+            100% Nothing (This is to allow me to load costura modules manually)
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarLoader`1.#ctor(System.Boolean,Sonar.Models.SonarVersion)">
+            <summary>
+            Main constructor
+            </summary>
+            <param name="appDomain"></param>
+        </member>
+        <member name="T:Sonar.SonarObject">
+            <summary>
+            Sonar Domain Object
+            </summary>
+        </member>
+        <member name="T:Sonar.SonarSerializer">
+            <summary>
+            Handles serialization of all sonar messages sent between client and server and data resources
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarSerializer.SerializeClientToServer``1(``0)">
+            <summary>
+            Serializes a message to be sent from client to server
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarSerializer.SerializeServerToClient``1(``0)">
+            <summary>
+            Serializes a message to be sent from server to client
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarSerializer.SerializeData``1(``0)">
+            <summary>
+            Serializes a message for data resources
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarSerializer.SerializeFeed``1(``0)">
+            <summary>
+            Serializes a message to be sent to the raw feed
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarSerializer.DeserializeClientToServer``1(System.Byte[])">
+            <summary>
+            Deserializes a message received from client to server
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarSerializer.DeserializeServerToClient``1(System.Byte[])">
+            <summary>
+            Deserializes a message received from server to client
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarSerializer.DeserializeData``1(System.Byte[])">
+            <summary>
+            Deserializes a message from data resources
+            </summary>
+        </member>
+        <member name="M:Sonar.SonarSerializer.DeserializeFeed``1(System.Byte[])">
+            <summary>
+            Deserializes a message received from the raw seed
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.JurisdictionExtensions.WorldsJurisdiction(System.UInt32,System.UInt32)">
+            <summary>
+            Determine Jurisdiction between 2 worlds
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.JurisdictionExtensions.IsWithinJurisdiction(Sonar.Models.GamePlace,Sonar.Models.GamePlace,Sonar.Enums.SonarJurisdiction)">
+            <summary>
+            Determine if two places are within the specified jurisdiction
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.JurisdictionExtensions.GetJurisdictionWith(Sonar.Models.GamePlace,Sonar.Models.GamePlace)">
+            <summary>
+            Gets Jurisdiction between two places
+            </summary>
+        </member>
+        <member name="T:Sonar.Utilities.LockHolder">
+            <summary>
+            Tiny utility class to hold a lock. Do not use lock constructs on this object (use LockObject instead)
+            </summary>
+        </member>
+        <member name="P:Sonar.Utilities.LockHolder.LockObject">
+            <summary>
+            Object used by this LockHolder. If you're using lock constructs in conjunction with this please use this object.
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.LockHolder.#ctor">
+            <summary>
+            Construct an unlocked LockHolder object
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.LockHolder.#ctor(System.Object,System.Boolean)">
+            <summary>
+            Construct a LockHolder object using the specified object
+            </summary>
+            <param name="obj">Object to use for locking</param>
+            <param name="locked">Initial locked status</param>
+        </member>
+        <member name="M:Sonar.Utilities.LockHolder.#ctor(System.Object,System.Int32)">
+            <summary>
+            Construct a LockHolder object using the specified object
+            </summary>
+            <param name="obj">Object to use for locking</param>
+            <param name="lockCount">Recursive count</param>
+        </member>
+        <member name="M:Sonar.Utilities.LockHolder.Lock(System.Int32)">
+            <summary>
+            Locks the object
+            </summary>
+            <param name="count">Recursive count</param>
+        </member>
+        <member name="M:Sonar.Utilities.LockHolder.Unlock(System.Int32)">
+            <summary>
+            Unlocks the object
+            </summary>
+            <param name="count">Recursive count</param>
+        </member>
+        <member name="M:Sonar.Utilities.LockHolder.UnlockFully">
+            <summary>
+            Fully unlock the object
+            </summary>
+        </member>
+        <member name="P:Sonar.Utilities.LockHolder.LockCount">
+            <summary>
+            How many locks are being held
+            </summary>
+        </member>
+        <member name="P:Sonar.Utilities.LockHolder.LockHeld">
+            <summary>
+            Is the lock being held?
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.LockHolder.Dispose">
+            <summary>
+            Dispose the object
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.LockHolder.Finalize">
+            <summary>
+            Should never happen
+            </summary>
+        </member>
+        <member name="F:Sonar.Utilities.PasswordUtils.SaltLength">
+            <summary>
+            Default length of generated salts
+            </summary>
+        </member>
+        <member name="F:Sonar.Utilities.PasswordUtils.Pkbdf2Iterations">
+            <summary>
+            Number of iterations performed by PKBDF2
+            </summary>
+        </member>
+        <member name="F:Sonar.Utilities.PasswordUtils.Pkbdf2KeyLength">
+            <summary>
+            Derived key length in bytes generated by PKBDF2
+            </summary>
+        </member>
+        <member name="F:Sonar.Utilities.PasswordUtils.InitialSalt">
+            <summary>
+            Initial salt
+            </summary>
+        </member>
+        <member name="F:Sonar.Utilities.PasswordUtils.Pkbdf2HashAlgorithm">
+            <summary>
+            Hash algorithm used by PKBDF2
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.PasswordUtils.GenerateCredentialsDk(System.String,System.String)">
+            <summary>
+            Generate a Derived Key from a user credentials
+            </summary>
+            <param name="username">Username</param>
+            <param name="password">Password</param>
+            <returns>Credentials derived key</returns>
+        </member>
+        <member name="M:Sonar.Utilities.PasswordUtils.GenerateDatabaseDk(System.Byte[],System.Byte[],System.Byte[])">
+            <summary>
+            Generate a derived key from the user credentials derived key using the specified salt and secret
+            </summary>
+            <param name="credentialsDk">Credentials derived key</param>
+            <param name="salt">Random salt</param>
+            <param name="secret">Secret salt</param>
+            <returns>Database derived key</returns>
+        </member>
+        <member name="M:Sonar.Utilities.PasswordUtils.Authenticate(System.Byte[],System.Byte[],System.Byte[],System.Byte[])">
+            <summary>
+            Test authentication using the user credentials derived key with the specified salt and secret and compare it to credentials DK retrieved from database
+            </summary>
+            <param name="credentialsDk">User credentials derived key</param>
+            <param name="salt">Random salt (from database)</param>
+            <param name="secret">Secret salt</param>
+            <param name="databaseDk">User credentials in database</param>
+            <returns>Authentication successful</returns>
+        </member>
+        <member name="M:Sonar.Utilities.PasswordUtils.GenerateCryptographicSalt(System.Int32)">
+            <summary>
+            Generates a cryptographic salt of a specified length
+            </summary>
+            <param name="length">Length of the salt in bytes</param>
+            <returns>Salt</returns>
+        </member>
+        <member name="M:Sonar.Utilities.PasswordUtils.EncodeBytes(System.Byte[])">
+            <summary>
+            Encode a byte sequence into a base64 string
+            </summary>
+            <param name="bytes">Bytes to encode</param>
+            <returns>Base64 string representing the encoded byte sequence</returns>
+        </member>
+        <member name="M:Sonar.Utilities.PasswordUtils.DecodeBytes(System.String)">
+            <summary>
+            Decode a base64 string into a byte sequence
+            </summary>
+            <param name="str">Base64 string to decode</param>
+            <returns>Byte sequence represended in the base64 string</returns>
+        </member>
+        <member name="M:Sonar.Utilities.Tasker.AddTask(System.Threading.Tasks.Task)">
+            <summary>
+            Adds a task to the tasks list, with some checks within it
+            </summary>
+            <param name="task">Task to add</param>
+        </member>
+        <member name="M:Sonar.Utilities.Tasker.RemoveTask(System.Threading.Tasks.Task)">
+            <summary>
+            Removes a task from the task list (will not wait when disposing)
+            </summary>
+            <param name="task">Task to remove</param>
+        </member>
+        <member name="P:Sonar.Utilities.Tasker.Count">
+            <summary>
+            Number of tasks this TaskerService is currently holding
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.Tasker.Reset">
+            <summary>
+            Resets the task list (DANGEROUS)
+            </summary>
+        </member>
+        <member name="T:Sonar.Utilities.Tasker.TaskerServiceDelegate">
+            <summary>
+            Tasker Service Delegate for events
+            </summary>
+            <param name="source">TaskerService Object that raised this event</param>
+            <param name="task">Task object the event is for</param>
+        </member>
+        <member name="E:Sonar.Utilities.Tasker.OnTaskAdded">
+            <summary>
+            Fired when a task is added
+            </summary>
+        </member>
+        <member name="E:Sonar.Utilities.Tasker.OnTaskRemoved">
+            <summary>
+            Fired when a task is removed
+            </summary>
+        </member>
+        <member name="E:Sonar.Utilities.Tasker.OnTaskComplete">
+            <summary>
+            Fired when a task is complete
+            </summary>
+        </member>
+        <member name="E:Sonar.Utilities.Tasker.OnTaskException">
+            <summary>
+            Fired when an exception occurs in a task
+            </summary>
+        </member>
+        <member name="E:Sonar.Utilities.Tasker.OnTaskCanceled">
+            <summary>
+            Fired when a task is cancelled
+            </summary>
+        </member>
+        <member name="E:Sonar.Utilities.Tasker.OnTaskFinished">
+            <summary>
+            Fired when a task is finished regardless of outcome
+            </summary>
+        </member>
+        <member name="E:Sonar.Utilities.Tasker.OnEventException">
+            <summary>
+            Fired when an exception happen during event handling
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.Tasker.Dispose">
+            <summary>
+            Dispose this TaskerService object
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.Tasker.GetEnumerator">
+            <summary>
+            Dispose this TaskerService object
+            </summary>
+            <returns>ValueTask that can be awaited for</returns>
+        </member>
+        <member name="P:Sonar.Utilities.UnixTimeHelper.UnixNow">
+            <summary>
+            Current time using Unix Epoch (in Milliseconds)
+            </summary>
+        </member>
+        <member name="P:Sonar.Utilities.UnixTimeHelper.UnixTimeOffset">
+            <summary>
+            Time synchronization offset relative to server (+ = behind, - = ahead)
+            </summary>
+        </member>
+        <member name="P:Sonar.Utilities.UnixTimeHelper.SyncedUnixNow">
+            <summary>
+            Synchronized time using Unix Epoch (in Milliseconds)
+            </summary>
+        </member>
+        <member name="M:Sonar.Utilities.UnixTimeHelper.GetUnixTime(System.DateTimeOffset)">
+            <summary>
+            Get a Unix Timestamp from a DateTimeOffset object
+            </summary>
+            <param name="dto">DateTimeOffset object</param>
+            <returns>Unix timestamp</returns>
+        </member>
+        <member name="M:Sonar.Utilities.UnixTimeHelper.GetUnixTime(System.DateTime)">
+            <summary>
+            Get a Unix Timestamp from a DateTime object
+            </summary>
+            <param name="dt">DateTime object</param>
+            <returns>Unix timestamp</returns>
+        </member>
+        <member name="M:Sonar.Utilities.UnixTimeHelper.GetDateTimeOffset(System.Double)">
+            <summary>
+            Get a DateTimeOffset object from a Unix timestamp
+            </summary>
+            <param name="ut">Unix timestamp</param>
+            <returns>DateTimeOffset</returns>
+        </member>
+        <member name="M:Sonar.Utilities.UnixTimeHelper.GetDateTime(System.Double)">
+            <summary>
+            Get a DateTime object from a Unix timestamp
+            </summary>
+            <param name="ut">Unix timestamp</param>
+            <returns>DateTimeOffset</returns>
+        </member>
+        <member name="P:Sonar.WebSocketClient.NativeClient">
+            <summary>
+            Native ClientWebSocket instance (can be null and resets on every reconnect)
+            </summary>
+        </member>
+        <member name="P:Sonar.WebSocketClient.WebSocketClientConfig.AutoReconnect">
+            <summary>
+            Attempt reconnecting on disconnects
+            </summary>
+        </member>
+        <member name="P:Sonar.WebSocketClient.WebSocketClientConfig.AutoReconnectTime">
+            <summary>
+            Time between connection attempts
+            </summary>
+        </member>
+        <member name="P:Sonar.WebSocketClient.WebSocketClientConfig.ReceiveTimeoutReconnect">
+            <summary>
+            Attempt reconnecting if no data is being received from the server
+            </summary>
+        </member>
+        <member name="P:Sonar.WebSocketClient.WebSocketClientConfig.ReceiveTimeoutTime">
+            <summary>
+            Timeout before reconnecting from no messages
+            </summary>
+        </member>
+        <member name="P:Sonar.WebSocketClient.WebSocketClientConfig.BufferSize">
+            <summary>
+            Receive buffer size, should not need changing but increase for performance
+            </summary>
+        </member>
+        <member name="P:Sonar.WebSocketClient.WebSocketClientConfig.MaxMessageSize">
+            <summary>
+            Maximum message size (Rough: actual max is this + BufferSize)
+            </summary>
+        </member>
+        <member name="P:Sonar.WebSocketClient.WebSocketClientConfig.EnableSeparateMessageTextEvent">
+            <summary>
+            Enable to preprocess Text websocket messages into strings and send them to OnReceivedMessageText event handlers
+            </summary>
+        </member>
+        <member name="P:Sonar.WebSocketClient.WebSocketClientConfig.DebugConsoleOutput">
+            <summary>
+            Output debug messages to console
+            </summary>
+        </member>
+        <member name="M:Sonar.WebSocketClient.#ctor(Sonar.WebSocketClient.WebSocketClientConfig,System.String)">
+            <summary>
+            Construct the WebSocketClient
+            </summary>
+            <param name="config">Websocket configuration</param>
+            <param name="url">(Optional) URL, if provided Start is called automatically</param>
+        </member>
+        <member name="M:Sonar.WebSocketClient.#ctor(System.String,Sonar.WebSocketClient.WebSocketClientConfig)">
+            <summary>
+            Construct the WebSocketClient
+            </summary>
+            <param name="url">URL, Start is called automatically</param>
+            <param name="config">(Optional) Websocket configuration</param>
+        </member>
+        <member name="M:Sonar.WebSocketClient.#ctor">
+            <summary>
+            Construct the WebSocketClient with default configuration
+            </summary>
+        </member>
+        <member name="M:Sonar.WebSocketClient.Start(System.String)">
+            <summary>
+            Starts and connect the WebSocket Client
+            </summary>
+            <param name="url">URL to connect to</param>
+        </member>
+        <member name="M:Sonar.WebSocketClient.Send(System.Byte[],System.Net.WebSockets.WebSocketMessageType)">
+            <summary>
+            Send a binary message
+            </summary>
+            <param name="message">Binary message to send</param>
+            <param name="type">(Optional) Override message type</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sonar.WebSocketClient.Send(System.String,System.Net.WebSockets.WebSocketMessageType)">
+            <summary>
+            Send a text message
+            </summary>
+            <param name="message">Text message to send</param>
+            <param name="type">(Optional) Override message type</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sonar.WebSocketClient.SendAsync(System.Byte[],System.Net.WebSockets.WebSocketMessageType)">
+            <summary>
+            Send a binary message (Alternative function, same as .Send)
+            </summary>
+            <param name="message">Binary message to send</param>
+            <param name="type">(Optional) Override message type</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sonar.WebSocketClient.SendAsync(System.String,System.Net.WebSockets.WebSocketMessageType)">
+            <summary>
+            Send a text message (Alternative function, same as .Send)
+            </summary>
+            <param name="message">Text message to send</param>
+            <param name="type">(Optional) Override message type</param>
+            <returns></returns>
+        </member>
+        <member name="P:Sonar.WebSocketClient.Task">
+            <summary>
+            Call this only after running Start
+            </summary>
+        </member>
+    </members>
+</doc>

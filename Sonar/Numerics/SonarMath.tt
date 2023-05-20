@@ -1,0 +1,131 @@
+﻿<#@ template debug="true" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Threading" #>
+using System;
+using System.Threading;
+
+namespace Sonar.Numerics
+{
+    // License for SonarMath: MIT, feel free to use
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3358:Ternary operators should not be nested", Justification = "Intentional")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4136:Method overloads should be grouped together", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1905:Redundant casts should not be used", Justification = "<Pending>")]
+    public static class SonarMath
+    {
+        private readonly static ThreadLocal<Random> _random = new(() => new Random());
+
+        /// <summary>
+        /// Normal thread local random
+        /// </summary>
+        public static Random Random => _random.Value!;
+        
+<# foreach (var type in new string[]{"sbyte", "byte", "char", "short", "ushort", "int", "uint", "long", "ulong", "float", "double", "decimal", "nint", "nuint"}) { #>
+        /// <summary>
+        /// Clamps the value between a minimum and maximum value
+        /// </summary>
+        public static <#= type #> Clamp(this <#= type #> value, <#= type #> min, <#= type #> max) => value < min ? min : value > max ? max : value;
+
+        /// <summary>
+        /// Clamps the value with a minimum value
+        /// </summary>
+        public static <#= type #> ClampMin(this <#= type #> value, <#= type #> min) => value < min ? min : value;
+
+        /// <summary>
+        /// Clamps the value with a maximum value
+        /// </summary>
+        public static <#= type #> ClampMax(this <#= type #> value, <#= type #> max) => value > max ? max : value;
+
+        /// <summary>
+        /// Check if the value roughly equals another value
+        /// </summary>
+        public static bool RoughlyEquals(this <#= type #> value1, <#= type #> value2, <#= type #> tolerance = (<#= type #>)1) => value1 >= value2 - tolerance && value1 <= value2 + tolerance;
+
+        /// <summary>
+        /// Return the lowest of two values
+        /// </summary>
+        public static <#= type #> Min(this <#= type #> v1, <#= type #> v2) => v1 < v2 ? v1 : v2;
+
+        /// <summary>
+        /// Return the highest of two values
+        /// </summary>
+        public static <#= type #> Max(this <#= type #> v1, <#= type #> v2) => v1 > v2 ? v1 : v2;
+
+<# } #>
+
+<# foreach (var type in new string[]{"sbyte", "short", "int", "long", "float", "double", "decimal", "nint"}) { #>
+        /// <summary>
+        /// Return the absolute value
+        /// </summary>
+        public static <#= type #> Abs(this <#= type #> value) => value < (<#= type #>)0 ? (<#= type #>)(-value) : (<#= type #>)value;
+
+<# } #>
+
+<# foreach (var type in new string[]{"float", "double", "decimal"}) { #>
+        /// <summary>
+        /// Return the value's ceiling
+        /// </summary>
+        public static <#= type #> Ceil(this <#= type #> value) => Math<#= type=="float"?"F":"" #>.Ceiling(value);
+
+        /// <summary>
+        /// Return the value's floor
+        /// </summary>
+        public static <#= type #> Floor(this <#= type #> value) => Math<#= type=="float"?"F":"" #>.Floor(value);
+
+        /// <summary>
+        /// Return rounded value
+        /// </summary>
+        public static <#= type #> Round(this <#= type #> value) => Math<#= type=="float"?"F":"" #>.Round(value);
+
+        /// <summary>
+        /// Return rounded value
+        /// </summary>
+        public static <#= type #> Round(this <#= type #> value, MidpointRounding midpoint) => Math<#= type=="float"?"F":"" #>.Round(value, midpoint);
+
+        /// <summary>
+        /// Return rounded value
+        /// </summary>
+        public static <#= type #> Round(this <#= type #> value, int digits) => Math<#= type=="float"?"F":"" #>.Round(value, digits);
+
+        /// <summary>
+        /// Return rounded value
+        /// </summary>
+        public static <#= type #> Round(this <#= type #> value, int digits, MidpointRounding midpoint) => Math<#= type=="float"?"F":"" #>.Round(value, digits, midpoint);
+
+        /// <summary>
+        /// Return truncated value
+        /// </summary>
+        public static <#= type #> Truncate(this <#= type #> value) => Math<#= type=="float"?"F":"" #>.Truncate(value);
+
+<# } #>
+
+<# foreach (var type in new string[]{"sbyte", "byte", "char", "short", "ushort", "int", "uint"}) { #>
+        /// <summary>
+        /// Return a value varied by up to the specified amount
+        /// </summary>
+        public static <#= type #> Variate(this <#= type #> value, <#= type #> amount) => (<#= type #>)(value + Random.Next((int)-amount, (int)amount + 1)).Clamp(<#= type #>.MinValue, <#= type #>.MaxValue);
+
+<# } #>
+
+<# foreach (var type in new string[]{"long", "ulong", "nint", "nuint"}) { #>
+        /// <summary>
+        /// Return a value varied by up to the specified amount
+        /// </summary>
+        public static <#= type #> Variate(this <#= type #> value, <#= type #> amount) => (<#= type #>)(value + Random.NextDouble() * amount * 2 - amount).Clamp(<#= type #>.MinValue, <#= type #>.MaxValue);
+
+<# } #>
+
+        /// <summary>
+        /// Return a value varied by up to the specified amount
+        /// </summary>
+        public static float Variate(this float value, float amount) => (float)((double)value).Variate(amount);
+
+        /// <summary>
+        /// Return a value varied by up to the specified amount
+        /// </summary>
+        public static double Variate(this double value, double amount) => value + Random.NextDouble() * amount * 2 - amount;
+    }
+}

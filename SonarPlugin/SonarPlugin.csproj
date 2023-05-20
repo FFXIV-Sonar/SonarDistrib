@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
     <LangVersion>9.0</LangVersion>
-    <AssemblyVersion>0.5.2.0</AssemblyVersion>
+    <AssemblyVersion>0.5.2.1</AssemblyVersion>
     <OutputType>Library</OutputType>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -94,14 +94,8 @@
     <PackageReference Include="NAudio.WinMM" Version="2.1.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="Exists('..\Sonar\Sonar.csproj')">
+  <ItemGroup>
     <ProjectReference Include="..\Sonar\Sonar.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="!Exists('..\Sonar\Sonar.csproj')">
-    <Reference Include="Sonar">
-      <HintPath>libs\Sonar.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <PropertyGroup>
@@ -174,6 +168,13 @@
     <ItemGroup>
       <EmbeddedResource Include="Resources\Secret.data" />
     </ItemGroup>
+  </Target>
+
+  <Target Name="Hash" AfterTargets="Build">
+    <GetFileHash Algorithm="SHA256" Files="$(OutputPath)\SonarPlugin.dll" HashEncoding="base64">
+      <Output TaskParameter="Hash" ItemName="PluginHash"/>
+    </GetFileHash>
+    <Warning Text="Plugin Hash: @(PluginHash)" />
   </Target>
 
 </Project>

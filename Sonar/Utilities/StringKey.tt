@@ -1,0 +1,106 @@
+﻿<#@ template debug="true" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Threading" #>
+
+using System;
+using System.Runtime.CompilerServices;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Sonar.Utilities
+{
+    [SuppressMessage("Major Code Smell", "S4035", Justification = "Implemented on derived classes")]
+    [SuppressMessage("Minor Code Smell", "S4136", Justification = "Generated code")]
+    [SuppressMessage("Design", "CA1067", Justification = "Implemented on derived classes")]
+    public abstract partial class StringKey : IEquatable<StringKey>, IEnumerable<uint>
+    {
+
+        public abstract int Length { get; }
+        public abstract uint this[int index] { get; }
+
+        public bool Equals(StringKey? other) => this.Equals(Unsafe.As<object>(other));
+
+        public IEnumerator<uint> GetEnumerator()
+        {
+            for (var index = 0; index < this.Length; index++)
+            {
+                yield return this[index];
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+        <# foreach (var parts in Enumerable.Range(1, 4))
+        {
+            var className = $"Key{parts}Parts";
+            var partsParams = string.Join(", ", Enumerable.Range(1, parts).Select(p => $"uint arg{p}"));
+            var partsArgs = string.Join(", ", Enumerable.Range(1, parts).Select(p => $"arg{p}"));
+        #>
+
+        public static StringKey Create(<#= partsParams #>)
+        {
+
+            return new <#= className #>(<#= partsArgs #>);
+            
+        }
+
+        private sealed class <#= className #> : StringKey
+        {
+
+            <#= string.Join("\r\n            ", Enumerable.Range(1, parts).Select(p => $"private readonly uint _key{p};")) #>
+
+            public <#= className #>(<#= partsParams #>)
+            {
+
+                <#= string.Join("\r\n                ", Enumerable.Range(1, parts).Select(p => $"this._key{p} = arg{p};")) #>
+
+            }
+
+            public override int Length => <#= parts #>;
+
+            public override uint this[int index]
+            {
+                get
+                {
+                
+                    return (index + 1) switch
+                    {
+
+                        <#= string.Join("\r\n                        ", Enumerable.Range(1, parts).Select(p => $"{p} => this._key{p},")) #>
+
+                        _ => throw new ArgumentOutOfRangeException(nameof(index))
+
+                    };
+
+                }
+            }
+
+
+            public override int GetHashCode()
+            {
+            
+                return HashCode.Combine(<#= string.Join(", ", Enumerable.Range(1, parts).Select(p => $"this._key{p}")) #>);
+            
+            }
+
+            public override bool Equals(object? obj)
+            {
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj is not <#= className #> other) return false;
+                return <#= string.Join(" && ", Enumerable.Range(1, parts).Select(p => $"this._key{p} == other._key{p}")) #>;
+            }
+
+            public override string ToString() => string.Join("_", <#= string.Join(", ",  Enumerable.Range(1, parts).Select(p => $"this._key{p}")) #>);
+
+        }
+
+        <#
+        }
+        #>
+
+    }
+}

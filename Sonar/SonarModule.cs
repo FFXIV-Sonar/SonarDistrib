@@ -1,20 +1,18 @@
-﻿using Dalamud.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
-using System.Xml.Linq;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.ComponentModel;
 
-namespace SonarPlugin
+namespace Sonar
 {
     internal static class SonarModule
     {
@@ -45,9 +43,7 @@ namespace SonarPlugin
             {
                 return Assembly.Load(resourceBytes);
             }
-#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
-#pragma warning restore CS0168 // Variable is declared but never used
             {
 #if DEBUG
                 File.AppendAllText(@"C:\SonarModuleError.log", $"[{DateTime.UtcNow:u}] {ex}\n\n");
@@ -65,11 +61,10 @@ namespace SonarPlugin
             if (resourceStream is null) return null;
             try
             {
-                return context.LoadFromStream(resourceStream);
+                var assembly = context.LoadFromStream(resourceStream);
+                return assembly;
             }
-#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
-#pragma warning restore CS0168 // Variable is declared but never used
             {
 #if DEBUG
                 File.AppendAllText(@"C:\SonarModuleError.log", $"[{DateTime.UtcNow:u}] {ex}\n\n");
@@ -99,10 +94,10 @@ namespace SonarPlugin
             return bytes;
         }
 
-        ///// <summary>
-        ///// DO NOT CALL THIS
-        ///// </summary>
-        //[EditorBrowsable(EditorBrowsableState.Never)]
-        //internal static void MakeCosturaStopComplainingAboutNotCallingCosturaUtilityInitialize() => CosturaUtility.Initialize(); // Else this loads stuff into the Dalamud context...
+        /// <summary>
+        /// DO NOT CALL THIS
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        internal static void MakeCosturaStopComplainingAboutNotCallingCosturaUtilityInitialize() => CosturaUtility.Initialize(); // Else this loads stuff into the Dalamud context...
     }
 }

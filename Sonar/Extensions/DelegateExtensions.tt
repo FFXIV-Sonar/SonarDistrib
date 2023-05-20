@@ -1,0 +1,331 @@
+﻿<#@ template debug="true" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Threading" #>
+
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Sonar.Extensions
+{
+    [SuppressMessage("Major Code Smell", "S1121")]
+    [SuppressMessage("Minor Code Smell", "S4136")]
+	public static class DelegateExtensions
+	{
+		/// <summary>Invoke safely while capturing exceptions</summary>
+		public static void SafeInvoke(this Action del, out IEnumerable<Exception> exceptions)
+		{
+		    List<Exception>? exs = null;
+			foreach (var item in Unsafe.As<Action[]>(del.GetInvocationList()))
+			{
+				try
+				{
+					item.Invoke();
+				}
+				catch (Exception ex)
+				{
+				    (exs ??= new()).Add(ex);
+				}
+			}
+			exceptions = exs is not null ? exs : Enumerable.Empty<Exception>();
+		}
+
+		/// <summary>Invoke safely while swallowing exceptions</summary>
+		public static void SafeInvoke(this Action del)
+		{
+			foreach (var item in Unsafe.As<Action[]>(del.GetInvocationList()))
+			{
+				try
+				{
+					item.Invoke();
+				}
+				catch
+				{
+					/* Swallow */
+				}
+			}
+		}
+
+		<# foreach (var count in Enumerable.Range(1, 16))
+		{
+		    var types = string.Join(", ", Enumerable.Range(1, count).Select(c => $"T{c}"));
+			var pars = string.Join(", ", Enumerable.Range(1, count).Select(c => $"T{c} arg{c}"));
+			var args = string.Join(", ", Enumerable.Range(1, count).Select(c => $"arg{c}"));
+		#>
+
+		/// <summary>Invoke safely while capturing exceptions</summary>
+		public static void SafeInvoke<<#= types #>>(this Action<<#=types#>> del, <#= pars #>, out IEnumerable<Exception> exceptions)
+		{
+		    List<Exception>? exs = null;
+			foreach (var item in Unsafe.As<Action<<#= types #>>[]>(del.GetInvocationList()))
+			{
+				try
+				{
+					item.Invoke(<#= args #>);
+				}
+				catch (Exception ex)
+				{
+				    (exs ??= new()).Add(ex);
+				}
+			}
+			exceptions = exs is not null ? exs : Enumerable.Empty<Exception>();
+		}
+
+		/// <summary>Invoke safely while swallowing exceptions</summary>
+		public static void SafeInvoke<<#= types #>>(this Action<<#=types#>> del, <#= pars #>)
+		{
+			foreach (var item in Unsafe.As<Action<<#= types #>>[]>(del.GetInvocationList()))
+			{
+				try
+				{
+					item.Invoke(<#= args #>);
+				}
+				catch
+				{
+					/* Swallow */
+				}
+			}
+		}
+
+		<# } #>
+
+		/// <summary>Invoke safely while capturing exceptions</summary>
+		public static IEnumerable<TResult> SafeInvoke<TResult>(this Func<TResult> del, out IEnumerable<Exception> exceptions)
+		{
+		    List<Exception>? exs = null;
+			var invocations = Unsafe.As<Func<TResult>[]>(del.GetInvocationList());
+			List<TResult> results = new(invocations.Length);
+			for (var i = 0; i < invocations.Length; i++)
+			{
+				try
+				{
+					results.Add(invocations[i].Invoke());
+				}
+				catch (Exception ex)
+				{
+				    (exs ??= new()).Add(ex);
+				}
+			}
+			exceptions = exs is not null ? exs : Enumerable.Empty<Exception>();
+			return results;
+		}
+
+		/// <summary>Invoke safely while swallowing exceptions</summary>
+		public static IEnumerable<TResult> SafeInvoke<TResult>(this Func<TResult> del)
+		{
+			var invocations = Unsafe.As<Func<TResult>[]>(del.GetInvocationList());
+			List<TResult> results = new(invocations.Length);
+			for (var i = 0; i < invocations.Length; i++)
+			{
+				try
+				{
+					results.Add(invocations[i].Invoke());
+				}
+				catch
+				{
+					/* Swallow */
+				}
+			}
+			return results;
+		}
+
+		<# foreach (var count in Enumerable.Range(1, 16))
+		{
+		    var types = string.Join(", ", Enumerable.Range(1, count).Select(c => $"T{c}"));
+			var pars = string.Join(", ", Enumerable.Range(1, count).Select(c => $"T{c} arg{c}"));
+			var args = string.Join(", ", Enumerable.Range(1, count).Select(c => $"arg{c}"));
+		#>
+
+		/// <summary>Invoke safely while capturing exceptions</summary>
+		public static IEnumerable<TResult> SafeInvoke<<#= types #>, TResult>(this Func<<#= types #>, TResult> del, <#= pars #>, out IEnumerable<Exception> exceptions)
+		{
+		    List<Exception>? exs = null;
+			var invocations = Unsafe.As<Func<<#= types #>, TResult>[]>(del.GetInvocationList());
+			List<TResult> results = new(invocations.Length);
+			for (var i = 0; i < invocations.Length; i++)
+			{
+				try
+				{
+					results.Add(invocations[i].Invoke(<#= args #>));
+				}
+				catch (Exception ex)
+				{
+				    (exs ??= new()).Add(ex);
+				}
+			}
+			exceptions = exs is not null ? exs : Enumerable.Empty<Exception>();
+			return results;
+		}
+
+		/// <summary>Invoke safely while swallowing exceptions</summary>
+		public static IEnumerable<TResult> SafeInvoke<<#= types #>, TResult>(this Func<<#= types #>, TResult> del, <#= pars #>)
+		{
+			var invocations = Unsafe.As<Func<<#= types #>, TResult>[]>(del.GetInvocationList());
+			List<TResult> results = new(invocations.Length);
+			for (var i = 0; i < invocations.Length; i++)
+			{
+				try
+				{
+					results.Add(invocations[i].Invoke(<#= args #>));
+				}
+				catch
+				{
+					/* Swallow */
+				}
+			}
+			return results;
+		}
+
+		<# } #>
+
+		/// <summary>Invoke safely while discarding results and capturing exceptions</summary>
+		public static void SafeInvokeAndDiscard<TResult>(this Func<TResult> del, out IEnumerable<Exception> exceptions)
+		{
+		    List<Exception>? exs = null;
+			foreach (var item in Unsafe.As<Func<TResult>[]>(del.GetInvocationList()))
+			{
+				try
+				{
+					_ = item.Invoke();
+				}
+				catch (Exception ex)
+				{
+				    (exs ??= new()).Add(ex);
+				}
+			}
+			exceptions = exs is not null ? exs : Enumerable.Empty<Exception>();
+		}
+
+		/// <summary>Invoke safely while discarding results and swallowing exceptions</summary>
+		public static void SafeInvokeAndDiscard<TResult>(this Func<TResult> del)
+		{
+			foreach (var item in Unsafe.As<Func<TResult>[]>(del.GetInvocationList()))
+			{
+				try
+				{
+					_ = item.Invoke();
+				}
+				catch
+				{
+					/* Swallow */
+				}
+			}
+		}
+
+		<# foreach (var count in Enumerable.Range(1, 16))
+		{
+		    var types = string.Join(", ", Enumerable.Range(1, count).Select(c => $"T{c}"));
+			var pars = string.Join(", ", Enumerable.Range(1, count).Select(c => $"T{c} arg{c}"));
+			var args = string.Join(", ", Enumerable.Range(1, count).Select(c => $"arg{c}"));
+		#>
+
+		/// <summary>Invoke safely while discarding results and capturing exceptions</summary>
+		public static void SafeInvokeAndDiscard<<#= types #>, TResult>(this Func<<#= types #>, TResult> del, <#= pars #>, out IEnumerable<Exception> exceptions)
+		{
+		    List<Exception>? exs = null;
+			foreach (var item in Unsafe.As<Func<<#= types #>, TResult>[]>(del.GetInvocationList()))
+			{
+				try
+				{
+					_ = item.Invoke(<#= args #>);
+				}
+				catch (Exception ex)
+				{
+				    (exs ??= new()).Add(ex);
+				}
+			}
+			exceptions = exs is not null ? exs : Enumerable.Empty<Exception>();
+		}
+
+		/// <summary>Invoke safely while discarding results and swallowing exceptions</summary>
+		public static void SafeInvokeAndDiscard<<#= types #>, TResult>(this Func<<#= types #>, TResult> del, <#= pars #>)
+		{
+			foreach (var item in Unsafe.As<Func<<#= types #>, TResult>[]>(del.GetInvocationList()))
+			{
+				try
+				{
+					_ = item.Invoke(<#= args #>);
+				}
+				catch
+				{
+					/* Swallow */
+				}
+			}
+		}
+
+		<# } #>
+
+		/// <summary>Invoke safely while capturing exceptions</summary>
+        public static void SafeInvoke(this EventHandler handler, object sender, EventArgs e, out IEnumerable<Exception> exceptions)
+        {
+            List<Exception>? exs = null;
+            foreach (var item in Unsafe.As<EventHandler[]>(handler.GetInvocationList()))
+            {
+                try
+                {
+                    item.Invoke(sender, e);
+                }
+                catch (Exception ex)
+                {
+                    (exs ??= new()).Add(ex);
+                }
+            }
+            exceptions = exs is not null ? exs : Enumerable.Empty<Exception>();
+        }
+
+		/// <summary>Invoke safely while capturing exceptions</summary>
+        public static void SafeInvoke<T>(this EventHandler<T> handler, object sender, T e, out IEnumerable<Exception> exceptions)
+        {
+            List<Exception>? exs = null;
+            foreach (var item in Unsafe.As<EventHandler<T>[]>(handler.GetInvocationList()))
+            {
+                try
+                {
+                    item.Invoke(sender, e);
+                }
+                catch (Exception ex)
+                {
+                    (exs ??= new()).Add(ex);
+                }
+            }
+            exceptions = exs is not null ? exs : Enumerable.Empty<Exception>();
+        }
+
+		/// <summary>Invoke safely while swallowing exceptions</summary>
+        public static void SafeInvoke(this EventHandler handler, object sender, EventArgs e)
+        {
+            foreach (var item in Unsafe.As<EventHandler[]>(handler.GetInvocationList()))
+            {
+                try
+                {
+                    item.Invoke(sender, e);
+                }
+                catch
+                {
+					/* Swallow */
+                }
+            }
+        }
+
+		/// <summary>Invoke safely while swallowing exceptions</summary>
+        public static void SafeInvoke<T>(this EventHandler<T> handler, object sender, T e)
+        {
+            foreach (var item in Unsafe.As<EventHandler<T>[]>(handler.GetInvocationList()))
+            {
+                try
+                {
+                    item.Invoke(sender, e);
+                }
+                catch
+                {
+					/* Swallow */
+                }
+            }
+        }
+	}
+}
