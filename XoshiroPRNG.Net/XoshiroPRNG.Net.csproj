@@ -22,6 +22,7 @@
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <DebugSymbols>false</DebugSymbols>
         <DebugType>None</DebugType>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.4|AnyCPU'">
       <DefineConstants />

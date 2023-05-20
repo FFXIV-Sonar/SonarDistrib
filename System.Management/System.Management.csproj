@@ -6,6 +6,7 @@
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>

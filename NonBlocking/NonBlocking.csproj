@@ -34,6 +34,7 @@
     <Copyright>Copyright 2022 (c) Vladimir Sadov. All rights reserved.</Copyright>
     <PackageTags>lock-free wait-free dictionary high-performance</PackageTags>
     <PackageProjectUrl>https://github.com/VSadov/NonBlocking</PackageProjectUrl>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <PropertyGroup>
