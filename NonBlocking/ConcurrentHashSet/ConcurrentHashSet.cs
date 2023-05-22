@@ -52,6 +52,8 @@ namespace NonBlocking
         public int Count => _backingDictionary.Count;
         public int EstimatedCount => _backingDictionary.EstimatedCount;
 
+        public int Capacity => _backingDictionary.Capacity;
+
         public bool IsReadOnly => false;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

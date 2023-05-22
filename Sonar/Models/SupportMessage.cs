@@ -1,5 +1,4 @@
-﻿using Loyc.Collections.Impl;
-using Sonar.Messages;
+﻿using Sonar.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,7 +80,7 @@ namespace Sonar.Models
         /// </summary>
         public string ToString(bool includeMeta)
         {
-            InternalList<string> output = new(12);
+            List<string> output = new(12);
             output.Add(DateTimeOffset.FromUnixTimeMilliseconds((long)this.Timestamp).ToString("u"));
             if (includeMeta && !string.IsNullOrWhiteSpace(this.Meta)) output.Add(this.Meta);
             output.Add("========================================");

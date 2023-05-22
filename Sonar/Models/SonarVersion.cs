@@ -2,10 +2,9 @@
 using Newtonsoft.Json;
 using System;
 using System.Reflection;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
-using Loyc.Collections.Impl;
 using Sonar.Messages;
 
 namespace Sonar.Models
@@ -61,7 +60,7 @@ namespace Sonar.Models
 
         public override string ToString()
         {
-            InternalList<string> output = new(5);
+            List<string> output = new(5);
             output.Add($"Sonar: {this.Sonar} ({this.Version})");
 
             if (!string.IsNullOrWhiteSpace(this.Plugin))
@@ -81,7 +80,7 @@ namespace Sonar.Models
 
         public string ToHashesString()
         {
-            var output = new InternalList<string>(7)
+            var output = new List<string>(7)
             {
                 $"Sonar: {this.SonarHash ?? "Unknown"}",
                 $"Plugin: {this.PluginHash ?? "Unknown"}",

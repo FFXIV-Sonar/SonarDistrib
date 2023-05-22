@@ -670,6 +670,12 @@ namespace NonBlocking
         public int EstimatedCount => _table.EstimatedCount;
 
         /// <summary>
+        /// Gets the hash table capacity for this <see cref="ConcurrentDictionary{TKey, TValue}"/>
+        /// </summary>
+        /// <value>Hash table size</value>
+        public int Capacity => _table.Capacity;
+
+        /// <summary>
         /// Adds a key/value pair to the <see cref="ConcurrentDictionary{TKey,TValue}"/>
         /// if the key does not already exist.
         /// </summary>

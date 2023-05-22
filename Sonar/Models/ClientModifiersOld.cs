@@ -1,7 +1,7 @@
 ﻿using Sonar.Messages;
 using MessagePack;
-using Loyc.Collections.Impl;
 using System;
+using System.Collections.Generic;
 
 namespace Sonar.Models
 {
@@ -46,7 +46,7 @@ namespace Sonar.Models
 
         public override string ToString()
         {
-            InternalList<string> ret = new(4);
+            List<string> ret = new(4);
             if (this.EnableRelayEventHandlers.HasValue) ret.Add($"Relay Events: {this.EnableRelayEventHandlers}");
             if (this.MinimumTickInterval.HasValue) ret.Add($"Tick Interval: {this.MinimumTickInterval}");
             if (this.AllowContribute.HasValue) ret.Add($"Allow Contribute: {this.AllowContribute}");

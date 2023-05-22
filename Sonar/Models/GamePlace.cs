@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using Sonar.Utilities;
 using Sonar.Threading;
 using Sonar.Trackers;
-using Loyc.Collections;
 
 namespace Sonar.Models
 {

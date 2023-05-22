@@ -133,22 +133,6 @@
           "System.Management": "[1.0.0, )"
         }
       },
-      "loyc.collections": {
-        "type": "Project",
-        "dependencies": {
-          "Loyc.Essentials": "[1.0.0, )",
-          "Loyc.Interfaces": "[1.0.0, )"
-        }
-      },
-      "loyc.essentials": {
-        "type": "Project",
-        "dependencies": {
-          "Loyc.Interfaces": "[1.0.0, )"
-        }
-      },
-      "loyc.interfaces": {
-        "type": "Project"
-      },
       "nonblocking": {
         "type": "Project",
         "dependencies": {
@@ -163,9 +147,12 @@
           "DnsClient": "[1.7.0, )",
           "DryIoc.MefAttributedModel.dll": "[7.0.0, )",
           "DryIoc.dll": "[5.3.4, )",
-          "Loyc.Collections": "[1.0.0, )",
-          "NonBlocking": "[2.1.1, )"
+          "NonBlocking": "[2.1.1, )",
+          "SonarUtils": "[1.0.0, )"
         }
+      },
+      "sonarutils": {
+        "type": "Project"
       },
       "system.management": {
         "type": "Project",

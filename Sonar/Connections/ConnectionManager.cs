@@ -13,11 +13,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Sonar.SonarConstants;
 using Sonar.Extensions;
-using Loyc.Collections;
 using DryIoc;
 using DryIocAttributes;
 using System.ComponentModel.Composition;
 using DryIoc.FastExpressionCompiler.LightExpression;
+using SonarUtils;
 
 namespace Sonar.Connections
 {

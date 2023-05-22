@@ -24,7 +24,6 @@ using static Sonar.SonarConstants;
 using Sonar.Data;
 using Sonar.Data.Details;
 using System.Diagnostics.CodeAnalysis;
-using Loyc;
 using System.Runtime.CompilerServices;
 using System.Collections.Immutable;
 using Container = DryIoc.Container;
@@ -32,7 +31,6 @@ using DryIoc;
 using Sonar.Connections;
 using System.Reflection;
 using System.Linq;
-using Loyc.Collections;
 using DryIoc.MefAttributedModel;
 
 namespace Sonar

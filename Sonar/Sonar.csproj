@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <AssemblyVersion>0.5.2.0</AssemblyVersion>
+    <AssemblyVersion>0.5.2.2</AssemblyVersion>
     <RootNamespace>Sonar</RootNamespace>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <LangVersion>11</LangVersion>
@@ -86,8 +86,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Collections.Pooled\Collections.Pooled.csproj" />
     <ProjectReference Include="..\DeviceId.Windows.Wmi\DeviceId.Windows.Wmi.csproj" />
-    <ProjectReference Include="..\LoycCore\Loyc.Collections\Loyc.Collections.csproj" />
     <ProjectReference Include="..\NonBlocking\NonBlocking.csproj" />
+    <ProjectReference Include="..\SonarUtils\SonarUtils.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Collections.Generic;
 using Sonar.Messages;
 using System.Security.Cryptography;
-using Loyc.Collections.Impl;
 
 namespace Sonar.Data.Details
 {
@@ -81,7 +80,7 @@ namespace Sonar.Data.Details
 
         public override string ToString()
         {
-            var lines = new InternalList<string>(9)
+            var lines = new List<string>(9)
             {
                 $"Database Timestamp: {this.Timestamp}",
                 $"Database Hash: {this.HashString}",

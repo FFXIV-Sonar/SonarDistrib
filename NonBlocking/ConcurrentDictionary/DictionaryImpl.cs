@@ -99,6 +99,8 @@ namespace NonBlocking
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static int ReduceHashToIndex(int fullHash, int lenMask)
         {
+            return fullHash & lenMask;
+            /*
             var h = (uint)fullHash;
 
             // xor-shift some upper bits down, in case if variations are mostly in high bits
@@ -109,6 +111,7 @@ namespace NonBlocking
             h += (h >> 3) * 2654435769u;
 
             return (int)h & lenMask;
+            */
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

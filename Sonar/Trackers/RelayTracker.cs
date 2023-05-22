@@ -16,7 +16,6 @@ using Sonar.Data.Rows;
 using Sonar.Config;
 using System.ComponentModel;
 using System.Diagnostics;
-using Loyc.Collections;
 using Sonar.Threading;
 using System.Runtime.CompilerServices;
 using System.ComponentModel.DataAnnotations;

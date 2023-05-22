@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MessagePack;
 using MessagePack.Formatters;
-using Loyc.Collections.Impl;
 using System.ComponentModel;
+using SonarUtils.Collections;
 
 namespace Sonar.Messages
 {
@@ -107,7 +107,7 @@ namespace Sonar.Messages
 
         public IEnumerator<ISonarMessage> GetEnumerator()
         {
-            return this.list.GetEnumerator();
+            return this.list.AsEnumerable().GetEnumerator();
         }
 
         public int IndexOf(ISonarMessage item)
@@ -144,7 +144,7 @@ namespace Sonar.Messages
             if (index < 0 || index >= this.Count) throw new ArgumentOutOfRangeException(nameof(index));
 
             this.list.InsertRangeHelper(index, source.Count);
-            int count = 0;
+            var count = 0;
             foreach (var item in source)
             {
                 if (this.AutoFlatten && item is MessageList list) count += this.InsertRangeCore(index + count, list);
@@ -192,7 +192,7 @@ namespace Sonar.Messages
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.list.GetEnumerator();
+            return this.list.AsEnumerable().GetEnumerator();
         }
 
         [EditorBrowsable(EditorBrowsableState.Advanced)] // Should never be needed

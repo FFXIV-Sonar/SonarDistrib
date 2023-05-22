@@ -1,5 +1,4 @@
-﻿using Loyc;
-using Sonar.Logging;
+﻿using Sonar.Logging;
 using System;
 
 namespace Sonar

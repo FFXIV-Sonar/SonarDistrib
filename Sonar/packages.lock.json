@@ -1114,27 +1114,14 @@
           "System.Management": "[1.0.0, )"
         }
       },
-      "loyc.collections": {
-        "type": "Project",
-        "dependencies": {
-          "Loyc.Essentials": "[1.0.0, )",
-          "Loyc.Interfaces": "[1.0.0, )"
-        }
-      },
-      "loyc.essentials": {
-        "type": "Project",
-        "dependencies": {
-          "Loyc.Interfaces": "[1.0.0, )"
-        }
-      },
-      "loyc.interfaces": {
-        "type": "Project"
-      },
       "nonblocking": {
         "type": "Project",
         "dependencies": {
           "System.Runtime.CompilerServices.Unsafe": "[6.0.0, )"
         }
+      },
+      "sonarutils": {
+        "type": "Project"
       },
       "system.management": {
         "type": "Project",
