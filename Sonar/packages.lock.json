@@ -2,6 +2,15 @@
   "version": 1,
   "dependencies": {
     "net7.0": {
+      "AG.NonBlocking": {
+        "type": "Direct",
+        "requested": "[2.1.1, )",
+        "resolved": "2.1.1",
+        "contentHash": "YQFUqdQLS2JRlWMFJL2Ejt2dKs3JgUSrYBrCailSdZjO0SXmyLLyDHIskq2p0oVjv9DqVbOa9DgauFvHAA9DIA==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
+      },
       "ConfigureAwait.Fody": {
         "type": "Direct",
         "requested": "[3.3.2, )",
@@ -1112,12 +1121,6 @@
           "DeviceId": "[6.3.0, )",
           "DeviceId.Windows": "[6.2.0, )",
           "System.Management": "[1.0.0, )"
-        }
-      },
-      "nonblocking": {
-        "type": "Project",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "[6.0.0, )"
         }
       },
       "sonarutils": {

@@ -42,7 +42,7 @@ namespace Sonar.Trackers
         public RelayTrackerData<T> Data { get; } = new();
 
         private readonly ConcurrentQueue<T> _relayUpdateQueue = new();
-        private readonly NonBlocking.ConcurrentHashSet<string> _confirmationRequests = new(comparer: FarmHashStringComparer.Instance);
+        private readonly NonBlocking.NonBlockingHashSet<string> _confirmationRequests = new(comparer: FarmHashStringComparer.Instance);
 
         /// <summary>Dispatch events regardless of jurisdiction settings</summary>
         public bool AlwaysDispatchEvents { get; set; }
@@ -69,6 +69,16 @@ namespace Sonar.Trackers
                     break;
                 case RelayConfirmationSlim<T> confirmation:
                     this._confirmationRequests.Add(confirmation.RelayKey);
+                    break;
+                case RelayDataIndexCapacities indexCounts:
+                    {
+                        var counts =
+                            typeof(T) == typeof(HuntRelay) ? indexCounts.Hunts :
+                            typeof(T) == typeof(FateRelay) ? indexCounts.Fates :
+                            null;
+                        if (counts is null) break;
+                        this.Data.SetCapacitiesCache(counts);
+                    }
                     break;
             }
         }

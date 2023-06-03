@@ -32,7 +32,7 @@ namespace Sonar.Connections
         private readonly CancellationTokenSource _cts = new();
 
         private volatile ISonarSocket? _socket;
-        private readonly NonBlocking.ConcurrentDictionary<ISonarSocket, SonarConnectionInformation> _sockets = new();
+        private readonly NonBlocking.NonBlockingDictionary<ISonarSocket, SonarConnectionInformation> _sockets = new();
         private volatile int _failCount;
         private volatile bool _reconnect;
 

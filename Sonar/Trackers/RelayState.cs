@@ -14,6 +14,7 @@ using Sonar.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Sonar.Relays;
+using Sonar.Utilities;
 
 namespace Sonar.Trackers
 {
@@ -290,7 +291,7 @@ namespace Sonar.Trackers
         /// </summary>
         internal void UpdateWithState(RelayState state)
         {
-            this.Relay = state.Relay;
+            this.Relay.UpdateWith(state.Relay);
             this.LastFound = this.LastFound.Max(state.LastFound);
             this.LastSeen = this.LastSeen.Max(state.LastSeen);
             this.LastKilled = this.LastKilled.Max(state.LastKilled);
@@ -359,6 +360,11 @@ namespace Sonar.Trackers
         public override string ToString()
         {
             return $"{this.Relay} (Found: {this.GetLastFound()} | Seen: {this.GetLastSeen()} | Killed: {this.GetLastKilled()})";
+        }
+
+        public override int GetHashCode()
+        {
+            return FarmHashStringComparer.Instance.GetHashCode(this.RelayKey);
         }
     }
 

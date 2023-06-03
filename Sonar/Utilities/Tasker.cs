@@ -14,7 +14,7 @@ namespace Sonar.Utilities
     /// </summary>
     public sealed class Tasker : IDisposable, IAsyncDisposable ,IEnumerable<Task>
     {
-        private readonly NonBlocking.ConcurrentHashSet<Task> _tasks = new();
+        private readonly NonBlocking.NonBlockingHashSet<Task> _tasks = new();
 
         #region User functions
         /// <summary>

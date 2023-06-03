@@ -11,21 +11,21 @@ namespace Sonar.Utilities
     /// <summary>String utilities for Sonar</summary>
     internal static class StringUtils
     {
-        private static readonly NonBlocking.ConcurrentDictionary<string, string> s_strings = new(comparer: FarmHashStringComparer.Instance);
+        private static readonly NonBlocking.NonBlockingDictionary<string, string> s_strings = new(comparer: FarmHashStringComparer.Instance);
 
-        /// <summary>Interns a <see cref="string"/> into a <see cref="NonBlocking.ConcurrentDictionary{TKey, TValue}"/></summary>
+        /// <summary>Interns a <see cref="string"/> into a <see cref="NonBlocking.NonBlockingDictionary{TKey, TValue}"/></summary>
         /// <remarks>This is faster than <see cref="string.Intern(string)"/></remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static string Intern(string key) => s_strings.GetOrAdd(key, key);
 
-        /// <summary>Try to get an interned <see cref="string"/> from the <see cref="NonBlocking.ConcurrentDictionary{TKey, TValue}"/></summary>
+        /// <summary>Try to get an interned <see cref="string"/> from the <see cref="NonBlocking.NonBlockingDictionary{TKey, TValue}"/></summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static string? GetInternedIfExist(string key) => s_strings.GetValueOrDefault(key);
 
         // === vvv Obsolete stuff beyond this line vvv ===
 
         [Obsolete]
-        private static readonly NonBlocking.ConcurrentDictionary<StringKey, string> s_keys = new();
+        private static readonly NonBlocking.NonBlockingDictionary<StringKey, string> s_keys = new();
 
         /// <summary>
         /// Generate a 1 part key. Fully cached.

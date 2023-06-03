@@ -15,7 +15,7 @@ namespace Sonar.Connections
     {
         private readonly Task _bootstrapTask;
         private readonly CancellationTokenSource _cts = new();
-        private readonly NonBlocking.ConcurrentHashSet<SonarUrl> _urls = new();
+        private readonly NonBlocking.NonBlockingHashSet<SonarUrl> _urls = new();
         private SonarUrl[]? _urlArray;
 
         private SonarUrl[] GetSonarUrls() => this._urlArray ??= this._urls.ToArray();

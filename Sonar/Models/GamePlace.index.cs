@@ -12,7 +12,7 @@ namespace Sonar.Models
 {
     public partial class GamePlace : ITrackerIndexable
     {
-        private static readonly NonBlocking.ConcurrentDictionary<string, WeakReference<IEnumerable<string>>> s_indexKeysCache = new(comparer: FarmHashStringComparer.Instance);
+        private static readonly NonBlocking.NonBlockingDictionary<string, WeakReference<IEnumerable<string>>> s_indexKeysCache = new(comparer: FarmHashStringComparer.Instance);
         private IEnumerable<string>? _indexKeys;
 
         /// <summary>

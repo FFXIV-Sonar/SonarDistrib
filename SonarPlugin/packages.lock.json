@@ -54,6 +54,14 @@
           "NAudio.Core": "2.1.0"
         }
       },
+      "AG.NonBlocking": {
+        "type": "Transitive",
+        "resolved": "2.1.1",
+        "contentHash": "YQFUqdQLS2JRlWMFJL2Ejt2dKs3JgUSrYBrCailSdZjO0SXmyLLyDHIskq2p0oVjv9DqVbOa9DgauFvHAA9DIA==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
+      },
       "DnsClient": {
         "type": "Transitive",
         "resolved": "1.7.0",
@@ -133,21 +141,15 @@
           "System.Management": "[1.0.0, )"
         }
       },
-      "nonblocking": {
-        "type": "Project",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "[6.0.0, )"
-        }
-      },
       "sonar": {
         "type": "Project",
         "dependencies": {
+          "AG.NonBlocking": "[2.1.1, )",
           "Collections.Pooled": "[2.0.0-preview, )",
           "DeviceId.Windows.Wmi": "[6.2.0, )",
           "DnsClient": "[1.7.0, )",
           "DryIoc.MefAttributedModel.dll": "[7.0.0, )",
           "DryIoc.dll": "[5.3.4, )",
-          "NonBlocking": "[2.1.1, )",
           "SonarUtils": "[1.0.0, )"
         }
       },

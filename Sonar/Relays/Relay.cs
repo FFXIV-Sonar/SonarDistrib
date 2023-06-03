@@ -166,5 +166,10 @@ namespace Sonar.Relays
         [Key(5)]
         public ReleaseMode Release { get; set; } = ReleaseMode.Normal;
         #endregion
+
+        public override int GetHashCode()
+        {
+            return FarmHashStringComparer.Instance.GetHashCode(this.RelayKey);
+        }
     }
 }

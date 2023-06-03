@@ -11,3 +11,5 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: InternalsVisibleTo("SonarServer")]
 [assembly: InternalsVisibleTo("SonarResourceGen")]
 [assembly: InternalsVisibleTo("SonarTesting")]
+[assembly: InternalsVisibleTo("SonarTests")]
+[assembly: InternalsVisibleTo("SonarBenchmarks")]

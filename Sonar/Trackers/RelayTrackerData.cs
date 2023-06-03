@@ -7,6 +7,7 @@ using Sonar.Relays;
 using Sonar.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -17,8 +18,10 @@ namespace Sonar.Trackers
 {
     public sealed partial class RelayTrackerData<T> where T : Relay
     {
-        internal readonly NonBlocking.ConcurrentDictionary<string, RelayState<T>> _states = new(comparer: FarmHashStringComparer.Instance);
-        private readonly NonBlocking.ConcurrentDictionary<string, NonBlocking.ConcurrentHashSet<RelayState<T>>> _index = new(comparer: FarmHashStringComparer.Instance);
+        internal readonly NonBlocking.NonBlockingDictionary<string, RelayState<T>> _states = new(comparer: FarmHashStringComparer.Instance);
+        private readonly NonBlocking.NonBlockingDictionary<string, NonBlocking.NonBlockingHashSet<RelayState<T>>> _index = new(comparer: FarmHashStringComparer.Instance);
+
+        private IReadOnlyDictionary<string, int> _indexCapacities = new Dictionary<string, int>();
 
         public IReadOnlyDictionary<string, RelayState<T>> States => this._states;
         public IReadOnlyDictionary<string, IReadOnlyCollection<RelayState<T>>> Index { get; }
@@ -82,21 +85,23 @@ namespace Sonar.Trackers
         {
             this._states.Clear();
             this._index.Clear();
+            this.Cleared?.SafeInvoke(this);
         }
 
-        internal event Action<RelayTrackerData<T>, RelayState<T>>? Added;
-        internal event Action<RelayTrackerData<T>, RelayState<T>>? Removed;
+        public event Action<RelayTrackerData<T>, RelayState<T>>? Added;
+        public event Action<RelayTrackerData<T>, RelayState<T>>? Removed;
+        public event Action<RelayTrackerData<T>>? Cleared;
 
         [SuppressMessage("Major Code Smell", "S1121", Justification = "Used immediately")]
         private void AddIndexEntries(RelayState<T> state)
         {
             foreach (var indexKey in state.IndexKeys)
             {
-                ConcurrentHashSet<RelayState<T>> entries;
+                NonBlockingHashSet<RelayState<T>> entries;
                 do
                 {
                     if (this._index.TryGetValue(indexKey, out entries)) break;
-                    if (this._index.TryAdd(indexKey, entries = new())) break;
+                    if (this._index.TryAdd(indexKey, entries = new(1, this._indexCapacities.GetValueOrDefault(indexKey)))) break;
                 } while (true);
                 entries.Add(state);
             }
@@ -109,6 +114,11 @@ namespace Sonar.Trackers
                 if (!this._index.TryGetValue(indexKey, out var entries)) continue;
                 entries.Remove(state);
             }
+        }
+
+        internal void SetCapacitiesCache(IReadOnlyDictionary<string, int> capacities)
+        {
+            this._indexCapacities = capacities;
         }
     }
 }

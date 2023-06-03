@@ -10,7 +10,7 @@ namespace Sonar
 {
     public sealed partial class SonarClient
     {
-        private readonly NonBlocking.ConcurrentDictionary<int, Action<SupportResponse>?> _supportCallbacks = new();
+        private readonly NonBlocking.NonBlockingDictionary<int, Action<SupportResponse>?> _supportCallbacks = new();
         
         /// <summary>Send a support message to Sonar team</summary>
         /// <remarks>Validity checks are performed by calling <see cref="SupportMessage.ThrowIfInvalid"/></remarks>
