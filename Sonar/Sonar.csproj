@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <AssemblyVersion>0.5.2.3</AssemblyVersion>
+    <TargetFrameworks>net7.0;net7.0-windows</TargetFrameworks>
+    <AssemblyVersion>0.5.2.4</AssemblyVersion>
     <RootNamespace>Sonar</RootNamespace>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <LangVersion>11</LangVersion>
@@ -56,6 +56,7 @@
     <PackageReference Include="DeviceId.Windows" Version="6.2.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="DeviceId.Windows.Wmi" Version="6.2.1" />
     <PackageReference Include="DnsClient" Version="1.7.0" />
     <PackageReference Include="DryIoc.dll" Version="5.3.4" />
     <PackageReference Include="DryIoc.MefAttributedModel.dll" Version="7.0.0" />
@@ -86,7 +87,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Collections.Pooled\Collections.Pooled.csproj" />
-    <ProjectReference Include="..\DeviceId.Windows.Wmi\DeviceId.Windows.Wmi.csproj" />
     <ProjectReference Include="..\SonarUtils\SonarUtils.csproj" />
   </ItemGroup>
 

@@ -62,6 +62,16 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
       },
+      "DeviceId.Windows.Wmi": {
+        "type": "Transitive",
+        "resolved": "6.2.1",
+        "contentHash": "7/HE1FvrvZdYitwq7/43M+qE93s4SRNuVf4ail+LPfzgzR6N97fcaTXhJUV4qLKGCLkTpQVl1Xo5I/6nJdYdew==",
+        "dependencies": {
+          "DeviceId": "6.3.0",
+          "DeviceId.Windows": "6.2.0",
+          "System.Management": "7.0.0"
+        }
+      },
       "DnsClient": {
         "type": "Transitive",
         "resolved": "1.7.0",
@@ -111,6 +121,14 @@
         "resolved": "4.7.0",
         "contentHash": "TKOHGbuqp7++lEna7+p19kTR8rKeAeoo2Faab2n2q7spV2CWPevmUkghMG6POKfSdeQhtAJoNZ33FT+01CNe3g=="
       },
+      "System.Management": {
+        "type": "Transitive",
+        "resolved": "7.0.0",
+        "contentHash": "A4jed4QUviDOm7fJNKAJObEAEkEUXmkGL/w0iyCYTzrl1rezTj8LGFHfsVst4Vb9JwFcTpboiDrvdST48avBpw==",
+        "dependencies": {
+          "System.CodeDom": "7.0.0"
+        }
+      },
       "System.Runtime.CompilerServices.Unsafe": {
         "type": "Transitive",
         "resolved": "6.0.0",
@@ -133,20 +151,12 @@
       "collections.pooled": {
         "type": "Project"
       },
-      "deviceid.windows.wmi": {
-        "type": "Project",
-        "dependencies": {
-          "DeviceId": "[6.3.0, )",
-          "DeviceId.Windows": "[6.2.0, )",
-          "System.Management": "[1.0.0, )"
-        }
-      },
       "sonar": {
         "type": "Project",
         "dependencies": {
           "AG.NonBlocking": "[2.1.1, )",
           "Collections.Pooled": "[2.0.0-preview, )",
-          "DeviceId.Windows.Wmi": "[6.2.0, )",
+          "DeviceId.Windows.Wmi": "[6.2.1, )",
           "DnsClient": "[1.7.0, )",
           "DryIoc.MefAttributedModel.dll": "[7.0.0, )",
           "DryIoc.dll": "[5.3.4, )",
@@ -155,13 +165,6 @@
       },
       "sonarutils": {
         "type": "Project"
-      },
-      "system.management": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.Win32.Registry": "[5.0.0, )",
-          "System.CodeDom": "[7.0.0, )"
-        }
       }
     }
   }
