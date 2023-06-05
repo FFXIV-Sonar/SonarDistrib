@@ -1,6 +1,7 @@
-﻿using Collections.Pooled;
+﻿using SonarUtils;
 using Sonar.Messages;
 using System;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Runtime.ExceptionServices;
 using System.Text;
@@ -60,7 +61,7 @@ namespace Sonar.Sockets
                 var token = this._cts.Token;
                 try
                 {
-                    using var messageBytes = new PooledList<byte>(this._receiveBufferSize, ClearMode.Never);
+                    var messageBytes = new List<byte>(this._receiveBufferSize);
                     var buffer = new byte[this._receiveBufferSize];
                     this.DispatchConnectedEvent();
                     while (true)

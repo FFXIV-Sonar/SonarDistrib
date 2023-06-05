@@ -45,7 +45,7 @@ namespace Sonar.Utilities
                     .OnMac(mac => mac
                         .AddPlatformSerialNumber())
                     .UseFormatter(new HashDeviceIdFormatter(SHA256.Create, new Base64UrlByteArrayEncoder()))
-                    .ToString()[..16].ToLowerInvariant(); // This is a big oops :/, can't remove ToLowerInvariant() now
+                    .ToString()[..16].ToLowerInvariant(); // This is a big oops :/, can't remove ToLowerInvariant() now // TODO
             }
             catch (Exception ex)
             {
@@ -56,6 +56,5 @@ namespace Sonar.Utilities
             hwId.Identifier = $"h2_{identifier}";
             return hwId;
         }
-
     }
 }

@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Collections.Pooled;
 using Sonar.Numerics;
+using SonarUtils;
 
 namespace Sonar
 {
@@ -48,9 +48,9 @@ namespace Sonar
         {
             using BrotliEncoder encoder = new(quality, window);
             if (bufferSize == 0) bufferSize = BrotliEncoder.GetMaxCompressedLength(src.Length.Clamp(MinimalBufferSize, MaximalBufferSize));
-            using PooledList<byte> ret = new();
+            var ret = new List<byte>();
 
-            int srcPos = 0;
+            var srcPos = 0;
             Span<byte> dst = bufferSize > StackThreshold ? new byte[bufferSize] : stackalloc byte[bufferSize];
             while (true)
             {
@@ -99,9 +99,9 @@ namespace Sonar
         {
             using BrotliDecoder decoder = new();
             if (bufferSize == 0) bufferSize = BrotliEncoder.GetMaxCompressedLength((src.Length * DecompressBufferSizeMultiplier).Clamp(MinimalBufferSize, MaximalBufferSize));
-            using PooledList<byte> ret = new();
+            var ret = new List<byte>();
 
-            int srcPos = 0;
+            var srcPos = 0;
             Span<byte> dst = bufferSize > StackThreshold ? new byte[bufferSize] : stackalloc byte[bufferSize];
             while (true)
             {

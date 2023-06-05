@@ -24,5 +24,21 @@ namespace SonarUtils
 
         /// <summary>Converts an enumerable to an <see cref="InternalList{T}"/></summary>
         public static InternalList<T> ToInternalList<T>(this IEnumerable<T> source) => new(source);
+
+        public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
+        {
+            foreach (var item in items)
+            {
+                collection.Add(item);
+            }
+        }
+
+        public static void AddRange<T>(this ICollection<T> collection, Span<T> items)
+        {
+            foreach (var item in items)
+            {
+                collection.Add(item);
+            }
+        }
     }
 }
