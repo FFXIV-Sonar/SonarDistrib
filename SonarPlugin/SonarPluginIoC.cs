@@ -38,6 +38,7 @@ namespace SonarPlugin
         public DalamudPluginInterface PluginInterface { get; set; }
         [EditorBrowsable(EditorBrowsableState.Never)]
         public Container Container => this._container; // Only stub should access this
+        private SonarPluginStub Stub { get; set; }
         [PluginService] private Framework Framework { get; set; } = default!;
         [PluginService] private Condition Condition { get; set; } = default!;
         [PluginService] private ClientState ClientState { get; set; } = default!;
@@ -49,8 +50,9 @@ namespace SonarPlugin
         [PluginService] private SigScanner SigScanner { get; set; } = default!;
         [PluginService] private DataManager Data { get; set; } = default!;
 
-        public SonarPluginIoC(DalamudPluginInterface pluginInterface)
+        public SonarPluginIoC(SonarPluginStub stub, DalamudPluginInterface pluginInterface)
         {
+            this.Stub = stub;
             this.PluginInterface = pluginInterface;
             pluginInterface.Inject(this);
             this.ConfigureServices();
@@ -95,6 +97,7 @@ namespace SonarPlugin
 
             // SonarPlugin services
             this._container.RegisterInstance(this, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterInstance(this.Stub, setup: Setup.With(preventDisposal: true));
             this._container.RegisterInstance(this._container, setup: Setup.With(preventDisposal: true));
 
             // Services
@@ -136,7 +139,7 @@ namespace SonarPlugin
             this._container.Register(Made.Of(r => ServiceInfo.Of<DataManager>(), d => d.GameData), Reuse.Singleton, Setup.With(preventDisposal: true));
 
 #if DEBUG
-            PluginLog.LogInformation("Registered services");
+            PluginLog.LogInformation("Registered services:");
             foreach (var service in this._container.GetServiceRegistrations())
             {
                 PluginLog.LogInformation($" - {service}");

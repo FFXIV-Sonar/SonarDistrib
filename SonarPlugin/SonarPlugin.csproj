@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
     <LangVersion>9.0</LangVersion>
-    <AssemblyVersion>0.5.2.5</AssemblyVersion>
+    <AssemblyVersion>0.5.2.6</AssemblyVersion>
     <OutputType>Library</OutputType>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -33,6 +33,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Flavor.data" />
     <None Remove="Resources\Icons\redflag.png" />
     <None Remove="Resources\Secret.data" />
     <None Remove="Resources\Sounds\FFXIV_Enter_Chat.mp3" />
@@ -47,6 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
+  <EmbeddedResource Include="Resources\Flavor.data" />
   <EmbeddedResource Include="Resources\Icons\redflag.png">
     <CopyToOutputDirectory>Never</CopyToOutputDirectory>
   </EmbeddedResource>
@@ -172,7 +174,7 @@
 
   <Target Name="Hash" AfterTargets="Build">
     <GetFileHash Algorithm="SHA256" Files="$(OutputPath)\SonarPlugin.dll" HashEncoding="base64">
-      <Output TaskParameter="Hash" ItemName="PluginHash"/>
+      <Output TaskParameter="Hash" ItemName="PluginHash" />
     </GetFileHash>
     <Warning Text="Plugin Hash: @(PluginHash)" />
   </Target>

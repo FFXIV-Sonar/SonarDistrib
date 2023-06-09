@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarUtils", "SonarUtils\So
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarTests", "SonarTests\SonarTests.csproj", "{99ACFDF7-D033-4DBE-ABFC-CC958A1FC546}"
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "FlavorChanger", "FlavorChanger\FlavorChanger.njsproj", "{BD7B4CA2-1818-40E8-9A23-579CF12781DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,8 @@ Global
 		{99ACFDF7-D033-4DBE-ABFC-CC958A1FC546}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99ACFDF7-D033-4DBE-ABFC-CC958A1FC546}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99ACFDF7-D033-4DBE-ABFC-CC958A1FC546}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD7B4CA2-1818-40E8-9A23-579CF12781DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD7B4CA2-1818-40E8-9A23-579CF12781DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

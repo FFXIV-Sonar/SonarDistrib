@@ -44,6 +44,7 @@ namespace SonarPlugin.GUI
         private bool fatesNeedSorting = true;
 
         private SonarPlugin Plugin { get; }
+        private SonarPluginStub Stub { get; }
         private DalamudPluginInterface PluginInterface { get; }
         private SonarClient Client { get; }
         private DataManager Data { get; }
@@ -69,9 +70,10 @@ namespace SonarPlugin.GUI
         private readonly IEnumerable<uint> _combinedFateValues;
         private readonly int fateTableColumnCount = Enum.GetNames(typeof(FateSelectionColumns)).Length;
 
-        public SonarConfigWindow(SonarPlugin plugin, DalamudPluginInterface pluginInterface, SonarClient client, DataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs) : base("Sonar Configuration")
+        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, DalamudPluginInterface pluginInterface, SonarClient client, DataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs) : base("Sonar Configuration")
         {
             this.Plugin = plugin;
+            this.Stub = stub;
             this.PluginInterface = pluginInterface;
             this.Client = client;
             this.Data = data;
@@ -925,7 +927,7 @@ namespace SonarPlugin.GUI
         {
             ImGui.BeginChild("##aboutTabScrollRegion");
             {
-                ImGui.Text($"{Assembly.GetExecutingAssembly().GetName().Name} v{Assembly.GetExecutingAssembly().GetName().Version}");
+                ImGui.Text($"{this.Stub.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
                 ImGui.Text($"{Loc.Localize("AboutSonarBroughtBy", "Brought to you by the Sonar Team")}");
 
                 if (ImGui.Button("Sonar Support Discord##SonarDiscord"))
@@ -981,7 +983,7 @@ namespace SonarPlugin.GUI
                 ImGui.Text("Version Information");
                 ImGui.BeginChild("##debugVersionInfo", new Vector2(0, 80 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
-                    ImGui.Text($"{Assembly.GetExecutingAssembly().GetName().Name} {Assembly.GetExecutingAssembly().GetName().Version}");
+                    ImGui.Text($"{this.Stub.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
                     ImGui.Text($"Dalamud {VersionUtils.GetDalamudVersion()} (Git: {VersionUtils.GetDalamudBuild()})");
                     ImGui.Text($"FFXIV {VersionUtils.GetGameVersion(this.Data)}");
                 }

@@ -6,9 +6,11 @@ using Dalamud.Plugin;
 using DryIoc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,10 +18,18 @@ namespace SonarPlugin
 {
     public sealed class SonarPluginStub : IDalamudPlugin
     {
-        public string Name => "Sonar";
+        /// <summary>Sonar name</summary>
+        public string Name { get; } = "Sonar";
+
+        /// <summary>Sonar name</summary>
+        public string PluginName { get; } = "SonarPlugin";
+
+        /// <summary>Sonar flavor</summary>
+        public string? Flavor { get; } = null;
+
 
         private SonarPluginIoC? Plugin;
-        public DalamudPluginInterface PluginInterface { get; }
+        private DalamudPluginInterface PluginInterface { get; }
 
         [PluginService] public CommandManager Commands { get; private set; } = default!;
         [PluginService] public ChatGui Chat { get; private set; } = default!;
@@ -35,6 +45,22 @@ namespace SonarPlugin
             this.PluginInterface = pluginInterface;
             this.PluginInterface.Inject(this);
 
+            try
+            {
+                var flavor = this.DetermineFlavor();
+                if (!string.IsNullOrWhiteSpace(flavor))
+                {
+                    PluginLog.Information($"Detected Flavor: {flavor}");
+                    this.Name = $"{this.Name}-{flavor}";
+                    this.PluginName = $"{this.PluginName}-{flavor}";
+                    this.Flavor = flavor;
+                }
+            }
+            catch (Exception ex)
+            {
+                PluginLog.Error(ex, "Exception occured while getting flavor");
+            }
+
             this.SonarOnCommand();
 
             this.Commands.AddHandler("/sonaron", new CommandInfo(this.SonarOnCommand) { HelpMessage = "Turn on / enable Sonar", ShowInHelp = true });
@@ -44,6 +70,86 @@ namespace SonarPlugin
             this.Commands.AddHandler("/sonardisable", new CommandInfo(this.SonarOffCommand) { HelpMessage = "Turn off / disable Sonar", ShowInHelp = true });
 
             this.Commands.AddHandler("/sonarreload", new CommandInfo(this.SonarReloadCommand) { HelpMessage = "Reload Sonar", ShowInHelp = true });
+        }
+
+        private string? DetermineFlavor()
+        {
+            PluginLog.Debug("Determining Flavor");
+
+            // Attempt #1: Flavor resource
+            var flavor = GetFlavorResource();
+            if (flavor is not null) return flavor;
+
+            // Attempt #2: Testing
+            if (this.PluginInterface.IsDev) return "dev";
+            else if (this.PluginInterface.IsTesting) return "testing";
+
+            // Attempt #3 and #4: Internal name and Directory name
+            flavor = DetermineFlavorCore(this.PluginInterface.InternalName) ?? DetermineFlavorCore(this.PluginInterface.AssemblyLocation.Directory?.Name);
+            if (flavor is not null) return flavor;
+
+            // Attempt #5: Give up
+            PluginLog.Warning("Unable to determine flavor");
+            return null;
+        }
+
+        private static string? DetermineFlavorCore(string? input)
+        {
+            if (input is not null)
+            {
+                // Attempt #1: SonarPlugin-something
+                var match = new Regex(@"^SonarPlugin-(?<flavor>.*)$", RegexOptions.CultureInvariant).Match(input);
+                if (match.Success)
+                {
+                    var flavor = match.Groups["flavor"].Value;
+                    if (string.IsNullOrEmpty(flavor)) return "negative";
+                    return flavor;
+                }
+
+                // Attempt #2: SonarPluginsomething
+                match = new Regex(@"^SonarPlugin(?<flavor>.*)$", RegexOptions.CultureInvariant).Match(input);
+                if (match.Success)
+                {
+                    var flavor = match.Groups["flavor"].Value;
+                    if (string.IsNullOrEmpty(flavor)) return null; // "SonarPlugin" means no flavor
+                    return flavor;
+                }
+
+                // Attempt #3: bin (likely to be a dev build)
+                match = new Regex(@"^bin$", RegexOptions.CultureInvariant).Match(input);
+                if (match.Success) return "dev";
+            }
+
+            // Attempt #4: input is the flavor
+            if (!string.IsNullOrWhiteSpace(input)) return input;
+            
+            // Attempt #5: Give up
+            return null;
+        }
+
+        private static string? GetFlavorResource()
+        {
+            // Open the Flavor.data embedded resource stream
+            var assembly = typeof(SonarPluginStub).Assembly;
+            var stream = assembly.GetManifestResourceStream("SonarPlugin.Resources.Flavor.data");
+            if (stream is null)
+            {
+                PluginLog.Warning("Flavor resource not found!");
+                return null;
+            }
+
+            // Read the stream into a bytes array
+            var bytes = new byte[stream.Length];
+            stream.Read(bytes, 0, bytes.Length);
+
+            // Decode the flavor string
+            var flavor = Encoding.UTF8.GetString(bytes);
+            if (string.IsNullOrWhiteSpace(flavor))
+            {
+                PluginLog.Debug("Resource flavor is empty");
+                return null;
+            }
+            return flavor;
         }
 
         private void SonarOnCommand(string? _ = null, string? __ = null)
@@ -80,7 +186,7 @@ namespace SonarPlugin
             {
                 PluginLog.Debug("Starting Sonar");
                 this.ReinitDelay.Wait();
-                this.Plugin = new(this.PluginInterface);
+                this.Plugin = new(this, this.PluginInterface);
                 this.Plugin.StartServices();
             }
             catch (Exception ex)

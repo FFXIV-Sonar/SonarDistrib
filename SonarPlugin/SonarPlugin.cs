@@ -162,7 +162,7 @@ namespace SonarPlugin
         {
             try
             {
-                if (updateServer) this.Client.Configuration = this.Client.Configuration;
+                if (updateServer) this.Client.Configuration = this.Client.Configuration; // TODO: Better interface than assigning (using the setter)...
                 this.Configuration.SonarConfig = this.Client.Configuration;
                 this.PluginInterface.SavePluginConfig(this.Configuration);
             }
