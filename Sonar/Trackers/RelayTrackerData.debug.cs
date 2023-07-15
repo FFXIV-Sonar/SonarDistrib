@@ -97,9 +97,7 @@ namespace Sonar.Trackers
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void DebugRebuildIndex(bool parallel = false)
         {
-            var counts = this._index.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Capacity);
             this._index.Clear(this._index.Capacity);
-            this.SetCapacitiesCache(counts);
             Parallel.ForEach(this._states.Values, GetParallelOptions(parallel), this.AddIndexEntries);
         }
 

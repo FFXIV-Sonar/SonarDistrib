@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
-    <LangVersion>9.0</LangVersion>
-    <AssemblyVersion>0.5.2.6</AssemblyVersion>
+    <LangVersion>11</LangVersion>
+    <AssemblyVersion>0.5.2.8</AssemblyVersion>
     <OutputType>Library</OutputType>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -86,8 +86,8 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DalamudPackager" Version="2.1.11" />
-    <PackageReference Include="DryIoc.dll" Version="5.3.4" />
-    <PackageReference Include="Fody" Version="6.6.4">
+    <PackageReference Include="DryIoc.dll" Version="5.4.1" />
+    <PackageReference Include="Fody" Version="6.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

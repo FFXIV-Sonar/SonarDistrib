@@ -234,7 +234,7 @@ namespace Sonar.Messages
                     return;
                 }
 
-                var messageFormatter = options.Resolver.GetFormatter<ISonarMessage>();
+                var messageFormatter = options.Resolver.GetFormatter<ISonarMessage>()!;
                 writer.WriteArrayHeader(value.Count);
                 foreach (var item in value)
                 {
@@ -247,8 +247,8 @@ namespace Sonar.Messages
                 if (reader.TryReadNil()) return null!;
                 options.Security.DepthStep(ref reader);
 
-                var messageFormatter = options.Resolver.GetFormatter<ISonarMessage>();
-                int count = reader.ReadArrayHeader();
+                var messageFormatter = options.Resolver.GetFormatter<ISonarMessage>()!;
+                var count = reader.ReadArrayHeader();
                 var value = new MessageList();
                 if (count > value.Capacity) value.Capacity = count;
                 foreach (var _ in Enumerable.Range(0, count))

@@ -70,16 +70,6 @@ namespace Sonar.Trackers
                 case RelayConfirmationSlim<T> confirmation:
                     this._confirmationRequests.Add(confirmation.RelayKey);
                     break;
-                case RelayDataIndexCapacities indexCounts:
-                    {
-                        var counts =
-                            typeof(T) == typeof(HuntRelay) ? indexCounts.Hunts :
-                            typeof(T) == typeof(FateRelay) ? indexCounts.Fates :
-                            null;
-                        if (counts is null) break;
-                        this.Data.SetCapacitiesCache(counts);
-                    }
-                    break;
             }
         }
 

@@ -28,16 +28,15 @@ namespace SonarPlugin
         public string? Flavor { get; } = null;
 
 
+        private readonly object _pluginLock = new object();
         private SonarPluginIoC? Plugin;
         private DalamudPluginInterface PluginInterface { get; }
 
         [PluginService] public CommandManager Commands { get; private set; } = default!;
         [PluginService] public ChatGui Chat { get; private set; } = default!;
 
-        private Task ReinitDelay = Task.CompletedTask;
-
-        private readonly object SonarTaskLock = new();
-        private Task? SonarTask;
+        private readonly object _taskLock = new();
+        private Task _sonarTask = Task.CompletedTask;
 
         public SonarPluginStub(DalamudPluginInterface pluginInterface)
         {
@@ -61,15 +60,13 @@ namespace SonarPlugin
                 PluginLog.Error(ex, "Exception occured while getting flavor");
             }
 
-            this.SonarOnCommand();
-
             this.Commands.AddHandler("/sonaron", new CommandInfo(this.SonarOnCommand) { HelpMessage = "Turn on / enable Sonar", ShowInHelp = true });
             this.Commands.AddHandler("/sonarenable", new CommandInfo(this.SonarOnCommand) { HelpMessage = "Turn on / enable Sonar", ShowInHelp = true });
-
             this.Commands.AddHandler("/sonaroff", new CommandInfo(this.SonarOffCommand) { HelpMessage = "Turn off / disable Sonar", ShowInHelp = true });
             this.Commands.AddHandler("/sonardisable", new CommandInfo(this.SonarOffCommand) { HelpMessage = "Turn off / disable Sonar", ShowInHelp = true });
-
             this.Commands.AddHandler("/sonarreload", new CommandInfo(this.SonarReloadCommand) { HelpMessage = "Reload Sonar", ShowInHelp = true });
+
+            this.InitializeSonar();
         }
 
         private string? DetermineFlavor()
@@ -154,74 +151,78 @@ namespace SonarPlugin
 
         private void SonarOnCommand(string? _ = null, string? __ = null)
         {
-            lock (this.SonarTaskLock)
+            lock (this._taskLock)
             {
-                if (!this.SonarTask?.IsCompleted ?? false) return;
-                this.SonarTask = Task.Factory.StartNew(this.InitializeSonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
+                if (!this._sonarTask.IsCompleted) return;
+                this._sonarTask = Task.Factory.StartNew(this.InitializeSonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
             }
         }
 
         private void SonarOffCommand(string? _ = null, string? __ = null)
         {
-            lock (this.SonarTaskLock)
+            lock (this._taskLock)
             {
-                if (!this.SonarTask?.IsCompleted ?? false) return;
-                this.SonarTask = Task.Factory.StartNew(this.DestroySonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
+                if (!this._sonarTask.IsCompleted) return;
+                this._sonarTask = Task.Factory.StartNew(this.DestroySonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
             }
         }
 
         private void SonarReloadCommand(string? _ = null, string? __ = null)
         {
-            lock (this.SonarTaskLock)
+            lock (this._taskLock)
             {
-                if (!this.SonarTask?.IsCompleted ?? false) return;
-                this.SonarTask = Task.Factory.StartNew(this.ReloadSonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
+                if (!this._sonarTask.IsCompleted) return;
+                this._sonarTask = Task.Factory.StartNew(this.ReloadSonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
             }
         }
 
         private void InitializeSonar()
         {
-            if (this.Plugin is not null) return;
-            try
+            lock (this._pluginLock)
             {
-                PluginLog.Debug("Starting Sonar");
-                this.ReinitDelay.Wait();
-                this.Plugin = new(this, this.PluginInterface);
-                this.Plugin.StartServices();
-            }
-            catch (Exception ex)
-            {
-                PluginLog.Error(ex, string.Empty);
-                this.ShowError(ex, "initialized", true);
-
-                if (ex is ContainerException cex && this.Plugin is not null)
+                if (this.Plugin is not null) return;
+                try
                 {
-                    PluginLog.Error(cex.TryGetDetails(this.Plugin.Container));
+                    PluginLog.Debug("Starting Sonar");
+                    this.Plugin = new(this, this.PluginInterface);
+                    this.Plugin.StartServices();
                 }
-                /* Swallow Exception */
+                catch (Exception ex)
+                {
+                    PluginLog.Error(ex, string.Empty);
+                    this.ShowError(ex, "initialized", true);
+
+                    if (ex is ContainerException cex && this.Plugin is not null)
+                    {
+                        PluginLog.Error(cex.TryGetDetails(this.Plugin.Container));
+                    }
+                    /* Swallow Exception */
+                }
             }
         }
 
         private void DestroySonar()
         {
-            if (this.Plugin is null) return;
-            try
+            lock (this._pluginLock)
             {
-                PluginLog.Debug("Stopping Sonar");
-                this.Plugin?.StopServices();
-                this.Plugin?.Dispose();
-                this.Plugin = null;
-                this.ReinitDelay = Task.Delay(5000);
-            }
-            catch (Exception ex)
-            {
-                this.ShowError(ex, "disposed", false);
-                PluginLog.Error(ex, string.Empty);
-                if (ex is ContainerException cex)
+                if (this.Plugin is null) return;
+                try
                 {
-                    PluginLog.Error(cex.TryGetDetails(this.Plugin!.Container));
+                    PluginLog.Debug("Stopping Sonar");
+                    this.Plugin?.StopServices();
+                    this.Plugin?.Dispose();
+                    this.Plugin = null;
                 }
-                /* Swallow Exception */
+                catch (Exception ex)
+                {
+                    this.ShowError(ex, "disposed", false);
+                    PluginLog.Error(ex, string.Empty);
+                    if (ex is ContainerException cex)
+                    {
+                        PluginLog.Error(cex.TryGetDetails(this.Plugin!.Container));
+                    }
+                    /* Swallow Exception */
+                }
             }
         }
 
@@ -267,8 +268,6 @@ namespace SonarPlugin
 
         public void Dispose()
         {
-            this.SonarOffCommand();
-
             this.Commands.RemoveHandler("/sonaron");
             this.Commands.RemoveHandler("/sonarenable");
 
@@ -276,6 +275,9 @@ namespace SonarPlugin
             this.Commands.RemoveHandler("/sonardisable");
 
             this.Commands.RemoveHandler("/sonarreload");
+
+            lock (this._taskLock) this._sonarTask.Wait();
+            this.DestroySonar();
 
             GC.SuppressFinalize(this);
         }

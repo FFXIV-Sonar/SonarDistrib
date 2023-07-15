@@ -66,35 +66,33 @@ namespace Sonar
             }
         }
 
-        private PlayerInfo playerInfo = new();
-        /// <summary>
-        /// Logged in player information (Name and Home World). Remember to set this on every modification even if the instance modified is the same.
-        /// </summary>
-        public PlayerInfo PlayerInfo
+        private PlayerInfo? _playerInfo;
+        /// <summary>Current <see cref="PlayerInfo"/></summary>
+        public PlayerInfo? PlayerInfo => this._playerInfo;
+
+        /// <summary>Updates <see cref="PlayerInfo"/></summary>
+        /// <returns>Update successful</returns>
+        public bool UpdatePlayerInfo(PlayerInfo info)
         {
-            get => this.playerInfo;
-            set
+            if (info.Equals(this._playerInfo)) return false;
+            lock (this._metaLock)
             {
-                lock (this._metaLock)
-                {
-                    this.playerInfo = value;
-                    this.Connection.SendIfConnected(value);
-                }
+                this._playerInfo = info;
+                this.Connection.SendIfConnected(info);
             }
+            return true;
         }
 
-        private PlayerPlace playerPlace = new();
-        /// <summary>
-        /// Player location (World, Zone, Instance). Remember to set this on every modification even if the instance modified is the same.
-        /// </summary>
+        private PlayerPlace _playerPlace = new();
+        /// <summary> Player location</summary>
         public PlayerPlace PlayerPlace
         {
-            get => this.playerPlace;
+            get => this._playerPlace;
             set
             {
                 lock (this._metaLock)
                 {
-                    this.playerPlace = value;
+                    this._playerPlace = value;
                     this.Connection.SendIfConnected(value);
                 }
             }
@@ -221,9 +219,36 @@ namespace Sonar
                     UnixTimeOffset = (heartbeat.UnixTime - UnixNow) - this.Ping / 2;
                     if (this.LogVerboseEnabled)
                     {
-                        //string syncMessage = UnixTimeOffset == 0 ? "Perfectly synchronized with the server" :
-                        //    $"{Math.Abs(UnixTimeOffset)}ms {(UnixTimeOffset > 0 ? "behind" : "ahead")}";
-                        //this.LogVerbose($"Time Synchronization: {syncMessage}");
+                        var syncMessage = UnixTimeOffset == 0 ? "perfectly synchronized with the server" :
+                            $"{Math.Abs(UnixTimeOffset)}ms {(UnixTimeOffset > 0 ? "behind" : "ahead")}";
+
+                        var placeCounts = heartbeat.ClientPlaceCounts;
+                        var placeWorldIndex = this.PlayerPlace?.GetIndexKey(Indexes.IndexType.World) ?? string.Empty;
+                        var placeDatacenterIndex = this.PlayerPlace?.GetIndexKey(Indexes.IndexType.Datacenter) ?? string.Empty;
+                        var placeRegionIndex = this.PlayerPlace?.GetIndexKey(Indexes.IndexType.Region) ?? string.Empty;
+                        var placeAudienceIndex = this.PlayerPlace?.GetIndexKey(Indexes.IndexType.Audience) ?? string.Empty;
+                        var placeCountsText = string.Join(" / ",
+                            $"{placeCounts.GetValueOrDefault(placeWorldIndex)}",
+                            $"{placeCounts.GetValueOrDefault(placeDatacenterIndex)}",
+                            $"{placeCounts.GetValueOrDefault(placeRegionIndex)}",
+                            $"{placeCounts.GetValueOrDefault(placeAudienceIndex)}",
+                            $"{placeCounts.GetValueOrDefault("all")}"
+                        );
+
+                        var homeCounts = heartbeat.ClientHomeCounts; // TODO: Implement indexes in PlayerInfo
+                        var homeWorldIndex = string.Empty;// this.PlayerInfo?.GetIndexKey(Indexes.IndexType.World) ?? string.Empty;
+                        var homeDatacenterIndex = string.Empty;// this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Datacenter) ?? string.Empty;
+                        var homeRegionIndex = string.Empty;// this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Region) ?? string.Empty;
+                        var homeAudienceIndex = string.Empty;// this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Audience) ?? string.Empty;
+                        var homeCountsText = string.Join(" / ",
+                            $"{homeCounts.GetValueOrDefault(homeWorldIndex)}",
+                            $"{homeCounts.GetValueOrDefault(homeDatacenterIndex)}",
+                            $"{homeCounts.GetValueOrDefault(homeRegionIndex)}",
+                            $"{homeCounts.GetValueOrDefault(homeAudienceIndex)}",
+                            $"{homeCounts.GetValueOrDefault("all")}"
+                        );
+
+                        this.LogVerbose($"Sonar Heartbeat Received (Player Counts: [Place: {placeCountsText} | Home: {homeCountsText}] | Time is {syncMessage})");
                     }
                     break;
 

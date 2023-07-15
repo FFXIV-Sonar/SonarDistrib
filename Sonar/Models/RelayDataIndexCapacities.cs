@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace Sonar.Models
 {
     [MessagePackObject]
+    [Obsolete("No longer used")]
     public sealed class RelayDataIndexCapacities : ISonarMessage
     {
         [Key(0)]

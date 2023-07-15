@@ -243,18 +243,6 @@ namespace Sonar.Trackers
         public DateTime GetLastUntouched() => this.GetLastUntouchedDateTimeOffset().UtcDateTime;
         #endregion
 
-        #region Setters
-        public void SetLastSeen(DateTimeOffset value) => this.LastSeen = value.ToUnixTimeMilliseconds();
-        public void SetLastFound(DateTimeOffset value) => this.LastFound = value.ToUnixTimeMilliseconds();
-        public void SetLastKilled(DateTimeOffset value) => this.LastKilled = value.ToUnixTimeMilliseconds();
-        public void SetLastUntouched(DateTimeOffset value) => this.LastUntouched = value.ToUnixTimeMilliseconds();
-
-        public void SetLastSeen(DateTime value) => this.SetLastSeen(new DateTimeOffset(value));
-        public void SetLastFound(DateTime value) => this.SetLastFound(new DateTimeOffset(value));
-        public void SetLastKilled(DateTime value) => this.SetLastKilled(new DateTimeOffset(value));
-        public void SetLastUntouched(DateTime value) => this.SetLastUntouched(new DateTimeOffset(value));
-        #endregion
-
         #region Alive functions
         public bool IsAlive() => this.Relay.IsAlive();
         public bool IsDead() => this.Relay.IsDead();
@@ -362,10 +350,8 @@ namespace Sonar.Trackers
             return $"{this.Relay} (Found: {this.GetLastFound()} | Seen: {this.GetLastSeen()} | Killed: {this.GetLastKilled()})";
         }
 
-        public override int GetHashCode()
-        {
-            return FarmHashStringComparer.Instance.GetHashCode(this.RelayKey);
-        }
+        public override int GetHashCode() => FarmHashStringComparer.Instance.GetHashCode(this.RelayKey);
+        public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is RelayState state && this.RelayKey.Equals(state.RelayKey));
     }
 
     /// <summary>

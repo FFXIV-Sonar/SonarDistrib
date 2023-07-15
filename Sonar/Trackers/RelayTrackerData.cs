@@ -13,22 +13,26 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using ConcurrentCollections;
 
 namespace Sonar.Trackers
 {
     public sealed partial class RelayTrackerData<T> where T : Relay
     {
         internal readonly NonBlocking.NonBlockingDictionary<string, RelayState<T>> _states = new(comparer: FarmHashStringComparer.Instance);
-        private readonly NonBlocking.NonBlockingDictionary<string, NonBlocking.NonBlockingHashSet<RelayState<T>>> _index = new(comparer: FarmHashStringComparer.Instance);
-
-        private IReadOnlyDictionary<string, int> _indexCapacities = new Dictionary<string, int>();
+        private readonly NonBlocking.NonBlockingDictionary<string, ConcurrentHashSet<RelayState<T>>> _index = new(comparer: FarmHashStringComparer.Instance);
 
         public IReadOnlyDictionary<string, RelayState<T>> States => this._states;
         public IReadOnlyDictionary<string, IReadOnlyCollection<RelayState<T>>> Index { get; }
 
         internal RelayTrackerData()
         {
-            this.Index = TransformDictionary.Create(this._index, entries => (IReadOnlyCollection<RelayState<T>>)entries);
+            this.Index = TransformDictionary.Create(this._index, static entries => (IReadOnlyCollection<RelayState<T>>)entries);
+        }
+
+        internal RelayTrackerData(IEnumerable<RelayState<T>> states) : this()
+        {
+            this.TryAddStates(states);
         }
 
         internal bool TryAddState(RelayState<T> state)
@@ -40,6 +44,11 @@ namespace Sonar.Trackers
                 return true;
             }
             return false;
+        }
+
+        internal void TryAddStates(IEnumerable<RelayState<T>> states)
+        {
+            foreach (var state in states) this.TryAddState(state);
         }
 
         public int Count => this._states.Count;
@@ -74,6 +83,7 @@ namespace Sonar.Trackers
 
         /// <summary>Get states from an index</summary>
         /// <param name="indexKey"><see cref="IndexType"/></param>
+        /// <remarks>If index doesn't exist, an <see cref="Enumerable.Empty"/> is returned</remarks>
         public IEnumerable<RelayState<T>> GetIndexEntries(string indexKey)
         {
             if (indexKey == "all") return this.States.Values;
@@ -95,13 +105,13 @@ namespace Sonar.Trackers
         [SuppressMessage("Major Code Smell", "S1121", Justification = "Used immediately")]
         private void AddIndexEntries(RelayState<T> state)
         {
-            foreach (var indexKey in state.IndexKeys)
+            foreach (var indexKey in (string[])state.IndexKeys)
             {
-                NonBlockingHashSet<RelayState<T>> entries;
+                ConcurrentHashSet<RelayState<T>> entries;
                 do
                 {
                     if (this._index.TryGetValue(indexKey, out entries)) break;
-                    if (this._index.TryAdd(indexKey, entries = new(1, this._indexCapacities.GetValueOrDefault(indexKey)))) break;
+                    if (this._index.TryAdd(indexKey, entries = new())) break;
                 } while (true);
                 entries.Add(state);
             }
@@ -112,13 +122,8 @@ namespace Sonar.Trackers
             foreach (var indexKey in state.IndexKeys)
             {
                 if (!this._index.TryGetValue(indexKey, out var entries)) continue;
-                entries.Remove(state);
+                entries.TryRemove(state);
             }
-        }
-
-        internal void SetCapacitiesCache(IReadOnlyDictionary<string, int> capacities)
-        {
-            this._indexCapacities = capacities;
         }
     }
 }

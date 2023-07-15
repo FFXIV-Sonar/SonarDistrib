@@ -20,17 +20,17 @@ namespace Sonar
 
         /// <summary>Executed once a <see cref="SonarClient"/> is created</summary>
         [SuppressMessage("Critical Code Smell", "S1215")]
-        private static void ClientCreated(bool isRetry = false)
+        private static void ClientCreated(int attemptedCount = 0)
         {
             if (Interlocked.Increment(ref s_instances) > MaxInstances)
             {
                 Interlocked.Decrement(ref s_instances);
-                if (isRetry) throw new InvalidOperationException($"Only {MaxInstances} {nameof(SonarClient)} instances can exist at a time");
+                if (attemptedCount >= 2) throw new InvalidOperationException($"Only {MaxInstances} {nameof(SonarClient)} instances can exist at a time");
                 GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
                 GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
-                ClientCreated(true);
+                ClientCreated(attemptedCount + 1);
             }
         }
 

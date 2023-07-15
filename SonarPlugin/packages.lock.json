@@ -19,15 +19,15 @@
       },
       "DryIoc.dll": {
         "type": "Direct",
-        "requested": "[5.3.4, )",
-        "resolved": "5.3.4",
-        "contentHash": "baJI+Uf5bEi7Hwr2CFhaJFxiQlsiKm27DpKBK8OcgU+tjtRlwJ5G0/k6KebJ+4OPrVBwwUhnU88HXiaEmP1wOA=="
+        "requested": "[5.4.1, )",
+        "resolved": "5.4.1",
+        "contentHash": "fWjM3O4tCivhoQiHsJ3XClLtQ8wK2Tg6Loy6bQ7nOO1L5nRngB4G8TjtLJT3JuvnVQ7DC+kD4nDIVR/qjQg/dw=="
       },
       "Fody": {
         "type": "Direct",
-        "requested": "[6.6.4, )",
-        "resolved": "6.6.4",
-        "contentHash": "vLZS+oa+ndUHYPlx/8n9bBTT3dHkCF0riml4paKq4D663+cZd47x1uagQo32D/gKFZ/sfmV1oqKaLmH0elxq4A=="
+        "requested": "[6.8.0, )",
+        "resolved": "6.8.0",
+        "contentHash": "hfZ/f8Mezt8aTkgv9nsvFdYoQ809/AqwsJlOGOPYIfBcG2aAIG3v3ex9d8ZqQuFYyMoucjRg4eKy3VleeGodKQ=="
       },
       "NAudio.Core": {
         "type": "Direct",
@@ -61,6 +61,11 @@
         "dependencies": {
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
+      },
+      "ConcurrentHashSet": {
+        "type": "Transitive",
+        "resolved": "1.3.0",
+        "contentHash": "a30gfk4WDn2f7sOisXpko+CrQ7s5nL1ZWk4afnRwwRQHWPRrRSZpzn5Dz2YWpJtS90NJqkytQ/MkzHq4QYTIbg=="
       },
       "DeviceId.Windows.Wmi": {
         "type": "Transitive",
@@ -96,6 +101,11 @@
         "dependencies": {
           "System.ComponentModel.Composition": "4.7.0"
         }
+      },
+      "InterlockedUtils": {
+        "type": "Transitive",
+        "resolved": "1.0.1",
+        "contentHash": "GW+lP8C2ioZOWyq3RwNN/cDbict8L/IpUn1h2QlITIABj+HrMCn1SBHcRBKM/FmvcFVceO/GNoauXsX+f+KDsw=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
@@ -152,10 +162,12 @@
         "type": "Project",
         "dependencies": {
           "AG.NonBlocking": "[2.1.1, )",
+          "ConcurrentHashSet": "[1.3.0, )",
           "DeviceId.Windows.Wmi": "[6.2.1, )",
           "DnsClient": "[1.7.0, )",
           "DryIoc.MefAttributedModel.dll": "[7.0.0, )",
-          "DryIoc.dll": "[5.3.4, )",
+          "DryIoc.dll": "[5.4.1, )",
+          "InterlockedUtils": "[1.0.1, )",
           "SonarUtils": "[1.0.0, )"
         }
       },

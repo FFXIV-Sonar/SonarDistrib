@@ -56,17 +56,11 @@ namespace SonarPlugin.Trackers
             this.IsLoggedIn = player is not null;
             if (this.IsLoggedIn)
             {
-                // Player Name and Homeworld
-                var playerName = player!.Name.TextValue;
-                var homeWorldId = player.HomeWorld.Id;
-                if (this.Info.Name != playerName || this.Info.HomeWorldId != homeWorldId)
-                {
-                    this.Info = new PlayerInfo() { Name = playerName, HomeWorldId = homeWorldId };
-                    this.Client.PlayerInfo = this.Info;
-                    PluginLog.LogVerbose("Logged in as {player}", this.Info);
-                }
+                // Player Information
+                var info = new PlayerInfo() { Name = player!.Name.TextValue, HomeWorldId = player.HomeWorld.Id };
+                if (this.Client.UpdatePlayerInfo(info)) PluginLog.LogVerbose("Logged in as {player}", info);
 
-                // Player current world
+                // Player Place
                 var worldId = player.CurrentWorld.Id;
                 var zoneId = this.ClientState.TerritoryType;
                 var instanceId = this.GetCurrentInstance();
@@ -91,7 +85,6 @@ namespace SonarPlugin.Trackers
         #endregion
 
         #region Debug Functions
-        public void DebugResetPlayer() => this.Info = new PlayerInfo();
         public void DebugResetPlace() => this.Place = new PlayerPlace();
         #endregion
 
@@ -100,10 +93,6 @@ namespace SonarPlugin.Trackers
         /// Player is logged in
         /// </summary>
         public bool IsLoggedIn { get; private set; }
-        /// <summary>
-        /// Player Name and Homeworld
-        /// </summary>
-        public PlayerInfo Info { get; private set; } = new PlayerInfo();
         /// <summary>
         /// Player Location
         /// </summary>

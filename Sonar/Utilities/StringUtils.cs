@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using Sonar.Data;
 using System;
+using ConcurrentCollections;
 
 // TODO: Remove obsolete methods once their usage are removed from SonarServer
 
@@ -11,16 +12,28 @@ namespace Sonar.Utilities
     /// <summary>String utilities for Sonar</summary>
     internal static class StringUtils
     {
-        private static readonly NonBlocking.NonBlockingDictionary<string, string> s_strings = new(comparer: FarmHashStringComparer.Instance);
+        private static readonly ConcurrentHashSet<string> s_strings = new(comparer: FarmHashStringComparer.Instance);
 
-        /// <summary>Interns a <see cref="string"/> into a <see cref="NonBlocking.NonBlockingDictionary{TKey, TValue}"/></summary>
+        /// <summary>Interns a <see cref="string"/> into a <see cref="ConcurrentHashSet{T}"/></summary>
         /// <remarks>This is faster than <see cref="string.Intern(string)"/></remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static string Intern(string key) => s_strings.GetOrAdd(key, key);
+        public static string Intern(string key)
+        {
+            if (!s_strings.TryGetValue(key, out var result))
+            {
+                if (!s_strings.Add(key)) return Intern(key);
+                return key;
+            }
+            return result;
+        }
 
-        /// <summary>Try to get an interned <see cref="string"/> from the <see cref="NonBlocking.NonBlockingDictionary{TKey, TValue}"/></summary>
+        /// <summary>Try to get an interned <see cref="string"/> from the <see cref="ConcurrentHashSet{T}"/></summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static string? GetInternedIfExist(string key) => s_strings.GetValueOrDefault(key);
+        public static string? GetInternedIfExist(string key)
+        {
+            s_strings.TryGetValue(key, out var result);
+            return result;
+        }
 
         // === vvv Obsolete stuff beyond this line vvv ===
 
