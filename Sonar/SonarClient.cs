@@ -235,11 +235,11 @@ namespace Sonar
                             $"{placeCounts.GetValueOrDefault("all")}"
                         );
 
-                        var homeCounts = heartbeat.ClientHomeCounts; // TODO: Implement indexes in PlayerInfo
-                        var homeWorldIndex = string.Empty;// this.PlayerInfo?.GetIndexKey(Indexes.IndexType.World) ?? string.Empty;
-                        var homeDatacenterIndex = string.Empty;// this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Datacenter) ?? string.Empty;
-                        var homeRegionIndex = string.Empty;// this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Region) ?? string.Empty;
-                        var homeAudienceIndex = string.Empty;// this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Audience) ?? string.Empty;
+                        var homeCounts = heartbeat.ClientHomeCounts;
+                        var homeWorldIndex = this.PlayerInfo?.GetIndexKey(Indexes.IndexType.World) ?? string.Empty;
+                        var homeDatacenterIndex = this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Datacenter) ?? string.Empty;
+                        var homeRegionIndex = this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Region) ?? string.Empty;
+                        var homeAudienceIndex = this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Audience) ?? string.Empty;
                         var homeCountsText = string.Join(" / ",
                             $"{homeCounts.GetValueOrDefault(homeWorldIndex)}",
                             $"{homeCounts.GetValueOrDefault(homeDatacenterIndex)}",

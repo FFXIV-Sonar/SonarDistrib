@@ -13,7 +13,7 @@ namespace Sonar.Models
     [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
-    public sealed class PlayerInfo : IEquatable<PlayerInfo>, ISonarMessage
+    public sealed partial class PlayerInfo : IEquatable<PlayerInfo>, ISonarMessage
     {
         private bool? _valid;
 

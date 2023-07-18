@@ -167,9 +167,7 @@ namespace Sonar.Relays
         public ReleaseMode Release { get; set; } = ReleaseMode.Normal;
         #endregion
 
-        public override int GetHashCode()
-        {
-            return FarmHashStringComparer.Instance.GetHashCode(this.RelayKey);
-        }
+        public override int GetHashCode() => FarmHashStringComparer.Instance.GetHashCode(this.RelayKey);
+        public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is Relay relay && this.RelayKey.Equals(relay.RelayKey));
     }
 }

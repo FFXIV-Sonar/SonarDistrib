@@ -14,20 +14,27 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using ConcurrentCollections;
+using System.Collections.Immutable;
+using SonarUtils;
+using SonarUtils.Collections;
+using DryIoc;
 
 namespace Sonar.Trackers
 {
     public sealed partial class RelayTrackerData<T> where T : Relay
     {
         internal readonly NonBlocking.NonBlockingDictionary<string, RelayState<T>> _states = new(comparer: FarmHashStringComparer.Instance);
-        private readonly NonBlocking.NonBlockingDictionary<string, ConcurrentHashSet<RelayState<T>>> _index = new(comparer: FarmHashStringComparer.Instance);
+        private readonly NonBlocking.NonBlockingDictionary<string, ImmutableHashSet<RelayState<T>>.Builder> _index = new(comparer: FarmHashStringComparer.Instance);
 
         public IReadOnlyDictionary<string, RelayState<T>> States => this._states;
         public IReadOnlyDictionary<string, IReadOnlyCollection<RelayState<T>>> Index { get; }
 
         internal RelayTrackerData()
         {
-            this.Index = TransformDictionary.Create(this._index, static entries => (IReadOnlyCollection<RelayState<T>>)entries);
+            this.Index = TransformDictionary.Create(this._index, static entries =>
+            {
+                lock(entries) return (IReadOnlyCollection<RelayState<T>>)entries.ToImmutable();
+            });
         }
 
         internal RelayTrackerData(IEnumerable<RelayState<T>> states) : this()
@@ -87,7 +94,7 @@ namespace Sonar.Trackers
         public IEnumerable<RelayState<T>> GetIndexEntries(string indexKey)
         {
             if (indexKey == "all") return this.States.Values;
-            return this._index.GetValueOrDefault(indexKey) ?? Enumerable.Empty<RelayState<T>>();
+            return this.Index.GetValueOrDefault(indexKey) ?? Enumerable.Empty<RelayState<T>>();
         }
 
         /// <summary>Clear all data</summary>
@@ -105,15 +112,15 @@ namespace Sonar.Trackers
         [SuppressMessage("Major Code Smell", "S1121", Justification = "Used immediately")]
         private void AddIndexEntries(RelayState<T> state)
         {
-            foreach (var indexKey in (string[])state.IndexKeys)
+            foreach (var indexKey in Unsafe.As<string[]>(state.IndexKeys).AsSpan())
             {
-                ConcurrentHashSet<RelayState<T>> entries;
-                do
+                ImmutableHashSet<RelayState<T>>.Builder entries;
+                while (true)
                 {
                     if (this._index.TryGetValue(indexKey, out entries)) break;
-                    if (this._index.TryAdd(indexKey, entries = new())) break;
-                } while (true);
-                entries.Add(state);
+                    if (this._index.TryAdd(indexKey, entries = ImmutableHashSet.CreateBuilder<RelayState<T>>())) break;
+                }
+                lock (entries) entries.Add(state);
             }
         }
 
@@ -122,7 +129,7 @@ namespace Sonar.Trackers
             foreach (var indexKey in state.IndexKeys)
             {
                 if (!this._index.TryGetValue(indexKey, out var entries)) continue;
-                entries.TryRemove(state);
+                lock (entries) entries.Remove(state);
             }
         }
     }

@@ -51,7 +51,7 @@ namespace Sonar.Trackers
                 }
             });
 
-            Parallel.ForEach(this._index, options, kvp =>
+            Parallel.ForEach(this.Index, options, kvp =>
             {
                 var (indexKey, index) = kvp;
 
@@ -105,7 +105,7 @@ namespace Sonar.Trackers
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void DebugCleanupIndex()
         {
-            foreach (var (indexKey, index) in this._index)
+            foreach (var (indexKey, index) in this.Index)
             {
                 if (index.Count == 0)
                 {
@@ -122,7 +122,7 @@ namespace Sonar.Trackers
             var addedCache = new HashSet<RelayState<T>>();
 
             this._states.Clear();
-            foreach (var index in this._index.Values)
+            foreach (var index in this.Index.Values)
             {
                 foreach (var state in index.Where(addedCache.Add))
                 {

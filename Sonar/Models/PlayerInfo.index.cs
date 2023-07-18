@@ -5,16 +5,16 @@ using Sonar.Indexes;
 using Sonar.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Sonar.Models
 {
-    public partial class GamePlace : ITrackerIndexable
+    public sealed partial class PlayerInfo : ITrackerIndexable
     {
-        private static readonly NonBlocking.NonBlockingDictionary<string, string[]> s_indexKeysCache = new(comparer: FarmHashStringComparer.Instance);
+        private static readonly NonBlocking.NonBlockingDictionary<uint, string[]> s_indexKeysCache = new();
         private IEnumerable<string>? _indexKeys;
 
         /// <summary>
@@ -29,20 +29,17 @@ namespace Sonar.Models
         {
             while (true) // Expected max number of iterations: 2
             {
-                if (s_indexKeysCache.TryGetValue(this.PlaceKey, out var result)) return result;
-                if (s_indexKeysCache.TryAdd(this.PlaceKey, result = this.GetIndexKeysCore_Factory())) return result;
+                if (s_indexKeysCache.TryGetValue(this.HomeWorldId, out var result)) return result;
+                if (s_indexKeysCache.TryAdd(this.HomeWorldId, result = this.GetIndexKeysCore_Factory())) return result;
             }
         }
 
         private string[] GetIndexKeysCore_Factory()
         {
-            var world = Database.Worlds.GetValueOrDefault(this.WorldId);
+            var world = Database.Worlds.GetValueOrDefault(this.HomeWorldId);
             var info = new IndexInfo()
             {
-                WorldId = this.WorldId,
-                ZoneId = this.ZoneId,
-                InstanceId = this.InstanceId,
-
+                WorldId = this.HomeWorldId,
                 DatacenterId = world?.DatacenterId,
                 RegionId = world?.RegionId,
                 AudienceId = world?.AudienceId,
@@ -55,13 +52,10 @@ namespace Sonar.Models
         /// </summary>
         public string GetIndexKey(IndexType type)
         {
-            var world = Database.Worlds.GetValueOrDefault(this.WorldId);
+            var world = Database.Worlds.GetValueOrDefault(this.HomeWorldId);
             var info = new IndexInfo()
             {
-                WorldId = this.WorldId,
-                ZoneId = this.ZoneId,
-                InstanceId = this.InstanceId,
-
+                WorldId = this.HomeWorldId,
                 DatacenterId = world?.DatacenterId,
                 RegionId = world?.RegionId,
                 AudienceId = world?.AudienceId,

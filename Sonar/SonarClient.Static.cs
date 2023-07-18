@@ -1,4 +1,5 @@
 ﻿using Sonar.Data;
+using Sonar.Models;
 using Sonar.Utilities;
 using System;
 using System.Collections.Generic;
@@ -49,6 +50,8 @@ namespace Sonar
         {
             Database.Reset();
             StringUtils.Reset();
+            GamePlace.ResetIndexCache();
+            PlayerInfo.ResetIndexCache();
         }
     }
 }
