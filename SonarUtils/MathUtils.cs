@@ -63,5 +63,30 @@ namespace SonarUtils
             value -= add;
             return ret;
         }
+
+        public static bool IsPrime(int number)
+        {
+            if (number is 2 or 3) return true;
+            if (number <= 1 || number % 2 == 0 || number % 3 == 0) return false;
+
+            var limit = (int)Math.Sqrt(number);
+            for (var i = 5L; i * i <= limit; i += 6)
+            {
+                if (number % i == 0 || number % (i + 2) == 0) return false;
+            }
+            return true;
+        }
+
+        public static int FindPrime(int number)
+        {
+            if (number is 2 or 3) return number;
+            if (number <= 1) return 2;
+            number |= 1; // Make sure its odd
+            for (; number < int.MaxValue; number += 2)
+            {
+                if (IsPrime(number)) return number;
+            }
+            throw new OverflowException();
+        }
     }
 }

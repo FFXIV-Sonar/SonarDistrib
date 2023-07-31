@@ -39,6 +39,8 @@ namespace SonarPlugin
         [EditorBrowsable(EditorBrowsableState.Never)]
         public Container Container => this._container; // Only stub should access this
         private SonarPluginStub Stub { get; set; }
+        
+        // NOTE: All setters for Plugin Services need to stay, Injector won't work otherwise.
         [PluginService] private Framework Framework { get; set; } = default!;
         [PluginService] private Condition Condition { get; set; } = default!;
         [PluginService] private ClientState ClientState { get; set; } = default!;

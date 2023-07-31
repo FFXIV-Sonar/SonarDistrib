@@ -12,7 +12,7 @@ namespace Sonar.Threading
 
     public sealed class SonarAsyncManualResetEvent
     {
-        private TaskCompletionSource _tcs = new();
+        private volatile TaskCompletionSource _tcs = new();
 
         public bool IsSet => this._tcs.Task.IsCompleted;
 

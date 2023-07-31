@@ -39,7 +39,7 @@ namespace SonarPlugin.GUI
         {
             this._indexWidget.DrawBreadcrumb();
             ImGui.Text($"Index key: {this._indexWidget.IndexKey}");
-            ImGui.Text($"Hunts: {this.Hunts.Data.GetIndexEntries(this._indexWidget.IndexKey).Count()} | Fates: {this.Fates.Data.GetIndexEntries(this._indexWidget.IndexKey).Count()}");
+            ImGui.Text($"Hunts: {this.Hunts.Data.GetIndexStates(this._indexWidget.IndexKey).Count()} | Fates: {this.Fates.Data.GetIndexStates(this._indexWidget.IndexKey).Count()}");
             ImGui.Spacing();
             ImGui.Text("Congratulations finding this!");
             ImGui.TextWrapped("Right now there's nothing useful in this window but I'll be working on this next release. In the meantime enjoy the filtering selector and hunt/fates counts");

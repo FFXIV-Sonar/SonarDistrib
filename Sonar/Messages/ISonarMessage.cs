@@ -65,7 +65,7 @@ namespace Sonar.Messages
 
     // Client Requests
     [Union(0x80, typeof(RelayDataRequest))]
-    [Union(0x81, typeof(RelayDataIndexCapacities))]
+    [Union(0x81, typeof(RelayDataIndexCapacities))] // TODO: Remove in the future
 
     // Database handling
     [Union(0xb0, typeof(SonarDbInfo))]

@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ConcurrencyLab.ParallelChecker" Version="2.7.0" />
+  </ItemGroup>
+
 </Project>

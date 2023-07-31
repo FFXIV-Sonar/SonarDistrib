@@ -17,19 +17,7 @@ namespace Sonar.Relays
     [Serializable]
     public sealed class ManualRelay : Relay
     {
-        /// <summary>
-        /// Relay Key for manual relays only identifies the player
-        /// </summary>
-        [JsonIgnore]
-        [IgnoreMember]
-        public override string RelayKey => $"{this.Id:X8}";
-
-        /// <summary>
-        /// Relay Key for manual relays only identifies the player
-        /// </summary>
-        [JsonIgnore]
-        [IgnoreMember]
-        public override string SortKey => $"{this.Player?.Name.ToLowerInvariant() ?? "_"} <{this.Player?.GetWorld()?.Name.ToLowerInvariant() ?? this.Player?.HomeWorldId.ToString() ?? "_"}>";
+        protected override string GetSortKeyImpl() => $"{this.Player?.Name.ToLowerInvariant() ?? "_"} <{this.Player?.GetWorld()?.Name.ToLowerInvariant() ?? this.Player?.HomeWorldId.ToString().ToLowerInvariant() ?? "_"}>";
 
         /// <summary>
         /// Player that sent this relay (will be set Server side)

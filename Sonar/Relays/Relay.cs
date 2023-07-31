@@ -42,14 +42,19 @@ namespace Sonar.Relays
         /// </summary>
         [JsonIgnore]
         [IgnoreMember]
-        public virtual string RelayKey => this._relayKey ??= StringUtils.Intern($"{this.WorldId}_{this.Id}_{this.InstanceId}");
+        public string RelayKey => this._relayKey ??= StringUtils.Intern(this.GetRelayKeyImpl());
+
+        protected virtual string GetRelayKeyImpl() => $"{this.WorldId}_{this.Id}_{this.InstanceId}";
 
         /// <summary>
         /// Sort Key
         /// </summary>
+        /// <remarks>NOTE/TODO: this is currently not reliable if changing Sonar languages half-way, due to caching. Might need to work around this.</remarks>
         [JsonIgnore]
         [IgnoreMember]
-        public virtual string SortKey => this._sortKey ??= StringUtils.Intern($"{this.Id}_{this.WorldId}_{this.InstanceId}");
+        public string SortKey => this._sortKey ??= StringUtils.Intern(this.GetSortKeyImpl());
+
+        protected virtual string GetSortKeyImpl() => $"{this.Id}_{this.WorldId}_{this.InstanceId}";
 
         /// <summary>
         /// Relay ID (Hunt ID, Fate ID, Player ID)

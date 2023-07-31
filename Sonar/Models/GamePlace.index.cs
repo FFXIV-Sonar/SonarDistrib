@@ -9,12 +9,13 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using SonarUtils.Collections;
 
 namespace Sonar.Models
 {
     public partial class GamePlace : ITrackerIndexable
     {
-        private static readonly NonBlocking.NonBlockingDictionary<string, string[]> s_indexKeysCache = new(comparer: FarmHashStringComparer.Instance);
+        private static readonly ConcurrentDictionarySlim<string, string[]> s_indexKeysCache = new(comparer: FarmHashStringComparer.Instance);
         private IEnumerable<string>? _indexKeys;
 
         /// <summary>

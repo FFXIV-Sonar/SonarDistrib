@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net7.0-windows7.0": {
+      "ConcurrencyLab.ParallelChecker": {
+        "type": "Direct",
+        "requested": "[2.7.0, )",
+        "resolved": "2.7.0",
+        "contentHash": "ydBfxgn7cMWywJNIFv4eIXWa08ze2+5o/GnEYLnpo4A+dC6nO0F+UxCbPyG1dYbVwsNO7EASKoo47hdb/0z+Vw=="
+      },
       "ConfigureAwait.Fody": {
         "type": "Direct",
         "requested": "[3.3.2, )",
@@ -61,11 +67,6 @@
         "dependencies": {
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
-      },
-      "ConcurrentHashSet": {
-        "type": "Transitive",
-        "resolved": "1.3.0",
-        "contentHash": "a30gfk4WDn2f7sOisXpko+CrQ7s5nL1ZWk4afnRwwRQHWPRrRSZpzn5Dz2YWpJtS90NJqkytQ/MkzHq4QYTIbg=="
       },
       "DeviceId.Windows.Wmi": {
         "type": "Transitive",
@@ -162,7 +163,7 @@
         "type": "Project",
         "dependencies": {
           "AG.NonBlocking": "[2.1.1, )",
-          "ConcurrentHashSet": "[1.3.0, )",
+          "ConcurrencyLab.ParallelChecker": "[2.7.0, )",
           "DeviceId.Windows.Wmi": "[6.2.1, )",
           "DnsClient": "[1.7.0, )",
           "DryIoc.MefAttributedModel.dll": "[7.0.0, )",
@@ -172,7 +173,10 @@
         }
       },
       "sonarutils": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "ConcurrencyLab.ParallelChecker": "[2.7.0, )"
+        }
       }
     }
   }

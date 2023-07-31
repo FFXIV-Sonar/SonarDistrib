@@ -81,31 +81,29 @@ namespace Sonar.Indexes
             return uint.Parse(s);
         }
 
-        public static bool TryParse(string indexKey, [NotNullWhen(true)] out IndexInfo indexInfo)
+        public static bool TryParse(string indexKey, [MaybeNullWhen(false)] out IndexInfo indexInfo)
         {
             foreach (var (type, regex) in GetRegexComparers())
             {
                 var match = regex.Match(indexKey);
-                if (match.Success)
+                if (!match.Success) continue;
+                indexInfo = new IndexInfo()
                 {
-                    indexInfo = new IndexInfo()
-                    {
-                        Type = type,
-                        WorldId = ParseUintOrNull(match.Groups.GetValueOrDefault("world")?.Value),
-                        ZoneId = ParseUintOrNull(match.Groups.GetValueOrDefault("zone")?.Value),
-                        InstanceId = ParseUintOrNull(match.Groups.GetValueOrDefault("instance")?.Value),
-                        DatacenterId = ParseUintOrNull(match.Groups.GetValueOrDefault("datacenter")?.Value),
-                        RegionId = ParseUintOrNull(match.Groups.GetValueOrDefault("region")?.Value),
-                        AudienceId = ParseUintOrNull(match.Groups.GetValueOrDefault("audience")?.Value),
-                    };
-                    return true;
-                }
+                    Type = type,
+                    WorldId = ParseUintOrNull(match.Groups.GetValueOrDefault("world")?.Value),
+                    ZoneId = ParseUintOrNull(match.Groups.GetValueOrDefault("zone")?.Value),
+                    InstanceId = ParseUintOrNull(match.Groups.GetValueOrDefault("instance")?.Value),
+                    DatacenterId = ParseUintOrNull(match.Groups.GetValueOrDefault("datacenter")?.Value),
+                    RegionId = ParseUintOrNull(match.Groups.GetValueOrDefault("region")?.Value),
+                    AudienceId = ParseUintOrNull(match.Groups.GetValueOrDefault("audience")?.Value),
+                };
+                return true;
             }
             indexInfo = default!;
             return false;
         }
 
-        public static bool TryParse(string indexKey, IndexType type, [NotNullWhen(true)] out IndexInfo indexInfo)
+        public static bool TryParse(string indexKey, IndexType type, [MaybeNullWhen(false)] out IndexInfo indexInfo)
         {
             var regex = GetRegexComparers()[type];
             var match = regex.Match(indexKey);

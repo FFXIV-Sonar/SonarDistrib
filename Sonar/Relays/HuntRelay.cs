@@ -23,31 +23,17 @@ namespace Sonar.Relays
     [Serializable]
     public sealed class HuntRelay : Relay
     {
-        /// <summary>
-        /// Relay Key
-        /// </summary>
-        [JsonIgnore]
-        [IgnoreMember]
-        public override string RelayKey
+        protected override string GetRelayKeyImpl()
         {
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Bug", "S4275", Justification = "base.RelayKey does this")]
-            get
+            return this.GetRank() switch
             {
-                return this.GetRank() switch
-                {
-                    HuntRank.SSMinion => $"{base.RelayKey}_{this.ZoneId}_{this.ActorId:X8}",
-                    HuntRank.SS => $"{base.RelayKey}_{this.ZoneId}",
-                    _ => base.RelayKey
-                };
-            }
+                HuntRank.SSMinion => $"{base.GetRelayKeyImpl()}_{this.ZoneId}_{this.ActorId:X8}",
+                HuntRank.SS => $"{base.GetRelayKeyImpl()}_{this.ZoneId}",
+                _ => base.GetRelayKeyImpl()
+            };
         }
 
-        /// <summary>
-        /// Sort Key
-        /// </summary>
-        [JsonIgnore]
-        [IgnoreMember]
-        public override string SortKey => this.GetHunt()?.Name.ToString().ToLowerInvariant() ?? base.SortKey;
+        protected override string GetSortKeyImpl() => this.GetHunt()?.Name.ToString().ToLowerInvariant() ?? base.GetSortKeyImpl();
 
         /// <summary>
         /// Actor ID

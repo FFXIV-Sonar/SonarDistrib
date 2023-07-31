@@ -19,7 +19,7 @@ namespace Sonar.Models
     [Serializable]
     public partial class GamePlace : ICloneable
     {
-        private string? _placeKey = default!; // Initialized in this.GeneratePlaceKey()
+        private string? _placeKey;
         private bool? _valid;
 
         public GamePlace() { }

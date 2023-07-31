@@ -48,12 +48,7 @@ namespace Sonar.Relays
 
         #endregion
 
-        /// <summary>
-        /// Sort Key
-        /// </summary>
-        [JsonIgnore]
-        [IgnoreMember]
-        public override string SortKey => this.GetFate()?.Name.ToString().ToLowerInvariant() ?? base.SortKey;
+        protected override string GetSortKeyImpl() => this.GetFate()?.Name.ToString().ToLowerInvariant() ?? base.GetSortKeyImpl();
 
         [JsonIgnore]
         [IgnoreMember]

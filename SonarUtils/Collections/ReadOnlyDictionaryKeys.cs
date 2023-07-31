@@ -8,22 +8,22 @@ using System.Threading.Tasks;
 namespace SonarUtils.Collections
 {
     /// <summary>Non-snapshotting dictionary Keys</summary>
-    public sealed class DictionaryKeys<TKey, TValue> : ISet<TKey>, IReadOnlySet<TKey>
+    public sealed class ReadOnlyDictionaryKeys<TKey, TValue> : ISet<TKey>, IReadOnlySet<TKey>
     {
-        private readonly IDictionary<TKey, TValue> _backingDictionary;
+        private readonly IReadOnlyDictionary<TKey, TValue> _backingDictionary;
 
-        public DictionaryKeys(IDictionary<TKey, TValue> backingDictionary)
+        public ReadOnlyDictionaryKeys(IReadOnlyDictionary<TKey, TValue> backingDictionary)
         {
             this._backingDictionary = backingDictionary;
         }
 
         public int Count => this._backingDictionary.Count;
 
-        public bool IsReadOnly => this._backingDictionary.IsReadOnly;
+        public bool IsReadOnly => true;
 
-        public void Add(TKey item) => this._backingDictionary.Add(item, default!);
+        public void Add(TKey item) => throw new NotSupportedException();
 
-        public void Clear() => this._backingDictionary.Clear();
+        public void Clear() => throw new NotSupportedException();
 
         public bool Contains(TKey item) => this._backingDictionary.ContainsKey(item);
 
@@ -32,20 +32,11 @@ namespace SonarUtils.Collections
             foreach (var item in this) array[arrayIndex++] = item;
         }
 
-        public void ExceptWith(IEnumerable<TKey> other)
-        {
-            foreach (var item in other) this.Remove(item);
-        }
+        public void ExceptWith(IEnumerable<TKey> other) => throw new NotSupportedException();
 
         public IEnumerator<TKey> GetEnumerator() => this._backingDictionary.Select(kvp => kvp.Key).GetEnumerator();
 
-        public void IntersectWith(IEnumerable<TKey> other)
-        {
-            foreach (var item in this)
-            {
-                if (!other.Contains(item)) this.Remove(item);
-            }
-        }
+        public void IntersectWith(IEnumerable<TKey> other) => throw new NotSupportedException();
 
         public bool IsProperSubsetOf(IEnumerable<TKey> other)
         {
@@ -72,7 +63,7 @@ namespace SonarUtils.Collections
             return this.Any(item => other.Contains(item));
         }
 
-        public bool Remove(TKey item) => this._backingDictionary.Remove(item);
+        public bool Remove(TKey item) => throw new NotSupportedException();
 
         public bool SetEquals(IEnumerable<TKey> other)
         {
@@ -81,30 +72,11 @@ namespace SonarUtils.Collections
             return this.All(otherItems.Contains);
         }
 
-        public void SymmetricExceptWith(IEnumerable<TKey> other)
-        {
-            var both = this.Intersect(other).ToList();
-            foreach (var item in other) this.Add(item);
-            foreach (var item in both) this.Remove(item);
-        }
+        public void SymmetricExceptWith(IEnumerable<TKey> other) => throw new NotSupportedException();
 
-        public void UnionWith(IEnumerable<TKey> other)
-        {
-            foreach (var item in other) this.Add(item);
-        }
+        public void UnionWith(IEnumerable<TKey> other) => throw new NotSupportedException();
 
-        bool ISet<TKey>.Add(TKey item)
-        {
-            try
-            {
-                this.Add(item);
-                return true;
-            }
-            catch (ArgumentException)
-            {
-                return false;
-            }
-        }
+        bool ISet<TKey>.Add(TKey item) => throw new NotSupportedException();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }

@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace SonarUtils.Collections
 {
     /// <summary>Non-snapshotting dictionary Values</summary>
-    public sealed class DictionaryValues<TKey, TValue> : ICollection<TValue>, IReadOnlyCollection<TValue>
+    public sealed class ReadOnlyDictionaryValues<TKey, TValue> : ICollection<TValue>, IReadOnlyCollection<TValue>
     {
-        private readonly IDictionary<TKey, TValue> _backingDictionary;
+        private readonly IReadOnlyDictionary<TKey, TValue> _backingDictionary;
 
-        public DictionaryValues(IDictionary<TKey, TValue> backingDictionary)
+        public ReadOnlyDictionaryValues(IReadOnlyDictionary<TKey, TValue> backingDictionary)
         {
             this._backingDictionary = backingDictionary;
         }

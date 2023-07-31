@@ -2,9 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Net.Http.Headers;
 
-namespace Sonar.Collections
+namespace SonarUtils.Collections
 {
     /// <summary>
     /// A dictionary that automatically transform values
@@ -17,8 +16,8 @@ namespace Sonar.Collections
         private readonly IDictionary<TKey, TSourceValue> _backingDictionary;
         private readonly Func<TSourceValue, TValue> _getterTransformFunc;
         private readonly Func<TValue, TSourceValue> _setterTransformFunc = default!; // Not used if read-only
-        private KeyCollection? _keyCollection;
-        private ValueCollection? _valueCollection;
+        private DictionaryKeys<TKey, TValue>? _keyCollection;
+        private DictionaryValues<TKey, TValue>? _valueCollection;
 
         public TransformDictionary(IDictionary<TKey, TSourceValue> backingDictionary, Func<TSourceValue, TValue> getterTransformFunc)
         {
@@ -85,20 +84,14 @@ namespace Sonar.Collections
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            // This is a weird case but I'll follow
-            if (this.IsReadOnly) return this.ContainsKey(item.Key);
-            return this._backingDictionary.Contains(KeyValuePair.Create(item.Key, this._setterTransformFunc(item.Value)));
+            return this.TryGetValue(item.Key, out var value) && EqualityComparer<TValue>.Default.Equals(item.Value, value);
         }
 
         public bool ContainsKey(TKey key) => this._backingDictionary.ContainsKey(key);
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            foreach (var item in this)
-            {
-                array[arrayIndex++] = item;
-                if (arrayIndex == array.Length) return;
-            }
+            foreach (var item in this) array[arrayIndex++] = item;
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
