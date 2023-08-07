@@ -14,6 +14,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Cysharp.Text;
 
 namespace Sonar.Indexes
 {
@@ -231,78 +232,78 @@ namespace Sonar.Indexes
 
         /// <summary>Generate a world index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetWorldIndexKey(uint worldId) => StringUtils.Intern($"{worldId}");
+        public static string GetWorldIndexKey(uint worldId) => StringUtils.Intern(ZString.Format("{0}", worldId));
 
         /// <summary>Generate a world zone index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetWorldZoneIndexKey(uint worldId, uint zoneId) => StringUtils.Intern($"{worldId}_{zoneId}");
+        public static string GetWorldZoneIndexKey(uint worldId, uint zoneId) => StringUtils.Intern(ZString.Format("{0}_{1}", worldId, zoneId));
 
         /// <summary>Generate a world zone instance index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetWorldZoneInstanceIndexKey(uint worldId, uint zoneId, uint instanceId) => StringUtils.Intern($"{worldId}_{zoneId}_{instanceId}");
+        public static string GetWorldZoneInstanceIndexKey(uint worldId, uint zoneId, uint instanceId) => StringUtils.Intern(ZString.Format("{0}_{1}_{2}", worldId, zoneId, instanceId));
 
         /// <summary>Generate a world instance index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetWorldInstanceIndexKey(uint worldId, uint instanceId) => StringUtils.Intern($"wi{worldId}_{instanceId}");
+        public static string GetWorldInstanceIndexKey(uint worldId, uint instanceId) => StringUtils.Intern(ZString.Format("wi{0}_{1}", worldId, instanceId));
 
         /// <summary>Generate a zone index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetZoneIndexKey(uint zoneId) => StringUtils.Intern($"z{zoneId}");
+        public static string GetZoneIndexKey(uint zoneId) => StringUtils.Intern(ZString.Format("z{0}", zoneId));
 
         /// <summary>Generate a zone instance index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetZoneInstanceIndexKey(uint zoneId, uint instanceId) => StringUtils.Intern($"z{zoneId}_{instanceId}");
+        public static string GetZoneInstanceIndexKey(uint zoneId, uint instanceId) => StringUtils.Intern(ZString.Format("z{0}_{1}", zoneId, instanceId));
 
         /// <summary>Generate an instance index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetInstanceIndexKey(uint instanceId) => StringUtils.Intern($"i{instanceId}");
+        public static string GetInstanceIndexKey(uint instanceId) => StringUtils.Intern(ZString.Format("i{0}", instanceId));
 
         /// <summary>Generate a datacenter index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetDatacenterIndexKey(uint datacenterId) => StringUtils.Intern($"d{datacenterId}");
+        public static string GetDatacenterIndexKey(uint datacenterId) => StringUtils.Intern(ZString.Format("d{0}", datacenterId));
 
         /// <summary>Generate a datacenter zone index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetDatacenterZoneIndexKey(uint datacenterId, uint zoneId) => StringUtils.Intern($"d{datacenterId}_{zoneId}");
+        public static string GetDatacenterZoneIndexKey(uint datacenterId, uint zoneId) => StringUtils.Intern(ZString.Format("d{0}_{1}", datacenterId, zoneId));
 
         /// <summary>Generate a datacenter zone instance index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetDatacenterZoneInstanceIndexKey(uint datacenterId, uint zoneId, uint instanceId) => StringUtils.Intern($"d{datacenterId}_{zoneId}_{instanceId}");
+        public static string GetDatacenterZoneInstanceIndexKey(uint datacenterId, uint zoneId, uint instanceId) => StringUtils.Intern(ZString.Format("d{0}_{1}_{2}", datacenterId, zoneId, instanceId));
 
         /// <summary>Generate a datacenter instance index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetDatacenterInstanceIndexKey(uint datacenterId, uint instanceId) => StringUtils.Intern($"di{datacenterId}_{instanceId}");
+        public static string GetDatacenterInstanceIndexKey(uint datacenterId, uint instanceId) => StringUtils.Intern(ZString.Format("di{0}_{1}", datacenterId, instanceId));
 
         /// <summary>Generate a region index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetRegionIndexKey(uint regionId) => StringUtils.Intern($"r{regionId}");
+        public static string GetRegionIndexKey(uint regionId) => StringUtils.Intern(ZString.Format("r{0}", regionId));
 
         /// <summary>Generate a region zone index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetRegionZoneIndexKey(uint regionId, uint zoneId) => StringUtils.Intern($"r{regionId}_{zoneId}");
+        public static string GetRegionZoneIndexKey(uint regionId, uint zoneId) => StringUtils.Intern(ZString.Format("r{0}_{1}", regionId, zoneId));
 
         /// <summary>Generate a region zone instance index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetRegionZoneInstanceIndexKey(uint regionId, uint zoneId, uint instanceId) => StringUtils.Intern($"r{regionId}_{zoneId}_{instanceId}");
+        public static string GetRegionZoneInstanceIndexKey(uint regionId, uint zoneId, uint instanceId) => StringUtils.Intern(ZString.Format("r{0}_{1}_{2}", regionId, zoneId, instanceId));
 
         /// <summary>Generate a region instance index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetRegionInstanceIndexKey(uint regionId, uint instanceId) => StringUtils.Intern($"ri{regionId}_{instanceId}");
+        public static string GetRegionInstanceIndexKey(uint regionId, uint instanceId) => StringUtils.Intern(ZString.Format("ri{0}_{1}", regionId, instanceId));
 
         /// <summary>Generate an audience index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetAudienceIndexKey(uint audienceId) => StringUtils.Intern($"a{audienceId}");
+        public static string GetAudienceIndexKey(uint audienceId) => StringUtils.Intern(ZString.Format("a{0}", audienceId));
 
         /// <summary>Generate an audience zone index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetAudienceZoneIndexKey(uint audienceId, uint zoneId) => StringUtils.Intern($"a{audienceId}_{zoneId}");
+        public static string GetAudienceZoneIndexKey(uint audienceId, uint zoneId) => StringUtils.Intern(ZString.Format("a{0}_{1}", audienceId, zoneId));
 
         /// <summary>Generate an audience zone instance index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetAudienceZoneInstanceIndexKey(uint audienceId, uint zoneId, uint instanceId) => StringUtils.Intern($"a{audienceId}_{zoneId}_{instanceId}");
+        public static string GetAudienceZoneInstanceIndexKey(uint audienceId, uint zoneId, uint instanceId) => StringUtils.Intern(ZString.Format("a{0}_{1}_{2}", audienceId, zoneId, instanceId));
 
         /// <summary>Generate an audience instance index key.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetAudienceInstanceIndexKey(uint audienceId, uint instanceId) => StringUtils.Intern($"ai{audienceId}_{instanceId}");
+        public static string GetAudienceInstanceIndexKey(uint audienceId, uint instanceId) => StringUtils.Intern(ZString.Format("ai{0}_{1}", audienceId, instanceId));
     }
 }

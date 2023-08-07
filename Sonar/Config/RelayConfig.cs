@@ -44,9 +44,8 @@ namespace Sonar.Config
         /// <summary>
         /// Main jurisdiction check function
         /// </summary>
-        public SonarJurisdiction GetReportJurisdiction(uint id, bool ignoreContrib = false)
+        public SonarJurisdiction GetReportJurisdiction(uint id)
         {
-            if (!ignoreContrib && !this.Contribute) return SonarJurisdiction.None;
             return this.GetReportJurisdictionImpl(id);
         }
     }

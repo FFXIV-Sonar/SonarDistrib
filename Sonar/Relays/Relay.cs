@@ -14,6 +14,7 @@ using Sonar.Utilities;
 using static Sonar.Utilities.UnixTimeHelper;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Cysharp.Text;
 using Sonar.Models;
 
 namespace Sonar.Relays
@@ -29,6 +30,7 @@ namespace Sonar.Relays
         private string? _relayKey;
         private string? _sortKey;
         private uint _id;
+        private int? _hash;
 
         protected override void ResetKeyCache()
         {
@@ -44,7 +46,7 @@ namespace Sonar.Relays
         [IgnoreMember]
         public string RelayKey => this._relayKey ??= StringUtils.Intern(this.GetRelayKeyImpl());
 
-        protected virtual string GetRelayKeyImpl() => $"{this.WorldId}_{this.Id}_{this.InstanceId}";
+        protected virtual string GetRelayKeyImpl() => ZString.Format("{0}_{1}_{2}", this.WorldId, this.Id, this.InstanceId);
 
         /// <summary>
         /// Sort Key
@@ -54,7 +56,7 @@ namespace Sonar.Relays
         [IgnoreMember]
         public string SortKey => this._sortKey ??= StringUtils.Intern(this.GetSortKeyImpl());
 
-        protected virtual string GetSortKeyImpl() => $"{this.Id}_{this.WorldId}_{this.InstanceId}";
+        protected virtual string GetSortKeyImpl() => ZString.Format("{0}_{1}_{2}", this.Id, this.WorldId, this.InstanceId);
 
         /// <summary>
         /// Relay ID (Hunt ID, Fate ID, Player ID)
@@ -172,7 +174,11 @@ namespace Sonar.Relays
         public ReleaseMode Release { get; set; } = ReleaseMode.Normal;
         #endregion
 
-        public override int GetHashCode() => FarmHashStringComparer.Instance.GetHashCode(this.RelayKey);
+        public override int GetHashCode() => this._hash ??= FarmHashStringComparer.GetHashCodeStatic(this.RelayKey);
+        public bool Equals(Relay relay) => ReferenceEquals(this, relay) || this.RelayKey.Equals(relay.RelayKey);
         public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is Relay relay && this.RelayKey.Equals(relay.RelayKey));
+
+        public static bool operator ==(Relay left, Relay right) => left.Equals(right);
+        public static bool operator !=(Relay left, Relay right) => !left.Equals(right);
     }
 }

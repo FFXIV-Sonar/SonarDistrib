@@ -28,6 +28,8 @@ namespace Sonar.Trackers
         [EditorBrowsable(EditorBrowsableState.Never)]
         public IEnumerable<string> DebugIndexConsistencyCheck(bool parallel = false)
         {
+            this.ThrowIfNotIndexing();
+
             List<string> output = new();
             var typeName = typeof(T).Name;
             var options = GetParallelOptions(parallel);
@@ -46,14 +48,24 @@ namespace Sonar.Trackers
                 // Make sure state can be found on all indexes it belongs into
                 foreach (var indexKey in Unsafe.As<string[]>(state.IndexKeys))
                 {
+                    // Check that the index entries exist
                     if (!this._index.TryGetValue(indexKey, out var entries))
                     {
                         lock (output) output.Add($"{typeName} State index not found for {state.RelayKey}: {indexKey}");
                         if (Debugger.IsAttached) Debugger.Break();
                     }
-                    else if (!entries.Contains(state.RelayKey))
+
+                    // Check that the state is in the index
+                    else if (!entries.TryGetValue(state, out var state2))
                     {
                         lock (output) output.Add($"{typeName} State not found at index {indexKey}: {state.RelayKey} (Expected indexes: {string.Join(", ", state.IndexKeys)})");
+                        if (Debugger.IsAttached) Debugger.Break();
+                    }
+
+                    // Make sure its the same state
+                    else if (!ReferenceEquals(state, state2))
+                    {
+                        lock (output) output.Add($"{typeName} State does not match between states and index entries contents: {state.RelayKey}");
                         if (Debugger.IsAttached) Debugger.Break();
                     }
                 }
@@ -70,12 +82,21 @@ namespace Sonar.Trackers
                     if (Debugger.IsAttached) Debugger.Break();
                 }
 
-                foreach (var key in index)
+                foreach (var state in index)
                 {
+                    var key = state.RelayKey;
+                    
                     // Make sure state exist
-                    if (!this._states.TryGetValue(key, out var state))
+                    if (!this._states.TryGetValue(key, out var state2))
                     {
                         lock (output) output.Add($"{typeName} State at index {indexKey} not found: {key}");
+                        if (Debugger.IsAttached) Debugger.Break();
+                    }
+
+                    // Make sure its the same state
+                    else if (!ReferenceEquals(state, state2))
+                    {
+                        lock (output) output.Add($"{typeName} State does not match between states and index entries contents: {state.RelayKey}");
                         if (Debugger.IsAttached) Debugger.Break();
                     }
 
@@ -92,9 +113,9 @@ namespace Sonar.Trackers
         }
 
         /// <summary>Rebuild indexes</summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void DebugRebuildIndex(bool parallel = false)
+        public void RebuildIndex(bool parallel = false)
         {
+            this.ThrowIfNotIndexing();
             foreach (var set in this._index.Values) set.Clear();
             Parallel.ForEach(this._states.Values, GetParallelOptions(parallel), this.AddIndexEntries);
         }
@@ -103,6 +124,7 @@ namespace Sonar.Trackers
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void DebugCleanupIndex()
         {
+            this.ThrowIfNotIndexing();
             foreach (var (indexKey, index) in this.Index)
             {
                 if (index.Count == 0)

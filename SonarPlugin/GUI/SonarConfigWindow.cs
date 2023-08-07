@@ -1039,7 +1039,7 @@ namespace SonarPlugin.GUI
                             this._debugHuntTask = Task.Run(() =>
                             {
                                 PluginLog.LogInformation("Hunt index debug rebuild started");
-                                this.Client.Trackers.Hunts.Data.DebugRebuildIndex();
+                                this.Client.Trackers.Hunts.Data.RebuildIndex();
                                 PluginLog.LogInformation("Hunt index debug rebuild complete");
                             });
                         }
@@ -1093,7 +1093,7 @@ namespace SonarPlugin.GUI
                             this._debugFateTask = Task.Run(() =>
                             {
                                 PluginLog.LogInformation("Fate index debug rebuild started");
-                                this.Client.Trackers.Fates.Data.DebugRebuildIndex();
+                                this.Client.Trackers.Fates.Data.RebuildIndex();
                                 PluginLog.LogInformation("Fate index debug rebuild complete");
                             });
                         }

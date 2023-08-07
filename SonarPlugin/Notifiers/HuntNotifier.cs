@@ -18,6 +18,7 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using System.Diagnostics;
 using static Sonar.SonarConstants;
 using Sonar.Relays;
+using SonarPlugin.GUI;
 
 namespace SonarPlugin.Notifiers
 {
@@ -27,15 +28,15 @@ namespace SonarPlugin.Notifiers
         private readonly Dictionary<string, double> _lastSSMinionSignals = new();
 
         private SonarPlugin Plugin { get; }
-        private HuntTracker Tracker { get; }
+        private IRelayTracker<HuntRelay> Tracker { get; }
         private PlayerProvider Player { get; }
         private ChatGui Chat { get; }
         private AudioPlaybackEngine Audio { get; }
 
-        public HuntNotifier(SonarPlugin plugin, HuntTracker tracker, PlayerProvider player, ChatGui chat, AudioPlaybackEngine audio)
+        public HuntNotifier(SonarPlugin plugin, RelayTrackerViews views, PlayerProvider player, ChatGui chat, AudioPlaybackEngine audio)
         {
             this.Plugin = plugin;
-            this.Tracker = tracker;
+            this.Tracker = views.Hunts;
             this.Player = player;
             this.Chat = chat;
             this.Audio = audio;

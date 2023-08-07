@@ -37,7 +37,7 @@ namespace Sonar.Trackers
         /// <summary>Relay Tracker Configuration. Please access it from SonarClient.</summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public abstract RelayConfig Config { get; }
-        protected SonarClient Client { get; }
+        public SonarClient Client { get; }
         public RelayTrackerData<T> Data { get; } = new();
 
         private readonly ConcurrentQueue<T> _relayUpdateQueue = new();
@@ -87,26 +87,17 @@ namespace Sonar.Trackers
             }
         }
 
-        private bool IsWithinJurisdiction(IReadOnlyDictionary<uint, WorldRow>? worlds, T relay, bool ignoreContrib = false)
+        private bool IsWithinJurisdiction(IReadOnlyDictionary<uint, WorldRow>? worlds, T relay)
         {
-            var jurisdiction = this.Config.GetReportJurisdiction(relay.Id, ignoreContrib);
+            var jurisdiction = this.Config.GetReportJurisdiction(relay.Id);
             return this.Client.PlayerPlace.IsWithinJurisdiction(relay, jurisdiction, worlds);
         }
 
-        private bool IsWithinJurisdiction(IReadOnlyDictionary<uint, WorldRow>? worlds, RelayState<T> state, bool ignoreContrib = false) => this.IsWithinJurisdiction(worlds, state.Relay, ignoreContrib);
-
-        protected bool IsWithinJurisdiction(IDictionary<uint, SonarJurisdiction> cache, IReadOnlyDictionary<uint, WorldRow>? worlds, T relay, bool ignoreContrib = false)
-        {
-            if (!cache.TryGetValue(relay.Id, out var jurisdiction))
-            {
-                cache[relay.Id] = jurisdiction = this.Config.GetReportJurisdiction(relay.Id, ignoreContrib);
-            }
-            return this.Client.PlayerPlace.IsWithinJurisdiction(relay, jurisdiction, worlds);
-        }
+        private bool IsWithinJurisdiction(IReadOnlyDictionary<uint, WorldRow>? worlds, RelayState<T> state) => this.IsWithinJurisdiction(worlds, state.Relay);
 
         public bool IsTrackable(T relay)
         {
-            return this.Config.TrackAll || this.IsWithinJurisdiction(null, relay, true);
+            return this.Config.TrackAll || this.IsWithinJurisdiction(null, relay);
         }
         public bool IsTrackable(RelayState<T> state) => this.IsTrackable(state.Relay);
 
@@ -229,95 +220,12 @@ namespace Sonar.Trackers
             return true;
         }
 
-        [SuppressMessage("Minor Code Smell", "S1199", Justification = "Attempt at organization")]
-        [Obsolete("Will be removed, use index instead and filter with .Where as needed")]
-        public IEnumerable<KeyValuePair<string, RelayState<T>>> GetRelaysQuery(bool withinJurisdiction = true, uint? regionId = null, uint? dcId = null, uint? worldId = null, uint? zoneId = null, uint? instanceId = null, uint? id = null, IReadOnlyCollection<uint>? regionIds = null, IReadOnlyCollection<uint>? dcIds = null, IReadOnlyCollection<uint>? worldIds = null, IReadOnlyCollection<uint>? zoneIds = null, IReadOnlyCollection<uint>? instanceIds = null, IReadOnlyCollection<uint>? ids = null, double? lastUpdatedAgo = null)
-        {
-            var cache = new Dictionary<uint, SonarJurisdiction>();
-            var query = this.Data.States.AsEnumerable();
-            var worlds = Database.Worlds;
-
-            // Single entries into HashSets? Blame ASP.NET Core
-            {
-                if (regionIds?.Count == 1 && !regionId.HasValue) { regionId = regionIds.First(); regionIds = null; }
-                if (dcIds?.Count == 1 && !dcId.HasValue) { dcId = dcIds.First(); dcIds = null; }
-                if (worldIds?.Count == 1 && !worldId.HasValue) { worldId = worldIds.First(); worldIds = null; }
-                if (zoneIds?.Count == 1 && !zoneId.HasValue) { zoneId = zoneIds.First(); zoneIds = null; }
-                if (instanceIds?.Count == 1 && !instanceId.HasValue) { instanceId = instanceIds.First(); instanceIds = null; }
-                if (ids?.Count == 1 && !id.HasValue) { id = ids.First(); ids = null; }
-            }
-
-            // Light
-            {
-                if (lastUpdatedAgo.HasValue) query = query.Where(kv => kv.Value.LastSeenAgo <= lastUpdatedAgo.Value);
-
-                if (id.HasValue) query = query.Where(kv => kv.Value.Relay.Id == id.Value);
-                if (instanceId.HasValue) query = query.Where(kv => kv.Value.Relay.InstanceId == instanceId.Value);
-                if (zoneId.HasValue) query = query.Where(kv => kv.Value.Relay.ZoneId == zoneId.Value);
-                if (worldId.HasValue) query = query.Where(kv => kv.Value.Relay.WorldId == worldId.Value);
-
-                if (ids?.Count > 0) query = query.Where(kv => ids.Contains(kv.Value.Relay.Id));
-                if (instanceIds?.Count > 0) query = query.Where(kv => instanceIds.Contains(kv.Value.Relay.InstanceId));
-                if (zoneIds?.Count > 0) query = query.Where(kv => zoneIds.Contains(kv.Value.Relay.ZoneId));
-                if (worldIds?.Count > 0) query = query.Where(kv => worldIds.Contains(kv.Value.Relay.WorldId));
-            }
-
-            // Heavy
-            {
-                if (dcId.HasValue) query = query.Where(kv => kv.Value.Relay.GetDatacenter()?.Id == dcId.Value);
-                if (regionId.HasValue) query = query.Where(kv => kv.Value.Relay.GetDatacenter()?.RegionId == regionId.Value);
-            }
-
-            // Complicated and inefficient
-            {
-                if (dcIds?.Count > 0) query = query.Where(kv =>
-                {
-                    var dc = kv.Value.GetDatacenter();
-                    if (dc is null) return false;
-                    return dcIds.Contains(dc.Id);
-                });
-
-                if (regionIds?.Count > 0) query = query.Where(kv =>
-                {
-                    var dc = kv.Value.GetDatacenter();
-                    if (dc is null) return false;
-                    return regionIds.Contains(dc.RegionId);
-                });
-
-            }
-
-            // Extreme
-            {
-                if (withinJurisdiction) query = query.Where(kv => this.IsWithinJurisdiction(cache, worlds, kv.Value.Relay, true));
-            }
-
-            return query;
-        }
-
-        [Obsolete("Will be removed, use index instead and filter with .Where as needed")]
-        public IEnumerable<KeyValuePair<string, RelayState<T>>> GetRelays(bool withinJurisdiction = true, uint? regionId = null, uint? dcId = null, uint? worldId = null, uint? zoneId = null, uint? instanceId = null, uint? id = null, IReadOnlyCollection<uint>? regionIds = null, IReadOnlyCollection<uint>? dcIds = null, IReadOnlyCollection<uint>? worldIds = null, IReadOnlyCollection<uint>? zoneIds = null, IReadOnlyCollection<uint>? instanceIds = null, IReadOnlyCollection<uint>? ids = null, double? lastUpdatedAgo = null)
-        {
-            return this.GetRelaysQuery(withinJurisdiction, regionId, dcId, worldId, zoneId, instanceId, id, regionIds, dcIds, worldIds, zoneIds, instanceIds, ids, lastUpdatedAgo);
-        }
-
-        [Obsolete("Will be removed, use index instead and filter with .Where as needed")]
-        public IEnumerable<KeyValuePair<string, RelayState<T>>> GetRelays(int count = 100, bool withinJurisdiction = true,  uint? regionId = null, uint? dcId = null, uint? worldId = null, uint? zoneId = null, uint? instanceId = null, uint? id = null, IReadOnlyCollection<uint>? regionIds = null, IReadOnlyCollection<uint>? dcIds = null, IReadOnlyCollection<uint>? worldIds = null, IReadOnlyCollection<uint>? zoneIds = null, IReadOnlyCollection<uint>? instanceIds = null, IReadOnlyCollection<uint>? ids = null, double? lastUpdatedAgo = null)
-        {
-            // Not going to reinvent Math.Clamp
-            Math.Clamp(count, 0, int.MaxValue);
-            if (count == 0) return Enumerable.Empty<KeyValuePair<string, RelayState<T>>>();
-
-            return this.GetRelaysQuery(withinJurisdiction, regionId, dcId, worldId, zoneId, instanceId, id, regionIds, dcIds, worldIds, zoneIds, instanceIds, ids, lastUpdatedAgo)
-                .OrderByDescending(s => s.Value.LastSeen)
-                .Take(count);
-        }
-
         #region Event Handlers
         private void DispatchEvents(RelayState<T> state, bool isNew)
         {
             if (this.Found is null && this.Updated is null && this.Dead is null && this.All is null) return;
             if (!this.Client.Modifiers.EnableRelayEventHandlers!.Value) return;
-            if (this.AlwaysDispatchEvents || this.IsWithinJurisdiction(null, state, true))
+            if (this.AlwaysDispatchEvents || this.IsWithinJurisdiction(null, state))
             {
                 var exceptions = Enumerable.Empty<Exception>();
                 if (state.IsAliveInternal())

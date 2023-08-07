@@ -10,7 +10,8 @@ namespace Sonar.Utilities
 {
     /// <summary>
     /// Ordinal string comparison using <see cref="Farmhash.Sharp.Farmhash"/>
-    /// </remarks>
+    /// </summary>
+    /// <remarks>
     /// Hash is generated using Hash64 instead of Hash32
     /// </remarks>
     public sealed class FarmHashStringComparer : IEqualityComparer<string>

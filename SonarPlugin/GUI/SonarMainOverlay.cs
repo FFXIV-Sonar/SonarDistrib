@@ -25,6 +25,8 @@ using System.Threading.Tasks;
 using Dalamud.Logging;
 using Dalamud.Game.Gui;
 using Sonar.Relays;
+using Sonar.Indexes;
+using Sonar.Utilities;
 
 namespace SonarPlugin.GUI
 {
@@ -41,8 +43,7 @@ namespace SonarPlugin.GUI
         private SonarPlugin Plugin { get; }
         private SonarClient Client { get; }
         private PlayerProvider Player { get; }
-        private HuntTracker Hunts { get; }
-        private FateTracker Fates { get; }
+        private RelayTrackerViews Views { get; }
         private HuntNotifier HuntNotifier { get; }
         private FateNotifier FateNotifier { get; }
         private MapTextureProvider MapTextures { get; }
@@ -59,13 +60,12 @@ namespace SonarPlugin.GUI
 
         private readonly TextureWrap _redFlag;
 
-        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, PlayerProvider player, HuntTracker hunts, FateTracker fates, HuntNotifier huntsNotifier, FateNotifier fateNotifier, MapTextureProvider mapTextures, ResourceHelper resources, UiBuilder ui, GameGui gameGui)
+        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, PlayerProvider player, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, MapTextureProvider mapTextures, ResourceHelper resources, UiBuilder ui, GameGui gameGui)
         {
             this.Plugin = plugin;
             this.Client = client;
             this.Player = player;
-            this.Hunts = hunts;
-            this.Fates = fates;
+            this.Views = views;
             this.HuntNotifier = huntsNotifier;
             this.FateNotifier = fateNotifier;
             this.MapTextures = mapTextures;
@@ -163,7 +163,7 @@ namespace SonarPlugin.GUI
         }
 
         private List<RelayState> _states = new();
-        private int _huntStatesLock = 0;
+        private readonly object _statesLock = new();
         private HuntRank _huntRank;
         private bool _huntsVisible;
         private bool _fatesVisible;
@@ -171,96 +171,42 @@ namespace SonarPlugin.GUI
         private bool UpdateTrackers(bool force)
         {
             if (!this.IsVisible) return false;
-            SpinWait spin = new();
-            while (true)
-            {
-                if (Interlocked.Exchange(ref this._huntStatesLock, 1) == 0) break;
-                if (!force) return false;
-                spin.SpinOnce();
-            }
+            if (!Monitor.TryEnter(this._statesLock, force ? -1 : 0)) return false;
 
             try
             {
-                var place = this.Player.Place;
-                var now = SyncedUnixNow;
+                var place = this.Client.PlayerPlace;
                 var rank = this._huntRank;
 
-                HuntRank? searchRank = null;
-                IReadOnlyCollection<HuntRank>? searchRanks = null;
-                if (rank != HuntRank.None)
+                HuntRank[]? searchRanks = null;
+                if (rank == HuntRank.S && !this.Plugin.Configuration.AllSRankSettings)
                 {
-                    if (rank == HuntRank.S && !this.Plugin.Configuration.AllSRankSettings)
-                    {
-                        searchRanks = new HashSet<HuntRank>() { HuntRank.S, HuntRank.SS, HuntRank.SSMinion };
-                    }
-                    else
-                    {
-                        searchRank = rank;
-                    }
+                    searchRanks = new HuntRank[] { HuntRank.S, HuntRank.SSMinion, HuntRank.SS };
                 }
 
 #if DEBUG
                 Stopwatch stopwatch = new();
                 stopwatch.Start();
 #endif
-
                 var newStates = Enumerable.Empty<RelayState>();
 
                 if (this._huntsVisible)
                 {
-                    newStates = newStates.Concat(this.Hunts
-                        .GetRelays(count: this.Plugin.Configuration.HuntsDisplayLimit, rank: searchRank, ranks: searchRanks)
-                        .Select(kv => kv.Value)
-                        .Where(h =>
-                        {
-                            var i = h.GetHunt()!;
-
-                            // List decaying
-                            if (h.IsAlive())
-                            {
-                                if (i.Rank == HuntRank.B && (now - h.LastSeen) > EarthSecond * this.Plugin.Configuration.DisplayHuntUpdateTimerOther)
-                                    return false;
-                                else if ((now - h.LastSeen) > EarthSecond * this.Plugin.Configuration.DisplayHuntUpdateTimer)
-                                    return false;
-                            }
-                            else
-                            {
-                                // B ranks respawn after roughly 5 seconds no need to keep them around longer than that
-                                if (i.Rank == HuntRank.B && (now - h.LastKilled) > EarthSecond * Math.Min(5, this.Plugin.Configuration.DisplayHuntDeadTimer))
-                                    return false;
-                                else if ((now - h.LastKilled) > EarthSecond * this.Plugin.Configuration.DisplayHuntDeadTimer)
-                                    return false;
-                            }
-
-                            // Approve
-                            return true;
-                        }));
+                    var hunts = Enumerable.Empty<RelayState>();
+                    if (searchRanks is not null) foreach (var r in searchRanks) hunts = hunts.Concat(this.Views.HuntsByRank[r].Data.States.Values);
+                    else hunts = hunts.Concat(this.Views.HuntsByRank[rank].Data.States.Values);
+                    hunts = hunts
+                        .SortBy(this.Plugin.Configuration.SortingMode, place)
+                        .Take(this.Plugin.Configuration.HuntsDisplayLimit);
+                    newStates = newStates.Concat(hunts);
                 }
 
                 if (this._fatesVisible)
                 {
-                    newStates = newStates.Concat(this.Fates
-                        .GetRelays(count: this.Plugin.Configuration.FatesDisplayLimit)
-                        .Select(kv => kv.Value)
-                        .Where(f =>
-                        {
-                            //var i = f.GetFate()!; // TODO: Maybe in the future
-
-                            // List decaying
-                            if (f.IsAlive())
-                            {
-                                if ((now - f.LastUpdated) > (EarthSecond * this.Plugin.Configuration.DisplayFateUpdateTimer))
-                                    return false;
-                            }
-                            else
-                            {
-                                if ((now - f.LastUpdated) > (EarthSecond * this.Plugin.Configuration.DisplayFateDeadTimer) + (f.Relay.Status == FateStatus.Unknown ? f.Relay.Duration : 0))
-                                    return false;
-                            }
-
-                            // Approve
-                            return true;
-                        }));
+                    var fates = this.Views.Fates.Data.States.Values
+                        .SortBy(this.Plugin.Configuration.SortingMode, place)
+                        .Take(this.Plugin.Configuration.FatesDisplayLimit);
+                    newStates = newStates.Concat(fates);
                 }
 
                 this._states = newStates.SortBy(this.Plugin.Configuration.SortingMode, place)
@@ -276,7 +222,7 @@ namespace SonarPlugin.GUI
             }
             finally
             {
-                this._huntStatesLock = 0;
+                Monitor.Exit(this._statesLock);
             }
             return true;
         }

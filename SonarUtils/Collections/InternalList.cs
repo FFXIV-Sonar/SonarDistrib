@@ -265,6 +265,7 @@ namespace SonarUtils.Collections
         {
             var list = new InternalList<T>(this.Capacity);
             this.InternalArray.AsSpan(0, this.Count).CopyTo(list.InternalArray);
+            list.Count = this.Count;
             return list;
         }
 
@@ -274,6 +275,7 @@ namespace SonarUtils.Collections
         {
             var list = new InternalList<T>(this.Count);
             this.InternalArray.AsSpan(0, this.Count).CopyTo(list.InternalArray);
+            list.Count = this.Count;
             return list;
         }
 

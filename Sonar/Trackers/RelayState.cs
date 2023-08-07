@@ -13,6 +13,7 @@ using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
 using Sonar.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Sonar.Indexes;
 using Sonar.Relays;
 using Sonar.Utilities;
 
@@ -25,7 +26,7 @@ namespace Sonar.Trackers
     [MessagePackObject]
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1721:Property names should not match get methods", Justification = "GetLastSeen, Found and Killed are Datetime getters")]
-    public abstract class RelayState : ISonarMessage
+    public abstract class RelayState : ISonarMessage, ITrackerIndexable
     {
         /// <summary>
         /// Grace period before a dead <see cref="RelayState"/> can be alive again
@@ -350,8 +351,13 @@ namespace Sonar.Trackers
             return $"{this.Relay} (Found: {this.GetLastFound()} | Seen: {this.GetLastSeen()} | Killed: {this.GetLastKilled()})";
         }
 
-        public override int GetHashCode() => FarmHashStringComparer.Instance.GetHashCode(this.RelayKey);
-        public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is RelayState state && this.RelayKey.Equals(state.RelayKey));
+        public override int GetHashCode() => this.Relay.GetHashCode();
+        public bool Equals(RelayState state) => ReferenceEquals(this, state) || this.Relay.Equals(state.Relay);
+        public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is RelayState state && this.Relay.Equals(state.Relay));
+        public static bool operator ==(RelayState left, RelayState right) => left.Equals(right);
+        public static bool operator !=(RelayState left, RelayState right) => !left.Equals(right);
+
+        public string GetIndexKey(IndexType type) => this.Relay.GetIndexKey(type);
     }
 
     /// <summary>

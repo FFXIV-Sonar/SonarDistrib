@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
     <LangVersion>11</LangVersion>
-    <AssemblyVersion>0.5.2.10</AssemblyVersion>
+    <AssemblyVersion>0.5.3.0</AssemblyVersion>
     <OutputType>Library</OutputType>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

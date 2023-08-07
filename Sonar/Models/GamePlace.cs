@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using Sonar.Utilities;
 using Sonar.Threading;
 using Sonar.Trackers;
+using Cysharp.Text;
 
 namespace Sonar.Models
 {
@@ -39,7 +40,7 @@ namespace Sonar.Models
         /// </summary>
         [JsonIgnore]
         [IgnoreMember]
-        public string PlaceKey => this._placeKey ??= StringUtils.Intern($"{this.WorldId}_{this.ZoneId}_{this.InstanceId}");
+        public string PlaceKey => this._placeKey ??= StringUtils.Intern(ZString.Format("{0}_{1}_{2}", this.WorldId, this.ZoneId, this.InstanceId));
 
         /// <summary>
         /// World ID

@@ -6,6 +6,7 @@ using MessagePack;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using MessagePack.Formatters;
+using Sonar.Utilities;
 
 namespace Sonar.Data
 {
@@ -16,7 +17,6 @@ namespace Sonar.Data
     public sealed class LanguageStrings : IDictionary<SonarLanguage, string>
     {
         private readonly Dictionary<SonarLanguage, string> strings = new();
-        private static readonly HashSet<string> s_interner = new();
 
         /// <summary>
         /// Resolve which language to return (in case not all languages are supported)
@@ -112,7 +112,7 @@ namespace Sonar.Data
                 }
 
                 // Sets the language string
-                lock (s_interner) this.strings[lang] = s_interner.Intern(value);
+                this.strings[lang] = StringUtils.Intern(value);
             }
         }
 

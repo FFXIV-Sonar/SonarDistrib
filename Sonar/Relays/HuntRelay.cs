@@ -12,6 +12,7 @@ using static Sonar.SonarConstants;
 using Sonar.Numerics;
 using Sonar.Utilities;
 using System.Runtime.CompilerServices;
+using Cysharp.Text;
 
 namespace Sonar.Relays
 {
@@ -27,8 +28,8 @@ namespace Sonar.Relays
         {
             return this.GetRank() switch
             {
-                HuntRank.SSMinion => $"{base.GetRelayKeyImpl()}_{this.ZoneId}_{this.ActorId:X8}",
-                HuntRank.SS => $"{base.GetRelayKeyImpl()}_{this.ZoneId}",
+                HuntRank.SSMinion => ZString.Format("{0}_{1}_{2:X8}", base.GetRelayKeyImpl(), this.ZoneId, this.ActorId),
+                HuntRank.SS => ZString.Format("{0}_{1}", base.GetRelayKeyImpl(), this.ZoneId),
                 _ => base.GetRelayKeyImpl()
             };
         }

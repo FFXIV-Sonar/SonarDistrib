@@ -150,6 +150,15 @@
         "resolved": "7.0.0",
         "contentHash": "BmSJ4b0e2nlplV/RdWVxvH7WECTHACofv06dx/JwOYc0n56eK1jIWdQKNYYsReSO4w8n1QA5stOzSQcfaVBkJg=="
       },
+      "ZString": {
+        "type": "Direct",
+        "requested": "[2.5.0, )",
+        "resolved": "2.5.0",
+        "contentHash": "xd503npIf5kAN8LAugMlOthWIPQGsyp/rvLxuPlTrHFf28YyYyDfsdLz1n3tvd+87PiAXZrJh0gtWulWtcBTGg==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
+      },
       "DryIocAttributes.dll": {
         "type": "Transitive",
         "resolved": "7.0.0",
@@ -427,6 +436,15 @@
         "requested": "[7.0.0, )",
         "resolved": "7.0.0",
         "contentHash": "BmSJ4b0e2nlplV/RdWVxvH7WECTHACofv06dx/JwOYc0n56eK1jIWdQKNYYsReSO4w8n1QA5stOzSQcfaVBkJg=="
+      },
+      "ZString": {
+        "type": "Direct",
+        "requested": "[2.5.0, )",
+        "resolved": "2.5.0",
+        "contentHash": "xd503npIf5kAN8LAugMlOthWIPQGsyp/rvLxuPlTrHFf28YyYyDfsdLz1n3tvd+87PiAXZrJh0gtWulWtcBTGg==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
       },
       "DryIocAttributes.dll": {
         "type": "Transitive",

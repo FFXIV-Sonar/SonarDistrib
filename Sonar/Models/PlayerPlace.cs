@@ -1,6 +1,7 @@
 ﻿using MessagePack;
 using Newtonsoft.Json;
 using Sonar.Messages;
+using Sonar.Relays;
 using System;
 
 namespace Sonar.Models

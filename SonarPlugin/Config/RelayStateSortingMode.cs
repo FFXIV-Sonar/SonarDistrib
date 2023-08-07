@@ -34,13 +34,22 @@ namespace SonarPlugin.Config
         [EnumCheapLoc("SortingModeZone", "Zone ID")]
         Zone,
 
-        //[EnumCheapLoc("SortingModeLastUpdated", "Jurisdiction")]
-        //Jurisdiction, // TODO: Figure out a way to implement this
+        [EnumCheapLoc("SortingModeWorldZoneInstanceRelay", "World then Zone then Instance then Relay IDs")]
+        WorldZoneInstanceRelay,
+
+        [EnumCheapLoc("SortingModeZoneInstanceRelay", "Zone then Instance then Relay IDs")]
+        ZoneInstanceRelay,
+
+        [EnumCheapLoc("SortingModeJurisdiction", "Jurisdiction")]
+        Jurisdiction,
+
+        [EnumCheapLoc("SortingModeJurisdictionWorldZoneInstanceRelay", "Jurisdiction then World then Zone then Instance then Relay IDs")]
+        JurisdictionWorldZoneInstanceRelay,
     }
 
     public static class RelayStateSortingModeExtensions
     {
-        public static IEnumerable<RelayState> SortBy(this IEnumerable<RelayState> states, RelayStateSortingMode mode, GamePlace place)
+        public static IOrderedEnumerable<RelayState> SortBy(this IEnumerable<RelayState> states, RelayStateSortingMode mode, GamePlace place)
         {
             return mode switch
             {
@@ -50,6 +59,10 @@ namespace SonarPlugin.Config
                 RelayStateSortingMode.Datacenter => states.OrderBy(s => s.GetWorld()?.AudienceId ?? 0),
                 RelayStateSortingMode.World => states.OrderBy(s => s.WorldId),
                 RelayStateSortingMode.Zone => states.OrderBy(s => s.ZoneId),
+                RelayStateSortingMode.WorldZoneInstanceRelay => states.OrderBy(s => s.WorldId).ThenBy(s => s.ZoneId).ThenBy(s => s.InstanceId).ThenBy(s => s.Relay.Id),
+                RelayStateSortingMode.ZoneInstanceRelay => states.OrderBy(s => s.ZoneId).ThenBy(s => s.InstanceId).ThenBy(s => s.Relay.Id),
+                RelayStateSortingMode.Jurisdiction => states.OrderBy(s => place.GetJurisdictionWith(s.Relay)),
+                RelayStateSortingMode.JurisdictionWorldZoneInstanceRelay => states.OrderBy(s => place.GetJurisdictionWith(s.Relay)).ThenBy(s => s.WorldId).ThenBy(s => s.ZoneId).ThenBy(s => s.InstanceId).ThenBy(s => s.Relay.Id),
                 _ => states.SortBy(RelayStateSortingMode.LastFound, place),
             };
         }
