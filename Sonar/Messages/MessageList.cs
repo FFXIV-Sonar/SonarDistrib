@@ -8,11 +8,15 @@ using MessagePack;
 using MessagePack.Formatters;
 using System.ComponentModel;
 using SonarUtils.Collections;
+using System.Diagnostics.CodeAnalysis;
+using DryIoc.FastExpressionCompiler.LightExpression;
 
 namespace Sonar.Messages
 {
+    // This class treat nulls in a special way
+    // - They're not prevented from being added/inserted however its possible to have a null value.
+    // - Null values are skipped during enumeration and deserialization.
     [MessagePackFormatter(typeof(MessageListFormatter))]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1939:Inheritance list should not be redundant", Justification = "well...")]
     public sealed class MessageList : IList<ISonarMessage>, ISonarMessage, ICloneable
     {
         private const int StartingCapacity = 8; // Common CPU L1 Cache line size: 64 bytes
@@ -75,6 +79,7 @@ namespace Sonar.Messages
 
         public void Add(ISonarMessage item)
         {
+            if (item is null) return;
             if (this.AutoFlatten && item is MessageList list) this.AddRange(list);
             else this.list.Add(item);
         }
@@ -107,7 +112,7 @@ namespace Sonar.Messages
 
         public IEnumerator<ISonarMessage> GetEnumerator()
         {
-            return this.list.AsEnumerable().GetEnumerator();
+            return this.list.AsEnumerable().Where(item => item is not null).GetEnumerator();
         }
 
         public int IndexOf(ISonarMessage item)
@@ -123,7 +128,7 @@ namespace Sonar.Messages
 
         public void InsertRange<T>(int index, IEnumerable<T> source) where T : ISonarMessage
         {
-            int reverseIndex = this.Count - index;
+            var reverseIndex = this.Count - index;
             if (reverseIndex == 0)
             {
                 this.AddRange(source);
@@ -171,7 +176,7 @@ namespace Sonar.Messages
             int nextIndex = queue.Dequeue();
 
             int deleted = 0;
-            ISonarMessage[] array = this.list.InternalArray;
+            var array = this.list.InternalArray;
             for (int index = 0; index < this.Count; index++)
             {
                 if (index == nextIndex)
@@ -192,15 +197,15 @@ namespace Sonar.Messages
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.list.AsEnumerable().GetEnumerator();
+            return this.list.AsEnumerable().Where(item => item is not null).GetEnumerator();
         }
 
         [EditorBrowsable(EditorBrowsableState.Advanced)] // Should never be needed
         public void RemoveNulls()
         {
-            int nulls = 0;
-            ISonarMessage[] array = this.list.InternalArray;
-            for (int index = 0; index < this.Count; index++)
+            var nulls = 0;
+            var array = this.list.InternalArray;
+            for (var index = 0; index < this.Count; index++)
             {
                 if (array[index] is null) nulls++;
                 else array[index - nulls] = array[index];

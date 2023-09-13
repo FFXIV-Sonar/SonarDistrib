@@ -58,16 +58,6 @@ namespace SonarPlugin
             this.PluginInterface = pluginInterface;
             pluginInterface.Inject(this);
             this.ConfigureServices();
-            this.VersionCheck();
-        }
-
-        private void VersionCheck()
-        {
-            // Game Version Check
-            if (this._container.Resolve<SonarAddressResolver>().Instance == IntPtr.Zero)
-            {
-                throw new NotSupportedException("FFXIV Version incompatible (Unable to read instance)");
-            }
         }
 
         private SonarClient GetSonarClient()

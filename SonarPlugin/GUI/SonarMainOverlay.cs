@@ -175,7 +175,7 @@ namespace SonarPlugin.GUI
 
             try
             {
-                var place = this.Client.PlayerPlace;
+                var place = this.Client.Meta.PlayerPosition;
                 var rank = this._huntRank;
 
                 HuntRank[]? searchRanks = null;

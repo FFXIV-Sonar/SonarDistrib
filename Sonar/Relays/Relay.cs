@@ -25,7 +25,7 @@ namespace Sonar.Relays
     [Serializable]
     [MessagePackObject]
     [JsonObject(MemberSerialization.OptIn)]
-    public abstract class Relay : GamePosition, IRelay, ISonarMessage
+    public abstract class Relay : GamePosition, IRelay, ISonarMessage, IEquatable<Relay>
     {
         private string? _relayKey;
         private string? _sortKey;
@@ -42,7 +42,7 @@ namespace Sonar.Relays
         /// <summary>
         /// Relay Key
         /// </summary>
-        [JsonIgnore]
+        [JsonProperty("Key")]
         [IgnoreMember]
         public string RelayKey => this._relayKey ??= StringUtils.Intern(this.GetRelayKeyImpl());
 
@@ -175,7 +175,7 @@ namespace Sonar.Relays
         #endregion
 
         public override int GetHashCode() => this._hash ??= FarmHashStringComparer.GetHashCodeStatic(this.RelayKey);
-        public bool Equals(Relay relay) => ReferenceEquals(this, relay) || this.RelayKey.Equals(relay.RelayKey);
+        public bool Equals(Relay? relay) => relay is not null && (ReferenceEquals(this, relay) || this.RelayKey.Equals(relay.RelayKey));
         public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is Relay relay && this.RelayKey.Equals(relay.RelayKey));
 
         public static bool operator ==(Relay left, Relay right) => left.Equals(right);

@@ -12,7 +12,7 @@ namespace Sonar
         /// <summary>
         /// Sonar.NET Protocol Version
         /// </summary>
-        public const int SonarVersion = 5;
+        public const int SonarVersion = 6;
 
         /// <summary>
         /// Lowest instance ID

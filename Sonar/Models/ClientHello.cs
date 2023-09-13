@@ -14,11 +14,17 @@ namespace Sonar.Models
     [MessagePackObject]
     public sealed class ClientHello : ISonarMessage
     {
+        #region Sonar OAuth
+        [Key(1)]
+        public string? ClientId { get; set; } = null!;
+
+        [Key(5)]
+        public string? ClientSecret { get; set; } = null!; // TODO: Not implemented
+        #endregion
+
+        #region Additional Data
         [Key(0)]
         public SonarVersion? Version { get; set; } = null!;
-
-        [Key(1)]
-        public string? ClientIdentifier { get; set; } = null!;
 
         [Key(2)]
         public string? HardwareIdentifier { get; set; } = null!;
@@ -28,5 +34,6 @@ namespace Sonar.Models
 
         [Key(4)]
         public ClientSecret PluginSecret { get; set; } = default;
+        #endregion
     }
 }

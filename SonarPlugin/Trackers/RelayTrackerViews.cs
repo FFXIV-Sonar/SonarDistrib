@@ -48,7 +48,7 @@ namespace SonarPlugin.Trackers
             var relay = state.Relay;
             var info = relay.GetHunt()!;
             if (rank != HuntRank.None && info.Rank != rank) return false;
-            if (!this.Client.PlayerPlace.IsWithinJurisdiction(relay, this.HuntsTracker.Config.GetReportJurisdiction(state.Id))) return false;
+            if (!this.Client.Meta.PlayerPosition?.IsWithinJurisdiction(relay, this.HuntsTracker.Config.GetReportJurisdiction(state.Id)) ?? false) return false;
             var now = SyncedUnixNow;
 
             // List decaying
@@ -75,7 +75,7 @@ namespace SonarPlugin.Trackers
         public bool FateViewPredicate(RelayState<FateRelay> state)
         {
             var relay = state.Relay;
-            if (!this.Client.PlayerPlace.IsWithinJurisdiction(relay, this.FatesTracker.Config.GetReportJurisdiction(state.Id))) return false;
+            if (!this.Client.Meta.PlayerPosition?.IsWithinJurisdiction(relay, this.FatesTracker.Config.GetReportJurisdiction(state.Id)) ?? false) return false;
             var now = SyncedUnixNow;
 
             // List decaying

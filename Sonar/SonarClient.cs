@@ -38,9 +38,8 @@ namespace Sonar
     /// <summary>Main entry point of Sonar</summary>
     public sealed partial class SonarClient : IDisposable, IAsyncDisposable
     {
-        private readonly Container _container = new();
+        private readonly Container _container;
 
-        private readonly object _metaLock = new();
         private readonly TickerService ticker;
         private readonly PingService pinger;
         internal ClientModifiers Modifiers = ClientModifiers.Defaults;
@@ -57,46 +56,13 @@ namespace Sonar
             get => Unsafe.As<SonarVersion>(this.versionInfo.Clone());
             set
             {
-                lock (this._metaLock)
-                {
-                    this.versionInfo = Unsafe.As<SonarVersion>(value.Clone());
-                    this.versionInfo.ResetSonarVersion();
-                    this.Connection.SendIfConnected(value);
-                }
+                this.versionInfo = Unsafe.As<SonarVersion>(value.Clone());
+                this.versionInfo.ResetSonarVersion();
+                this.Connection.SendIfConnected(value);
             }
         }
 
-        private PlayerInfo? _playerInfo;
-        /// <summary>Current <see cref="PlayerInfo"/></summary>
-        public PlayerInfo? PlayerInfo => this._playerInfo;
-
-        /// <summary>Updates <see cref="PlayerInfo"/></summary>
-        /// <returns>Update successful</returns>
-        public bool UpdatePlayerInfo(PlayerInfo info)
-        {
-            if (info.Equals(this._playerInfo)) return false;
-            lock (this._metaLock)
-            {
-                this._playerInfo = info;
-                this.Connection.SendIfConnected(info);
-            }
-            return true;
-        }
-
-        private PlayerPlace _playerPlace = new();
-        /// <summary> Player location</summary>
-        public PlayerPlace PlayerPlace
-        {
-            get => this._playerPlace;
-            set
-            {
-                lock (this._metaLock)
-                {
-                    this._playerPlace = value;
-                    this.Connection.SendIfConnected(value);
-                }
-            }
-        }
+        public SonarMeta Meta { get; }
 
         private SonarConfig configuration;
         /// <summary>
@@ -107,12 +73,18 @@ namespace Sonar
             get => this.configuration;
             set
             {
-                lock (this._metaLock)
+                var taken = false;
+                this.Meta._lock.Enter(ref taken);
+                try
                 {
                     value.VersionUpdate();
                     this.configuration = value;
                     this.baseLogger.Level = value.LogLevel;
                     this.Connection.SendIfConnected(value);
+                }
+                finally
+                {
+                    this.Meta._lock.Exit();
                 }
             }
         }
@@ -154,6 +126,7 @@ namespace Sonar
             this.ticker = new(this);
             this.pinger = new(this);
             this.configuration = new();
+            this.Meta = this._container.Resolve<SonarMeta>();
             this.Trackers = this._container.Resolve<RelayTrackers>();
 
             this.ticker.Tick += this.Ticker_Tick;
@@ -184,25 +157,31 @@ namespace Sonar
         private void ReadyHandler(SonarConnectionManager arg1, ISonarSocket arg2, uint arg3)
         {
             this.pinger.Poke();
-            lock (this._metaLock)
+            var taken = false;
+            this.Meta._lock.Enter(ref taken);
+            try
             {
                 var messages = new MessageList()
                 {
                     new ClientHello()
                     {
                         HardwareIdentifier = this.HardwareIdentifier.Identifier,
-                        ClientIdentifier = this.ClientIdentifier.Identifier,
+                        ClientId = this.ClientIdentifier.Identifier,
                         Version = this.VersionInfo,
                         SonarSecret = ClientSecret.ReadEmbeddedSecret(typeof(SonarClient).Assembly, "Sonar.Resources.Secret.data"),
                         PluginSecret = this.StartInfo.PluginSecret,
                     },
 
                     this.Configuration,
-                    this.PlayerInfo,
-                    this.PlayerPlace,
+                    this.Meta.PlayerInfo!,
+                    this.Meta.PlayerPosition!,
                     Database.GetDbInfo(),
                 };
                 this.Connection.SendIfConnected(messages);
+            }
+            finally
+            {
+                this.Meta._lock.Exit();
             }
         }
 
@@ -223,10 +202,10 @@ namespace Sonar
                             $"{Math.Abs(UnixTimeOffset)}ms {(UnixTimeOffset > 0 ? "behind" : "ahead")}";
 
                         var placeCounts = heartbeat.ClientPlaceCounts;
-                        var placeWorldIndex = this.PlayerPlace?.GetIndexKey(Indexes.IndexType.World) ?? string.Empty;
-                        var placeDatacenterIndex = this.PlayerPlace?.GetIndexKey(Indexes.IndexType.Datacenter) ?? string.Empty;
-                        var placeRegionIndex = this.PlayerPlace?.GetIndexKey(Indexes.IndexType.Region) ?? string.Empty;
-                        var placeAudienceIndex = this.PlayerPlace?.GetIndexKey(Indexes.IndexType.Audience) ?? string.Empty;
+                        var placeWorldIndex = this.Meta.PlayerPosition?.GetIndexKey(Indexes.IndexType.World) ?? string.Empty;
+                        var placeDatacenterIndex = this.Meta.PlayerPosition?.GetIndexKey(Indexes.IndexType.Datacenter) ?? string.Empty;
+                        var placeRegionIndex = this.Meta.PlayerPosition?.GetIndexKey(Indexes.IndexType.Region) ?? string.Empty;
+                        var placeAudienceIndex = this.Meta.PlayerPosition?.GetIndexKey(Indexes.IndexType.Audience) ?? string.Empty;
                         var placeCountsText = string.Join(" / ",
                             $"{placeCounts.GetValueOrDefault(placeWorldIndex)}",
                             $"{placeCounts.GetValueOrDefault(placeDatacenterIndex)}",
@@ -236,10 +215,10 @@ namespace Sonar
                         );
 
                         var homeCounts = heartbeat.ClientHomeCounts;
-                        var homeWorldIndex = this.PlayerInfo?.GetIndexKey(Indexes.IndexType.World) ?? string.Empty;
-                        var homeDatacenterIndex = this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Datacenter) ?? string.Empty;
-                        var homeRegionIndex = this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Region) ?? string.Empty;
-                        var homeAudienceIndex = this.PlayerInfo?.GetIndexKey(Indexes.IndexType.Audience) ?? string.Empty;
+                        var homeWorldIndex = this.Meta.PlayerInfo?.GetIndexKey(Indexes.IndexType.World) ?? string.Empty;
+                        var homeDatacenterIndex = this.Meta.PlayerInfo?.GetIndexKey(Indexes.IndexType.Datacenter) ?? string.Empty;
+                        var homeRegionIndex = this.Meta.PlayerInfo?.GetIndexKey(Indexes.IndexType.Region) ?? string.Empty;
+                        var homeAudienceIndex = this.Meta.PlayerInfo?.GetIndexKey(Indexes.IndexType.Audience) ?? string.Empty;
                         var homeCountsText = string.Join(" / ",
                             $"{homeCounts.GetValueOrDefault(homeWorldIndex)}",
                             $"{homeCounts.GetValueOrDefault(homeDatacenterIndex)}",

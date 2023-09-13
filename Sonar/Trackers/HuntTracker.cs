@@ -23,7 +23,7 @@ namespace Sonar.Trackers
     /// Handles, receives and relay hunt tracking information
     /// </summary>
     [SingletonReuse]
-    [ExportEx]
+    [ExportMany]
     public sealed class HuntTracker : RelayTracker<HuntRelay>
     {
         internal HuntTracker(SonarClient client) : base(client) { }

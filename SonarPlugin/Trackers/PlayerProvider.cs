@@ -10,6 +10,7 @@ using Dalamud.Game.ClientState;
 using SonarPlugin.Game;
 using Dalamud.Logging;
 using Dalamud.Game.ClientState.Objects;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using Sonar;
 
 namespace SonarPlugin.Trackers
@@ -20,86 +21,53 @@ namespace SonarPlugin.Trackers
         private SonarClient Client { get; }
         private ClientState ClientState { get; }
         private ObjectTable ObjectTable { get; }
-        private SonarAddressResolver Address { get; } 
 
-        public PlayerProvider(SonarPlugin plugin, SonarClient client, ClientState clientState, ObjectTable objectTable, SonarAddressResolver address)
+        public PlayerProvider(SonarPlugin plugin, SonarClient client, ClientState clientState, ObjectTable objectTable)
         {
             this.Plugin = plugin;
             this.Client = client;
             this.ClientState = clientState;
             this.ObjectTable = objectTable;
-            this.Address = address;
             PluginLog.LogInformation("PlayerTracker initialized");
         }
 
-        private byte GetCurrentInstance()
+        private unsafe uint GetCurrentInstance()
         {
-            var addr = this.Address.Instance;
-            return addr != IntPtr.Zero ? MemoryHelper.Read<byte>(addr) : (byte)0;
-        }
-
-        private unsafe int GetCurrentInstance2()
-        {
-            // TODO once its available and CN catches up
             // https://github.com/goatcorp/Dalamud/pull/1078#issuecomment-1382729843
-            // using FFXIVClientStructs.FFXIV.Client.Game.UI; <-- move this out to the top of course
-            // UIState.Instance()->AreaInstance.Instance;
-            return this.GetCurrentInstance(); // Need to return something
+            return (uint)UIState.Instance()->AreaInstance.Instance;
         }
 
         private void FrameworkTick(Framework framework)
         {
             // Don't proceed if the structures aren't ready
-            if (!this.Plugin.SafeToReadTables) return;
+            if (!this.Plugin.SafeToReadTables || !this.ClientState.IsLoggedIn) return;
 
             var player = this.ClientState.LocalPlayer;
-            this.IsLoggedIn = player is not null;
-            if (this.IsLoggedIn)
-            {
-                // Player Information
-                var info = new PlayerInfo() { Name = player!.Name.TextValue, HomeWorldId = player.HomeWorld.Id };
-                if (this.Client.UpdatePlayerInfo(info)) PluginLog.LogVerbose("Logged in as {player}", info);
 
-                // Player Place
-                var worldId = player.CurrentWorld.Id;
-                var zoneId = this.ClientState.TerritoryType;
-                var instanceId = this.GetCurrentInstance();
-                if (this.Place.WorldId != worldId || this.Place.ZoneId != zoneId || this.Place.InstanceId != instanceId)
-                {
-                    this.Place = new PlayerPlace() { WorldId = worldId, ZoneId = zoneId, InstanceId = instanceId };
-                    this.Client.PlayerPlace = this.Place;
-                    PluginLog.LogVerbose("Moved to {place}", this.Place);
-                }
+            // Player Information
+            var info = new PlayerInfo() { Name = player!.Name.TextValue, HomeWorldId = player.HomeWorld.Id };
+            if (this.Client.Meta.UpdatePlayerInfo(info)) PluginLog.LogVerbose("Logged in as {player}", info);
 
-                // Players nearby count
-                this.PlayerCount = this.ObjectTable
-                    .OfType<PlayerCharacter>()
-                    .Count();
-            }
+            // Player Place
+            var place = new PlayerPosition() { WorldId = player.CurrentWorld.Id, ZoneId = this.ClientState.TerritoryType, InstanceId = this.GetCurrentInstance(), Coords = player.Position.SwapYZ() };
+            if (this.Client.Meta.UpdatePlayerPosition(place).PlaceUpdated) PluginLog.LogVerbose("Moved to {place}", place);
+
+            // Players nearby count
+            this.PlayerCount = this.ObjectTable
+                .OfType<PlayerCharacter>()
+                .Count();
         }
 
-        #region Event Handlers
-        public delegate void VoidDelegate(PlayerProvider source);
-        public event VoidDelegate? OnPlayerChanged;
-        public event VoidDelegate? OnPlaceChanged;
-        #endregion
-
-        #region Debug Functions
-        public void DebugResetPlace() => this.Place = new PlayerPlace();
-        #endregion
-
         #region Player Information
-        /// <summary>
-        /// Player is logged in
-        /// </summary>
-        public bool IsLoggedIn { get; private set; }
-        /// <summary>
-        /// Player Location
-        /// </summary>
-        public PlayerPlace Place { get; private set; } = new PlayerPlace();
-        /// <summary>
-        /// Surrounding Players Count (including self)
-        /// </summary>
+        /// <summary>Player is logged in</summary>
+        [Obsolete("Use ClientState.IsLoggedIn instead")]
+        public bool IsLoggedIn => this.ClientState.IsLoggedIn;
+
+        /// <summary>Player Location</summary>
+        [Obsolete("Use SonarClient.Meta.PlayerPosition instead")]
+        public PlayerPosition Place => this.Client.Meta.PlayerPosition ?? new(); // TODO: Fix this
+
+        /// <summary>Surrounding Players Count (including self)</summary>
         public int PlayerCount { get; private set; }
         #endregion
 

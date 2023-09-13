@@ -22,7 +22,7 @@ namespace Sonar.Trackers
     /// Handles, receives and relay fate tracking information
     /// </summary>
     [SingletonReuse]
-    [ExportEx]
+    [ExportMany]
     public sealed class FateTracker : RelayTracker<FateRelay>
     {
         internal FateTracker(SonarClient client) : base(client) { }

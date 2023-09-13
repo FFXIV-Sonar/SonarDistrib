@@ -16,7 +16,7 @@ namespace Sonar.Messages
 
     // Session Information Updates (Client to Server)
     [Union(0x10, typeof(PlayerInfo))]
-    [Union(0x11, typeof(PlayerPlace))]
+    [Union(0x11, typeof(PlayerPosition))]
     [Union(0x12, typeof(SonarConfig))]
     [Union(0x13, typeof(SonarVersion))]
     //[Union(0x14, typeof(ClientModifiersOld))]
@@ -46,7 +46,11 @@ namespace Sonar.Messages
     // Relay States (Server to Client)
     [Union(0x40, typeof(RelayState<HuntRelay>))]
     [Union(0x41, typeof(RelayState<FateRelay>))]
-    
+
+    // Lock on requests
+    [Union(0x140, typeof(LockOn<HuntRelay>))]
+    [Union(0x141, typeof(LockOn<FateRelay>))]
+
     // Support / Communication
     [Union(0x50, typeof(SupportMessage))]
     [Union(0x51, typeof(SupportResponse))]
@@ -65,7 +69,7 @@ namespace Sonar.Messages
 
     // Client Requests
     [Union(0x80, typeof(RelayDataRequest))]
-    [Union(0x81, typeof(RelayDataIndexCapacities))] // TODO: Remove in the future
+    //[Union(0x81, typeof(RelayDataIndexCapacities))]
 
     // Database handling
     [Union(0xb0, typeof(SonarDbInfo))]

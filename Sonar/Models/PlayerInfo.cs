@@ -35,7 +35,7 @@ namespace Sonar.Models
 
         public static bool Equals(PlayerInfo? left, PlayerInfo? right) => ReferenceEquals(left, right) || (left is not null && right is not null && left.HomeWorldId == right.HomeWorldId && string.Equals(left.Name, right.Name, StringComparison.Ordinal));
         public bool Equals(PlayerInfo? other) => Equals(this, other);
-        public override bool Equals(object? obj) => obj is PlayerPlace place && this.Equals(place);
+        public override bool Equals(object? obj) => obj is PlayerPosition place && this.Equals(place);
         public override int GetHashCode() => HashCode.Combine(this.Name.GetHashCode(), this.HomeWorldId.GetHashCode());
         public static bool operator ==(PlayerInfo left, PlayerInfo right) => left.Equals(right);
         public static bool operator !=(PlayerInfo left, PlayerInfo right) => !left.Equals(right);

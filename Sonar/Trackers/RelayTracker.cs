@@ -28,11 +28,12 @@ using Sonar.Extensions;
 using Sonar.Connections;
 using Sonar.Sockets;
 using Sonar.Relays;
+using SonarUtils.Collections;
 
 namespace Sonar.Trackers
 {
     /// <summary>Handles, receives and relay hunt tracking information</summary>
-    public abstract partial class RelayTracker<T> : IRelayTracker<T>, IDisposable where T : Relay
+    public abstract partial class RelayTracker<T> : IRelayTracker<T> where T : Relay
     {
         /// <summary>Relay Tracker Configuration. Please access it from SonarClient.</summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -41,7 +42,8 @@ namespace Sonar.Trackers
         public RelayTrackerData<T> Data { get; } = new();
 
         private readonly ConcurrentQueue<T> _relayUpdateQueue = new();
-        private readonly NonBlocking.NonBlockingHashSet<string> _confirmationRequests = new(comparer: FarmHashStringComparer.Instance);
+        private readonly ConcurrentHashSetSlim<string> _confirmationRequests = new(comparer: FarmHashStringComparer.Instance);
+        private readonly ConcurrentHashSetSlim<string> _lockOn = new(comparer: FarmHashStringComparer.Instance);
 
         /// <summary>Dispatch events regardless of jurisdiction settings</summary>
         public bool AlwaysDispatchEvents { get; set; }
@@ -49,10 +51,13 @@ namespace Sonar.Trackers
         private protected RelayTracker(SonarClient sonar)
         {
             this.Client = sonar;
+            this.Client.Meta.PlayerPlaceChanged += this.Meta_PlayerPlaceChanged;
             this.Client.Tick += this.Client_Tick;
             this.Client.Connection.MessageReceived += this.Client_MessageReceived;
             this.Client.Connection.DisconnectedInternal += this.Client_Disconnected;
         }
+
+        private void Meta_PlayerPlaceChanged(PlayerPosition obj) => this._lockOn.Clear();
 
         private void Client_Disconnected(SonarConnectionManager arg1, ISonarSocket arg2) => this._confirmationRequests.Clear();
 
@@ -60,11 +65,14 @@ namespace Sonar.Trackers
         {
             switch (message)
             {
+                case RelayState<T> state:
+                    this.UpdateState(state, true);
+                    break;
                 case T relay:
                     this.FeedRelay(relay);
                     break;
-                case RelayState<T> state:
-                    this.UpdateState(state, true);
+                case LockOn<T> lockOn:
+                    this._lockOn.Add(lockOn.RelayKey);
                     break;
                 case RelayConfirmationSlim<T> confirmation:
                     this._confirmationRequests.Add(confirmation.RelayKey);
@@ -90,7 +98,7 @@ namespace Sonar.Trackers
         private bool IsWithinJurisdiction(IReadOnlyDictionary<uint, WorldRow>? worlds, T relay)
         {
             var jurisdiction = this.Config.GetReportJurisdiction(relay.Id);
-            return this.Client.PlayerPlace.IsWithinJurisdiction(relay, jurisdiction, worlds);
+            return jurisdiction == SonarJurisdiction.All || (this.Client.Meta.PlayerPosition?.IsWithinJurisdiction(relay, jurisdiction, worlds) ?? false);
         }
 
         private bool IsWithinJurisdiction(IReadOnlyDictionary<uint, WorldRow>? worlds, RelayState<T> state) => this.IsWithinJurisdiction(worlds, state.Relay);
@@ -109,7 +117,7 @@ namespace Sonar.Trackers
             var localOnly = relay.GetZone()!.LocalOnly;
 
             // Confirm relay existence if requested
-            if (this._confirmationRequests.EstimatedCount > 0 && this._confirmationRequests.Remove(relay.RelayKey))
+            if (this._confirmationRequests.Count > 0 && this._confirmationRequests.Remove(relay.RelayKey))
             {
                 this.Client.Connection.SendIfConnected(new RelayConfirmationSlim<T>() { RelayKey = relay.RelayKey });
             }
@@ -118,6 +126,7 @@ namespace Sonar.Trackers
             if (localOnly || !this.Client.Connection.IsConnected || !this.Config.Contribute || !this.Client.Modifiers.AllowContribute!.Value)
             {
                 if (this.IsTrackable(relay) && !this.FeedRelayInternal(relay)) return false;
+                if (this._lockOn.Count > 0 && this._lockOn.Contains(relay.RelayKey)) this._relayUpdateQueue.Enqueue(relay);
             }
             else
             {

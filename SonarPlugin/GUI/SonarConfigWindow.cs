@@ -93,7 +93,7 @@ namespace SonarPlugin.GUI
 
             // Chat Types for determining which chat log to send text messages into the chat window
             this._chatTypes = Enum.GetValues<XivChatType>()
-                .Select(t => t.GetDetails()?.FancyName)
+                .Select(t => t.GetDetails()?.FancyName ?? t.ToString())
                 .Where(n => !string.IsNullOrWhiteSpace(n))
                 .ToArray()!;
 
@@ -352,7 +352,7 @@ namespace SonarPlugin.GUI
                 {
                     ImGui.Indent();
                     // TODO: might need to do extra checks here and default to Echo channel on failure.
-                    var currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.HuntOutputChannel).FancyName;
+                    var currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.HuntOutputChannel)?.FancyName ?? this.Plugin.Configuration.HuntOutputChannel.ToString();
                     var selectedChat = Array.IndexOf(this._chatTypes, currentChat);
 
                     if (ImGui.Combo("##chatTypes", ref selectedChat, this._chatTypes, this._chatTypes.Length))
@@ -659,7 +659,7 @@ namespace SonarPlugin.GUI
                 {
                     ImGui.Indent();
                     // TODO: might need to do extra checks here and default to Echo channel on failure.
-                    string currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.FateOutputChannel).FancyName;
+                    string currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.FateOutputChannel)?.FancyName ?? this.Plugin.Configuration.FateOutputChannel.ToString();
                     int selectedChat = Array.IndexOf(this._chatTypes, currentChat);
 
                     if (ImGui.Combo("##chatTypes", ref selectedChat, this._chatTypes, this._chatTypes.Length))
@@ -994,7 +994,7 @@ namespace SonarPlugin.GUI
                 ImGui.Text("Player Tracker");
                 ImGui.BeginChild("##DebugPlayerTracker", new Vector2(0, 35 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
-                    ImGui.Text($"Zone: {this.Client.PlayerPlace}");
+                    ImGui.Text($"Zone: {this.Client.Meta.PlayerPosition}");
                 }
                 ImGui.EndChild(); // debugPlayerTracker
                 ImGui.Spacing();

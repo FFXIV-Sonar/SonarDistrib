@@ -1,28 +1,35 @@
 ﻿using Dalamud.Game.Text;
-using System.Reflection;
+using System;
+using System.Collections.Generic;
 
 namespace SonarPlugin.Utility
 {
     public static class XivChatTypeUtils
     {
-        public static XivChatType GetValueFromInfoAttribute(string name)
+        private static IReadOnlyDictionary<string, XivChatType>? s_chatTypes;
+        public static IReadOnlyDictionary<string, XivChatType> ChatTypes
         {
-            var type = typeof(XivChatType);
-            foreach (var field in type.GetFields())
+            get
             {
-                var attribute = field.GetCustomAttribute<XivChatTypeInfoAttribute>();
-                if (attribute != null)
+                if (s_chatTypes is null)
                 {
-                    if (attribute.FancyName == name)
-                        return (XivChatType)field.GetValue(null)!;
+                    var dict = new Dictionary<string, XivChatType>(comparer: StringComparer.InvariantCultureIgnoreCase);
+                    foreach (var value in Enum.GetValues<XivChatType>())
+                    {
+                        dict.TryAdd(value.ToString(), value);
+                    }
+                    foreach (var value in Enum.GetValues<XivChatType>())
+                    {
+                        var details = value.GetDetails();
+                        if (details is null) continue;
+                        dict.TryAdd(details.FancyName, value);
+                    }
+                    s_chatTypes = dict;
                 }
-                else
-                {
-                    if (field.Name == name)
-                        return (XivChatType)field.GetValue(null)!;
-                }
+                return s_chatTypes;
             }
-            return default;
         }
+        public static XivChatType GetValueFromInfoAttribute(string name) => ChatTypes.GetValueOrDefault(name);
+
     }
 }
