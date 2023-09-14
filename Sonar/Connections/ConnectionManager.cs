@@ -130,9 +130,10 @@ namespace Sonar.Connections
                     while (!this._cts.IsCancellationRequested && this._failCount == failCount)
                     {
                         var startTicks = System.Environment.TickCount;
-                        var ticks = GetVariedIntervalMs(Math.Max(Math.Min(endTicks - startTicks, MinimumIntervalMs), 0));
-                        if (ticks == 0) break;
-                        await Task.Delay(ticks, token);
+                        var ticks = endTicks - startTicks;
+                        if (ticks <= 0) break;
+                        await Task.Delay(GetVariedIntervalMs(RecheckIntervalMs), token);
+                        this.EnsureConnectionIfAvailable();
                     }
 
                     // Update snapshot
@@ -235,7 +236,11 @@ namespace Sonar.Connections
         private void SocketMessageHandler(ISonarSocket socket, ISonarMessage message)
         {
             if (this._socket == socket) this.MessageReceived?.Invoke(this, message);
-            else if (message is ServerReady ready && this._sockets.TryGetValue(socket, out var info)) info.Id = ready.ConnectionId;
+            else if (message is ServerReady ready && this._sockets.TryGetValue(socket, out var info))
+            {
+                info.Id = ready.ConnectionId;
+                this.EnsureConnectionIfAvailable();
+            }
         }
 
         private bool TryGetNextSocket([NotNullWhen(true)] out ISonarSocket socket, out SonarConnectionInformation info)

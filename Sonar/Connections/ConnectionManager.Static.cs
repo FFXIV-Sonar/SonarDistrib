@@ -5,6 +5,7 @@ namespace Sonar.Connections
     /// <summary>Manage sonar connections</summary>
     public sealed partial class SonarConnectionManager
     {
+        private const int RecheckIntervalMs = 100;
         private const int MinimumIntervalMs = 2000;
         private const int MaximumIntervalMs = 300000;
         private const double IntervalVariation = 0.2; // This can break min and max interval boundaries (intentional)
