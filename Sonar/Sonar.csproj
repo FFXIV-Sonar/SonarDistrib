@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net7.0-windows</TargetFrameworks>
-    <AssemblyVersion>0.5.4.1</AssemblyVersion>
+    <TargetFrameworks>net7.0</TargetFrameworks>
+    <AssemblyVersion>0.6.0.0</AssemblyVersion>
     <RootNamespace>Sonar</RootNamespace>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <LangVersion>11</LangVersion>
@@ -41,7 +41,7 @@
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="DeviceId" Version="6.3.0">
+    <PackageReference Include="DeviceId" Version="6.4.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DeviceId.Linux" Version="6.3.0">
@@ -50,10 +50,10 @@
     <PackageReference Include="DeviceId.Mac" Version="6.2.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="DeviceId.Windows" Version="6.2.0">
+    <PackageReference Include="DeviceId.Windows" Version="6.4.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="DeviceId.Windows.Wmi" Version="6.2.1" />
+    <PackageReference Include="DeviceId.Windows.Wmi" Version="6.5.0" />
     <PackageReference Include="DnsClient" Version="1.7.0" PrivateAssets="all" />
     <PackageReference Include="DryIoc.dll" Version="5.4.1" />
     <PackageReference Include="DryIoc.MefAttributedModel.dll" Version="7.0.0" />
@@ -81,7 +81,7 @@
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="ZString" Version="2.5.0" />
+    <PackageReference Include="ZString" Version="2.5.1" />
   </ItemGroup>
 
   <ItemGroup>

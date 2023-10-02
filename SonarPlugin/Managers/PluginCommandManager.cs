@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using static Dalamud.Game.Command.CommandInfo;
+using Dalamud.Plugin.Services;
 
 namespace SonarPlugin.Managers
 {
@@ -14,14 +15,16 @@ namespace SonarPlugin.Managers
         private readonly (string, CommandInfo)[] _pluginCommands;
         private readonly MethodInfo? _loaderAssemblySetter;
 
-        private CommandManager Commands { get; }
+        private ICommandManager Commands { get; }
         private THost Host { get; }
+        private IPluginLog Logger { get; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "<Pending>")]
-        public PluginCommandManager(THost host, CommandManager commands)
+        public PluginCommandManager(THost host, ICommandManager commands, IPluginLog logger)
         {
             this.Commands = commands;
             this.Host = host;
+            this.Logger = logger;
 
             this._loaderAssemblySetter = typeof(CommandInfo).GetProperty("LoaderAssemblyName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty)?.SetMethod;
 
@@ -35,22 +38,22 @@ namespace SonarPlugin.Managers
 
         private void AddComandHandlers()
         {
-            PluginLog.LogDebug("Adding command handlers for {type}", this.Host.GetType().Name);
+            this.Logger.Debug("Adding command handlers for {type}", this.Host.GetType().Name);
             for (var i = 0; i < this._pluginCommands.Length; i++)
             {
                 var (command, commandInfo) = this._pluginCommands[i];
-                PluginLog.LogVerbose(" - {command}", command);
+                this.Logger.Verbose(" - {command}", command);
                 this.Commands.AddHandler(command, commandInfo);
             }
         }
 
         private void RemoveCommandHandlers()
         {
-            PluginLog.LogDebug("Removing command handlers for {type}", this.Host.GetType().Name);
+            this.Logger.Debug("Removing command handlers for {type}", this.Host.GetType().Name);
             for (var i = 0; i < this._pluginCommands.Length; i++)
             {
                 var (command, _) = this._pluginCommands[i];
-                PluginLog.LogVerbose(" - {command}", command);
+                this.Logger.Verbose(" - {command}", command);
                 this.Commands.RemoveHandler(command);
             }
         }

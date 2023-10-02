@@ -5,7 +5,7 @@
   "Description": "Automatically send and receive hunt and fate relays. /sonar to open, /sonarconfig to configure. Support is only provided in the Sonar Support discord.",
   "Changelog": "See the Sonar Support discord #announcements channel for more information",
   "InternalName": "SonarPlugin",
-  "DalamudApiLevel": 8,
+  "DalamudApiLevel": 9,
   "Tags": [
     "Sonar",
     "Hunt",
@@ -20,7 +20,8 @@
   "CategoryTags": [
     "utility"
   ],
-  "RepoUrl": "https://discord.gg/K7y24Rr", "TODO1": "To be replaced once supportInfo is implemented DIP53: https://github.com/FFXIV-Sonar/SonarDistrib",
+  "RepoUrl": "https://discord.gg/K7y24Rr",
+  "TODO1": "To be replaced once supportInfo is implemented DIP53: https://github.com/FFXIV-Sonar/SonarDistrib",
   "IconUrl": "https://assets.ffxivsonar.com/dalamud/logo.png",
   "ImageUrls": [
     "https://assets.ffxivsonar.com/dalamud/image1.png",

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Sonar.Trackers;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 
 namespace SonarPlugin.Trackers
 {
@@ -16,25 +17,27 @@ namespace SonarPlugin.Trackers
     {
         private PlayerProvider Player { get; }
         private HuntTracker Tracker { get; }
-        private ObjectTable Table { get; }
+        private IObjectTable Table { get; }
         private SonarPlugin Plugin { get; }
+        private IPluginLog Logger { get; }
 
         /// <summary>
         /// Initialize monster tracker
         /// </summary>
-        public SonarHuntProvider(PlayerProvider player, HuntTracker tracker, ObjectTable table, SonarPlugin plugin)
+        public SonarHuntProvider(PlayerProvider player, HuntTracker tracker, IObjectTable table, SonarPlugin plugin, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
             this.Player = player;
             this.Tracker = tracker;
             this.Table = table;
             this.Plugin = plugin;
+            this.Logger = logger;
 
             // Initialization feedback
-            PluginLog.LogInformation("MobTracker Initialized");
+            this.Logger.Information("MobTracker Initialized");
         }
 
-        private void FrameworkTick(Framework framework)
+        private void FrameworkTick(IFramework framework)
         {
             // Don't proceed if the structures aren't ready
             if (!this.Plugin.SafeToReadTables) return;

@@ -19,6 +19,7 @@ using System.Diagnostics;
 using static Sonar.SonarConstants;
 using Sonar.Relays;
 using SonarPlugin.GUI;
+using Dalamud.Plugin.Services;
 
 namespace SonarPlugin.Notifiers
 {
@@ -30,18 +31,20 @@ namespace SonarPlugin.Notifiers
         private SonarPlugin Plugin { get; }
         private IRelayTracker<HuntRelay> Tracker { get; }
         private PlayerProvider Player { get; }
-        private ChatGui Chat { get; }
+        private IChatGui Chat { get; }
         private AudioPlaybackEngine Audio { get; }
+        private IPluginLog Logger { get; }
 
-        public HuntNotifier(SonarPlugin plugin, RelayTrackerViews views, PlayerProvider player, ChatGui chat, AudioPlaybackEngine audio)
+        public HuntNotifier(SonarPlugin plugin, RelayTrackerViews views, PlayerProvider player, IChatGui chat, AudioPlaybackEngine audio, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Tracker = views.Hunts;
             this.Player = player;
             this.Chat = chat;
             this.Audio = audio;
+            this.Logger = logger;
 
-            PluginLog.LogInformation("Hunt Notifier Initialized");
+            this.Logger.Information("Hunt Notifier Initialized");
         }
 
         private void HuntFound(RelayState<HuntRelay> state)
@@ -58,12 +61,12 @@ namespace SonarPlugin.Notifiers
 
             if (allowSound && this.Plugin.Configuration.PlaySoundARanks && state.Relay.GetRank() == HuntRank.A)
             {
-                try { this.Audio.PlaySound(this.Plugin.Configuration.SoundFileARanks ?? string.Empty); } catch (Exception ex) { PluginLog.LogError(ex, "Exception playing sound"); }
+                try { this.Audio.PlaySound(this.Plugin.Configuration.SoundFileARanks ?? string.Empty); } catch (Exception ex) { this.Logger.Error(ex, "Exception playing sound"); }
             }
 
             if (allowSound && this.Plugin.Configuration.PlaySoundSRanks && (state.Relay.GetRank() == HuntRank.S || state.Relay.GetRank() == HuntRank.SS || state.Relay.GetRank() == HuntRank.SSMinion))
             {
-                try { this.Audio.PlaySound(this.Plugin.Configuration.SoundFileSRanks ?? string.Empty); } catch (Exception ex) { PluginLog.LogError(ex, "Exception playing sound"); }
+                try { this.Audio.PlaySound(this.Plugin.Configuration.SoundFileSRanks ?? string.Empty); } catch (Exception ex) { this.Logger.Error(ex, "Exception playing sound"); }
             }
         }
 
@@ -91,7 +94,7 @@ namespace SonarPlugin.Notifiers
             if (relay.IsDead()) builder.AddText(" was just killed");
             if (this.Plugin.Configuration.EnableGameChatItalicFont) builder.AddItalicsOff();
 
-            this.Chat.PrintChat(new()
+            this.Chat.Print(new()
             {
                 Type = type,
                 Name = "Sonar",

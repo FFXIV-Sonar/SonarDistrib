@@ -3,6 +3,8 @@ using System;
 using Dalamud.Logging;
 using System.Reflection;
 using Dalamud.Interface;
+using Dalamud.Plugin.Services;
+using Dalamud.Interface.Internal;
 
 namespace SonarPlugin.Utility
 {
@@ -10,18 +12,20 @@ namespace SonarPlugin.Utility
     public sealed class ResourceHelper
     {
         private UiBuilder Ui { get; }
+        private IPluginLog Logger { get; }
         
-        public ResourceHelper(UiBuilder ui)
+        public ResourceHelper(UiBuilder ui, IPluginLog logger)
         {
             this.Ui = ui;
+            this.Logger = logger;
         }
 
-        public TextureWrap LoadIcon(string filename)
+        public IDalamudTextureWrap LoadIcon(string filename)
         {
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"SonarPlugin.Resources.Icons.{filename}");
             if (stream is null)
             {
-                PluginLog.LogWarning($"Embedded resource not found while loading icon image: {filename}");
+                this.Logger.Warning($"Embedded resource not found while loading icon image: {filename}");
                 return this.Ui.LoadImageRaw(new byte[] { 255, 0, 0, 127 }, 1, 1, 4);
             }
 
@@ -33,7 +37,7 @@ namespace SonarPlugin.Utility
             }
             catch (Exception ex)
             {
-                PluginLog.LogError(ex, $"Failed to load icon image: {filename}, loading fallback");
+                this.Logger.Error(ex, $"Failed to load icon image: {filename}, loading fallback");
                 return this.Ui.LoadImageRaw(new byte[] { 255, 0, 0, 127 }, 1, 1, 4);
             }
         }

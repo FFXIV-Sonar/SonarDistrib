@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Dalamud.Interface.Windowing;
 using Sonar;
+using Dalamud.Plugin.Services;
 
 namespace SonarPlugin
 {
@@ -21,9 +22,10 @@ namespace SonarPlugin
         private SonarMainOverlay MainWindow { get; }
         private SonarConfigWindow ConfigWindow { get; }
         private SonarTrackerWindow TrackerWindow { get; }
-        private CommandManager Commands { get; }
+        private ICommandManager Commands { get; }
+        private IPluginLog Logger { get; }
 
-        public SonarCommands(SonarPlugin plugin, SonarClient client, WindowSystem windows, SonarMainOverlay mainWindow, CommandManager commands, SonarConfigWindow configWindow, SonarTrackerWindow trackerWindow)
+        public SonarCommands(SonarPlugin plugin, SonarClient client, WindowSystem windows, SonarMainOverlay mainWindow, ICommandManager commands, SonarConfigWindow configWindow, SonarTrackerWindow trackerWindow, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;
@@ -32,7 +34,8 @@ namespace SonarPlugin
             this.Commands = commands;
             this.ConfigWindow = configWindow;
             this.TrackerWindow = trackerWindow;
-            PluginLog.LogInformation("Sonar Commands Initialized");
+            this.Logger = logger;
+            this.Logger.Information("Sonar Commands Initialized");
         }
 
         [Command("/sonar")]
@@ -78,7 +81,7 @@ namespace SonarPlugin
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this._commandManager = new PluginCommandManager<SonarCommands>(this, this.Commands);
+            this._commandManager = new PluginCommandManager<SonarCommands>(this, this.Commands, this.Logger);
             return Task.CompletedTask;
         }
 

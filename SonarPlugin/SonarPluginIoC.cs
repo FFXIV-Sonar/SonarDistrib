@@ -27,6 +27,7 @@ using System.ComponentModel;
 using Container = DryIoc.Container;
 using Sonar.Trackers;
 using Sonar.Models;
+using Dalamud.Plugin.Services;
 
 namespace SonarPlugin
 {
@@ -41,16 +42,17 @@ namespace SonarPlugin
         private SonarPluginStub Stub { get; set; }
         
         // NOTE: All setters for Plugin Services need to stay, Injector won't work otherwise.
-        [PluginService] private Framework Framework { get; set; } = default!;
-        [PluginService] private Condition Condition { get; set; } = default!;
-        [PluginService] private ClientState ClientState { get; set; } = default!;
-        [PluginService] private ObjectTable ObjectTable { get; set; } = default!;
-        [PluginService] private FateTable FateTable { get; set; } = default!;
-        [PluginService] private GameGui GameGui { get; set; } = default!;
-        [PluginService] private ChatGui ChatGui { get; set; } = default!;
-        [PluginService] private CommandManager CommandManager { get; set; } = default!;
-        [PluginService] private SigScanner SigScanner { get; set; } = default!;
-        [PluginService] private DataManager Data { get; set; } = default!;
+        [PluginService] private IFramework Framework { get; set; } = default!;
+        [PluginService] private ICondition Condition { get; set; } = default!;
+        [PluginService] private IClientState ClientState { get; set; } = default!;
+        [PluginService] private IObjectTable ObjectTable { get; set; } = default!;
+        [PluginService] private IFateTable FateTable { get; set; } = default!;
+        [PluginService] private IGameGui GameGui { get; set; } = default!;
+        [PluginService] private IChatGui ChatGui { get; set; } = default!;
+        [PluginService] private ICommandManager CommandManager { get; set; } = default!;
+        [PluginService] private ISigScanner SigScanner { get; set; } = default!;
+        [PluginService] private IDataManager Data { get; set; } = default!;
+        [PluginService] private IPluginLog Logger { get; set; } = default!;
 
         public SonarPluginIoC(SonarPluginStub stub, DalamudPluginInterface pluginInterface)
         {
@@ -62,7 +64,7 @@ namespace SonarPlugin
 
         private SonarClient GetSonarClient()
         {
-            PluginLog.LogInformation("Initializing Sonar");
+            this.Logger.Information("Initializing Sonar");
             var startInfo = new SonarStartInfo()
             {
                 WorkingDirectory = Path.Join(this.PluginInterface.GetPluginConfigDirectory(), "Sonar"),
@@ -125,24 +127,25 @@ namespace SonarPlugin
             this._container.RegisterInstance(this.ObjectTable, setup: Setup.With(preventDisposal: true));
             this._container.RegisterInstance(this.SigScanner, setup: Setup.With(preventDisposal: true));
             this._container.RegisterInstance(this.Data, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterInstance(this.Logger, setup: Setup.With(preventDisposal: true));
 
             // Additional Dalamud Services
             this._container.Register(Made.Of(r => ServiceInfo.Of<DalamudPluginInterface>(), pi => pi.UiBuilder), Reuse.Singleton, Setup.With(preventDisposal: true));
-            this._container.Register(Made.Of(r => ServiceInfo.Of<DataManager>(), d => d.GameData), Reuse.Singleton, Setup.With(preventDisposal: true));
+            this._container.Register(Made.Of(r => ServiceInfo.Of<IDataManager>(), d => d.GameData), Reuse.Singleton, Setup.With(preventDisposal: true));
 
 #if DEBUG
-            PluginLog.LogInformation("Registered services:");
+            this.Logger.Information("Registered services:");
             foreach (var service in this._container.GetServiceRegistrations())
             {
-                PluginLog.LogInformation($" - {service}");
+                this.Logger.Information($" - {service}");
             }
 
-            PluginLog.LogInformation("Validating DryIoC");
+            this.Logger.Information("Validating DryIoC");
             var exceptions = this._container.Validate();
 
             foreach (var (service, exception) in exceptions)
             {
-                PluginLog.LogError(exception, $"Exception in {service.ServiceType.Name}");
+                this.Logger.Error(exception, $"Exception in {service.ServiceType.Name}");
             }
 #endif
         }
@@ -170,7 +173,7 @@ namespace SonarPlugin
             var tasks = new List<Task>();
             foreach (var service in this._container.ResolveMany<IHostedService>())
             {
-                PluginLog.LogDebug($"Starting {service.GetType().Name}");
+                this.Logger.Debug($"Starting {service.GetType().Name}");
                 tasks.Add(service.StartAsync(CancellationToken.None));
             }
             Task.WaitAll(tasks.ToArray());
@@ -181,7 +184,7 @@ namespace SonarPlugin
             var tasks = new List<Task>();
             foreach (var service in this._container.ResolveMany<IHostedService>())
             {
-                PluginLog.LogDebug($"Stopping {service.GetType().Name}");
+                this.Logger.Debug($"Stopping {service.GetType().Name}");
                 tasks.Add(service.StopAsync(CancellationToken.None));
             }
             Task.WaitAll(tasks.ToArray());

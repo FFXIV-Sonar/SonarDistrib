@@ -16,6 +16,7 @@ using SonarPlugin.Game;
 using Sonar.Data.Extensions;
 using Dalamud.Logging;
 using Sonar.Relays;
+using Dalamud.Plugin.Services;
 
 namespace SonarPlugin.Notifiers
 {
@@ -24,18 +25,20 @@ namespace SonarPlugin.Notifiers
         private SonarPlugin Plugin { get; }
         private FateTracker Tracker { get; }
         private PlayerProvider Player { get; }
-        private ChatGui Chat { get; }
+        private IChatGui Chat { get; }
         private AudioPlaybackEngine Audio { get; }
+        private IPluginLog Logger { get; }
         
-        public FateNotifier(SonarPlugin plugin, FateTracker tracker, PlayerProvider player, ChatGui chat, AudioPlaybackEngine audio)
+        public FateNotifier(SonarPlugin plugin, FateTracker tracker, PlayerProvider player, IChatGui chat, AudioPlaybackEngine audio, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Tracker = tracker;
             this.Player = player;
             this.Chat = chat;
             this.Audio = audio;
+            this.Logger = logger;
 
-            PluginLog.LogInformation("Fate Notifier Initialized");
+            this.Logger.Information("Fate Notifier Initialized");
         }
 
         private void FateFound(RelayState<FateRelay> state)
@@ -53,7 +56,7 @@ namespace SonarPlugin.Notifiers
             if (allowSound && this.Plugin.Configuration.PlaySoundFates)
             {
                 if (!this.Plugin.Configuration.SendFateToSound.Contains(state.Relay.Id)) return;
-                try { this.Audio.PlaySound(this.Plugin.Configuration.SoundFileFates ?? string.Empty); } catch (Exception ex) { PluginLog.LogError(ex, "Exception playing sound"); }
+                try { this.Audio.PlaySound(this.Plugin.Configuration.SoundFileFates ?? string.Empty); } catch (Exception ex) { this.Logger.Error(ex, "Exception playing sound"); }
             }
         }
 
@@ -70,7 +73,7 @@ namespace SonarPlugin.Notifiers
             if (relay.IsDead()) builder.AddText(" was just killed");
             if (this.Plugin.Configuration.EnableFateChatItalicFont) builder.AddItalicsOff();
 
-            this.Chat.PrintChat(new()
+            this.Chat.Print(new()
             {
                 Type = type,
                 Name = "Sonar",

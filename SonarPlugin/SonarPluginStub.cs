@@ -3,6 +3,7 @@ using Dalamud.Game.Gui;
 using Dalamud.IoC;
 using Dalamud.Logging;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using DryIoc;
 using System;
 using System.Collections.Generic;
@@ -32,15 +33,17 @@ namespace SonarPlugin
         private SonarPluginIoC? Plugin;
         private DalamudPluginInterface PluginInterface { get; }
 
-        [PluginService] public CommandManager Commands { get; private set; } = default!;
-        [PluginService] public ChatGui Chat { get; private set; } = default!;
+        [PluginService] public ICommandManager Commands { get; private set; } = default!;
+        [PluginService] public IChatGui Chat { get; private set; } = default!;
+        [PluginService] public IPluginLog Logger { get; private set; } = default!;
 
         private readonly object _taskLock = new();
         private Task _sonarTask = Task.CompletedTask;
 
         public SonarPluginStub(DalamudPluginInterface pluginInterface)
         {
-            PluginLog.Debug("Initializing Sonar [Stub]");
+            pluginInterface.Inject(this);
+            this.Logger.Debug("Initializing Sonar [Stub]");
             this.PluginInterface = pluginInterface;
             this.PluginInterface.Inject(this);
 
@@ -49,7 +52,7 @@ namespace SonarPlugin
                 var flavor = this.DetermineFlavor();
                 if (!string.IsNullOrWhiteSpace(flavor))
                 {
-                    PluginLog.Information($"Detected Flavor: {flavor}");
+                    this.Logger.Information($"Detected Flavor: {flavor}");
                     this.Name = $"{this.Name}-{flavor}";
                     this.PluginName = $"{this.PluginName}-{flavor}";
                     this.Flavor = flavor;
@@ -57,7 +60,7 @@ namespace SonarPlugin
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, "Exception occured while getting flavor");
+                this.Logger.Error(ex, "Exception occured while getting flavor");
             }
 
             this.Commands.AddHandler("/sonaron", new CommandInfo(this.SonarOnCommand) { HelpMessage = "Turn on / enable Sonar", ShowInHelp = true });
@@ -71,10 +74,10 @@ namespace SonarPlugin
 
         private string? DetermineFlavor()
         {
-            PluginLog.Debug("Determining Flavor");
+            this.Logger.Debug("Determining Flavor");
 
             // Attempt #1: Flavor resource
-            var flavor = GetFlavorResource();
+            var flavor = this.GetFlavorResource();
             if (flavor is not null) return flavor;
 
             // Attempt #2: Testing
@@ -86,7 +89,7 @@ namespace SonarPlugin
             if (flavor is not null) return flavor;
 
             // Attempt #5: Give up
-            PluginLog.Warning("Unable to determine flavor");
+            this.Logger.Warning("Unable to determine flavor");
             return null;
         }
 
@@ -124,14 +127,14 @@ namespace SonarPlugin
             return null;
         }
 
-        private static string? GetFlavorResource()
+        private string? GetFlavorResource()
         {
             // Open the Flavor.data embedded resource stream
             var assembly = typeof(SonarPluginStub).Assembly;
             var stream = assembly.GetManifestResourceStream("SonarPlugin.Resources.Flavor.data");
             if (stream is null)
             {
-                PluginLog.Warning("Flavor resource not found!");
+                this.Logger.Warning("Flavor resource not found!");
                 return null;
             }
 
@@ -143,7 +146,7 @@ namespace SonarPlugin
             var flavor = Encoding.UTF8.GetString(bytes);
             if (string.IsNullOrWhiteSpace(flavor))
             {
-                PluginLog.Debug("Resource flavor is empty");
+                this.Logger.Debug("Resource flavor is empty");
                 return null;
             }
             return flavor;
@@ -183,18 +186,18 @@ namespace SonarPlugin
                 if (this.Plugin is not null) return;
                 try
                 {
-                    PluginLog.Debug("Starting Sonar");
+                    this.Logger.Debug("Starting Sonar");
                     this.Plugin = new(this, this.PluginInterface);
                     this.Plugin.StartServices();
                 }
                 catch (Exception ex)
                 {
-                    PluginLog.Error(ex, string.Empty);
+                    this.Logger.Error(ex, string.Empty);
                     this.ShowError(ex, "initialized", true);
 
                     if (ex is ContainerException cex && this.Plugin is not null)
                     {
-                        PluginLog.Error(cex.TryGetDetails(this.Plugin.Container));
+                        this.Logger.Error(cex.TryGetDetails(this.Plugin.Container));
                     }
                     /* Swallow Exception */
                 }
@@ -208,7 +211,7 @@ namespace SonarPlugin
                 if (this.Plugin is null) return;
                 try
                 {
-                    PluginLog.Debug("Stopping Sonar");
+                    this.Logger.Debug("Stopping Sonar");
                     this.Plugin?.StopServices();
                     this.Plugin?.Dispose();
                     this.Plugin = null;
@@ -216,10 +219,10 @@ namespace SonarPlugin
                 catch (Exception ex)
                 {
                     this.ShowError(ex, "disposed", false);
-                    PluginLog.Error(ex, string.Empty);
+                    this.Logger.Error(ex, string.Empty);
                     if (ex is ContainerException cex)
                     {
-                        PluginLog.Error(cex.TryGetDetails(this.Plugin!.Container));
+                        this.Logger.Error(cex.TryGetDetails(this.Plugin!.Container));
                     }
                     /* Swallow Exception */
                 }
@@ -239,11 +242,11 @@ namespace SonarPlugin
             var footer = "Sonar may be in an undefined state, a game restart may be required.";
             var contact = "If this problem persist report it to https://discord.gg/K7y24Rr";
 
-            PluginLog.Error(header);
+            this.Logger.Error(header);
             this.Chat.PrintError(header);
 
             try { if (ex is AggregateException aex) ex = aex.Flatten(); } catch { /* Swallow */ }
-            PluginLog.Error($"{ex}");
+            this.Logger.Error($"{ex}");
             try
             {
                 if (ex is ReflectionTypeLoadException rexs)
@@ -252,17 +255,17 @@ namespace SonarPlugin
                     {
                         var rrex = rex;
                         try { if (rrex is AggregateException aex) rrex = aex.Flatten(); } catch { /* Swallow */ }
-                        PluginLog.Error($"{rrex}");
+                        this.Logger.Error($"{rrex}");
                     }
                 }
             }
-            catch (Exception ex2) { PluginLog.Error(ex2, string.Empty); }
+            catch (Exception ex2) { this.Logger.Error(ex2, string.Empty); }
             this.Chat.PrintError(dalamud);
 
-            PluginLog.Error(footer);
+            this.Logger.Error(footer);
             this.Chat.PrintError(footer);
 
-            PluginLog.Error(contact);
+            this.Logger.Error(contact);
             this.Chat.PrintError(contact);
         }
 
@@ -284,7 +287,7 @@ namespace SonarPlugin
 
         ~SonarPluginStub()
         {
-            try { this.Dispose(); } catch (Exception ex) { PluginLog.Error(ex, string.Empty); }
+            try { this.Dispose(); } catch (Exception ex) { this.Logger.Error(ex, string.Empty); }
         }
     }
 }

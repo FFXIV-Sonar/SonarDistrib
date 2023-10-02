@@ -7,6 +7,7 @@ using SonarPlugin.NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using Dalamud.Logging;
 using Sonar.Threading;
+using Dalamud.Plugin.Services;
 
 namespace SonarPlugin.Utility
 {
@@ -16,10 +17,12 @@ namespace SonarPlugin.Utility
         private readonly Dictionary<string, byte[]?> _cache = new();
         private readonly ResettableLazy<AudioEngineCore> _core;
         private AudioEngineCore Core => this._core.Value;
+        private IPluginLog Logger { get; }
 
-        public AudioPlaybackEngine()
+        public AudioPlaybackEngine(IPluginLog logger)
         {
             this._core = new(this.CreateEngineCore);
+            this.Logger = logger;
         }
 
         private float _volume = 1.0f;
@@ -35,7 +38,7 @@ namespace SonarPlugin.Utility
 
         private AudioEngineCore CreateEngineCore()
         {
-            var ret = new AudioEngineCore();
+            var ret = new AudioEngineCore(this.Logger);
             ret.VolumeProvider.Volume = this.Volume;
             ret.PlaybackStopped += this.PlaybackStoppedHandler;
             return ret;
@@ -45,7 +48,7 @@ namespace SonarPlugin.Utility
         {
             if (this._core.IsValueCreated && this._core.Value == core) this._core.Reset();
             core.PlaybackStopped -= this.PlaybackStoppedHandler;
-            if (ex is not null) PluginLog.LogDebug(ex, string.Empty);
+            if (ex is not null) this.Logger.Debug(ex, string.Empty);
             core.Dispose();
         }
 
@@ -60,7 +63,7 @@ namespace SonarPlugin.Utility
             }
             catch (Exception ex)
             {
-                PluginLog.LogError($"Exception playing sound\n{ex}");
+                this.Logger.Error($"Exception playing sound\n{ex}");
             }
         }
 
@@ -108,7 +111,7 @@ namespace SonarPlugin.Utility
                 }
                 catch (Exception ex2)
                 {
-                    PluginLog.LogError($"Error processing audio file: {filename}\n{new AggregateException(ex1, ex2)}");
+                    this.Logger.Error($"Error processing audio file: {filename}\n{new AggregateException(ex1, ex2)}");
                     return null;
                 }
             }

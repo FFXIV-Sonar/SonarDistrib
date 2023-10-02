@@ -27,6 +27,9 @@ using Dalamud.Game.Gui;
 using Sonar.Relays;
 using Sonar.Indexes;
 using Sonar.Utilities;
+using Dalamud.Plugin.Services;
+using System.Diagnostics.CodeAnalysis;
+using Dalamud.Interface.Internal;
 
 namespace SonarPlugin.GUI
 {
@@ -34,6 +37,8 @@ namespace SonarPlugin.GUI
     {
         public string WindowTitle => windowTitle;
         private bool _visible; // used as ref
+
+        [SuppressMessage("Minor Code Smell", "S2292", Justification = "Backing field is used with ref")]
         public bool IsVisible
         {
             get => this._visible;
@@ -42,14 +47,14 @@ namespace SonarPlugin.GUI
 
         private SonarPlugin Plugin { get; }
         private SonarClient Client { get; }
-        private PlayerProvider Player { get; }
         private RelayTrackerViews Views { get; }
         private HuntNotifier HuntNotifier { get; }
         private FateNotifier FateNotifier { get; }
         private MapTextureProvider MapTextures { get; }
         private ResourceHelper Resources { get; }
         private UiBuilder Ui { get; }
-        private GameGui GameGui { get; }
+        private IGameGui GameGui { get; }
+        private IPluginLog Logger { get; }
 
         private static readonly string windowTitle = Loc.Localize("MainWindowTitle", "Sonar");
         private static Vector2 minimumWindowSize = new(300, 100);
@@ -58,13 +63,12 @@ namespace SonarPlugin.GUI
         private static Vector2 iconSize = new(16, 16);
         private static readonly float detailLabelOffset = 100.0f;
 
-        private readonly TextureWrap _redFlag;
+        private readonly IDalamudTextureWrap _redFlag;
 
-        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, PlayerProvider player, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, MapTextureProvider mapTextures, ResourceHelper resources, UiBuilder ui, GameGui gameGui)
+        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, MapTextureProvider mapTextures, ResourceHelper resources, UiBuilder ui, IGameGui gameGui, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;
-            this.Player = player;
             this.Views = views;
             this.HuntNotifier = huntsNotifier;
             this.FateNotifier = fateNotifier;
@@ -72,11 +76,12 @@ namespace SonarPlugin.GUI
             this.Resources = resources;
             this.Ui = ui;
             this.GameGui = gameGui;
+            this.Logger = logger;
 
             this._visible = this.Plugin.Configuration.OverlayVisibleByDefault;
             this._redFlag = this.Resources.LoadIcon("redflag.png");
 
-            PluginLog.LogInformation("Sonar Main Overlay Initialized");
+            this.Logger.Information("Sonar Main Overlay Initialized");
         }
 
         private ImGuiWindowFlags WindowFlags
@@ -213,12 +218,12 @@ namespace SonarPlugin.GUI
                     .ToList(); // ToList() needs to stay
 #if DEBUG
                 stopwatch.Stop();
-                PluginLog.LogDebug($"Tracker queries took {stopwatch.Elapsed.TotalMilliseconds}ms (Count: {this._states.Count})");
+                this.Logger.Debug($"Tracker queries took {stopwatch.Elapsed.TotalMilliseconds}ms (Count: {this._states.Count})");
 #endif
             }
             catch (Exception ex)
             {
-                PluginLog.LogError($"{ex}");
+                this.Logger.Error($"{ex}");
             }
             finally
             {
@@ -233,7 +238,7 @@ namespace SonarPlugin.GUI
 
             ImGui.BeginChild($"##{this._huntRank}TabScrollRegion", new Vector2(0, 0), false, this.ListFlags);
 
-            foreach (RelayState state in states.Where(s => s.IsAlive()))
+            foreach (var state in states.Where(s => s.IsAlive()))
             {
                 switch (state)
                 {

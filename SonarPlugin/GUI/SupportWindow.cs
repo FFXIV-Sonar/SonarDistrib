@@ -20,7 +20,6 @@ namespace SonarPlugin.GUI
         private static int s_nextId; // Interlocked
         public static SupportWindow CreateWindow(WindowSystem windows, SonarClient client) => new(windows, client, Interlocked.Increment(ref s_nextId));
 
-        private bool _visible;
         private bool _logsVisible;
         private bool _responseVisible;
 

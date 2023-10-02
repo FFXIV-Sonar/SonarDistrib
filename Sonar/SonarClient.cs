@@ -165,8 +165,10 @@ namespace Sonar
                 {
                     new ClientHello()
                     {
+                        ClientId = this.ClientIdentifier.ClientId,
+                        ClientSecret = this.ClientIdentifier.ClientSecret,
+
                         HardwareIdentifier = this.HardwareIdentifier.Identifier,
-                        ClientId = this.ClientIdentifier.Identifier,
                         Version = this.VersionInfo,
                         SonarSecret = ClientSecret.ReadEmbeddedSecret(typeof(SonarClient).Assembly, "Sonar.Resources.Secret.data"),
                         PluginSecret = this.StartInfo.PluginSecret,

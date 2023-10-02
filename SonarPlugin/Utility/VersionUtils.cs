@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using Dalamud;
 using System.Reflection;
 using Dalamud.Data;
+using Dalamud.Plugin.Services;
+using Dalamud.Interface;
+using Dalamud.Utility;
+using System.Runtime.CompilerServices;
 
 namespace SonarPlugin.Utility
 {
@@ -15,32 +19,33 @@ namespace SonarPlugin.Utility
         /// <summary>
         /// Get Sonar Plugin Version
         /// </summary>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static string GetSonarPluginVersion() => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 
         /// <summary>
         /// Get Dalamud Version
         /// </summary>
-        public static string GetDalamudVersion() => typeof(DalamudStartInfo).Assembly.GetName().Version!.ToString();
+        public static string GetDalamudVersion() => Util.AssemblyVersion;
 
         /// <summary>
         /// Get Dalamud Build Git Hash
         /// </summary>
-        public static string GetDalamudBuild() => Dalamud.Utility.Util.GetGitHash();
+        public static string GetDalamudBuild() => Util.GetGitHash();
 
         /// <summary>
         /// Get Dalamud Hash
         /// </summary>
-        public static string GetDalamudHash() => SonarVersion.GetAssemblyHash(typeof(DalamudStartInfo).Assembly);
+        public static string GetDalamudHash() => SonarVersion.GetAssemblyHash(typeof(Util).Assembly);
 
         /// <summary>
         /// Steal Game Version information from Dalamud's Start Info
         /// </summary>
-        public static string GetGameVersion(DataManager data) => data.GameData.Repositories["ffxiv"].Version;
+        public static string GetGameVersion(IDataManager data) => data.GameData.Repositories["ffxiv"].Version;
 
         /// <summary>
         /// Get SonarVersion for Sonar.NET
         /// </summary>
-        public static SonarVersion GetSonarVersionModel(DataManager data)
+        public static SonarVersion GetSonarVersionModel(IDataManager data)
         {
             return new SonarVersion
             {

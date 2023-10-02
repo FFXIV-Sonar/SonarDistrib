@@ -11,6 +11,9 @@ namespace Sonar.Messages
     public sealed class ClientIdentifier : ISonarMessage
     {
         [Key(0)]
-        public string? Identifier { get; set; }
+        public string? ClientId { get; set; }
+
+        [Key(1)]
+        public string? ClientSecret { get; set; } // TODO: Not implemented
     }
 }

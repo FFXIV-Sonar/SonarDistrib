@@ -23,6 +23,7 @@ using Dalamud.Logging;
 using static SonarPlugin.Utility.ShellUtils;
 using Dalamud.Data;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using Dalamud.Interface.ImGuiFileDialog;
 using System.Runtime;
 
@@ -31,14 +32,9 @@ namespace SonarPlugin.GUI
     [SingletonService]
     public sealed class SonarConfigWindow : Window, IDisposable
     {
-        private bool _visible;
         private Task _debugHuntTask = Task.CompletedTask;
         private Task _debugFateTask = Task.CompletedTask;
-        public bool IsVisible
-        {
-            get { return this._visible; }
-            set { this._visible = value; }
-        }
+        public bool IsVisible { get; set; }
 
 
         private bool fatesNeedSorting = true;
@@ -47,8 +43,9 @@ namespace SonarPlugin.GUI
         private SonarPluginStub Stub { get; }
         private DalamudPluginInterface PluginInterface { get; }
         private SonarClient Client { get; }
-        private DataManager Data { get; }
+        private IDataManager Data { get; }
         private FileDialogManager FileDialogs { get; }
+        private IPluginLog Logger { get; }
 
         private AudioPlaybackEngine Audio { get; }
 
@@ -60,7 +57,6 @@ namespace SonarPlugin.GUI
         private string[] audioFilesForSRanks = default!;
         private string[] audioFilesForARanks = default!;
         private readonly List<string> _defaultAudioResourceList;
-        private static bool s_fileDialogOpen;
         private string fateSearchText = string.Empty;
 
         private List<FateRow> filteredFateData;
@@ -70,7 +66,7 @@ namespace SonarPlugin.GUI
         private readonly IEnumerable<uint> _combinedFateValues;
         private readonly int fateTableColumnCount = Enum.GetNames(typeof(FateSelectionColumns)).Length;
 
-        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, DalamudPluginInterface pluginInterface, SonarClient client, DataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs) : base("Sonar Configuration")
+        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, DalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs, IPluginLog logger) : base("Sonar Configuration")
         {
             this.Plugin = plugin;
             this.Stub = stub;
@@ -79,6 +75,7 @@ namespace SonarPlugin.GUI
             this.Data = data;
             this.Audio = audio;
             this.FileDialogs = fileDialogs;
+            this.Logger = logger;
 
             this.Plugin.Windows.AddWindow(this);
 
@@ -480,7 +477,7 @@ namespace SonarPlugin.GUI
                 foreach (var rank in ranks.Reverse())
                 {
                     if (rank == HuntRank.None) continue;
-                    if (this.Plugin.Configuration.AllSRankSettings == false && (rank == HuntRank.SS || rank == HuntRank.SSMinion)) continue;
+                    if (!this.Plugin.Configuration.AllSRankSettings && (rank == HuntRank.SS || rank == HuntRank.SSMinion)) continue;
                     if (!this.Plugin.Configuration.AdvancedHuntReportSettings)
                     {
                         this.DrawHuntTabRankBasic(rank);
@@ -587,7 +584,7 @@ namespace SonarPlugin.GUI
                 foreach (ExpansionPack expansion in Enum.GetValues(typeof(ExpansionPack)))
                 {
                     this.Client.Configuration.HuntConfig.SetJurisdiction(expansion, rank, this.jurisdictionsCombo.Keys.ToList()[index]);
-                    if (this.Plugin.Configuration.AllSRankSettings == false && (rank == HuntRank.S))
+                    if (!this.Plugin.Configuration.AllSRankSettings && (rank == HuntRank.S))
                     {
                         this.Client.Configuration.HuntConfig.SetJurisdiction(expansion, HuntRank.SS, this.jurisdictionsCombo.Keys.ToList()[index]);
                         this.Client.Configuration.HuntConfig.SetJurisdiction(expansion, HuntRank.SSMinion, this.jurisdictionsCombo.Keys.ToList()[index]);
@@ -613,7 +610,7 @@ namespace SonarPlugin.GUI
                     {
                         this._save = this._server = true;
                         this.Client.Configuration.HuntConfig.SetJurisdiction(expansion, rank, this.jurisdictionsCombo.Keys.ToList()[index]);
-                        if (this.Plugin.Configuration.AllSRankSettings == false && (rank == HuntRank.S))
+                        if (!this.Plugin.Configuration.AllSRankSettings && (rank == HuntRank.S))
                         {
                             this.Client.Configuration.HuntConfig.SetJurisdiction(expansion, HuntRank.SS, this.jurisdictionsCombo.Keys.ToList()[index]);
                             this.Client.Configuration.HuntConfig.SetJurisdiction(expansion, HuntRank.SSMinion, this.jurisdictionsCombo.Keys.ToList()[index]);
@@ -1013,22 +1010,22 @@ namespace SonarPlugin.GUI
                         if (ImGui.Button("Clear"))
                         {
                             this.Client.Trackers.Hunts.Data.Clear();
-                            PluginLog.LogInformation("Hunts Tracker Reset");
+                            this.Logger.Information("Hunts Tracker Reset");
                         }
                         ImGui.SameLine();
                         if (ImGui.Button("Check"))
                         {
                             this._debugHuntTask = Task.Run(() =>
                             {
-                                PluginLog.LogInformation("Hunt index consistency check started");
+                                this.Logger.Information("Hunt index consistency check started");
                                 var result = this.Client.Trackers.Hunts.Data.DebugIndexConsistencyCheck();
                                 if (!result.Any())
                                 {
-                                    PluginLog.LogInformation($"Hunt index debug consistency check successful");
+                                    this.Logger.Information($"Hunt index debug consistency check successful");
                                 }
                                 else
                                 {
-                                    PluginLog.LogWarning($"Hunt index consistency check failed!\n{string.Join("\n", result)}");
+                                    this.Logger.Warning($"Hunt index consistency check failed!\n{string.Join("\n", result)}");
                                 }
                             });
                         }
@@ -1038,9 +1035,9 @@ namespace SonarPlugin.GUI
                         {
                             this._debugHuntTask = Task.Run(() =>
                             {
-                                PluginLog.LogInformation("Hunt index debug rebuild started");
+                                this.Logger.Information("Hunt index debug rebuild started");
                                 this.Client.Trackers.Hunts.Data.RebuildIndex();
-                                PluginLog.LogInformation("Hunt index debug rebuild complete");
+                                this.Logger.Information("Hunt index debug rebuild complete");
                             });
                         }
                         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Rebuild index\nOutput will be at /xllog\n\nWarning: You may experience stuttering");
@@ -1067,22 +1064,22 @@ namespace SonarPlugin.GUI
                         if (ImGui.Button("Clear"))
                         {
                             this.Client.Trackers.Fates.Data.Clear();
-                            PluginLog.LogInformation("Fates Tracker Reset");
+                            this.Logger.Information("Fates Tracker Reset");
                         }
                         ImGui.SameLine();
                         if (ImGui.Button("Check"))
                         {
                             this._debugFateTask = Task.Run(() =>
                             {
-                                PluginLog.LogInformation("Fate index debug consistency check started");
+                                this.Logger.Information("Fate index debug consistency check started");
                                 var result = this.Client.Trackers.Fates.Data.DebugIndexConsistencyCheck();
                                 if (!result.Any())
                                 {
-                                    PluginLog.LogInformation($"Fate index consistency check successful");
+                                    this.Logger.Information($"Fate index consistency check successful");
                                 }
                                 else
                                 {
-                                    PluginLog.LogWarning($"Fate consistency check failed!\n{string.Join("\n", result)}");
+                                    this.Logger.Warning($"Fate consistency check failed!\n{string.Join("\n", result)}");
                                 }
                             });
                         }
@@ -1092,9 +1089,9 @@ namespace SonarPlugin.GUI
                         {
                             this._debugFateTask = Task.Run(() =>
                             {
-                                PluginLog.LogInformation("Fate index debug rebuild started");
+                                this.Logger.Information("Fate index debug rebuild started");
                                 this.Client.Trackers.Fates.Data.RebuildIndex();
-                                PluginLog.LogInformation("Fate index debug rebuild complete");
+                                this.Logger.Information("Fate index debug rebuild complete");
                             });
                         }
                         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Rebuild index\nOutput will be at /xllog\n\nWarning: You may experience stuttering");
@@ -1228,7 +1225,7 @@ namespace SonarPlugin.GUI
         {
             IEnumerable<FateRow> sortedFateData = fateDataToSort;
 
-            PluginLog.Log($"Sort Spec count - {sortSpecs.SpecsCount}");
+            this.Logger.Debug($"Sort Spec count - {sortSpecs.SpecsCount}");
 
             for (int i = 0; i < sortSpecs.SpecsCount; i++)
             {

@@ -12,6 +12,7 @@ using Dalamud.Logging;
 using Dalamud.Game.ClientState.Objects;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using Sonar;
+using Dalamud.Plugin.Services;
 
 namespace SonarPlugin.Trackers
 {
@@ -19,16 +20,18 @@ namespace SonarPlugin.Trackers
     {
         private SonarPlugin Plugin { get; }
         private SonarClient Client { get; }
-        private ClientState ClientState { get; }
-        private ObjectTable ObjectTable { get; }
+        private IClientState ClientState { get; }
+        private IObjectTable ObjectTable { get; }
+        private IPluginLog Logger { get; }
 
-        public PlayerProvider(SonarPlugin plugin, SonarClient client, ClientState clientState, ObjectTable objectTable)
+        public PlayerProvider(SonarPlugin plugin, SonarClient client, IClientState clientState, IObjectTable objectTable, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;
             this.ClientState = clientState;
             this.ObjectTable = objectTable;
-            PluginLog.LogInformation("PlayerTracker initialized");
+            this.Logger = logger;
+            this.Logger.Information("PlayerTracker initialized");
         }
 
         private unsafe uint GetCurrentInstance()
@@ -37,7 +40,7 @@ namespace SonarPlugin.Trackers
             return (uint)UIState.Instance()->AreaInstance.Instance;
         }
 
-        private void FrameworkTick(Framework framework)
+        private void FrameworkTick(IFramework framework)
         {
             // Don't proceed if the structures aren't ready
             if (!this.Plugin.SafeToReadTables || !this.ClientState.IsLoggedIn) return;
@@ -46,11 +49,11 @@ namespace SonarPlugin.Trackers
 
             // Player Information
             var info = new PlayerInfo() { Name = player!.Name.TextValue, HomeWorldId = player.HomeWorld.Id };
-            if (this.Client.Meta.UpdatePlayerInfo(info)) PluginLog.LogVerbose("Logged in as {player}", info);
+            if (this.Client.Meta.UpdatePlayerInfo(info)) this.Logger.Verbose("Logged in as {player}", info);
 
             // Player Place
             var place = new PlayerPosition() { WorldId = player.CurrentWorld.Id, ZoneId = this.ClientState.TerritoryType, InstanceId = this.GetCurrentInstance(), Coords = player.Position.SwapYZ() };
-            if (this.Client.Meta.UpdatePlayerPosition(place).PlaceUpdated) PluginLog.LogVerbose("Moved to {place}", place);
+            if (this.Client.Meta.UpdatePlayerPosition(place).PlaceUpdated) this.Logger.Verbose("Moved to {place}", place);
 
             // Players nearby count
             this.PlayerCount = this.ObjectTable

@@ -1,4 +1,5 @@
 ﻿using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -17,8 +18,12 @@ namespace SonarPlugin.Utility
         public MixingSampleProvider MixingProvider { get; }
         public VolumeSampleProvider VolumeProvider { get; }
 
-        public AudioEngineCore()
+        private IPluginLog Logger { get; }
+
+        public AudioEngineCore(IPluginLog logger)
         {
+            this.Logger = logger;
+
             this.MixingProvider = new(Format) { ReadFully = true };
             this.VolumeProvider = new(this.MixingProvider);
             this.Player = this.CreateWavePlayer();
@@ -34,36 +39,36 @@ namespace SonarPlugin.Utility
             do
             {
                 await Task.Delay(1000);
-                PluginLog.Debug($"Mixer Inputs: {this.MixingProvider.MixerInputs.Count()}");
+                this.Logger.Debug($"Mixer Inputs: {this.MixingProvider.MixerInputs.Count()}");
             }
             while (this.Player.PlaybackState != PlaybackState.Stopped && this.MixingProvider.MixerInputs.Any() && this._disposed == 0);
             this.Player.Dispose();
-            PluginLog.LogDebug($"WavePlayer Disposed: {this.Player.GetType()}");
+            this.Logger.Debug($"WavePlayer Disposed: {this.Player.GetType()}");
         }
 
         public void Dispose() => this._disposed = 1;
 
         private IWavePlayer CreateWavePlayer()
         {
-            PluginLog.LogDebug($"Creating WavePlayer");
+            this.Logger.Debug($"Creating WavePlayer");
             IWavePlayer ret;
             try
             {
-                PluginLog.LogVerbose($"Attempting to create WavePlayer using {nameof(WasapiOut)}");
+                this.Logger.Verbose($"Attempting to create WavePlayer using {nameof(WasapiOut)}");
                 ret = new WasapiOut(AudioClientShareMode.Shared, 100);
             }
             catch (Exception ex1)
             {
                 try
                 {
-                    PluginLog.LogVerbose($"Attempting to create WavePlayer using {nameof(DirectSoundOut)}");
+                    this.Logger.Verbose($"Attempting to create WavePlayer using {nameof(DirectSoundOut)}");
                     ret = new DirectSoundOut(100);
                 }
                 catch (Exception ex2)
                 {
                     try
                     {
-                        PluginLog.LogVerbose($"Attempting to create WavePlayer using {nameof(WaveOutEvent)}");
+                        this.Logger.Verbose($"Attempting to create WavePlayer using {nameof(WaveOutEvent)}");
                         ret = new WaveOutEvent();
                     }
                     catch (Exception ex3)
@@ -73,7 +78,7 @@ namespace SonarPlugin.Utility
                 }
             }
             ret.PlaybackStopped += this.PlaybackStoppedHandler;
-            PluginLog.LogDebug($"WavePlayer type: {ret.GetType()}");
+            this.Logger.Debug($"WavePlayer type: {ret.GetType()}");
             return ret;
         }
         private void PlaybackStoppedHandler(object? _, StoppedEventArgs args) => this.PlaybackStopped?.Invoke(this, args.Exception);

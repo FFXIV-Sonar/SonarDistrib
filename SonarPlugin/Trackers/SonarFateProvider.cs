@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sonar.Trackers;
 using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 
 namespace SonarPlugin.Trackers
 {
@@ -17,27 +18,29 @@ namespace SonarPlugin.Trackers
         private PlayerProvider Player { get; }
         private SonarPlugin Plugin { get; }
         private FateTracker Tracker { get; }
-        private FateTable Fates { get; }
+        private IFateTable Fates { get; }
+        private IPluginLog Logger { get; }
 
         /// <summary>
         /// Initialize fate tracker
         /// </summary>
         /// <param name="plugin">Sonar Plugin object</param>
         /// <param name="debug">(Optional) Output debug logging</param>
-        public SonarFateProvider(PlayerProvider player, SonarPlugin plugin, FateTracker tracker, FateTable fates)
+        public SonarFateProvider(PlayerProvider player, SonarPlugin plugin, FateTracker tracker, IFateTable fates, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
             this.Player = player;
             this.Plugin = plugin;
             this.Tracker = tracker;
             this.Fates = fates;
+            this.Logger = logger;
 
             // Initialization feedback
-            PluginLog.LogInformation("FateTracker Initialized");
+            this.Logger.Information("FateTracker Initialized");
         }
 
         private List<string> _lastFateKeys = new();
-        private void Framework(Framework framework)
+        private void Framework(IFramework framework)
         {
             // Don't proceed if the structures aren't ready
             if (!this.Plugin.SafeToReadTables)

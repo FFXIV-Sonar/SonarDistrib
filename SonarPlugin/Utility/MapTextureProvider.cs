@@ -10,6 +10,8 @@ using Lumina.Data.Files;
 using Dalamud.Utility;
 using Dalamud.Data;
 using Dalamud.Interface;
+using Dalamud.Plugin.Services;
+using Dalamud.Interface.Internal;
 
 namespace SonarPlugin.Utility
 {
@@ -17,21 +19,24 @@ namespace SonarPlugin.Utility
     public sealed class MapTextureProvider : IDisposable
     {
         private readonly Tasker _tasker = new();
-        private readonly Dictionary<string, TextureWrap> _textures = new();
+        private readonly Dictionary<string, IDalamudTextureWrap> _textures = new();
         private readonly HashSet<string> _loading = new();
         private readonly object _texturesLock = new();
 
-        private DataManager Data { get; }
+        private IDataManager Data { get; }
         private UiBuilder Ui { get; }
+        private IPluginLog Logger { get; }
 
-        public MapTextureProvider(DataManager data, UiBuilder ui)
+        public MapTextureProvider(IDataManager data, UiBuilder ui, IPluginLog logger)
         {
             this.Data = data;
             this.Ui = ui;
-            PluginLog.LogInformation("Lumina Data initialized");
+            this.Logger = logger;
+
+            this.Logger.Information("Map Texture Provider initialized");
         }
 
-        public TextureWrap? GetMapTexture(string path)
+        public IDalamudTextureWrap? GetMapTexture(string path)
         {
             if (string.IsNullOrWhiteSpace(path)) return null;
             lock (this._texturesLock)
@@ -62,7 +67,7 @@ namespace SonarPlugin.Utility
         }
 
         // Adapted from https://github.com/ufx/SaintCoinach/blob/master/SaintCoinach/Xiv/Map.cs
-        public TextureWrap? BuildMapImage(string mapId, string size)
+        public IDalamudTextureWrap? BuildMapImage(string mapId, string size)
         {
             const string MapFileFormat = "ui/map/{0}/{1}{2}_{3}.tex";
             var fileName = mapId.Replace("/", "");

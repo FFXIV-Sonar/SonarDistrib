@@ -38,6 +38,8 @@ using Sonar.Logging;
 using Dalamud.Interface.Windowing;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Dalamud.Plugin.Services;
+using System.Runtime.CompilerServices;
 
 namespace SonarPlugin
 {
@@ -46,14 +48,15 @@ namespace SonarPlugin
     {
         private DalamudPluginInterface PluginInterface { get; }
         private SonarClient Client { get; }
-        private Framework Framework { get; }
-        private ChatGui Chat { get; }
-        private Condition Condition { get; }
+        private IFramework Framework { get; }
+        private IChatGui Chat { get; }
+        private ICondition Condition { get; }
         private AudioPlaybackEngine Audio { get; }
+        private IPluginLog Logger { get; }
 
         public bool IsDuty { get; private set; }
 
-        public SonarPlugin(DalamudPluginInterface pluginInterface, SonarClient client, Framework framework, ChatGui chat, Condition condition, AudioPlaybackEngine audio)
+        public SonarPlugin(DalamudPluginInterface pluginInterface, SonarClient client, IFramework framework, IChatGui chat, ICondition condition, AudioPlaybackEngine audio, IPluginLog logger)
         {
             this.PluginInterface = pluginInterface;
             this.Client = client;
@@ -61,6 +64,7 @@ namespace SonarPlugin
             this.Chat = chat;
             this.Condition = condition;
             this.Audio = audio;
+            this.Logger = logger;
 
             this.Initialize();
         }
@@ -90,39 +94,39 @@ namespace SonarPlugin
         private void Events_OnSonarMessage(SonarClient source, string? message)
         {
             if (message is null) return;
-            this.Chat.PrintChat(new()
+            this.Chat.Print(new()
             {
                 Type = this.Configuration.HuntOutputChannel,
                 Name = "Sonar",
                 Message = message
             });
-            PluginLog.LogInformation("Sonar Message Received: {message}");
+            this.Logger.Information("Sonar Message Received: {message}");
         }
 
         #region OnBuildUi and Framework event and tick manager
         public bool SafeToReadTables { get; private set; }
 
         // FrameworkEvent
-        public event Action<Framework>? OnFrameworkEvent;
+        public event Action<IFramework>? OnFrameworkEvent;
 
-        private void Framework_OnUpdateEvent(Framework framework)
+        private void Framework_OnUpdateEvent(IFramework framework)
         {
             this.SafeToReadTables = !this.Condition[ConditionFlag.BetweenAreas51]; // TODO: Move the condition checks to their respective places
             this.IsDuty = this.Condition[ConditionFlag.BoundByDuty56];
-            DispatchFrameworkEvent(nameof(this.OnFrameworkEvent), this.OnFrameworkEvent, framework);
+            this.DispatchFrameworkEvent(nameof(this.OnFrameworkEvent), this.OnFrameworkEvent, framework);
         }
 
-        private static void DispatchFrameworkEvent(string name, Action<Framework>? ev, Framework framework)
+        private void DispatchFrameworkEvent(string name, Action<IFramework>? ev, IFramework framework)
         {
             if (ev is null) return;
             ev.SafeInvoke(framework, out var exceptions);
-            foreach (var ex in exceptions) FrameworkErrorHandler($"{name} Exception", ex);
+            foreach (var ex in exceptions) this.FrameworkErrorHandler($"{name} Exception", ex);
         }
 
-        private static void FrameworkErrorHandler(string name, Exception ex)
+        private void FrameworkErrorHandler(string name, Exception ex)
         {
             if (ex is AggregateException aex) ex = aex;
-            PluginLog.LogError(ex, $"{name} Exception");
+            this.Logger.Error(ex, $"{name} Exception");
         }
         #endregion
 
@@ -146,14 +150,14 @@ namespace SonarPlugin
                 }
                 else if (this.Configuration.Version > SonarConfiguration.SonarConfigurationVersion)
                 {
-                    PluginLog.LogWarning($"Your Sonar configuration v{this.Configuration.Version} is from the future! Please turn off your time machine and go back to v{SonarConfiguration.SonarConfigurationVersion}.");
+                    this.Logger.Warning($"Your Sonar configuration v{this.Configuration.Version} is from the future! Please turn off your time machine and go back to v{SonarConfiguration.SonarConfigurationVersion}.");
                 }
                 this.Configuration.Sanitize();
                 this.Client.Configuration = this.Configuration.SonarConfig;
             }
             catch (Exception e)
             {
-                PluginLog.LogError($"Failed to load configuration: {e}");
+                this.Logger.Error($"Failed to load configuration: {e}");
                 this.ResetConfiguration(); // TODO: Potential infinite recursion
             }
         }
@@ -168,7 +172,7 @@ namespace SonarPlugin
             }
             catch (Exception e)
             {
-                PluginLog.LogError($"Failed to save configuration: {e}");
+                this.Logger.Error($"Failed to save configuration: {e}");
             }
         }
 
@@ -182,33 +186,33 @@ namespace SonarPlugin
             this.LoadConfiguration(true);
         }
 
-        private void ClientLogHandler(SonarClient source, SonarLogMessage log) => LogHandler(log);
+        private void ClientLogHandler(SonarClient source, SonarLogMessage log) => this.LogHandler(log);
 
-        private static void LogHandler(SonarLogMessage log)
+        private void LogHandler(SonarLogMessage log)
         {
             var (level, message) = (log.Level, log.Message);
             switch (level)
             {
                 case SonarLogLevel.Verbose:
-                    PluginLog.LogVerbose(message);
+                    this.Logger.Verbose(message);
                     break;
                 case SonarLogLevel.Debug:
-                    PluginLog.LogDebug(message);
+                    this.Logger.Debug(message);
                     break;
                 case SonarLogLevel.Information:
-                    PluginLog.LogInformation(message);
+                    this.Logger.Information(message);
                     break;
                 case SonarLogLevel.Warning:
-                    PluginLog.LogWarning(message);
+                    this.Logger.Warning(message);
                     break;
                 case SonarLogLevel.Error:
-                    PluginLog.LogError(message);
+                    this.Logger.Error(message);
                     break;
                 case SonarLogLevel.Fatal:
-                    PluginLog.LogFatal(message);
+                    this.Logger.Fatal(message);
                     break;
                 default:
-                    PluginLog.Log(message);
+                    this.Logger.Debug(message);
                     break;
             }
         }
@@ -225,8 +229,8 @@ namespace SonarPlugin
             // Hunt and Fate Trackers
             if (this.Client is not null)
             {
-                this.Client.ServerMessage -= Events_OnSonarMessage;
-                this.Client.LogMessage -= ClientLogHandler;
+                this.Client.ServerMessage -= this.Events_OnSonarMessage;
+                this.Client.LogMessage -= this.ClientLogHandler;
             }
 
             if (this.PluginInterface is not null)

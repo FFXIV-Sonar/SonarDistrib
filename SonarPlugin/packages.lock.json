@@ -37,27 +37,27 @@
       },
       "NAudio.Core": {
         "type": "Direct",
-        "requested": "[2.1.0, )",
-        "resolved": "2.1.0",
-        "contentHash": "0iowfmolibU4KxjaC/s7lox/BeDg76UVvXtCuCzRiNpylVndqsxXxp+bVWFrpv0KzQDIKLxZrnDmYENlAI0u9g=="
+        "requested": "[2.2.1, )",
+        "resolved": "2.2.1",
+        "contentHash": "GgkdP6K/7FqXFo7uHvoqGZTJvW4z8g2IffhOO4JHaLzKCdDOUEzVKtveoZkCuUX8eV2HAINqi7VFqlFndrnz/g=="
       },
       "NAudio.Wasapi": {
         "type": "Direct",
-        "requested": "[2.1.0, )",
-        "resolved": "2.1.0",
-        "contentHash": "Zp/8l79aYQEu7/HfzXWVpqyIwRUPgsvCj/Qx+pR6ykJxvwjqOoUfMiEG9US1wW4d7PEzT5ZBIL+cp90t6HNNiw==",
+        "requested": "[2.2.1, )",
+        "resolved": "2.2.1",
+        "contentHash": "lFfXoqacZZe0WqNChJgGYI+XV/n/61LzPHT3C1CJp4khoxeo2sziyX5wzNYWeCMNbsWxFvT3b3iXeY1UYjBhZw==",
         "dependencies": {
-          "NAudio.Core": "2.1.0"
+          "NAudio.Core": "2.2.1"
         }
       },
       "NAudio.WinMM": {
         "type": "Direct",
-        "requested": "[2.1.0, )",
-        "resolved": "2.1.0",
-        "contentHash": "lUU5C+XNzKhFUIEafA/nJpbtjksFtbUd033fs27KeHlOM0r6rQFF3l75dqxg+rWkGu81MfkBbYrNpH9p8qmtBA==",
+        "requested": "[2.2.1, )",
+        "resolved": "2.2.1",
+        "contentHash": "xFHRFwH4x6aq3IxRbewvO33ugJRvZFEOfO62i7uQJRUNW2cnu6BeBTHUS0JD5KBucZbHZaYqxQG8dwZ47ezQuQ==",
         "dependencies": {
           "Microsoft.Win32.Registry": "4.7.0",
-          "NAudio.Core": "2.1.0"
+          "NAudio.Core": "2.2.1"
         }
       },
       "AG.NonBlocking": {
@@ -70,11 +70,11 @@
       },
       "DeviceId.Windows.Wmi": {
         "type": "Transitive",
-        "resolved": "6.2.1",
-        "contentHash": "7/HE1FvrvZdYitwq7/43M+qE93s4SRNuVf4ail+LPfzgzR6N97fcaTXhJUV4qLKGCLkTpQVl1Xo5I/6nJdYdew==",
+        "resolved": "6.5.0",
+        "contentHash": "Vqffz85WRqHWS+KPPCkBsyWBwWCBTyDoksizqmOvuvgVRp+W4jCJt94Zi62zoIcyKCH6OTqapI+l03twoqgzRQ==",
         "dependencies": {
-          "DeviceId": "6.3.0",
-          "DeviceId.Windows": "6.2.0",
+          "DeviceId": "6.4.0",
+          "DeviceId.Windows": "6.4.0",
           "System.Management": "7.0.0"
         }
       },
@@ -153,23 +153,20 @@
       },
       "ZString": {
         "type": "Transitive",
-        "resolved": "2.5.0",
-        "contentHash": "xd503npIf5kAN8LAugMlOthWIPQGsyp/rvLxuPlTrHFf28YyYyDfsdLz1n3tvd+87PiAXZrJh0gtWulWtcBTGg==",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
-        }
+        "resolved": "2.5.1",
+        "contentHash": "hHZnrIZAgda8j9n2gR4M7GbETcjr6EBo4CUnMtK8o2MgkgzARg+Y7XI142nNOpRRuup1LJb12/gd/tMhzwdw8g=="
       },
       "sonar": {
         "type": "Project",
         "dependencies": {
           "AG.NonBlocking": "[2.1.1, )",
           "ConcurrencyLab.ParallelChecker": "[2.7.0, )",
-          "DeviceId.Windows.Wmi": "[6.2.1, )",
+          "DeviceId.Windows.Wmi": "[6.5.0, )",
           "DryIoc.MefAttributedModel.dll": "[7.0.0, )",
           "DryIoc.dll": "[5.4.1, )",
           "InterlockedUtils": "[1.0.1, )",
           "SonarUtils": "[1.0.0, )",
-          "ZString": "[2.5.0, )"
+          "ZString": "[2.5.1, )"
         }
       },
       "sonarutils": {
