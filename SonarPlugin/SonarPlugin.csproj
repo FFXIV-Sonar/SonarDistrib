@@ -86,7 +86,7 @@
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="DalamudPackager" Version="2.1.11" />
+    <PackageReference Include="DalamudPackager" Version="2.1.12" />
     <PackageReference Include="DryIoc.dll" Version="5.4.1" />
     <PackageReference Include="Fody" Version="6.8.0">
       <PrivateAssets>all</PrivateAssets>
