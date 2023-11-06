@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net7.0</TargetFrameworks>
-    <AssemblyVersion>0.6.0.0</AssemblyVersion>
+    <AssemblyVersion>0.6.0.1</AssemblyVersion>
     <RootNamespace>Sonar</RootNamespace>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <LangVersion>11</LangVersion>

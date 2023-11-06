@@ -186,7 +186,6 @@ namespace SonarPlugin.GUI
 
                 ImGui.EndTabBar();
             }
-            ImGui.End();
             if (this._save) this.Plugin.SaveConfiguration(this._server);
             this._save = this._server = false;
         }

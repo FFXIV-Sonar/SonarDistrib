@@ -17,6 +17,9 @@ namespace Sonar.Connections
         [Key(0)]
         public required string Url { get; init; }
 
+        [Key(5)]
+        public SonarUrlType Type { get; init; }
+
         /// <summary>Disable to remove during bootstrap process. Default: <c>true</c></summary>
         [Key(1)]
         public bool Enabled { get; init; } = true;

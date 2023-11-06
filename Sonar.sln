@@ -31,7 +31,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarTests", "SonarTests\So
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "FlavorChanger", "FlavorChanger\FlavorChanger.njsproj", "{BD7B4CA2-1818-40E8-9A23-579CF12781DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonarBenchmarks", "SonarBenchmarks\SonarBenchmarks.csproj", "{DBC39DE3-7A30-478F-9336-A02C58226E47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarBenchmarks", "SonarBenchmarks\SonarBenchmarks.csproj", "{DBC39DE3-7A30-478F-9336-A02C58226E47}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarSecrets", "SonarSecrets\SonarSecrets.csproj", "{8759AE7B-B9AC-48F5-8A97-456460040C58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{DBC39DE3-7A30-478F-9336-A02C58226E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBC39DE3-7A30-478F-9336-A02C58226E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBC39DE3-7A30-478F-9336-A02C58226E47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8759AE7B-B9AC-48F5-8A97-456460040C58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8759AE7B-B9AC-48F5-8A97-456460040C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8759AE7B-B9AC-48F5-8A97-456460040C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8759AE7B-B9AC-48F5-8A97-456460040C58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

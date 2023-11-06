@@ -161,7 +161,7 @@ namespace SonarPlugin.GUI
                 }
                 ImGui.EndChild();
 
-                DrawTab();
+                this.DrawTab();
             }
 
             ImGui.End();

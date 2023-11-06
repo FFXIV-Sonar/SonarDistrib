@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Major Code Smell", "S3264", Justification = "Custom invokers")]
 [assembly: InternalsVisibleTo("SonarServer")]
 [assembly: InternalsVisibleTo("SonarResourceGen")]
+[assembly: InternalsVisibleTo("SonarSecrets")]
 [assembly: InternalsVisibleTo("SonarTesting")]
 [assembly: InternalsVisibleTo("SonarTests")]
 [assembly: InternalsVisibleTo("SonarBenchmarks")]
