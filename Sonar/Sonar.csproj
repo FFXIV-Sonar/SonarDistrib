@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
-    <AssemblyVersion>0.6.0.3</AssemblyVersion>
+    <AssemblyVersion>0.6.0.4</AssemblyVersion>
     <RootNamespace>Sonar</RootNamespace>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <LangVersion>11</LangVersion>
@@ -41,18 +41,10 @@
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="DeviceId" Version="6.6.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="DeviceId.Linux" Version="6.4.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="DeviceId.Mac" Version="6.3.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="DeviceId.Windows" Version="6.6.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="DeviceId" Version="6.6.0" />
+    <PackageReference Include="DeviceId.Linux" Version="6.4.0" />
+    <PackageReference Include="DeviceId.Mac" Version="6.3.0" />
+    <PackageReference Include="DeviceId.Windows" Version="6.6.0" />
     <PackageReference Include="DeviceId.Windows.Wmi" Version="6.6.0" />
     <PackageReference Include="DnsClient" Version="1.7.0" PrivateAssets="all" />
     <PackageReference Include="DryIoc.dll" Version="5.4.3" />
@@ -62,20 +54,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="InterlockedUtils" Version="1.0.1" />
-    <PackageReference Include="MessagePack" Version="2.5.129">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="MessagePack.Annotations" Version="2.5.129">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="MessagePack" Version="2.5.129" />
+    <PackageReference Include="MessagePack.Annotations" Version="2.5.129" />
     <PackageReference Include="MessagePackAnalyzer" Version="2.5.129">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="ZString" Version="2.5.1" />
