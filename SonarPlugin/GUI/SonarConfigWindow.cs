@@ -26,6 +26,7 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using Dalamud.Interface.ImGuiFileDialog;
 using System.Runtime;
+using System.Runtime.InteropServices;
 
 namespace SonarPlugin.GUI
 {
@@ -45,6 +46,7 @@ namespace SonarPlugin.GUI
         private SonarClient Client { get; }
         private IDataManager Data { get; }
         private FileDialogManager FileDialogs { get; }
+        private IndexProvider Index { get; }
         private IPluginLog Logger { get; }
 
         private AudioPlaybackEngine Audio { get; }
@@ -60,13 +62,12 @@ namespace SonarPlugin.GUI
         private string fateSearchText = string.Empty;
 
         private List<FateRow> filteredFateData;
-        private readonly List<FateRow> _fateData;
+        private readonly Dictionary<uint, string> _fateZonesCache = new();
         private string[] audioFilesForFates = default!;
         private readonly Dictionary<uint, HashSet<uint>> _combinedFates = new();
-        private readonly IEnumerable<uint> _combinedFateValues;
         private readonly int fateTableColumnCount = Enum.GetNames(typeof(FateSelectionColumns)).Length;
 
-        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, DalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs, IPluginLog logger) : base("Sonar Configuration")
+        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, DalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs, IndexProvider index, IPluginLog logger) : base("Sonar Configuration")
         {
             this.Plugin = plugin;
             this.Stub = stub;
@@ -75,6 +76,7 @@ namespace SonarPlugin.GUI
             this.Data = data;
             this.Audio = audio;
             this.FileDialogs = fileDialogs;
+            this.Index = index;
             this.Logger = logger;
 
             this.Plugin.Windows.AddWindow(this);
@@ -112,33 +114,10 @@ namespace SonarPlugin.GUI
             this.SetupARankAudioSelection();
             this.SetupFateAudioSelection();
 
-            // Default to false for IsField if unable to be retrieved to avoid showing fates that are setup incorrectly
-            this._fateData = Database.Fates.Values.Where(o => o.GetZone()?.IsField ?? false).ToList();
-
-            // Combine all fates that have the same fate name which should mean they are the same fate but in different locations
-            // Will need to rethink this if that proves to be false somehow in the future
-            var repeatedFates = from f in _fateData
-                                group f by f.Name.ToString() into g
-                                where g.Count() > 1
-                                select new
-                                {
-                                    FateName = g.Key,
-                                    Fates = g.ToList()
-                                };
-
-            // Take each repeated fate and remove them from the list of data to show, then add a single item back to the list and store the fates being combined for use later
-            foreach (var item in repeatedFates)
-            {
-                this._fateData.RemoveAll(o => o.Name.ToString() == item.FateName);
-                this._fateData.Add(item.Fates[0]);
-                this._combinedFates.Add(item.Fates[0].Id, new HashSet<uint>(item.Fates.Select(o => o.Id)));
-            }
-
-            // Flatten the values of the combined fates so it is easier to count selected fates for the selected text above the fate table
-            this._combinedFateValues = this._combinedFates.Values.SelectMany(o => o);
-
             // Set initial fate information
-            this.filteredFateData = this._fateData;
+            this.filteredFateData = Database.Fates.Values
+                .DistinctBy(fate => fate.GroupId)
+                .ToList();
 
             this.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfig;
         }
@@ -747,12 +726,16 @@ namespace SonarPlugin.GUI
                 if (ImGui.InputText("##fateSearchText", ref this.fateSearchText, 100))
                 {
                     // Default to false for IsField if unable to be retrieved to avoid showing fates that are setup incorrectly
-                    this.filteredFateData = _fateData
-                        .Where(o => o.GetZone()?.IsField ?? false)
-                        .Where(o => $"{o.Name}".IndexOf(fateSearchText, StringComparison.OrdinalIgnoreCase) != -1 ||
-                                    $"{o.GetZone()}".IndexOf(fateSearchText, StringComparison.OrdinalIgnoreCase) != -1 ||
-                                    $"{o.Level}".IndexOf(fateSearchText, StringComparison.OrdinalIgnoreCase) != -1)
+                    this.filteredFateData = this.Index.Fates.Search(this.fateSearchText)
+                        .DistinctBy(fate => fate.GroupId)
                         .ToList();
+                    
+                    //this.filteredFateData = _fateData
+                    //    .Where(o => o.GetZone()?.IsField ?? false)
+                    //    .Where(o => $"{o.Name}".IndexOf(fateSearchText, StringComparison.OrdinalIgnoreCase) != -1 ||
+                    //                $"{o.GetZone()}".IndexOf(fateSearchText, StringComparison.OrdinalIgnoreCase) != -1 ||
+                    //                $"{o.Level}".IndexOf(fateSearchText, StringComparison.OrdinalIgnoreCase) != -1)
+                    //    .ToList();
 
                     fatesNeedSorting = true;
                 }
@@ -761,18 +744,30 @@ namespace SonarPlugin.GUI
                 ImGui.Separator();
                 ImGui.Spacing();
 
-                int selectedFates = this.Plugin.Configuration.SendFateToChat.Count(o => _combinedFates.ContainsKey(o)) + this.Plugin.Configuration.SendFateToChat.Count(o => !_combinedFateValues.Contains(o));
+                int selectedFates = this.Plugin.Configuration.SendFateToChat
+                    .Select(id => Database.Fates.GetValueOrDefault(id))
+                    .Where(fate => fate is not null)
+                    .DistinctBy(fate => fate!.GroupId)
+                    .Count();
                 ImGui.Text(string.Format(Loc.Localize("SelectedFatesToChatText", "{0} fate(s) selected to chat"), selectedFates));
                 ImGui.SameLine();
                 ImGui.Text(" | ");
                 ImGui.SameLine();
-                selectedFates = this.Plugin.Configuration.SendFateToSound.Count(o => _combinedFates.ContainsKey(o)) + this.Plugin.Configuration.SendFateToSound.Count(o => !_combinedFateValues.Contains(o));
+                selectedFates = this.Plugin.Configuration.SendFateToSound
+                    .Select(id => Database.Fates.GetValueOrDefault(id))
+                    .Where(fate => fate is not null)
+                    .DistinctBy(fate => fate!.GroupId)
+                    .Count();
                 ImGui.Text(string.Format(Loc.Localize("SelectedFatesToSoundText", "{0} fate(s) selected to sound"), selectedFates));
                 ImGui.SameLine();
                 ImGui.Text(" | ");
                 ImGui.SameLine();
-                selectedFates = this.Client.Configuration.FateConfig.GetJurisdictions().Count(o => _combinedFates.ContainsKey(o.Key) && o.Value != SonarJurisdiction.Default) +
-                                this.Client.Configuration.FateConfig.GetJurisdictions().Count(o => !_combinedFateValues.Contains(o.Key) && o.Value != SonarJurisdiction.Default);
+                selectedFates = this.Client.Configuration.FateConfig.GetJurisdictions()
+                    .Where(kvp => kvp.Value != SonarJurisdiction.Default)
+                    .Select(kvp => Database.Fates.GetValueOrDefault(kvp.Key))
+                    .Where(fate => fate is not null)
+                    .DistinctBy(fate => fate!.GroupId)
+                    .Count();
                 ImGui.Text(string.Format(Loc.Localize("SelectedFatesToNonDefaultJurisdiction", "{0} fate(s) not set to default jurisdiction"), selectedFates));
 
 
@@ -825,20 +820,13 @@ namespace SonarPlugin.GUI
                         SonarImGui.Checkbox($"##fate_{currentFate.Id}_chat", this.Plugin.Configuration.SendFateToChat.Contains(currentFate.Id), _ =>
                         {
                             this._save = true;
-                            if (_combinedFates.ContainsKey(currentFate.Id))
+                            if (this.Plugin.Configuration.SendFateToChat.Contains(currentFate.Id))
                             {
-                                if (this.Plugin.Configuration.SendFateToChat.Contains(currentFate.Id))
-                                {
-                                    this.Plugin.Configuration.SendFateToChat.ExceptWith(_combinedFates[currentFate.Id]);
-                                }
-                                else
-                                {
-                                    this.Plugin.Configuration.SendFateToChat.UnionWith(_combinedFates[currentFate.Id]);
-                                }
+                                this.Plugin.Configuration.SendFateToChat.ExceptWith(currentFate.GroupFateIds);
                             }
-                            else if (!this.Plugin.Configuration.SendFateToChat.Remove(currentFate.Id))
+                            else
                             {
-                                this.Plugin.Configuration.SendFateToChat.Add(currentFate.Id);
+                                this.Plugin.Configuration.SendFateToChat.UnionWith(currentFate.GroupFateIds);
                             }
                         });
 
@@ -852,20 +840,13 @@ namespace SonarPlugin.GUI
                         SonarImGui.Checkbox($"##fate_{currentFate.Id}_sound", this.Plugin.Configuration.SendFateToSound.Contains(currentFate.Id), _ =>
                         {
                             this._save = true;
-                            if (this._combinedFates.ContainsKey(currentFate.Id))
+                            if (this.Plugin.Configuration.SendFateToSound.Contains(currentFate.Id))
                             {
-                                if (this.Plugin.Configuration.SendFateToSound.Contains(currentFate.Id))
-                                {
-                                    this.Plugin.Configuration.SendFateToSound.ExceptWith(_combinedFates[currentFate.Id]);
-                                }
-                                else
-                                {
-                                    this.Plugin.Configuration.SendFateToSound.UnionWith(_combinedFates[currentFate.Id]);
-                                }
+                                this.Plugin.Configuration.SendFateToSound.ExceptWith(currentFate.GroupFateIds);
                             }
-                            else if (!this.Plugin.Configuration.SendFateToSound.Remove(currentFate.Id))
+                            else
                             {
-                                this.Plugin.Configuration.SendFateToSound.Add(currentFate.Id);
+                                this.Plugin.Configuration.SendFateToSound.UnionWith(currentFate.GroupFateIds);
                             }
                         });
 
@@ -885,16 +866,9 @@ namespace SonarPlugin.GUI
                         if (ImGui.Combo($"##fate_{currentFate.Id}_jurisdiction", ref index, this.jurisdictionsCombo.Values.ToArray(), this.jurisdictionsCombo.Count))
                         {
                             this._save = this._server = true;
-                            if (_combinedFates.ContainsKey(currentFate.Id))
+                            foreach (var fateId in currentFate.GroupFateIds)
                             {
-                                foreach (var fateId in _combinedFates[currentFate.Id])
-                                {
-                                    this.Client.Configuration.FateConfig.SetJurisdiction(fateId, this.jurisdictionsCombo.Keys.ToList()[index]);
-                                }
-                            }
-                            else
-                            {
-                                this.Client.Configuration.FateConfig.SetJurisdiction(currentFate.Id, this.jurisdictionsCombo.Keys.ToList()[index]);
+                                this.Client.Configuration.FateConfig.SetJurisdiction(fateId, this.jurisdictionsCombo.Keys.ToList()[index]);
                             }
                         }
 
@@ -903,7 +877,9 @@ namespace SonarPlugin.GUI
                         ImGui.TableNextColumn();
                         ImGui.Text($"{currentFate.Name}");
                         ImGui.TableNextColumn();
-                        ImGui.Text($"{currentFate.GetZone()}");
+                        ref var fateZones = ref CollectionsMarshal.GetValueRefOrAddDefault(this._fateZonesCache, currentFate.Id, out var cacheHit);
+                        if (!cacheHit) fateZones = string.Join(", ", currentFate.GetGroupZones().Select(zone => zone?.ToString()).OrderBy(name => name));
+                        ImGui.Text(fateZones);
                         ImGui.TableNextColumn();
                         ImGui.Text($"{ExpansionPackHelper.GetExpansionPackLongString(currentFate.Expansion)}");
                         ImGui.TableNextColumn();

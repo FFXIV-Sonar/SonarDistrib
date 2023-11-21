@@ -11,6 +11,8 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SonarUtils.Text;
+using SonarUtils;
 
 namespace Sonar
 {

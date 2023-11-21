@@ -1,18 +1,19 @@
-﻿using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using Sonar.Data;
+﻿using SonarUtils.Collections;
+using SonarUtils.Text;
 using System;
-using SonarUtils.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
 
-// TODO: Remove obsolete methods once their usage are removed from SonarServer
-
-namespace Sonar.Utilities
+namespace SonarUtils
 {
     /// <summary>String utilities for Sonar</summary>
-    internal static class StringUtils
+    public static class StringUtils
     {
         private static readonly ConcurrentHashSetSlim<string> s_strings = new(comparer: FarmHashStringComparer.Instance);
+        private static readonly ConcurrentDictionarySlim<int, string> s_spansCache = new();
 
         /// <summary>Interns a <see cref="string"/> into a <see cref="ConcurrentHashSetSlim{T}"/></summary>
         /// <remarks>This is faster than <see cref="string.Intern(string)"/></remarks>
@@ -25,6 +26,23 @@ namespace Sonar.Utilities
                 if (s_strings.Add(key)) return key;
             }
         }
+
+        /// <summary>Gets an interned string out of a <see cref="ReadOnlySpan{T}"/></summary>
+        /// <remarks>This is an alternative version to avoid allocating a <see cref="string"/> while possible.</remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static string Intern(ReadOnlySpan<char> span)
+        {
+            var hash = FarmHashStringComparer.GetHashCodeStatic(span);
+            if (s_spansCache.TryGetValue(hash, out var key) && span.SequenceEqual(key.AsSpan())) return key;
+            var result = Intern(new string(span));
+            s_spansCache[hash] = result;
+            return result;
+        }
+
+        /// <summary>Gets an interned string out of a <see cref="ReadOnlyMemory{T}"/></summary>
+        /// <remarks>This is an alternative version to avoid allocating a <see cref="string"/> while possible.</remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static string Intern(ReadOnlyMemory<char> memory) => Intern(memory.Span);
 
         /// <summary>Try to get an interned <see cref="string"/> from the <see cref="ConcurrentHashSetSlim{T}"/></summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -57,9 +75,10 @@ namespace Sonar.Utilities
         [Obsolete($"This is now a wrapper for {nameof(StringUtils)}.{nameof(Intern)}")]
         public static string GenerateKey(uint part1, uint part2, uint part3) => Intern($"{part1}_{part2}_{part3}");
 
-        internal static void Reset()
+        public static void Reset()
         {
             s_strings.Clear();
+            s_spansCache.Clear();
         }
     }
 }

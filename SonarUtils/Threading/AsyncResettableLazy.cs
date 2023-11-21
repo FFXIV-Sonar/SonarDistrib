@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Net.WebSockets;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Sonar.Threading
+namespace SonarUtils.Threading
 {
-    // License for AsyncResettableLazy: MIT, feel free to use
-
     /// <summary>
     /// Very similar to Lazy <typeparamref name="T"/>, except that its resettable. Additionally, uses the old value while initializing a new one.
     /// </summary>

@@ -5,6 +5,13 @@ using System.Linq;
 using System.Collections.Generic;
 using Sonar.Messages;
 using System.Security.Cryptography;
+using System.ComponentModel;
+
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen; // FrozenDictionary
+#else
+using System.Collections.ObjectModel; // ReadOnlyDictionary
+#endif
 
 namespace Sonar.Data.Details
 {
@@ -47,9 +54,49 @@ namespace Sonar.Data.Details
         public IDictionary<uint, WeatherRow> Weathers { get; set; } = new Dictionary<uint, WeatherRow>();
         #endregion
 
-        /// <summary>
-        /// Warning: Slow
-        /// </summary>
+        /// <summary>Freeze all dictionaries</summary>
+        public void Freeze()
+        {
+#if NET8_0_OR_GREATER
+            this.Worlds = this.Worlds.ToFrozenDictionary();
+            this.Datacenters = this.Datacenters.ToFrozenDictionary();
+            this.Regions = this.Regions.ToFrozenDictionary();
+            this.Audiences = this.Audiences.ToFrozenDictionary();
+            this.Hunts = this.Hunts.ToFrozenDictionary();
+            this.Fates = this.Fates.ToFrozenDictionary();
+            this.Maps = this.Maps.ToFrozenDictionary();
+            this.Zones = this.Zones.ToFrozenDictionary();
+            this.Weathers = this.Weathers.ToFrozenDictionary();
+#else
+            this.Worlds = this.Worlds.AsReadOnly();
+            this.Datacenters = this.Datacenters.AsReadOnly();
+            this.Regions = this.Regions.AsReadOnly();
+            this.Audiences = this.Audiences.AsReadOnly();
+            this.Hunts = this.Hunts.AsReadOnly();
+            this.Fates = this.Fates.AsReadOnly();
+            this.Maps = this.Maps.AsReadOnly();
+            this.Zones = this.Zones.AsReadOnly();
+            this.Weathers = this.Weathers.AsReadOnly();
+#endif
+        }
+
+        /// <summary>Thaw all dictionaries</summary>
+        /// <remarks>To be used after using <see cref="Freeze"/> to make them modifiable</remarks>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public void Thaw()
+        {
+            this.Worlds = this.Worlds.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.Datacenters = this.Datacenters.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.Regions = this.Regions.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.Audiences = this.Audiences.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.Hunts = this.Hunts.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.Fates = this.Fates.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.Maps = this.Maps.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.Zones = this.Zones.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.Weathers = this.Weathers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        }
+
+        /// <summary>Warning: Slow</summary>
         public byte[] ComputeHash()
         {
             using var hasher = SHA256.Create();

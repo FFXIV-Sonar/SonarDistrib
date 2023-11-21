@@ -15,6 +15,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Cysharp.Text;
+using SonarUtils;
 
 namespace Sonar.Indexes
 {

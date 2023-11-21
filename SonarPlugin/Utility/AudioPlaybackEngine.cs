@@ -5,9 +5,8 @@ using System.Reflection;
 using NAudio.Wave;
 using SonarPlugin.NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using Dalamud.Logging;
-using Sonar.Threading;
 using Dalamud.Plugin.Services;
+using SonarUtils.Threading;
 
 namespace SonarPlugin.Utility
 {
@@ -117,6 +116,7 @@ namespace SonarPlugin.Utility
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S112")]
         private byte[] GetWaveBytes(WaveStream reader)
         {
             var buffer = new byte[1024];

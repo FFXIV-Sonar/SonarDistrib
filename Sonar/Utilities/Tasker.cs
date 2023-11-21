@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SonarUtils.Collections;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Sonar.Utilities
     /// </summary>
     public sealed class Tasker : IDisposable, IAsyncDisposable ,IEnumerable<Task>
     {
-        private readonly NonBlocking.NonBlockingHashSet<Task> _tasks = new();
+        private readonly ConcurrentHashSetSlim<Task> _tasks = new();
 
         #region User functions
         /// <summary>
@@ -27,18 +28,19 @@ namespace Sonar.Utilities
             if (!this._tasks.Add(task)) return false;
 
             // Adds exception handling
-            task.ContinueWith(task =>
+            task.ContinueWith(static (task, obj) =>
             {
-                if (!this._tasks.Remove(task))
+                var self = Unsafe.As<Tasker>(obj)!;
+                if (!self._tasks.Remove(task))
                 {
                     if (task.Exception is not null) throw task.Exception!;
                     return;
                 }
-                if (task.IsCompletedSuccessfully) this.InvokeEvent(this.TaskSuccessful, task);
-                if (task.IsFaulted) this.InvokeEvent(this.TaskFaulted, task);
-                if (task.IsCanceled) this.InvokeEvent(this.TaskCanceled, task);
-                this.InvokeEvent(this.TaskComplete, task);
-            }, TaskScheduler.Default);
+                if (task.IsCompletedSuccessfully) self.InvokeEvent(self.TaskSuccessful, task);
+                if (task.IsFaulted) self.InvokeEvent(self.TaskFaulted, task);
+                if (task.IsCanceled) self.InvokeEvent(self.TaskCanceled, task);
+                self.InvokeEvent(self.TaskComplete, task);
+            }, this, TaskScheduler.Default);
 
             this.InvokeEvent(this.TaskAdded, task);
             return true;
@@ -122,19 +124,14 @@ namespace Sonar.Utilities
         #endregion
 
         #region Disposable Pattern
-        /// <summary>
-        /// Dispose this TaskerService object
-        /// </summary>
+        /// <summary>Await all tasks</summary>
         public async ValueTask DisposeAsync()
         {
             var tasks = this._tasks.ToArray();
             try { await Task.WhenAll(tasks); } catch { /* Swallow */ }
         }
 
-
-        /// <summary>
-        /// Dispose this TaskerService object
-        /// </summary>
+        /// <summary>Wait all tasks</summary>
         public void Dispose()
         {
             var tasks = this._tasks.ToArray();

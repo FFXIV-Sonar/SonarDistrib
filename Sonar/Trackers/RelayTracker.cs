@@ -2,7 +2,7 @@
 using Sonar.Enums;
 using Sonar.Messages;
 using Sonar.Models;
-using Sonar.Utilities;
+using SonarUtils;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -29,6 +29,8 @@ using Sonar.Connections;
 using Sonar.Sockets;
 using Sonar.Relays;
 using SonarUtils.Collections;
+using Sonar.Utilities;
+using SonarUtils.Text;
 
 namespace Sonar.Trackers
 {

@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Sonar.Trackers;
 using Sonar.Relays;
+using SonarUtils;
 
 namespace Sonar.Models
 {

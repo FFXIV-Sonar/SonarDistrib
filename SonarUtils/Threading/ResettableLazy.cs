@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace Sonar.Threading
+namespace SonarUtils.Threading
 {
-    // License for ResettableLazy: MIT, feel free to use
-
     /// <summary>
     /// Very similar to <see cref="Lazy{T}"/>, except that its resettable.
     /// </summary>

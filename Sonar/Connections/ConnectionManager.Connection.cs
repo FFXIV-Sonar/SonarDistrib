@@ -11,7 +11,7 @@ namespace Sonar.Connections
         // Houses connection information
         private sealed class SonarConnectionInformation
         {
-            public SonarUrl Url { get; init; }
+            public required SonarUrl Url { get; init; }
             public uint? Id { get; set; }
         }
     }

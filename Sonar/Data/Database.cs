@@ -18,37 +18,16 @@ namespace Sonar.Data
     /// </summary>
     public static class Database
     {
-        private static readonly ResettableLazy<SonarDb> s_db = new(LoadEmbeddedDb) { ShouldDispose = false };
+        private static Lazy<SonarDb> s_db = new(LoadEmbeddedDb);
         internal static SonarDb Instance
         {
-            get
-            {
-                return s_db.Value;
-            }
-            set
-            {
-                s_db.Value = value;
-                ResetLaziness();
-            }
-        }
-
-        private static void ResetLaziness()
-        {
-            s_worlds.Reset();
-            s_datacenters.Reset();
-            s_regions.Reset();
-            s_audiences.Reset();
-            s_hunts.Reset();
-            s_fates.Reset();
-            s_maps.Reset();
-            s_zones.Reset();
-            s_weathers.Reset();
+            get => s_db.Value;
+            set => s_db = new(value);
         }
 
         internal static void Reset()
         {
-            s_db.Reset();
-            ResetLaziness();
+            s_db = new(LoadEmbeddedDb);
         }
 
         private static SonarDb LoadEmbeddedDb()
@@ -59,17 +38,15 @@ namespace Sonar.Data
 
             var bytes = new byte[stream.Length];
             stream.Read(bytes, 0, bytes.Length);
-            return SonarSerializer.DeserializeData<SonarDb>(bytes);
+            var db = SonarSerializer.DeserializeData<SonarDb>(bytes);
+            db.Freeze();
+            return db;
         }
 
-        /// <summary>
-        /// Warning: Slow
-        /// </summary>
+        /// <summary>Warning: Slow</summary>
         public static byte[] ComputeHash() => Instance.ComputeHash();
 
-        /// <summary>
-        /// Warning: Slow
-        /// </summary>
+        /// <summary>Warning: Slow</summary>
         public static bool VerifyHash() => Instance.VerifyHash();
 
         public static SonarDbInfo GetDbInfo() => Instance.GetDbInfo();
@@ -95,33 +72,19 @@ namespace Sonar.Data
         public static string HashString => Instance.HashString;
 
         #region Dictionaries and Lists
-        private static readonly ResettableLazy<IReadOnlyDictionary<uint, WorldRow>> s_worlds = new(() => new ReadOnlyDictionary<uint, WorldRow>(Instance.Worlds)) { ShouldDispose = false };
-        public static IReadOnlyDictionary<uint, WorldRow> Worlds => s_worlds.Value;
-
-        private static readonly ResettableLazy<IReadOnlyDictionary<uint, DatacenterRow>> s_datacenters = new(() => new ReadOnlyDictionary<uint, DatacenterRow>(Instance.Datacenters)) { ShouldDispose = false };
-        public static IReadOnlyDictionary<uint, DatacenterRow> Datacenters => s_datacenters.Value;
-
-        private static readonly ResettableLazy<IReadOnlyDictionary<uint, RegionRow>> s_regions = new(() => new ReadOnlyDictionary<uint, RegionRow>(Instance.Regions)) { ShouldDispose = false };
-        public static IReadOnlyDictionary<uint, RegionRow> Regions => s_regions.Value;
-
-        private static readonly ResettableLazy<IReadOnlyDictionary<uint, AudienceRow>> s_audiences = new(() => new ReadOnlyDictionary<uint, AudienceRow>(Instance.Audiences)) { ShouldDispose = false };
-        public static IReadOnlyDictionary<uint, AudienceRow> Audiences => s_audiences.Value;
-
-        private static readonly ResettableLazy<IReadOnlyDictionary<uint, HuntRow>> s_hunts = new(() => new ReadOnlyDictionary<uint, HuntRow>(Instance.Hunts)) { ShouldDispose = false };
-        public static IReadOnlyDictionary<uint, HuntRow> Hunts => s_hunts.Value;
-
-        private static readonly ResettableLazy<IReadOnlyDictionary<uint, FateRow>> s_fates = new(() => new ReadOnlyDictionary<uint, FateRow>(Instance.Fates)) { ShouldDispose = false };
-        public static IReadOnlyDictionary<uint, FateRow> Fates => s_fates.Value;
-
-        private static readonly ResettableLazy<IReadOnlyDictionary<uint, MapRow>> s_maps = new(() => new ReadOnlyDictionary<uint, MapRow>(Instance.Maps)) { ShouldDispose = false };
-        public static IReadOnlyDictionary<uint, MapRow> Maps => s_maps.Value;
-
-        private static readonly ResettableLazy<IReadOnlyDictionary<uint, ZoneRow>> s_zones = new(() => new ReadOnlyDictionary<uint, ZoneRow>(Instance.Zones)) { ShouldDispose = false };
-        public static IReadOnlyDictionary<uint, ZoneRow> Zones => s_zones.Value;
-
-        private static readonly ResettableLazy<IReadOnlyDictionary<uint, WeatherRow>> s_weathers = new(() => new ReadOnlyDictionary<uint, WeatherRow>(Instance.Weathers)) { ShouldDispose = false };
-        public static IReadOnlyDictionary<uint, WeatherRow> Weathers => s_weathers.Value;
+        public static IReadOnlyDictionary<uint, WorldRow> Worlds => Instance.Worlds.ToIReadOnlyDictionaryUnsafe();
+        public static IReadOnlyDictionary<uint, DatacenterRow> Datacenters => Instance.Datacenters.ToIReadOnlyDictionaryUnsafe();
+        public static IReadOnlyDictionary<uint, RegionRow> Regions => Instance.Regions.ToIReadOnlyDictionaryUnsafe();
+        public static IReadOnlyDictionary<uint, AudienceRow> Audiences => Instance.Audiences.ToIReadOnlyDictionaryUnsafe();
+        public static IReadOnlyDictionary<uint, HuntRow> Hunts => Instance.Hunts.ToIReadOnlyDictionaryUnsafe();
+        public static IReadOnlyDictionary<uint, FateRow> Fates => Instance.Fates.ToIReadOnlyDictionaryUnsafe();
+        public static IReadOnlyDictionary<uint, MapRow> Maps => Instance.Maps.ToIReadOnlyDictionaryUnsafe();
+        public static IReadOnlyDictionary<uint, ZoneRow> Zones => Instance.Zones.ToIReadOnlyDictionaryUnsafe();
+        public static IReadOnlyDictionary<uint, WeatherRow> Weathers => Instance.Weathers.ToIReadOnlyDictionaryUnsafe();
         #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static IReadOnlyDictionary<TKey, TValue> ToIReadOnlyDictionaryUnsafe<TKey, TValue>(this IDictionary<TKey, TValue> dict) => Unsafe.As<IReadOnlyDictionary<TKey, TValue>>(dict);
 
     }
 }

@@ -25,9 +25,9 @@
       },
       "DryIoc.dll": {
         "type": "Direct",
-        "requested": "[5.4.1, )",
-        "resolved": "5.4.1",
-        "contentHash": "fWjM3O4tCivhoQiHsJ3XClLtQ8wK2Tg6Loy6bQ7nOO1L5nRngB4G8TjtLJT3JuvnVQ7DC+kD4nDIVR/qjQg/dw=="
+        "requested": "[5.4.3, )",
+        "resolved": "5.4.3",
+        "contentHash": "yhXOG3SOxeWYxBAWskNRDD8fzw5hriEawv4VN4WKaFHOuubiop4kxe2rkWTEyCnTgRVgxVUSQCDBBkZqwPm1iQ=="
       },
       "Fody": {
         "type": "Direct",
@@ -70,20 +70,20 @@
       },
       "DeviceId.Windows.Wmi": {
         "type": "Transitive",
-        "resolved": "6.5.0",
-        "contentHash": "Vqffz85WRqHWS+KPPCkBsyWBwWCBTyDoksizqmOvuvgVRp+W4jCJt94Zi62zoIcyKCH6OTqapI+l03twoqgzRQ==",
+        "resolved": "6.6.0",
+        "contentHash": "RMngL2ioAiR4MEUb+17n7IT/FgzSYKK8NFN9YxbZZizl1PVEPyf/fM0SXSMAloOCeDgFu7077SbEW9cnKbPQcQ==",
         "dependencies": {
-          "DeviceId": "6.4.0",
-          "DeviceId.Windows": "6.4.0",
-          "System.Management": "7.0.0"
+          "DeviceId": "6.6.0",
+          "DeviceId.Windows": "6.6.0",
+          "System.Management": "8.0.0"
         }
       },
       "DryIoc.MefAttributedModel.dll": {
         "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "rL15zLKGf1J/kLMpO1JSdNooOHrAjWTHduvrHRFuA/AYQ+9pqowKxsm3VgdPZecJMx2J4ixFk0gLWZhxl5Y5wg==",
+        "resolved": "7.0.2",
+        "contentHash": "vshe/0Gf+Aesxi6l73AdWvPkjhgliw10jsS84Z8iq4aiZPtlt+diL16sr4zVDoSmUrmuFn3VPE0Z0hs1sALe9A==",
         "dependencies": {
-          "DryIoc.dll": "5.0.0",
+          "DryIoc.dll": "5.4.2",
           "DryIocAttributes.dll": "7.0.0"
         }
       },
@@ -94,6 +94,11 @@
         "dependencies": {
           "System.ComponentModel.Composition": "4.7.0"
         }
+      },
+      "Farmhash.Sharp": {
+        "type": "Transitive",
+        "resolved": "0.9.0",
+        "contentHash": "6Ij80JrfPyiDRM4QqdlEIjev4Q97eqEakh7wFJZYmbUkWVoCJb1+YdSdoXpzvn+Fs2dXH8THRsn+uUvrhMNKpQ=="
       },
       "InterlockedUtils": {
         "type": "Transitive",
@@ -116,8 +121,8 @@
       },
       "System.CodeDom": {
         "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "GLltyqEsE5/3IE+zYRP5sNa1l44qKl9v+bfdMcwg+M9qnQf47wK3H0SUR/T+3N4JEQXF3vV4CSuuo0rsg+nq2A=="
+        "resolved": "8.0.0",
+        "contentHash": "WTlRjL6KWIMr/pAaq3rYqh0TJlzpouaQ/W1eelssHgtlwHAH25jXTkUphTYx9HaIIf7XA6qs/0+YhtLEQRkJ+Q=="
       },
       "System.ComponentModel.Composition": {
         "type": "Transitive",
@@ -126,10 +131,10 @@
       },
       "System.Management": {
         "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "A4jed4QUviDOm7fJNKAJObEAEkEUXmkGL/w0iyCYTzrl1rezTj8LGFHfsVst4Vb9JwFcTpboiDrvdST48avBpw==",
+        "resolved": "8.0.0",
+        "contentHash": "jrK22i5LRzxZCfGb+tGmke2VH7oE0DvcDlJ1HAKYU8cPmD8XnpUT0bYn2Gy98GEhGjtfbR/sxKTVb+dE770pfA==",
         "dependencies": {
-          "System.CodeDom": "7.0.0"
+          "System.CodeDom": "8.0.0"
         }
       },
       "System.Runtime.CompilerServices.Unsafe": {
@@ -161,9 +166,9 @@
         "dependencies": {
           "AG.NonBlocking": "[2.1.1, )",
           "ConcurrencyLab.ParallelChecker": "[2.7.0, )",
-          "DeviceId.Windows.Wmi": "[6.5.0, )",
-          "DryIoc.MefAttributedModel.dll": "[7.0.0, )",
-          "DryIoc.dll": "[5.4.1, )",
+          "DeviceId.Windows.Wmi": "[6.6.0, )",
+          "DryIoc.MefAttributedModel.dll": "[7.0.2, )",
+          "DryIoc.dll": "[5.4.3, )",
           "InterlockedUtils": "[1.0.1, )",
           "SonarUtils": "[1.0.0, )",
           "ZString": "[2.5.1, )"
@@ -172,7 +177,8 @@
       "sonarutils": {
         "type": "Project",
         "dependencies": {
-          "ConcurrencyLab.ParallelChecker": "[2.7.0, )"
+          "ConcurrencyLab.ParallelChecker": "[2.7.0, )",
+          "Farmhash.Sharp": "[0.9.0, )"
         }
       }
     }

@@ -6,7 +6,7 @@ using MessagePack;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using MessagePack.Formatters;
-using Sonar.Utilities;
+using SonarUtils;
 
 namespace Sonar.Data
 {

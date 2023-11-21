@@ -16,7 +16,7 @@ using System.Collections.Immutable;
 using SonarUtils;
 using SonarUtils.Collections;
 using DryIoc;
-using Microsoft.VisualBasic;
+using SonarUtils.Text;
 
 namespace Sonar.Trackers
 {

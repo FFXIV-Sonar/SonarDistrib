@@ -3,6 +3,7 @@ using Sonar.Data.Extensions;
 using Sonar.Data.Rows;
 using Sonar.Enums;
 using Sonar.Threading;
+using SonarUtils.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +18,13 @@ namespace SonarPlugin.Utility
     {
         private object? _checkObj;
         private SonarLanguage _lastLanguage;
-        private Lazy<FullTextIndex<ZoneRow>> _zoneSearchIndex = default!;
-        private Lazy<FullTextIndex<HuntRow>> _huntSearchIndex = default!;
-        private Lazy<FullTextIndex<FateRow>> _fateSearchIndex = default!;
+        private Lazy<KeywordTextIndex<ZoneRow>> _zoneSearchIndex = default!;
+        private Lazy<KeywordTextIndex<HuntRow>> _huntSearchIndex = default!;
+        private Lazy<KeywordTextIndex<FateRow>> _fateSearchIndex = default!;
 
-        public FullTextIndex<ZoneRow> Zones => this._zoneSearchIndex.Value;
-        public FullTextIndex<HuntRow> Hunts => this._huntSearchIndex.Value;
-        public FullTextIndex<FateRow> Fates => this._fateSearchIndex.Value;
+        public KeywordTextIndex<ZoneRow> Zones => this._zoneSearchIndex.Value;
+        public KeywordTextIndex<HuntRow> Hunts => this._huntSearchIndex.Value;
+        public KeywordTextIndex<FateRow> Fates => this._fateSearchIndex.Value;
 
         public IndexProvider()
         {
@@ -44,19 +45,19 @@ namespace SonarPlugin.Utility
         {
             var zones = Database.Zones.Values
                 .Where(zone => zone.IsField);
-            this._zoneSearchIndex = new(() => FullTextIndex.Create(zones, getter: zone => $"{zone.Name} {zone.Region}"));
+            this._zoneSearchIndex = new(() => KeywordTextIndex.Create(zones, getter: zone => $"{zone.Name} {zone.Region} {zone.Expansion}", maxLength: 4));
 
             var hunts = Database.Hunts.Values;
-            this._huntSearchIndex = new(() => FullTextIndex.Create(hunts, getter: hunt => $"{hunt.Name} {string.Join(' ', hunt.GetSpawnZones().Select(z => $"{z.Name} {z.Region}"))}"));
+            this._huntSearchIndex = new(() => KeywordTextIndex.Create(hunts, getter: hunt => $"{hunt.Name} {string.Join(' ', hunt.GetSpawnZones().Select(z => $"{z.Name} {z.Region}"))} {hunt.Expansion} {hunt.Rank}", maxLength: 4));
 
             var fates = Database.Fates.Values
                 .Where(fate => fate.GetZone()!.IsField);
-            this._fateSearchIndex = new(() => FullTextIndex.Create(fates, getter: fate => $"{fate.Level} {fate.Name} {fate.AchievementName} {fate.GetZone()!.Name} {fate.GetZone()!.Region}"));
+            this._fateSearchIndex = new(() => KeywordTextIndex.Create(fates, getter: fate => $"{fate.Level} {fate.Name} {fate.AchievementName} {fate.GetZone()!.Name} {fate.GetZone()!.Region} {fate.Expansion}", maxLength: 4));
 
             // Build indexes in the background
             Task.Run(() => this.Zones);
-            //Task.Run(() => this.Hunts);
-            //Task.Run(() => this.Fates);
+            Task.Run(() => this.Hunts);
+            Task.Run(() => this.Fates);
         }
     }
 }
