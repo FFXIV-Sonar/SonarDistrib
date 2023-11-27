@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarBenchmarks", "SonarBen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarSecrets", "SonarSecrets\SonarSecrets.csproj", "{8759AE7B-B9AC-48F5-8A97-456460040C58}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonarUtils.Tests", "SonarUtils.Tests\SonarUtils.Tests.csproj", "{2604D25D-E90F-4695-B600-2FB19293A140}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{8759AE7B-B9AC-48F5-8A97-456460040C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8759AE7B-B9AC-48F5-8A97-456460040C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8759AE7B-B9AC-48F5-8A97-456460040C58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2604D25D-E90F-4695-B600-2FB19293A140}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2604D25D-E90F-4695-B600-2FB19293A140}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2604D25D-E90F-4695-B600-2FB19293A140}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2604D25D-E90F-4695-B600-2FB19293A140}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

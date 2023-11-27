@@ -56,9 +56,7 @@ namespace SonarUtils.Threading
 
         private static T DefaultValueFactory()
         {
-            var instance = Activator.CreateInstance<T>();
-            if (instance is null) throw new InvalidOperationException($"Unable to create object of type {typeof(T)} using the default constructor");
-            return instance;
+            return Activator.CreateInstance<T>() ?? throw new InvalidOperationException($"Unable to create object of type {typeof(T)} using the default constructor");
         }
 
         [DoesNotReturn]

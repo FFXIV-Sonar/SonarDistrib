@@ -220,6 +220,11 @@
           "System.Text.Encodings.Web": "7.0.0"
         }
       },
+      "XoshiroPRNG.Net": {
+        "type": "Transitive",
+        "resolved": "1.6.0",
+        "contentHash": "Agj7DDi1obbcZXzPJDGpx4ncwrlr0Q39xe/coNGJV2DU3AzhWiHF33sM2nkHlgIL1icLacx1hkqNz8No7pdWWg=="
+      },
       "ZString": {
         "type": "Transitive",
         "resolved": "2.5.1",
@@ -248,7 +253,8 @@
         "type": "Project",
         "dependencies": {
           "ConcurrencyLab.ParallelChecker": "[2.7.0, )",
-          "Farmhash.Sharp": "[0.9.0, )"
+          "Farmhash.Sharp": "[0.9.0, )",
+          "XoshiroPRNG.Net": "[1.6.0, )"
         }
       }
     }

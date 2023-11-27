@@ -2,34 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
-    <LangVersion>11</LangVersion>
     <AssemblyVersion>0.6.0.4</AssemblyVersion>
-    <OutputType>Library</OutputType>
-    <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <Authors>Sonar Team</Authors>
-    <Company>Sonar Team</Company>
-    <Product>Sonar</Product>
-    <Copyright></Copyright>
-    <Description>*pokes* *pokes* *pokes* *pokes* *pokes*!!!</Description>
-    <RepositoryType></RepositoryType>
-    <RepositoryUrl></RepositoryUrl>
-    <PackageReleaseNotes>Thanks Ascians for placing Sonar Towers all across Eorzea!</PackageReleaseNotes>
-    <PackageProjectUrl>https://discord.gg/K7y24Rr</PackageProjectUrl>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <Nullable>enable</Nullable>
-    <DebugType>None</DebugType>
-    <DebugSymbols>false</DebugSymbols>
-    <RootNamespace>SonarPlugin</RootNamespace>
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <OutputPath>bin/</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
-    <DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>
   </PropertyGroup>
 
   <ItemGroup>
@@ -145,22 +127,9 @@
     </Reference>
   </ItemGroup>
 
-  <Target Name="CleanupDebugAndDocs" BeforeTargets="PackagePlugin" Condition="'$(Configuration)' == 'Release'">
-    <ItemGroup>
-      <FilesToDelete Include="$(OutDir)*.pdb;$(OutDir)*.xml" />
-    </ItemGroup>
-    <Delete Files="@(FilesToDelete)" />
-  </Target>
-
   <Target Name="PackagePlugin" AfterTargets="Build">
     <DalamudPackager ProjectDir="$(ProjectDir)" OutputPath="$(OutputPath)" AssemblyName="$(AssemblyName)" MakeZip="true" />
   </Target>
-  
-  <ItemGroup>
-    <None Update="obfuscar.xml">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
   <Target Name="Secrets" BeforeTargets="PrepareForBuild" Condition="'$(PLOGON_SECRET_PLUGIN)' != ''">
     <Warning Text="Adding Secret: PLOGON_SECRET_PLUGIN" />
@@ -174,11 +143,11 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="Hash" AfterTargets="Build">
+  <Target Name="Hash" AfterTargets="Build" Condition="Exists('$(Outdir)\Sonar.dll')">
     <GetFileHash Algorithm="SHA256" Files="$(OutputPath)\SonarPlugin.dll" HashEncoding="base64">
       <Output TaskParameter="Hash" ItemName="PluginHash" />
     </GetFileHash>
-    <Warning Text="Plugin Hash: @(PluginHash)" />
+    <Warning Text="SonarPlugin Hash: @(PluginHash)" />
   </Target>
 
 </Project>

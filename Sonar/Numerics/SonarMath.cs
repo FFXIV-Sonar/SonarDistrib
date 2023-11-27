@@ -10,7 +10,7 @@ namespace Sonar.Numerics
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1905:Redundant casts should not be used", Justification = "<Pending>")]
     public static class SonarMath
     {
-        private readonly static ThreadLocal<Random> _random = new(() => new Random());
+        private static readonly ThreadLocal<Random> _random = new(() => new Random());
 
         /// <summary>
         /// Normal thread local random

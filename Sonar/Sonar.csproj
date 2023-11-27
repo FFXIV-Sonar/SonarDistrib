@@ -4,23 +4,12 @@
     <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
     <AssemblyVersion>0.6.0.4</AssemblyVersion>
     <RootNamespace>Sonar</RootNamespace>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <LangVersion>11</LangVersion>
     <Nullable>enable</Nullable>
+    <Deterministic>true</Deterministic>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <DebugType>None</DebugType>
-    <DebugSymbols>false</DebugSymbols>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>disable</ImplicitUsings>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
@@ -108,6 +97,13 @@
     <ItemGroup>
       <EmbeddedResource Include="Resources\Secret.data" />
     </ItemGroup>
+  </Target>
+
+  <Target Name="Hash" AfterTargets="Build" Condition="Exists('$(Outdir)\Sonar.dll')">
+    <GetFileHash Algorithm="SHA256" Files="$(Outdir)\Sonar.dll" HashEncoding="base64">
+      <Output TaskParameter="Hash" ItemName="SonarHash" />
+    </GetFileHash>
+    <Warning Text="Sonar Hash: @(SonarHash)" />
   </Target>
 
 </Project>
