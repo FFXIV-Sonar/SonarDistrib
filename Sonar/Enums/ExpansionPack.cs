@@ -8,5 +8,6 @@
         Stormblood,
         Shadowbringers,
         Endwalker,
+        Dawntrail,
     }
 }

@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sonar", "Sonar\Sonar.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarPlugin", "SonarPlugin\SonarPlugin.csproj", "{F5BA4BB1-26FA-4FB9-B557-85BB4AEFAB0F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarResourceGen", "SonarResourceGen\SonarResourceGen.csproj", "{EE8B5077-F0D1-4D5D-A7CD-847F49E96C77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarResourceGen", "SonarResources\SonarResources.csproj", "{EE8B5077-F0D1-4D5D-A7CD-847F49E96C77}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarServer", "SonarServer\SonarServer.csproj", "{AE30030E-9F89-432F-8378-C7C7C5F2E5BE}"
 EndProject
@@ -35,7 +35,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarBenchmarks", "SonarBen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarSecrets", "SonarSecrets\SonarSecrets.csproj", "{8759AE7B-B9AC-48F5-8A97-456460040C58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonarUtils.Tests", "SonarUtils.Tests\SonarUtils.Tests.csproj", "{2604D25D-E90F-4695-B600-2FB19293A140}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonarUtils.Tests", "SonarUtils.Tests\SonarUtils.Tests.csproj", "{2604D25D-E90F-4695-B600-2FB19293A140}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{35C5F924-32BF-4CCD-B1FD-52FFF8A5139B}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +93,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{35C5F924-32BF-4CCD-B1FD-52FFF8A5139B} = {8F7B1230-AB17-4773-A174-A23DB0B121D3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F039DA17-64AE-4558-8887-BA8C2D0CDCE2}

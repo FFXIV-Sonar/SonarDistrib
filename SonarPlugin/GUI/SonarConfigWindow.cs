@@ -194,7 +194,7 @@ namespace SonarPlugin.GUI
             var index = this.jurisdictionsCombo.Keys.ToList().IndexOf(this.Client.Configuration.ReceiveJurisdiction);
             if (ImGui.Combo($"{Loc.Localize("ReceiveJurisdiction", "Receive Jurisdiction")}", ref index, this.jurisdictionsCombo.Values.ToArray(), this.jurisdictionsCombo.Count))
             {
-                this._save = true;
+                this._save = this._server = true;
                 if (index == 0) index = 5;
                 this.Client.Configuration.ReceiveJurisdiction = this.jurisdictionsCombo.Keys.ToList()[index];
             }
@@ -217,12 +217,44 @@ namespace SonarPlugin.GUI
             ImGui.Separator();
             ImGui.Spacing();
 
-            if (ImGui.TreeNodeEx("##generalTabDutySettings", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("Duty Settings", "Duty Settings")}"))
+            if (ImGui.TreeNodeEx("##generalTabDutySettings", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("DutySettings", "Duty Settings")}"))
             {
                 ImGui.Indent();
 
                 this._save |= ImGui.Checkbox($"{Loc.Localize("DisableChatAlertsDuties", "Disable Chat Alerts during Duties")}##enableWindowClickthrough", ref this.Plugin.Configuration.DisableChatInDuty);
                 this._save |= ImGui.Checkbox($"{Loc.Localize("DisableSoundAlertsDuties", "Disable Sound Alerts during Duties")}##enableWindowClickthrough", ref this.Plugin.Configuration.DisableSoundInDuty);
+
+                ImGui.Unindent();
+            }
+
+            if (ImGui.TreeNodeEx("##generalTabClicks", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("ClickSettings", "Click Settings")}"))
+            {
+                ImGui.Indent();
+
+                var actions = EnumCheapLocExtensions.CheapLoc<ClickAction>().Values.ToArray();
+                SonarImGui.Combo($"{Loc.Localize("MiddleClick", "Middle Click")}##middleClickConfig", (int)this.Plugin.Configuration.MiddleClick, actions, index =>
+                {
+                    this._save = true;
+                    if (index == 0) index = 2;
+                    this.Plugin.Configuration.MiddleClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
+                });
+
+                SonarImGui.Combo($"{Loc.Localize("RightClick", "Right Click")}##rightClickConfig", (int)this.Plugin.Configuration.RightClick, actions, index =>
+                {
+                    this._save = true;
+                    if (index == 0) index = 3;
+                    this.Plugin.Configuration.RightClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
+                });
+
+                ImGui.Spacing();
+
+                var cityStates = Enum.GetValues<CityState>().Select(cityState => (cityState, cityState.GetMeta())).ToArray();
+                var cityStateStrings = cityStates.Select(ct => ct.Item2?.GetZone()?.ToString() ?? string.Empty).ToArray();
+                SonarImGui.Combo($"{Loc.Localize("PreferredCityState", "Preferred City State")}##preferredCityState", (int)this.Plugin.Configuration.PreferredCityState, cityStateStrings, index =>
+                {
+                    this._save = true;
+                    this.Plugin.Configuration.PreferredCityState = cityStates[index].cityState;
+                });
 
                 ImGui.Unindent();
             }

@@ -111,26 +111,26 @@
       },
       "MessagePack": {
         "type": "Direct",
-        "requested": "[2.5.129, )",
-        "resolved": "2.5.129",
-        "contentHash": "1jBW0Q3qvv+PJBwer8lQ2l26/fKptJIqFgVdyKfn4zW+LSYE8xEcvd4svfh0erI5f4d+rQRIAN229I2ARI/A5w==",
+        "requested": "[2.5.140, )",
+        "resolved": "2.5.140",
+        "contentHash": "nkIsgy8BkIfv40bSz9XZb4q//scI1PF3AYeB5X66nSlIhBIqbdpLz8Qk3gHvnjV3RZglQLO/ityK3eNfLii2NA==",
         "dependencies": {
-          "MessagePack.Annotations": "2.5.129",
+          "MessagePack.Annotations": "2.5.140",
           "Microsoft.NET.StringTools": "17.6.3",
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
       },
       "MessagePack.Annotations": {
         "type": "Direct",
-        "requested": "[2.5.129, )",
-        "resolved": "2.5.129",
-        "contentHash": "wNJB3EaJKjq+5pti+0T8b444fEb2PRw3hFefp9+of/BvDdTWO0iIUWfYNZbKx5aAIrpFzhLEfMAEJnGWWq3OFQ=="
+        "requested": "[2.5.140, )",
+        "resolved": "2.5.140",
+        "contentHash": "JE3vwluOrsJ4t3hnfXzIxJUh6lhx6M/KR8Sark/HOUw1DJ5UKu5JsAnnuaQngg6poFkRx1lzHSLTkxHNJO7+uQ=="
       },
       "MessagePackAnalyzer": {
         "type": "Direct",
-        "requested": "[2.5.129, )",
-        "resolved": "2.5.129",
-        "contentHash": "AxRB2xsdmZVJaaHeCvFhfkh3I7od1CL94Bz4lzMTyYoHwLB0w3y+5i2G6SApbTuGjIox+/C+k5s7OO02lenbzg=="
+        "requested": "[2.5.140, )",
+        "resolved": "2.5.140",
+        "contentHash": "iFJI9n3QMYnCWz83hRD6/gAURXYedSd6Itijs6LeUYoxNFQE+xHmEG5bz3w8ymnbKKt62FEP3gldvHSiDSO7yg=="
       },
       "Microsoft.NET.ILLink.Analyzers": {
         "type": "Direct",
@@ -400,26 +400,26 @@
       },
       "MessagePack": {
         "type": "Direct",
-        "requested": "[2.5.129, )",
-        "resolved": "2.5.129",
-        "contentHash": "1jBW0Q3qvv+PJBwer8lQ2l26/fKptJIqFgVdyKfn4zW+LSYE8xEcvd4svfh0erI5f4d+rQRIAN229I2ARI/A5w==",
+        "requested": "[2.5.140, )",
+        "resolved": "2.5.140",
+        "contentHash": "nkIsgy8BkIfv40bSz9XZb4q//scI1PF3AYeB5X66nSlIhBIqbdpLz8Qk3gHvnjV3RZglQLO/ityK3eNfLii2NA==",
         "dependencies": {
-          "MessagePack.Annotations": "2.5.129",
+          "MessagePack.Annotations": "2.5.140",
           "Microsoft.NET.StringTools": "17.6.3",
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
       },
       "MessagePack.Annotations": {
         "type": "Direct",
-        "requested": "[2.5.129, )",
-        "resolved": "2.5.129",
-        "contentHash": "wNJB3EaJKjq+5pti+0T8b444fEb2PRw3hFefp9+of/BvDdTWO0iIUWfYNZbKx5aAIrpFzhLEfMAEJnGWWq3OFQ=="
+        "requested": "[2.5.140, )",
+        "resolved": "2.5.140",
+        "contentHash": "JE3vwluOrsJ4t3hnfXzIxJUh6lhx6M/KR8Sark/HOUw1DJ5UKu5JsAnnuaQngg6poFkRx1lzHSLTkxHNJO7+uQ=="
       },
       "MessagePackAnalyzer": {
         "type": "Direct",
-        "requested": "[2.5.129, )",
-        "resolved": "2.5.129",
-        "contentHash": "AxRB2xsdmZVJaaHeCvFhfkh3I7od1CL94Bz4lzMTyYoHwLB0w3y+5i2G6SApbTuGjIox+/C+k5s7OO02lenbzg=="
+        "requested": "[2.5.140, )",
+        "resolved": "2.5.140",
+        "contentHash": "iFJI9n3QMYnCWz83hRD6/gAURXYedSd6Itijs6LeUYoxNFQE+xHmEG5bz3w8ymnbKKt62FEP3gldvHSiDSO7yg=="
       },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",

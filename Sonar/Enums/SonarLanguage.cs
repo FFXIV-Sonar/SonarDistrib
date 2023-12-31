@@ -13,5 +13,8 @@
         // China languages
         ChineseSimplified,
         ChineseTraditional,
+
+        // Korea languages
+        Korean,
     }
 }

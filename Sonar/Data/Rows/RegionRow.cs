@@ -11,5 +11,7 @@ namespace Sonar.Data.Rows
         public string Name { get; set; } = default!;
         [Key(2)]
         public uint AudienceId { get; set; }
+        [Key(3)]
+        public bool IsPublic { get; set; }
     }
 }

@@ -21,6 +21,8 @@ namespace Sonar.Data.Rows
         public uint AudienceId { get; set; }
         [Key(4)]
         public bool HasLodestone { get; set; }
+        [Key(5)]
+        public bool IsPublic { get; set; }
 
         public override string ToString() => this.Name.ToString();
     }

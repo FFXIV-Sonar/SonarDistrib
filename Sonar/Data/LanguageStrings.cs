@@ -7,6 +7,8 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using MessagePack.Formatters;
 using SonarUtils;
+using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Sonar.Data
 {
@@ -16,7 +18,7 @@ namespace Sonar.Data
     [MessagePackFormatter(typeof(LanguageStringsFormatter))]
     public sealed class LanguageStrings : IDictionary<SonarLanguage, string>
     {
-        private readonly Dictionary<SonarLanguage, string> strings = new();
+        private readonly IDictionary<SonarLanguage, string> _strings = new Dictionary<SonarLanguage, string>();
 
         /// <summary>
         /// Resolve which language to return (in case not all languages are supported)
@@ -26,19 +28,19 @@ namespace Sonar.Data
         public SonarLanguage? ResolveLanguage(SonarLanguage lang = SonarLanguage.Default)
         {
             // Fail fast if no strings are stored
-            if (this.strings.Count == 0) return null;
+            if (this._strings.Count == 0) return null;
 
             // If default take it from Database.Default
             if (lang == SonarLanguage.Default) lang = Database.DefaultLanguage;
 
             // If a string for the requested language doesn't exist try the default language
-            if (!this.strings.ContainsKey(lang)) lang = Database.DefaultLanguage;
+            if (!this._strings.ContainsKey(lang)) lang = Database.DefaultLanguage;
 
             // If a string for the default language doesn't exist fall back to English
-            if (!this.strings.ContainsKey(lang)) lang = SonarLanguage.English;
+            if (!this._strings.ContainsKey(lang)) lang = SonarLanguage.English;
 
             // If a string doesn't exist use whichever key is found as a last resort
-            if (!this.strings.ContainsKey(lang)) lang = this.strings.Keys.First();
+            if (!this._strings.ContainsKey(lang)) lang = this._strings.Keys.First();
 
             // Return the resolved language
             return lang;
@@ -50,16 +52,16 @@ namespace Sonar.Data
         }
 
         [IgnoreMember]
-        public ICollection<SonarLanguage> Keys => this.strings.Keys;
+        public ICollection<SonarLanguage> Keys => this._strings.Keys;
 
         [IgnoreMember]
-        public ICollection<string> Values => this.strings.Values;
+        public ICollection<string> Values => this._strings.Values;
 
         [IgnoreMember]
-        public int Count => this.strings.Count;
+        public int Count => this._strings.Count;
 
         [IgnoreMember]
-        public bool IsReadOnly => false;
+        public bool IsReadOnly => this._strings.IsReadOnly;
 
         /// <summary>
         /// Return a string of the specified language
@@ -75,7 +77,7 @@ namespace Sonar.Data
             if (!resLang.HasValue) return string.Empty;
 
             // Return the language string for the specified language
-            return this.strings[resLang.Value];
+            return this._strings[resLang.Value];
         }
 
         /// <summary>
@@ -107,51 +109,51 @@ namespace Sonar.Data
                 // If the value is null, remove the string and return
                 if (string.IsNullOrEmpty(value))
                 {
-                    this.strings.Remove(lang);
+                    this._strings.Remove(lang);
                     return;
                 }
 
                 // Sets the language string
-                this.strings[lang] = StringUtils.Intern(value);
+                this._strings[lang] = StringUtils.Intern(value);
             }
         }
 
-        public bool ContainsKey(SonarLanguage key) => this.strings.ContainsKey(key);
+        public bool ContainsKey(SonarLanguage key) => this._strings.ContainsKey(key);
 
         public void Add(SonarLanguage key, string value) => this[key] = value;
 
-        public bool Remove(SonarLanguage key) => this.strings.Remove(key);
+        public bool Remove(SonarLanguage key) => this._strings.Remove(key);
 
-        public bool TryGetValue(SonarLanguage key, [MaybeNullWhen(false)] out string value) => this.strings.TryGetValue(key, out value);
+        public bool TryGetValue(SonarLanguage key, [MaybeNullWhen(false)] out string value) => this._strings.TryGetValue(key, out value);
 
         public void Add(KeyValuePair<SonarLanguage, string> item) => this[item.Key] = item.Value;
 
-        public void Clear() => this.strings.Clear();
+        public void Clear() => this._strings.Clear();
 
-        public bool Contains(KeyValuePair<SonarLanguage, string> item) => this.strings.Contains(item);
+        public bool Contains(KeyValuePair<SonarLanguage, string> item) => this._strings.Contains(item);
 
-        public void CopyTo(KeyValuePair<SonarLanguage, string>[] array, int arrayIndex) => ((ICollection<KeyValuePair<SonarLanguage, string>>)this.strings).CopyTo(array, arrayIndex);
+        public void CopyTo(KeyValuePair<SonarLanguage, string>[] array, int arrayIndex) => this._strings.CopyTo(array, arrayIndex);
 
-        public bool Remove(KeyValuePair<SonarLanguage, string> item) => ((ICollection<KeyValuePair<SonarLanguage, string>>)this.strings).Remove(item);
+        public bool Remove(KeyValuePair<SonarLanguage, string> item) => this._strings.Remove(item);
 
-        public IEnumerator<KeyValuePair<SonarLanguage, string>> GetEnumerator() => this.strings.GetEnumerator();
+        public IEnumerator<KeyValuePair<SonarLanguage, string>> GetEnumerator() => this._strings.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => this.strings.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this._strings.GetEnumerator();
 
-        public class LanguageStringsFormatter : IMessagePackFormatter<LanguageStrings>
+        public class LanguageStringsFormatter : IMessagePackFormatter<LanguageStrings?>
         {
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1168:Empty arrays and collections should be returned instead of null", Justification = "MessagePack expectation")]
-            public LanguageStrings Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+            //[SuppressMessage("Major Code Smell", "S1168", Justification = "MessagePack expectation")]
+            public LanguageStrings? Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
             {
-                if (reader.TryReadNil()) return null!;
+                if (reader.TryReadNil()) return null;
                 options.Security.DepthStep(ref reader);
 
                 var ret = new LanguageStrings();
                 var keyFormatter = options.Resolver.GetFormatterWithVerify<SonarLanguage>();
                 var valueFormatter = options.Resolver.GetFormatterWithVerify<string>();
 
-                int count = reader.ReadMapHeader();
-                for (int i = 0; i < count; i++)
+                var count = reader.ReadMapHeader();
+                for (var i = 0; i < count; i++)
                 {
                     var key = keyFormatter.Deserialize(ref reader, options);
                     var value = valueFormatter.Deserialize(ref reader, options);

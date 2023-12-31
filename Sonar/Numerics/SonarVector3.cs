@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using MessagePack;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
+using System.Text.Json.Serialization;
 
 namespace Sonar.Numerics
 {
@@ -38,58 +39,63 @@ namespace Sonar.Numerics
             this.X = x; this.Y = y; this.Z = z;
         }
 
-        //public SonarVector3() { }
         public SonarVector3(float value) : this(value, value, value) { }
         public SonarVector3(SonarVector2 vec, float z) : this(vec.X, vec.Y, z) { }
         public SonarVector3(SonarVector3 vec) : this(vec.X, vec.Y, vec.Z) { }
 
         [JsonProperty]
+        [JsonInclude]
         [IgnoreMember]
         public float X;
         [JsonProperty]
+        [JsonInclude]
         [IgnoreMember]
         public float Y;
         [JsonProperty]
+        [JsonInclude]
         [IgnoreMember]
         public float Z;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [System.Text.Json.Serialization.JsonIgnore]
         [Key(0)]
         public int msgPackX
         {
-            get => unchecked((int)Math.Round(this.X * MessagePackAccuracy));
+            readonly get => unchecked((int)Math.Round(this.X * MessagePackAccuracy));
             set => this.X = (float)(value / MessagePackAccuracy);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [System.Text.Json.Serialization.JsonIgnore]
         [Key(1)]
         public int msgPackY
         {
-            get => unchecked((int)Math.Round(this.Y * MessagePackAccuracy));
+            readonly get => unchecked((int)Math.Round(this.Y * MessagePackAccuracy));
             set => this.Y = (float)(value / MessagePackAccuracy);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [System.Text.Json.Serialization.JsonIgnore]
         [Key(2)]
         public int msgPackZ
         {
-            get => unchecked((int)Math.Round(this.Z * MessagePackAccuracy));
+            readonly get => unchecked((int)Math.Round(this.Z * MessagePackAccuracy));
             set => this.Z = (float)(value / MessagePackAccuracy);
         }
 
-        public float Length() => (float)Math.Sqrt(this.LengthSquared());
-        public float LengthSquared() => this * this;
-        public SonarVector3 Unit()
+        public readonly float Length() => (float)Math.Sqrt(this.LengthSquared());
+        public readonly float LengthSquared() => this * this;
+        public readonly SonarVector3 Unit()
         {
-            float length = this.Length();
+            var length = this.Length();
             return new SonarVector3(this.X / length, this.Y / length, this.Z / length);
         }
-        public float Dot(SonarVector3 vec) => this * vec;
-        public SonarVector3 Cross(SonarVector3 vec) => new SonarVector3(this.Y * vec.Z - this.Z * vec.Y, this.Z * vec.X - this.X * vec.Z, this.X * vec.Y - this.Y * vec.X);
-        public SonarVector3 Delta(SonarVector3 vec) => vec - this;
-        public float DeltaAngle(SonarVector3 vec) => (float)Math.Acos((this * vec) / (this.Length() / vec.Length()));
+        public readonly float Dot(SonarVector3 vec) => this * vec;
+        public readonly SonarVector3 Cross(SonarVector3 vec) => new SonarVector3(this.Y * vec.Z - this.Z * vec.Y, this.Z * vec.X - this.X * vec.Z, this.X * vec.Y - this.Y * vec.X);
+        public readonly SonarVector3 Delta(SonarVector3 vec) => vec - this;
+        public readonly float DeltaAngle(SonarVector3 vec) => (float)Math.Acos((this * vec) / (this.Length() / vec.Length()));
 
-        public override string ToString() => $"({this.X}, {this.Y}, {this.Z})";
+        public readonly override string ToString() => $"({this.X}, {this.Y}, {this.Z})";
 
         public static implicit operator Vector3(SonarVector3 vec) => new Vector3(vec.X, vec.Y, vec.Z);
 
@@ -128,8 +134,8 @@ namespace Sonar.Numerics
         public static bool operator >=(SonarVector3 vec1, float value) => vec1.Length() >= value;
         public static bool operator >(SonarVector3 vec1, float value) => vec1.Length() > value;
 
-        public override bool Equals(object? obj) => obj is SonarVector3 vec && (this.X, this.Y, this.Z).Equals((vec.X, vec.Y, vec.Z));
-        public bool Equals(SonarVector3 v) => this == v;
-        public override int GetHashCode() => (this.X, this.Y, this.Z).GetHashCode();
+        public readonly override bool Equals(object? obj) => obj is SonarVector3 vec && (this.X, this.Y, this.Z).Equals((vec.X, vec.Y, vec.Z));
+        public readonly bool Equals(SonarVector3 v) => this == v;
+        public readonly override int GetHashCode() => (this.X, this.Y, this.Z).GetHashCode();
     }
 }

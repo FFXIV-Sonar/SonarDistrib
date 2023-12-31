@@ -40,6 +40,11 @@ namespace SonarPlugin.Config
         public float SoundVolume = 0.5f;
         public PluginLanguage Language = PluginLanguage.English;
 
+        public ClickAction MiddleClick = ClickAction.Chat;
+        public ClickAction RightClick = ClickAction.Map;
+
+        public CityState PreferredCityState = CityState.Limsa;
+
         private RelayStateSortingMode _sortingMode = RelayStateSortingMode.LastFound;
         public RelayStateSortingMode SortingMode
         {

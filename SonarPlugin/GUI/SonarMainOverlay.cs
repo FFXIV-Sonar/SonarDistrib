@@ -30,6 +30,8 @@ using Sonar.Utilities;
 using Dalamud.Plugin.Services;
 using System.Diagnostics.CodeAnalysis;
 using Dalamud.Interface.Internal;
+using SonarPlugin.Managers;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 namespace SonarPlugin.GUI
 {
@@ -50,10 +52,12 @@ namespace SonarPlugin.GUI
         private RelayTrackerViews Views { get; }
         private HuntNotifier HuntNotifier { get; }
         private FateNotifier FateNotifier { get; }
+        private AetheryteManager Aetherytes { get; }
         private MapTextureProvider MapTextures { get; }
         private ResourceHelper Resources { get; }
         private UiBuilder Ui { get; }
         private IGameGui GameGui { get; }
+        private IFramework Framework { get; }
         private IPluginLog Logger { get; }
 
         private static readonly string windowTitle = Loc.Localize("MainWindowTitle", "Sonar");
@@ -65,17 +69,19 @@ namespace SonarPlugin.GUI
 
         private readonly IDalamudTextureWrap _redFlag;
 
-        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, MapTextureProvider mapTextures, ResourceHelper resources, UiBuilder ui, IGameGui gameGui, IPluginLog logger)
+        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, AetheryteManager aetherytes, MapTextureProvider mapTextures, ResourceHelper resources, UiBuilder ui, IGameGui gameGui, IFramework framework, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;
             this.Views = views;
             this.HuntNotifier = huntsNotifier;
             this.FateNotifier = fateNotifier;
+            this.Aetherytes = aetherytes;
             this.MapTextures = mapTextures;
             this.Resources = resources;
             this.Ui = ui;
             this.GameGui = gameGui;
+            this.Framework = framework;
             this.Logger = logger;
 
             this._visible = this.Plugin.Configuration.OverlayVisibleByDefault;
@@ -273,6 +279,46 @@ namespace SonarPlugin.GUI
             ImGui.EndChild();
         }
 
+        private unsafe void PerformClickAction(RelayState state)
+        {
+            var action = ClickAction.None;
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Middle)) action = this.Plugin.Configuration.MiddleClick;
+            else if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) action = this.Plugin.Configuration.RightClick;
+            this.PerformClickAction(state, action);
+        }
+
+        private unsafe void PerformClickAction(RelayState state, ClickAction action)
+        {
+            var mapAgent = AgentMap.Instance();
+
+            var relay = state.Relay;
+            var zone = relay.GetZone();
+            var zoneId = zone?.Id ?? 0;
+            var mapId = zone?.MapId ?? 0;
+            var coords = relay.Coords.SwapYZ();
+
+            switch (action)
+            {
+                case ClickAction.Chat:
+                    if (state is RelayState<HuntRelay> huntState) this.HuntNotifier.SendToChat(huntState);
+                    else if (state is RelayState<FateRelay> fateState) this.FateNotifier.SendToChat(fateState);
+                    break;
+
+                case ClickAction.Map:
+                    if (mapAgent is not null)
+                    {
+                        mapAgent->SetFlagMapMarker(zoneId, mapId, coords);
+                        mapAgent->OpenMap(mapId, zoneId);
+                    }
+                    break;
+
+                case ClickAction.Teleport:
+                    if (mapAgent is not null) mapAgent->SetFlagMapMarker(zoneId, mapId, coords);
+                    this.Aetherytes.TeleportToClosest(state.Relay, true);
+                    break;
+            }
+        }
+
         private void DrawHunt(RelayState<HuntRelay> state)
         {
             //throw new Exception("Some error here");
@@ -300,11 +346,10 @@ namespace SonarPlugin.GUI
             }
 
             ImGui.PushStyleColor(ImGuiCol.Text, statusColor);
-            bool isHeaderOpen = ImGui.TreeNodeEx($"##hunt_{relay.RelayKey}", ImGuiTreeNodeFlags.CollapsingHeader, $"{relay}");
+            bool isHeaderOpen = ImGui.TreeNodeEx($"##hunt_{relay.RelayKey}", ImGuiTreeNodeFlags.CollapsingHeader, $"{relay} [{relay.Players}]");
             ImGui.PopStyleColor();
 
-            if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) OpenMap(relay);
-            if (ImGui.IsItemClicked(ImGuiMouseButton.Middle)) this.HuntNotifier.SendToChat(state);
+            this.PerformClickAction(state);
 
             if (isHeaderOpen)
             {
@@ -394,14 +439,14 @@ namespace SonarPlugin.GUI
                 ImGui.PushID($"SonarHuntFlag_{relayKey}");
                 if (ImGui.Button(FontAwesomeExtensions.ToIconString(FontAwesomeIcon.MapMarkerAlt), (new Vector2(40.0f, 0.0f)) * ImGui.GetIO().FontGlobalScale))
                 {
-                    this.HuntNotifier.SendToChat(state);
+                    this.PerformClickAction(state, ClickAction.Chat);
                 }
                 ImGui.PopID();
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "Show coordinates in chat window (Middle-Click)"));
+                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "Show coordinates in chat window"));
                 }
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
@@ -412,15 +457,31 @@ namespace SonarPlugin.GUI
                 ImGui.PushID($"SonarHuntMap_{relayKey}");
                 if (ImGui.Button(FontAwesomeExtensions.ToIconString(FontAwesomeIcon.MapMarked), (new Vector2(40.0f, 0.0f)) * ImGui.GetIO().FontGlobalScale))
                 {
-                    OpenMap(relay);
+                    this.PerformClickAction(state, ClickAction.Map);
                 }
                 ImGui.PopID();
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "Set flag and open map (Right-Click)"));
+                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "Set flag and open map"));
                 }
+
+                ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
+
+                // Teleport
+                ImGui.PushFont(UiBuilder.IconFont);
+                ImGui.PushStyleColor(ImGuiCol.Text, ColorPalette.LightOrange);
+                ImGui.PushID($"SonarHuntTeleport_{relayKey}");
+                if (ImGui.Button(FontAwesomeExtensions.ToIconString(FontAwesomeIcon.Diamond), (new Vector2(40.0f, 0.0f)) * ImGui.GetIO().FontGlobalScale))
+                {
+                    this.PerformClickAction(state, ClickAction.Teleport);
+                }
+                ImGui.PopID();
+                ImGui.PopStyleColor();
+                ImGui.PopFont();
+                if (ImGui.IsItemHovered())
+                    ImGui.SetTooltip(Loc.Localize("TeleportButtonTooltip", "Teleport to Closest Aetheryte"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
 
@@ -477,11 +538,7 @@ namespace SonarPlugin.GUI
             bool isHeaderOpen = ImGui.TreeNodeEx($"##fate_{relay.RelayKey}", ImGuiTreeNodeFlags.CollapsingHeader, $"{relay}");
             ImGui.PopStyleColor();
 
-            // Right Click
-            if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) this.OpenMap(relay);
-
-            // Middle Click
-            if (ImGui.IsItemClicked(ImGuiMouseButton.Middle)) this.FateNotifier.SendToChat(state);
+            this.PerformClickAction(state);
 
             if (isHeaderOpen)
             {
@@ -573,16 +630,15 @@ namespace SonarPlugin.GUI
                 ImGui.PushID($"SonarFateFlag_{relayKey}");
                 if (ImGui.Button(FontAwesomeExtensions.ToIconString(FontAwesomeIcon.MapMarkerAlt), (new Vector2(40.0f, 0.0f)) * ImGui.GetIO().FontGlobalScale))
                 {
-                    this.FateNotifier.SendToChat(state);
+                    this.PerformClickAction(state, ClickAction.Chat);
                 }
                 ImGui.PopID();
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "Show coordinates in chat window (Middle-Click)"));
+                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "Show coordinates in chat window"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
-
 
                 // Set flag to fate location and open map
                 ImGui.PushFont(UiBuilder.IconFont);
@@ -590,13 +646,29 @@ namespace SonarPlugin.GUI
                 ImGui.PushID($"SonarFateMap_{relayKey}");
                 if (ImGui.Button(FontAwesomeExtensions.ToIconString(FontAwesomeIcon.MapMarked), (new Vector2(40.0f, 0.0f)) * ImGui.GetIO().FontGlobalScale))
                 {
-                    this.OpenMap(relay);
+                    this.PerformClickAction(state, ClickAction.Map);
                 }
                 ImGui.PopID();
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "Set flag and open map (Right-Click)"));
+                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "Set flag and open map"));
+
+                ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
+
+                // Teleport
+                ImGui.PushFont(UiBuilder.IconFont);
+                ImGui.PushStyleColor(ImGuiCol.Text, ColorPalette.LightOrange);
+                ImGui.PushID($"SonarFateTeleport_{relayKey}");
+                if (ImGui.Button(FontAwesomeExtensions.ToIconString(FontAwesomeIcon.Diamond), (new Vector2(40.0f, 0.0f)) * ImGui.GetIO().FontGlobalScale))
+                {
+                    this.PerformClickAction(state, ClickAction.Teleport);
+                }
+                ImGui.PopID();
+                ImGui.PopStyleColor();
+                ImGui.PopFont();
+                if (ImGui.IsItemHovered())
+                    ImGui.SetTooltip(Loc.Localize("TeleportButtonTooltip", "Teleport to Closest Aetheryte"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
 
@@ -616,11 +688,6 @@ namespace SonarPlugin.GUI
 
                 ImGui.EndGroup(); // End Detail Group
             }
-        }
-
-        private void OpenMap(GamePosition relay)
-        {
-            this.GameGui.OpenMapWithMapLink(relay.GetMapLinkPayload());
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

@@ -81,6 +81,7 @@ namespace Sonar.Data
         public static IReadOnlyDictionary<uint, MapRow> Maps => Instance.Maps.ToIReadOnlyDictionaryUnsafe();
         public static IReadOnlyDictionary<uint, ZoneRow> Zones => Instance.Zones.ToIReadOnlyDictionaryUnsafe();
         public static IReadOnlyDictionary<uint, WeatherRow> Weathers => Instance.Weathers.ToIReadOnlyDictionaryUnsafe();
+        public static IReadOnlyDictionary<uint, AetheryteRow> Aetherytes => Instance.Aetherytes.ToIReadOnlyDictionaryUnsafe();
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

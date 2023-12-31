@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using Sonar.Messages;
 using System.Security.Cryptography;
 using System.ComponentModel;
+using SonarUtils.Collections;
+
 
 #if NET8_0_OR_GREATER
 using System.Collections.Frozen; // FrozenDictionary
@@ -23,7 +25,7 @@ namespace Sonar.Data.Details
         [Key(1)]
         public byte[] Hash { get; set; } = Array.Empty<byte>();
         [IgnoreMember]
-        public string HashString => Convert.ToBase64String(this.Hash).Replace("=", string.Empty);
+        public string HashString => UrlBase64.Encode(this.Hash);
 
         #region Dictionaries and Lists
         [Key(2)]
@@ -52,6 +54,9 @@ namespace Sonar.Data.Details
 
         [Key(8)]
         public IDictionary<uint, WeatherRow> Weathers { get; set; } = new Dictionary<uint, WeatherRow>();
+
+        [Key(11)]
+        public IDictionary<uint, AetheryteRow> Aetherytes { get; set; } = new Dictionary<uint, AetheryteRow>();
         #endregion
 
         /// <summary>Freeze all dictionaries</summary>
@@ -67,6 +72,7 @@ namespace Sonar.Data.Details
             this.Maps = this.Maps.ToFrozenDictionary();
             this.Zones = this.Zones.ToFrozenDictionary();
             this.Weathers = this.Weathers.ToFrozenDictionary();
+            this.Aetherytes = this.Aetherytes.ToFrozenDictionary();
 #else
             this.Worlds = this.Worlds.AsReadOnly();
             this.Datacenters = this.Datacenters.AsReadOnly();
@@ -77,6 +83,7 @@ namespace Sonar.Data.Details
             this.Maps = this.Maps.AsReadOnly();
             this.Zones = this.Zones.AsReadOnly();
             this.Weathers = this.Weathers.AsReadOnly();
+            this.Aetherytes = this.Aetherytes.AsReadOnly();
 #endif
         }
 
@@ -94,15 +101,13 @@ namespace Sonar.Data.Details
             this.Maps = this.Maps.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             this.Zones = this.Zones.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             this.Weathers = this.Weathers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.Aetherytes = this.Aetherytes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         /// <summary>Warning: Slow</summary>
         public byte[] ComputeHash()
         {
-            using var hasher = SHA256.Create();
-            if (hasher is null) return Array.Empty<byte>();
-
-            var byteList = new List<byte>(1048576);
+            var byteList = new InternalList<byte>(262144);
             byteList.AddRange(MessagePackSerializer.Serialize(this.Worlds.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.Datacenters.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.Regions.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
@@ -112,34 +117,34 @@ namespace Sonar.Data.Details
             byteList.AddRange(MessagePackSerializer.Serialize(this.Maps.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.Zones.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.Weathers.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
+            byteList.AddRange(MessagePackSerializer.Serialize(this.Aetherytes.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
 
-            var hash = new byte[32];
-            if (!hasher.TryComputeHash(byteList.ToArray(), hash, out var bytesWritten)) return Array.Empty<byte>();
+            var hash = new byte[SHA256.HashSizeInBytes];
+            if (!SHA256.TryHashData(byteList.AsSpan(), hash, out var bytesWritten)) return Array.Empty<byte>();
             return hash[..bytesWritten];
         }
 
-        /// <summary>
-        /// Warning: Slow
-        /// </summary>
+        /// <summary>Warning: Slow</summary>
         public bool VerifyHash() => this.Hash.SequenceEqual(this.ComputeHash());
 
         public SonarDbInfo GetDbInfo() => new() { Timestamp = this.Timestamp, Hash = this.Hash };
 
         public override string ToString()
         {
-            var lines = new List<string>(9)
+            var lines = new string[]
             {
                 $"Database Timestamp: {this.Timestamp}",
                 $"Database Hash: {this.HashString}",
-                $"Worlds: {this.Worlds.Count}",
-                $"Datacenters: {this.Datacenters.Count}",
-                $"Regions: {this.Regions.Count}",
-                $"Audiences: {this.Audiences.Count}",
+                $"Worlds: {this.Worlds.Count} (Public: {this.Worlds.Values.Count(world => world.IsPublic)})",
+                $"Datacenters: {this.Datacenters.Count} (Public: {this.Datacenters.Values.Count(datacenter => datacenter.IsPublic)})",
+                $"Regions: {this.Regions.Count} (Public: {this.Regions.Values.Count(region => region.IsPublic)})",
+                $"Audiences: {this.Audiences.Count} (Public: {this.Audiences.Values.Count(audience => audience.IsPublic)})",
                 $"Hunts: {this.Hunts.Count}",
                 $"Fates: {this.Fates.Count}",
                 $"Maps: {this.Maps.Count}",
-                $"Zones: {this.Zones.Count}",
+                $"Zones: {this.Zones.Count} (Fields: {this.Zones.Values.Count(zone => zone.IsField)})",
                 $"Weathers: {this.Weathers.Count}",
+                $"Aetherytes: {this.Aetherytes.Count} (Teleportable: {this.Aetherytes.Values.Count(aetheryte => aetheryte.Teleportable)})",
             };
             return string.Join('\n', lines);
         }
