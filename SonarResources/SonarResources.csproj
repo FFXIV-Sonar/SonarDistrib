@@ -5,8 +5,9 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SonarResources</RootNamespace>
     <AssemblyName>SonarResourceGen</AssemblyName>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Deterministic>true</Deterministic>
+    <LangVersion>12</LangVersion>
     <NuGetPackageImportStamp />
     <Nullable>enable</Nullable>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

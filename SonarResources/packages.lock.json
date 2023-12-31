@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net8.0": {
+    "net7.0": {
       "ConcurrencyLab.ParallelChecker": {
         "type": "Direct",
         "requested": "[2.7.0, )",
