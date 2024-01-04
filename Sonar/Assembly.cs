@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Major Code Smell", "S1117", Justification = "this. is used for instance variables")]
 [assembly: SuppressMessage("Major Code Smell", "S3264", Justification = "Custom invokers")]
 [assembly: InternalsVisibleTo("SonarServer")]
-[assembly: InternalsVisibleTo("SonarResourceGen")]
+[assembly: InternalsVisibleTo("SonarResources")]
 [assembly: InternalsVisibleTo("SonarSecrets")]
 [assembly: InternalsVisibleTo("SonarTesting")]
 [assembly: InternalsVisibleTo("SonarTests")]

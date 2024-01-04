@@ -46,6 +46,7 @@ namespace Sonar.Trackers
         private readonly ConcurrentQueue<T> _relayUpdateQueue = new();
         private readonly ConcurrentHashSetSlim<string> _confirmationRequests = new(comparer: FarmHashStringComparer.Instance);
         private readonly ConcurrentHashSetSlim<string> _lockOn = new(comparer: FarmHashStringComparer.Instance);
+        private readonly ConcurrentDictionarySlim<string, double> _lastSeen = new(comparer: FarmHashStringComparer.Instance);
 
         /// <summary>Dispatch events regardless of jurisdiction settings</summary>
         public bool AlwaysDispatchEvents { get; set; }
@@ -57,9 +58,22 @@ namespace Sonar.Trackers
             this.Client.Tick += this.Client_Tick;
             this.Client.Connection.MessageReceived += this.Client_MessageReceived;
             this.Client.Connection.DisconnectedInternal += this.Client_Disconnected;
+            this.Data.Cleared += this.Data_Clear;
         }
 
-        private void Meta_PlayerPlaceChanged(PlayerPosition obj) => this._lockOn.Clear();
+        private void Data_Clear(RelayTrackerData<T> obj)
+        {
+            this._relayUpdateQueue.Clear();
+            this._confirmationRequests.Clear();
+            this._lockOn.Clear();
+            this._lastSeen.Clear();
+        }
+
+        private void Meta_PlayerPlaceChanged(PlayerPosition obj)
+        {
+            this._confirmationRequests.Clear();
+            this._lockOn.Clear();
+        }
 
         private void Client_Disconnected(SonarConnectionManager arg1, ISonarSocket arg2) => this._confirmationRequests.Clear();
 
@@ -170,10 +184,15 @@ namespace Sonar.Trackers
         private bool UpdateState(T? newRelay, RelayState<T>? newState, bool isFromServer)
         {
             // This method is intended to be called only with a newRelay or newState
-            // Debug.Assert(newRelay is not null ^ newState is not null); // This should not happen
+            Debug.Assert(newRelay is not null ^ newState is not null, "Only a new relay or state must be provided"); // This should not happen
 
-            if (newState is not null) newRelay = newState.Relay;
-            // Debug.Assert(newRelay is not null); // newRelay will never be null from this point forward
+            if (newState is not null)
+            {
+                newRelay = newState.Relay;
+                if (this._lastSeen.TryGetValue(newRelay.RelayKey, out var lastSeen) && newState.LastSeen <= lastSeen) return false;
+                this._lastSeen[newState.RelayKey] = newState.LastSeen;
+            }
+            Debug.Assert(newRelay is not null); // newRelay will never be null from this point forward
 
             if (isFromServer)
             {
@@ -195,7 +214,7 @@ namespace Sonar.Trackers
                 // Under normal circumstances this loop will execute at most twice, whicn means
                 // that another thread made the value between the TryGet and TryAdd, therefore
                 // TryGet will succeed on the second loop. (TryGet = TryGetValue).
-                if (this.Data.States.TryGetValue(newRelay!.RelayKey, out state!)) break;
+                if (this.Data.States.TryGetValue(newRelay.RelayKey, out state!)) break;
 #pragma warning disable S1121 // Assignments should not be made from within sub-expressions (Justification: Immediately used after the loop)
                 if (this.Data.TryAddState(state = newState ?? new(newRelay, now)))
 #pragma warning restore S1121 // Assignments should not be made from within sub-expressions
@@ -205,7 +224,6 @@ namespace Sonar.Trackers
                 }
                 // Forward-progressing: No Spinwait needed
             } while (true);
-            // Debug.Assert(state is not null); // This should not happen
 
             // Process state changes if its not new
             if (!isNew)
@@ -275,12 +293,14 @@ namespace Sonar.Trackers
             if (Interlocked.Exchange(ref this.disposed, 1) == 1) return;
             if (disposing)
             {
+                this.Data.Cleared -= this.Data_Clear;
                 this.Client.Tick -= this.Client_Tick;
                 this.Client.Connection.MessageReceived -= this.Client_MessageReceived;
                 this.Client.Connection.DisconnectedInternal -= this.Client_Disconnected;
                 this.Data.Clear();
             }
         }
+
         public void Dispose()
         {
             this.Dispose(true);

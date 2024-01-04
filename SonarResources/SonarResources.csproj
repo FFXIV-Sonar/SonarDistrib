@@ -3,8 +3,6 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SonarResources</RootNamespace>
-    <AssemblyName>SonarResourceGen</AssemblyName>
     <TargetFramework>net7.0</TargetFramework>
     <Deterministic>true</Deterministic>
     <LangVersion>12</LangVersion>
