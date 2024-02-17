@@ -16,7 +16,6 @@ namespace Sonar.Sockets
         private readonly int _receiveBufferSize;
         private readonly int _maxMessageBytes;
         private readonly CancellationTokenSource _cts = new();
-
         private readonly ActionBlock<(WebSocketMessageType, byte[])> _sendBlock;
 
         public WebSocket WebSocket { get; }

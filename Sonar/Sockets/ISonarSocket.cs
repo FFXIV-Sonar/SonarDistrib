@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace Sonar.Sockets
 {
@@ -18,6 +19,16 @@ namespace Sonar.Sockets
         public Task SendAsync(ISonarMessage message, CancellationToken cancellationToken = default);
         public Task SendTextAsync(byte[] textBytes, CancellationToken cancellationToken = default);
 
+        public void AddHandler(Type type, Action<ISonarSocket, ISonarMessage> handler);
+        public void AddHandler(Type type, Func<ISonarSocket, ISonarMessage, Task> handler);
+        public void AddHandler<T>(Action<ISonarSocket, T> handler) where T : ISonarMessage;
+        public void AddHandler<T>(Func<ISonarSocket, T, Task> handler) where T : ISonarMessage;
+
+        public bool RemoveHandler(Type type, Action<ISonarSocket, ISonarMessage> handler);
+        public bool RemoveHandler(Type type, Func<ISonarSocket, ISonarMessage, Task> handler);
+        public bool RemoveHandler<T>(Action<ISonarSocket, T> handler) where T : ISonarMessage;
+        public bool RemoveHandler<T>(Func<ISonarSocket, T, Task> handler) where T : ISonarMessage;
+
         public event Action<ISonarSocket>? Connected;
         public event Action<ISonarSocket>? Disconnected;
         public event Action<ISonarSocket, byte[]>? RawReceived;
@@ -27,10 +38,5 @@ namespace Sonar.Sockets
         public event Action<ISonarSocket, string>? TextReceived;
         public event Func<ISonarSocket, string, Task>? TextReceivedAsync;
         public event Action<ISonarSocket, Exception>? Exception;
-
-        public void RegisterMessageHandler<T>(Action<ISonarSocket, T> handler) where T : ISonarMessage;
-        public void RegisterMessageHandler<T>(Func<ISonarSocket, T, Task> handler) where T : ISonarMessage;
-        public bool RemoveMessageHandler<T>(Action<ISonarSocket, T> handler) where T : ISonarMessage;
-        public bool RemoveMessageHandler<T>(Func<ISonarSocket, T, Task> handler) where T : ISonarMessage;
     }
 }

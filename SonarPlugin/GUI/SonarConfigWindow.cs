@@ -557,6 +557,7 @@ namespace SonarPlugin.GUI
             { ExpansionPack.Stormblood, $"{Loc.Localize("StormbloodText", "Stormblood")}" },
             { ExpansionPack.Shadowbringers, $"{Loc.Localize("ShadowbringersText", "Shadowbringers")}" },
             { ExpansionPack.Endwalker, $"{Loc.Localize("EndwalkerText", "Endwalker")}" },
+            { ExpansionPack.Dawntrail, $"{Loc.Localize("DawntrailText", "Dawntrail")}" },
         };
 
         private readonly Dictionary<SonarJurisdiction, string> jurisdictionsCombo = new Dictionary<SonarJurisdiction, string>()

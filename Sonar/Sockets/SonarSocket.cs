@@ -9,6 +9,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SonarUtils;
+using DryIoc;
+using System.Collections.Concurrent;
+using System.Collections.Immutable;
 
 namespace Sonar.Sockets
 {
@@ -16,15 +19,15 @@ namespace Sonar.Sockets
     {
         protected readonly Func<byte[], ISonarMessage> ConvertBytesToMessage;
         protected readonly Func<ISonarMessage, byte[]> ConvertMessageToBytes;
-        private Dictionary<Type, Action<ISonarSocket, ISonarMessage>[]> _messageHandlers = new(); // Interlocked changes only
-        private Dictionary<Type, Func<ISonarSocket, ISonarMessage, Task>[]> _asyncMessageHandlers = new(); // Interlocked changes only
+        private readonly ConcurrentDictionary<Type, ImmutableList<Action<ISonarSocket, ISonarMessage>>> _messageHandlers = new();
+        private readonly ConcurrentDictionary<Type, ImmutableList<Func<ISonarSocket, ISonarMessage, Task>>> _asyncMessageHandlers = new();
 
         public abstract Task Completion { get; protected set; }
 
         protected SonarSocket(Func<byte[], ISonarMessage> bytesToMessages, Func<ISonarMessage, byte[]> messageToBytes)
         {
-            this.ConvertBytesToMessage = bytesToMessages;
-            this.ConvertMessageToBytes = messageToBytes;
+            this.ConvertBytesToMessage = bytesToMessages ?? throw new ArgumentNullException(nameof(bytesToMessages));
+            this.ConvertMessageToBytes = messageToBytes ?? throw new ArgumentNullException(nameof(messageToBytes));
         }
 
         protected async Task ProcessReceivedBytesAsync(byte[] bytes)
@@ -32,7 +35,31 @@ namespace Sonar.Sockets
             var message = this.ConvertBytesToMessage(bytes);
             await this.DispatchEventPairAsync(this.RawReceived, this.RawReceivedAsync, bytes); // This is after conversion to ensure its a valid message
             await this.ProcessMessageAsync(message);
-       }
+        }
+
+        private IEnumerable<Action<ISonarSocket, ISonarMessage>> GetHandlers(Type type)
+        {
+            var types = type.GetAllTypes();
+            foreach (var candidateType in types)
+            {
+                if (this._messageHandlers.TryGetValue(candidateType, out var handlers))
+                {
+                    foreach (var handler in handlers) yield return handler;
+                }
+            }
+        }
+
+        private IEnumerable<Func<ISonarSocket, ISonarMessage, Task>> GetAsyncHandlers(Type type)
+        {
+            var types = type.GetAllTypes();
+            foreach (var candidateType in types)
+            {
+                if (this._asyncMessageHandlers.TryGetValue(candidateType, out var handlers))
+                {
+                    foreach (var handler in handlers) yield return handler;
+                }
+            }
+        }
 
         private async Task ProcessMessageAsync(ISonarMessage message)
         {
@@ -50,50 +77,92 @@ namespace Sonar.Sockets
             }
             else
             {
-                await this.DispatchEventPairAsync(this.MessageReceived, this.MessageReceivedAsync, message);
-
-                if (this._messageHandlers.TryGetValue(message.GetType(), out var handlers))
+                var types = message.GetAllTypes();
+                foreach (var type in types)
                 {
-                    for (var i = 0; i < handlers.Length; i++)
+                    if (this._messageHandlers.TryGetValue(type, out var handlers) && !handlers.IsEmpty)
                     {
-                        try
+                        for (var i = 0; i < handlers.Count; i++)
                         {
-                            handlers[i](this, message);
-                        }
-                        catch (Exception ex)
-                        {
-                            this.DispatchExceptionEvent(ex);
+                            try
+                            {
+                                handlers[i](this, message);
+                            }
+                            catch (Exception ex)
+                            {
+                                this.DispatchExceptionEvent(ex);
+                            }
                         }
                     }
-                }
 
-                if (this._asyncMessageHandlers.TryGetValue(message.GetType(), out var asyncHandlers))
-                {
-                    var tasks = new List<Task>(asyncHandlers.Length);
-                    foreach (var asyncHandler in asyncHandlers)
+                    if (this._asyncMessageHandlers.TryGetValue(type, out var asyncHandlers) && !asyncHandlers.IsEmpty)
                     {
-                        try
+                        for (var i = 0; i < asyncHandlers.Count; i++)
                         {
-                            tasks.Add(asyncHandler(this, message));
-                        }
-                        catch (Exception ex)
-                        {
-                            this.DispatchExceptionEvent(ex);
-                        }
-                    }
-                    foreach (var task in tasks)
-                    {
-                        try
-                        {
-                            await task;
-                        }
-                        catch (Exception ex)
-                        {
-                            this.DispatchExceptionEvent(ex);
+                            try
+                            {
+                                await asyncHandlers[i](this, message);
+                            }
+                            catch (Exception ex)
+                            {
+                                this.DispatchExceptionEvent(ex);
+                            }
                         }
                     }
                 }
             }
+        }
+
+        public void AddHandler(Type type, Action<ISonarSocket, ISonarMessage> handler)
+        {
+            this._messageHandlers.AddOrUpdate(type, type => ImmutableList.Create(handler), (type, handlers) => handlers.Add(handler));
+        }
+
+        public void AddHandler(Type type, Func<ISonarSocket, ISonarMessage, Task> handler)
+        {
+            this._asyncMessageHandlers.AddOrUpdate(type, type => ImmutableList.Create(handler), (type, handlers) => handlers.Add(handler));
+        }
+
+        public void AddHandler<T>(Action<ISonarSocket, T> handler) where T : ISonarMessage
+        {
+            this.AddHandler(typeof(T), Unsafe.As<Action<ISonarSocket, ISonarMessage>>(handler));
+        }
+
+        public void AddHandler<T>(Func<ISonarSocket, T, Task> handler) where T : ISonarMessage
+        {
+            this.AddHandler(typeof(T), Unsafe.As<Func<ISonarSocket, ISonarMessage, Task>>(handler));
+        }
+
+        public bool RemoveHandler(Type type, Action<ISonarSocket, ISonarMessage> handler)
+        {
+            while (true)
+            {
+                if (!this._messageHandlers.TryGetValue(type, out var handlers)) return false;
+                var newHandlers = handlers.Remove(handler);
+                if (ReferenceEquals(handlers, newHandlers)) return false;
+                if (this._messageHandlers.TryUpdate(type, newHandlers, handlers)) return true;
+            }
+        }
+
+        public bool RemoveHandler(Type type, Func<ISonarSocket, ISonarMessage, Task> handler)
+        {
+            while (true)
+            {
+                if (!this._asyncMessageHandlers.TryGetValue(type, out var handlers)) return false;
+                var newHandlers = handlers.Remove(handler);
+                if (ReferenceEquals(handlers, newHandlers)) return false;
+                if (this._asyncMessageHandlers.TryUpdate(type, newHandlers, handlers)) return true;
+            }
+        }
+
+        public bool RemoveHandler<T>(Action<ISonarSocket, T> handler) where T : ISonarMessage
+        {
+            return this.RemoveHandler(typeof(T), Unsafe.As<Action<ISonarSocket, ISonarMessage>>(handler));
+        }
+
+        public bool RemoveHandler<T>(Func<ISonarSocket, T, Task> handler) where T : ISonarMessage
+        {
+            return this.RemoveHandler(typeof(T), Unsafe.As<Func<ISonarSocket, ISonarMessage, Task>>(handler));
         }
 
         protected async Task ProcessReceivedTextAsync(string text)
@@ -115,99 +184,24 @@ namespace Sonar.Sockets
         public event Action<ISonarSocket>? Disconnected;
         public event Action<ISonarSocket, byte[]>? RawReceived;
         public event Func<ISonarSocket, byte[], Task>? RawReceivedAsync;
-        public event Action<ISonarSocket, ISonarMessage>? MessageReceived;
-        public event Func<ISonarSocket, ISonarMessage, Task>? MessageReceivedAsync;
         public event Action<ISonarSocket, string>? TextReceived;
         public event Func<ISonarSocket, string, Task>? TextReceivedAsync;
         public event Action<ISonarSocket, Exception>? Exception;
 
-        public void RegisterMessageHandler<T>(Action<ISonarSocket, T> handler) where T : ISonarMessage
+        public event Action<ISonarSocket, ISonarMessage>? MessageReceived
         {
-            while (true)
-            {
-                var originalDictionary = this._messageHandlers;
-                var dictionaryCopy = new Dictionary<Type, Action<ISonarSocket, ISonarMessage>[]>(originalDictionary);
-                if (!dictionaryCopy.TryGetValue(typeof(T), out var originalArray))
-                {
-                    originalArray = Array.Empty<Action<ISonarSocket, ISonarMessage>>();
-                }
-                var arrayCopy = originalArray.Append(Unsafe.As<Action<ISonarSocket, ISonarMessage>>(handler)).ToArray();
-                dictionaryCopy[typeof(T)] = arrayCopy;
-                if (Interlocked.CompareExchange(ref this._messageHandlers, dictionaryCopy, originalDictionary) == originalDictionary) return;
-            }
+            add => this.AddHandler(typeof(ISonarMessage), value!);
+            remove => this.RemoveHandler(typeof(ISonarMessage), value!);
         }
-
-        public void RegisterMessageHandler<T>(Func<ISonarSocket, T, Task> handler) where T : ISonarMessage
+        public event Func<ISonarSocket, ISonarMessage, Task>? MessageReceivedAsync
         {
-            while (true)
-            {
-                var originalDictionary = this._asyncMessageHandlers;
-                var dictionaryCopy = new Dictionary<Type, Func<ISonarSocket, ISonarMessage, Task>[]>(originalDictionary);
-                if (!dictionaryCopy.TryGetValue(typeof(T), out var originalArray))
-                {
-                    originalArray = Array.Empty<Func<ISonarSocket, ISonarMessage, Task>>();
-                }
-                var arrayCopy = originalArray.Append(Unsafe.As<Func<ISonarSocket, ISonarMessage, Task>>(handler)).ToArray();
-                dictionaryCopy[typeof(T)] = arrayCopy;
-                if (Interlocked.CompareExchange(ref this._asyncMessageHandlers, dictionaryCopy, originalDictionary) == originalDictionary) return;
-            }
+            add => this.AddHandler(typeof(ISonarMessage), value!);
+            remove => this.RemoveHandler(typeof(ISonarMessage), value!);
         }
 
         protected void DispatchExceptionEvent(Exception exception) => this.Exception?.SafeInvoke(this, exception);
         protected void DispatchConnectedEvent() => this.Connected?.Invoke(this);
         protected void DispatchDisconnectedEvent() => this.Disconnected?.Invoke(this);
-
-        public bool RemoveMessageHandler<T>(Action<ISonarSocket, T> handler) where T : ISonarMessage
-        {
-            while (true)
-            {
-                var originalDictionary = this._messageHandlers;
-                if (!originalDictionary.TryGetValue(typeof(T), out var originalArray)) return false;
-                var removeIndex = originalArray.IndexOf(Unsafe.As<Action<ISonarSocket, ISonarMessage>>(handler));
-                if (removeIndex == -1) return false;
-
-                var dictionaryCopy = new Dictionary<Type, Action<ISonarSocket, ISonarMessage>[]>(originalDictionary);
-
-                var newLength = originalArray.Length - 1;
-                if (newLength == 0)
-                {
-                    dictionaryCopy.Remove(typeof(T));
-                }
-                else
-                {
-                    var arrayCopy = new Action<ISonarSocket, ISonarMessage>[originalArray.Length - 1];
-                    for (var i = 0; i < arrayCopy.Length; i++) arrayCopy[i] = originalArray[i >= removeIndex ? i + 1 : i];
-                    dictionaryCopy[typeof(T)] = arrayCopy;
-                }
-                if (Interlocked.CompareExchange(ref this._messageHandlers, dictionaryCopy, originalDictionary) == originalDictionary) return true;
-            }
-        }
-
-        public bool RemoveMessageHandler<T>(Func<ISonarSocket, T, Task> handler) where T : ISonarMessage
-        {
-            while (true)
-            {
-                var originalDictionary = this._asyncMessageHandlers;
-                if (!originalDictionary.TryGetValue(typeof(T), out var originalArray)) return false;
-                var removeIndex = originalArray.IndexOf(Unsafe.As<Func<ISonarSocket, ISonarMessage, Task>>(handler));
-                if (removeIndex == -1) return false;
-
-                var dictionaryCopy = new Dictionary<Type, Func<ISonarSocket, ISonarMessage, Task>[]>(originalDictionary);
-
-                var newLength = originalArray.Length - 1;
-                if (newLength == 0)
-                {
-                    dictionaryCopy.Remove(typeof(T));
-                }
-                else
-                {
-                    var arrayCopy = new Func<ISonarSocket, ISonarMessage, Task>[originalArray.Length - 1];
-                    for (var i = 0; i < arrayCopy.Length; i++) arrayCopy[i] = originalArray[i >= removeIndex ? i + 1 : i];
-                    dictionaryCopy[typeof(T)] = arrayCopy;
-                }
-                if (Interlocked.CompareExchange(ref this._asyncMessageHandlers, dictionaryCopy, originalDictionary) == originalDictionary) return true;
-            }
-        }
 
         protected virtual void Dispose(bool disposing)
         {

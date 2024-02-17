@@ -162,11 +162,16 @@ namespace SonarResources.Aetherytes
             this.Db.Aetherytes[1].Teleportable = false;
 
             // 1 second = 20 units / yalms
+            // Flying angle up to 45 degrees => 14 vertical yalms per second while flying up
             this.SetDistanceCost("Tamamizu", 100); // Underwater inside a giant bubble
             this.SetDistanceCost("Pla Enni", 50); // Minor inconvenience getting out of this cave
             this.SetDistanceCost("The Macarenses Angle", 500); // I wish we could fly up faster...
-            this.SetDistanceCost("Tertium", 200); // Some inconvenience getting out of this subway station
-            this.SetDistanceCost("Bestways Burrow", 100); // Minor inconveience getting out of their base
+
+            this.SetDistanceCost("Tertium", 300); // Some inconvenience getting out of this subway station
+            this.SetCoordinates("Tertium", new(503, -431, 11)); // Additionally move this aetheryte to the entrance
+
+            this.SetDistanceCost("Bestways Burrow", /*100*/ 500); // Minor inconveience getting out of their base
+            this.SetCoordinates("Bestways Burrow", new(0, -140, 100)); // Lets move this aetheryte outside (note: coords at mid-air, X:0 is not a typo)
 
             /* Special cases / notes:
                - Missing Aetherytes:
@@ -217,6 +222,16 @@ namespace SonarResources.Aetherytes
                 throw new ArgumentException($"Aetheryte {name} does not exist", nameof(name));
 
             aetheryte.DistanceCostModifier = cost;
+        }
+
+        private void SetCoordinates(string name, SonarVector3 coords)
+        {
+            var aetheryte =
+                this.Db.Aetherytes.Values.FirstOrDefault(aetheryte => aetheryte.Name.ToString().Equals(name, StringComparison.InvariantCulture)) ??
+                this.Db.Aetherytes.Values.FirstOrDefault(aetheryte => aetheryte.Name.ToString().Equals(name, StringComparison.InvariantCultureIgnoreCase)) ??
+                throw new ArgumentException($"Aetheryte {name} does not exist", nameof(name));
+
+            aetheryte.Coords = coords;
         }
     }
 }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net7.0</TargetFrameworks>
-    <AssemblyVersion>0.6.1.1</AssemblyVersion>
+    <AssemblyVersion>0.6.2.0</AssemblyVersion>
     <RootNamespace>Sonar</RootNamespace>
     <Nullable>enable</Nullable>
     <Deterministic>true</Deterministic>
@@ -49,6 +49,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="8.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

@@ -13,6 +13,7 @@ namespace Sonar.Connections
         {
             public required SonarUrl Url { get; init; }
             public uint? Id { get; set; }
+            public ConnectionType Type { get; set; }
         }
     }
 }

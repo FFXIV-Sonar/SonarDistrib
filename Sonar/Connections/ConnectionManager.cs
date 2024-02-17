@@ -18,6 +18,8 @@ using DryIocAttributes;
 using System.ComponentModel.Composition;
 using DryIoc.FastExpressionCompiler.LightExpression;
 using SonarUtils;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sonar.Connections
 {
@@ -143,10 +145,20 @@ namespace Sonar.Connections
             catch { /* Swallow */ }
         }
 
-        private async Task ConnectAttemptTask()
+        private Task ConnectAttemptTask()
         {
             var url = this._urls.GetRandomUrl(this._reconnect || this._failCount >= FailureThreshold, this._reconnect);
+            return url.Type switch
+            {
+                ConnectionType.WebSocket => this.ConnectionAttemptWebSocket(url),
+                ConnectionType.SignalR => this.ConnectionAttemptSignalR(url),
+                _ => throw new ArgumentException($"Invalid Connection Type: {url.Type}")
+            };
 
+        }
+
+        private async Task ConnectionAttemptWebSocket(SonarUrl url)
+        {
             using var cts = new CancellationTokenSource(ConnectTimeoutMs);
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(this._cts.Token, cts.Token);
             var token = linkedCts.Token;
@@ -172,6 +184,34 @@ namespace Sonar.Connections
             }
         }
 
+        private async Task ConnectionAttemptSignalR(SonarUrl url)
+        {
+            using var cts = new CancellationTokenSource(ConnectTimeoutMs);
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(this._cts.Token, cts.Token);
+            var token = linkedCts.Token;
+            var connection = new HubConnectionBuilder()
+                .WithUrl(url.Url)
+                .AddMessagePackProtocol(configure => configure.SerializerOptions = SonarSerializer.MessagePackOptions)
+                .Build();
+            try
+            {
+                var socket = SonarSocketSignalR.CreateClientSocket(connection); // webSocket is now "owned" by this SonarSocket
+                this._sockets.TryAdd(socket, new() { Url = url });
+                this.PrepareSocket(socket);
+                await Task.Delay(ReadyTimeoutMs, token);
+                if (this._sockets.TryGetValue(socket, out var info) && !info.Id.HasValue && this._sockets.TryRemove(socket, out _))
+                {
+                    try { this.DisposeSocket(socket); } catch { /* Swallow */ }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Only log exception if not connected.
+                if (this._socket is null && ex is not OperationCanceledException) this.Client.LogError(ex, "Connection exception");
+                connection.DisposeAsync().AsTask().GetAwaiter().GetResult(); // Dispose faulty socket
+            }
+        }
+
         private void EnsureConnectionIfAvailable()
         {
             var socket = this._socket;
@@ -187,7 +227,7 @@ namespace Sonar.Connections
             // Try getting an available socket if current active socket is null
             if (this._socket is null && this.TryGetNextSocket(out socket, out var info) && Interlocked.CompareExchange(ref this._socket, socket, null) == null)
             {
-                this.Client.LogInformation(() => $"Sonar Connected (Connection ID: {info.Id}{(info.Url.Proxy ? $" | Proxy" : string.Empty)})");
+                this.Client.LogInformation(() => $"Sonar Connected (Connection ID: {info.Id} | Type: {info.Type}{(info.Url.Proxy ? $" | Proxy" : string.Empty)})");
                 this.ConnectedInternal?.Invoke(this, socket, info.Id!.Value);
                 if (this.Connected is not null) _ = Task.Run(() => this.Connected?.SafeInvoke(this, info.Id!.Value));
             }
@@ -239,6 +279,8 @@ namespace Sonar.Connections
             else if (message is ServerReady ready && this._sockets.TryGetValue(socket, out var info))
             {
                 info.Id = ready.ConnectionId;
+                info.Type = ready.ConnectionType;
+                socket.Send(ready);
                 this.EnsureConnectionIfAvailable();
             }
         }
