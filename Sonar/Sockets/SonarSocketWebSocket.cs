@@ -69,7 +69,7 @@ namespace Sonar.Sockets
                         if (result.MessageType is WebSocketMessageType.Close)
                         {
                             if (result.CloseStatus != WebSocketCloseStatus.NormalClosure &&
-                                !(result.CloseStatus == WebSocketCloseStatus.EndpointUnavailable && result.CloseStatusDescription is "Socket is Disposed" or "[maybe]CloudFlare WebSocket proxy restarting"))
+                                !(result.CloseStatus == WebSocketCloseStatus.EndpointUnavailable && result.CloseStatusDescription is "Socket is Disposed" or "CloudFlare WebSocket proxy restarting"))
                             {
                                 this.DispatchExceptionEvent(ExceptionDispatchInfo.SetCurrentStackTrace(new WebSocketException($"{result.CloseStatus}: {result.CloseStatusDescription}")));
                             }
