@@ -68,8 +68,7 @@ namespace Sonar.Sockets
                         var result = await this.WebSocket.ReceiveAsync(buffer, token);
                         if (result.MessageType is WebSocketMessageType.Close)
                         {
-                            if (result.CloseStatus != WebSocketCloseStatus.NormalClosure &&
-                                !(result.CloseStatus == WebSocketCloseStatus.EndpointUnavailable && result.CloseStatusDescription is "Socket is Disposed" or "CloudFlare WebSocket proxy restarting"))
+                            if (result.CloseStatus is not WebSocketCloseStatus.NormalClosure and not WebSocketCloseStatus.EndpointUnavailable)
                             {
                                 this.DispatchExceptionEvent(ExceptionDispatchInfo.SetCurrentStackTrace(new WebSocketException($"{result.CloseStatus}: {result.CloseStatusDescription}")));
                             }
@@ -123,8 +122,7 @@ namespace Sonar.Sockets
                 }
             }
 
-            this._cts.Cancel();
-            this.WebSocket.Dispose();
+            this.Dispose();
 
             try
             {
@@ -138,13 +136,31 @@ namespace Sonar.Sockets
 
         protected override void Dispose(bool disposing)
         {
-            this._cts.Cancel();
+            try
+            {
+                this._cts.Cancel();
+                this._cts.Dispose();
+                this.WebSocket.Dispose();
+            }
+            catch
+            {
+                /* Swallow */
+            }
             base.Dispose(disposing);
         }
 
         public override async ValueTask DisposeAsync()
         {
-            this._cts.Cancel();
+            try
+            {
+                this._cts.Cancel();
+                this._cts.Dispose();
+                this.WebSocket.Dispose();
+            }
+            catch
+            {
+                /* Swallow */
+            }
             await base.DisposeAsync();
         }
 
