@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net7.0": {
+    "net8.0": {
       "ConcurrencyLab.ParallelChecker": {
         "type": "Direct",
         "requested": "[2.7.0, )",
@@ -584,7 +584,6 @@
         "resolved": "8.0.3",
         "contentHash": "lM0+lfgJKv1Fq1z6uoMxIAQtVbhd427Ht5HqomDsebsrnklR9pkYgmdp6r6k+dNw5LoI8Vr0EevtQvdKW9aV7w==",
         "dependencies": {
-          "Microsoft.Bcl.AsyncInterfaces": "8.0.0",
           "Microsoft.Extensions.Features": "8.0.3",
           "System.IO.Pipelines": "8.0.0"
         }
@@ -604,8 +603,7 @@
         "resolved": "8.0.3",
         "contentHash": "gujPT796RA93n79QYA9g0HNGta+Z1BtGD3mpg1BRmSvfwXljA4oGkw7Fm9bi+LgEwwIiHvVAmLVjTQutK+C3eA==",
         "dependencies": {
-          "Microsoft.AspNetCore.Connections.Abstractions": "8.0.3",
-          "System.Text.Json": "8.0.3"
+          "Microsoft.AspNetCore.Connections.Abstractions": "8.0.3"
         }
       },
       "Microsoft.AspNetCore.SignalR.Client": {
@@ -624,7 +622,6 @@
         "dependencies": {
           "Microsoft.AspNetCore.SignalR.Common": "8.0.3",
           "Microsoft.AspNetCore.SignalR.Protocols.Json": "8.0.3",
-          "Microsoft.Bcl.TimeProvider": "8.0.1",
           "Microsoft.Extensions.DependencyInjection": "8.0.0",
           "Microsoft.Extensions.Logging": "8.0.0",
           "System.Threading.Channels": "8.0.0"
@@ -636,8 +633,7 @@
         "contentHash": "1MX4XXjCH/+ZZWS2zPElNEzLMwszI95iqqjsdTOvaaK7sQLPn8Y41YCOfHU/2lXSWYP8Yc+umyiikoonRedP5Q==",
         "dependencies": {
           "Microsoft.AspNetCore.Connections.Abstractions": "8.0.3",
-          "Microsoft.Extensions.Options": "8.0.2",
-          "System.Text.Json": "8.0.3"
+          "Microsoft.Extensions.Options": "8.0.2"
         }
       },
       "Microsoft.AspNetCore.SignalR.Protocols.Json": {
@@ -655,19 +651,6 @@
         "dependencies": {
           "MessagePack": "2.5.108",
           "Microsoft.AspNetCore.SignalR.Common": "8.0.3"
-        }
-      },
-      "Microsoft.Bcl.AsyncInterfaces": {
-        "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "3WA9q9yVqJp222P3x1wYIGDAkpjAku0TMUaaQV22g6L67AI0LdOIrVS7Ht2vJfLHGSPVuqN94vIr15qn+HEkHw=="
-      },
-      "Microsoft.Bcl.TimeProvider": {
-        "type": "Transitive",
-        "resolved": "8.0.1",
-        "contentHash": "C7kWHJnMRY7EvJev2S8+yJHZ1y7A4ZlLbA4NE+O23BDIAN5mHeqND1m+SKv1ChRS5YlCDW7yAMUe7lttRsJaAA==",
-        "dependencies": {
-          "Microsoft.Bcl.AsyncInterfaces": "8.0.0"
         }
       },
       "Microsoft.Extensions.DependencyInjection": {
@@ -783,15 +766,15 @@
       },
       "System.Text.Encodings.Web": {
         "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+        "resolved": "7.0.0",
+        "contentHash": "OP6umVGxc0Z0MvZQBVigj4/U31Pw72ITihDWP9WiWDm+q5aoe0GaJivsfYGq53o6dxH7DcXWiCTl7+0o2CGdmg=="
       },
       "System.Text.Json": {
         "type": "Transitive",
-        "resolved": "8.0.3",
-        "contentHash": "hpagS9joOwv6efWfrMmV9MjQXpiXZH72PgN067Ysfr6AWMSD1/1hEcvh/U5mUpPLezEWsOJSuVrmqDIVD958iA==",
+        "resolved": "7.0.0",
+        "contentHash": "DaGSsVqKsn/ia6RG8frjwmJonfos0srquhw09TlT8KRw5I43E+4gs+/bZj4K0vShJ5H9imCuXupb4RmS+dBy3w==",
         "dependencies": {
-          "System.Text.Encodings.Web": "8.0.0"
+          "System.Text.Encodings.Web": "7.0.0"
         }
       },
       "System.Threading.Channels": {
@@ -806,8 +789,8 @@
       },
       "ZString": {
         "type": "Transitive",
-        "resolved": "2.5.1",
-        "contentHash": "hHZnrIZAgda8j9n2gR4M7GbETcjr6EBo4CUnMtK8o2MgkgzARg+Y7XI142nNOpRRuup1LJb12/gd/tMhzwdw8g=="
+        "resolved": "2.6.0",
+        "contentHash": "XE8a+11nZg0LRaf+RGABEWaHIf8yGd5w8v/Ra1iWxMBmAVzwuKbW7G21mS0U7w7sh1lYcgckInWGgnz4qyET8A=="
       },
       "sonar": {
         "type": "Project",
@@ -827,7 +810,7 @@
           "Microsoft.AspNetCore.SignalR.Client": "[8.0.3, )",
           "Microsoft.AspNetCore.SignalR.Protocols.MessagePack": "[8.0.3, )",
           "SonarUtils": "[1.0.0, )",
-          "ZString": "[2.5.1, )"
+          "ZString": "[2.6.0, )"
         }
       },
       "sonarutils": {

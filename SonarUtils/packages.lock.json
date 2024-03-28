@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net7.0": {
+    "net8.0": {
       "ConcurrencyLab.ParallelChecker": {
         "type": "Direct",
         "requested": "[2.7.0, )",
@@ -21,6 +21,6 @@
         "contentHash": "Agj7DDi1obbcZXzPJDGpx4ncwrlr0Q39xe/coNGJV2DU3AzhWiHF33sM2nkHlgIL1icLacx1hkqNz8No7pdWWg=="
       }
     },
-    "net7.0/linux-x64": {}
+    "net8.0/linux-x64": {}
   }
 }
