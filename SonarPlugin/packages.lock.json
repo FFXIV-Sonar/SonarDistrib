@@ -2,16 +2,6 @@
   "version": 1,
   "dependencies": {
     "net8.0-windows7.0": {
-      "CheapLoc": {
-        "type": "Direct",
-        "requested": "[1.1.8, )",
-        "resolved": "1.1.8",
-        "contentHash": "b6p8ct7RuSspsNB8kOSCNDv7l7PsDrdaxrbtLcC5PfWK5hquRenFugV/yHhfhd2rH4B28+TaBqVxi8qCfvtQZg==",
-        "dependencies": {
-          "Mono.Cecil": "0.11.3",
-          "Newtonsoft.Json": "12.0.2"
-        }
-      },
       "ConcurrencyLab.ParallelChecker": {
         "type": "Direct",
         "requested": "[2.7.0, )",
@@ -303,16 +293,6 @@
           "System.Security.AccessControl": "5.0.0",
           "System.Security.Principal.Windows": "5.0.0"
         }
-      },
-      "Mono.Cecil": {
-        "type": "Transitive",
-        "resolved": "0.11.3",
-        "contentHash": "DNYE+io5XfEE8+E+5padThTPHJARJHbz1mhbhMPNrrWGKVKKqj/KEeLvbawAmbIcT73NuxLV7itHZaYCZcVWGg=="
-      },
-      "Newtonsoft.Json": {
-        "type": "Transitive",
-        "resolved": "12.0.2",
-        "contentHash": "rTK0s2EKlfHsQsH6Yx2smvcTCeyoDNgCW7FEYyV01drPlh2T243PR2DiDXqtC5N4GDm4Ma/lkxfW5a/4793vbA=="
       },
       "System.CodeDom": {
         "type": "Transitive",

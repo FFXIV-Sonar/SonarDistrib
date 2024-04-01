@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\SonarCommon.props" />
   <Import Project="Dalamud.Plugin.Bootstrap.targets" />
 
   <PropertyGroup>
-    <AssemblyVersion>0.6.2.1</AssemblyVersion>
-    <Deterministic>true</Deterministic>
     <OutputPath>bin/</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
   </PropertyGroup>
@@ -58,14 +57,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CheapLoc" Version="1.1.8" />
     <PackageReference Include="ConcurrencyLab.ParallelChecker" Version="2.7.0" />
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DryIoc.dll" Version="5.4.3" />
     <PackageReference Include="Fody" Version="6.8.0">
-      <PrivateAssets>All</PrivateAssets>
+      <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NAudio.Core" Version="2.2.1" />
@@ -76,6 +74,10 @@
   <ItemGroup>
     <ProjectReference Include="..\SonarUtils\SonarUtils.csproj" />
     <ProjectReference Include="..\Sonar\Sonar.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CheapLoc" Private="false" />
   </ItemGroup>
 
   <Target Name="Secrets" BeforeTargets="PrepareForBuild" Condition="'$(PLOGON_SECRET_PLUGIN)' != ''">

@@ -43,10 +43,10 @@ namespace Sonar.Sockets
         {
             try
             {
-                await this.WebSocket.SendAsync(message.bytes, message.type, true, this._cts.Token);
+                await this.WebSocket.SendAsync(message.bytes, message.type, WebSocketMessageFlags.EndOfMessage | WebSocketMessageFlags.DisableCompression, this._cts.Token);
             }
             catch (OperationCanceledException) { /* Swallow */ }
-            catch (WebSocketException ex) when (ex.Message == "The WebSocket is in an invalid state ('Aborted') for this operation. Valid states are: 'Open, CloseReceived'") { /* Swallow */ }
+            catch (WebSocketException ex) when (ex.WebSocketErrorCode == WebSocketError.InvalidState) { /* Swallow */ }
             catch (Exception ex)
             {
                 this.DispatchExceptionEvent(ex);
