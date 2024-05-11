@@ -1,22 +1,19 @@
-﻿using SonarUtils.Collections;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SonarUtils
 {
     public static class TypeUtils
     {
-        private static readonly ConcurrentDictionary<Type, IEnumerable<Type>> s_derivedTypes = new();
-        private static readonly ConcurrentDictionary<Type, IEnumerable<Type>> s_allTypes = new();
+        private static readonly ConcurrentDictionary<Type, ImmutableArray<Type>> s_derivedTypes = new();
+        private static readonly ConcurrentDictionary<Type, ImmutableArray<Type>> s_allTypes = new();
         
-        public static IEnumerable<Type> GetDerivedTypes(this Type type) => s_derivedTypes.GetOrAdd(type, GetDerivedTypesCore);
-        public static IEnumerable<Type> GetDerivedTypes(this object obj) => obj.GetType().GetDerivedTypes();
-        private static IEnumerable<Type> GetDerivedTypesCore(Type type)
+        public static ImmutableArray<Type> GetDerivedTypes(this Type type) => s_derivedTypes.GetOrAdd(type, GetDerivedTypesCore);
+        public static ImmutableArray<Type> GetDerivedTypes(this object obj) => obj.GetType().GetDerivedTypes();
+        private static ImmutableArray<Type> GetDerivedTypesCore(Type type)
         {
             var types = new HashSet<Type>();
             var baseType = type.BaseType;
@@ -26,10 +23,16 @@ namespace SonarUtils
                 types.UnionWith(baseType.GetDerivedTypes());
             }
             types.UnionWith(type.GetInterfaces());
-            return types.ToArray();
+            return types.ToImmutableArray();
         }
-        public static IEnumerable<Type> GetAllTypes(this Type type) => s_allTypes.GetOrAdd(type, GetAllTypesCore);
-        public static IEnumerable<Type> GetAllTypes(this object obj) => obj.GetType().GetAllTypes();
-        private static IEnumerable<Type> GetAllTypesCore(Type type) => type.GetDerivedTypes().Prepend(type);
+        public static ImmutableArray<Type> GetAllTypes(this Type type) => s_allTypes.GetOrAdd(type, GetAllTypesCore);
+        public static ImmutableArray<Type> GetAllTypes(this object obj) => obj.GetType().GetAllTypes();
+        private static ImmutableArray<Type> GetAllTypesCore(Type type) => type.GetDerivedTypes().Prepend(type).ToImmutableArray();
+
+        public static void ResetCache()
+        {
+            s_allTypes.Clear();
+            s_derivedTypes.Clear();
+        }
     }
 }

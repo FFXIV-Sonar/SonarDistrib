@@ -32,6 +32,8 @@ using Sonar.Connections;
 using System.Reflection;
 using System.Linq;
 using DryIoc.MefAttributedModel;
+using Sonar.Tokens;
+using Sonar.Extensions;
 
 namespace Sonar
 {
@@ -304,6 +306,7 @@ namespace Sonar
         public event SonarClientPingHandler? Pong;
 
         public event SonarServerMessageHandler? ServerMessage;
+        public event Action<SonarClient, ISonarToken>? TokenReceived;
 
 #region Disposable Interface
         private int disposed; // Interlocked

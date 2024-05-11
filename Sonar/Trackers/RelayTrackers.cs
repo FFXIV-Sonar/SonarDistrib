@@ -26,13 +26,24 @@ namespace Sonar.Trackers
             this.Utils = utils;
         }
 
-        /// <summary>Get tracker for <typeparamref name="T"/></summary>
+        /// <summary>Get a relay tracker of a specified <paramref name="type"/></summary>
+        public IRelayTracker? GetTracker(RelayType type)
+        {
+            if (type == RelayType.Hunt) return this.Hunts;
+            if (type == RelayType.Fate) return this.Fates;
+            return default;
+        }
+
+        /// <summary>Get a relay tracker of a specified <paramref name="type"/></summary>
+        public IRelayTracker? GetTracker(Type type)
+        {
+            return this.GetTracker(RelayUtils.GetRelayType(type));
+        }
+
+        /// <summary>Get a relay tracker for <typeparamref name="T"/></summary>
         public RelayTracker<T>? GetTracker<T>() where T : Relay
         {
-            var type = typeof(T);
-            if (type == typeof(HuntRelay)) return Unsafe.As<RelayTracker<T>>(this.Hunts);
-            if (type == typeof(FateRelay)) return Unsafe.As<RelayTracker<T>>(this.Fates);
-            return default;
+            return Unsafe.As<RelayTracker<T>>(this.GetTracker(typeof(T)));
         }
     }
 }

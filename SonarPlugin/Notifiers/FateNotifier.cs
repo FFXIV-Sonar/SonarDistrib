@@ -47,15 +47,13 @@ namespace SonarPlugin.Notifiers
             var allowChat = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
             var allowSound = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableSoundInDuty);
 
-            if (allowChat && this.Plugin.Configuration.EnableFateChatReports)
+            if (allowChat && this.Plugin.Configuration.EnableFateChatReports && this.Plugin.Configuration.SendFateToChat.Contains(state.Relay.Id))
             {
-                if (!this.Plugin.Configuration.SendFateToChat.Contains(state.Relay.Id)) return;
                 this.SendToChat(state);
             }
 
-            if (allowSound && this.Plugin.Configuration.PlaySoundFates)
+            if (allowSound && this.Plugin.Configuration.PlaySoundFates && this.Plugin.Configuration.SendFateToSound.Contains(state.Relay.Id))
             {
-                if (!this.Plugin.Configuration.SendFateToSound.Contains(state.Relay.Id)) return;
                 try { this.Audio.PlaySound(this.Plugin.Configuration.SoundFileFates ?? string.Empty); } catch (Exception ex) { this.Logger.Error(ex, "Exception playing sound"); }
             }
         }

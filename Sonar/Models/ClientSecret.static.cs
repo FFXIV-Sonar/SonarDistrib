@@ -13,7 +13,7 @@ using System.Xml.Linq;
 
 namespace Sonar.Models
 {
-    public readonly partial struct ClientSecret
+    public sealed partial class ClientSecret
     {
         /// <summary>Generates a secret hash for a specified secret name</summary>
         public static byte[] HashSecret(string secretName)
@@ -22,7 +22,7 @@ namespace Sonar.Models
         }
 
         /// <summary>Read embedded secret from an assembly</summary>
-        public static ClientSecret ReadEmbeddedSecret(Assembly assembly, string resourceName)
+        public static ClientSecret? ReadEmbeddedSecret(Assembly assembly, string resourceName)
         {
             using var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream is null) return default;

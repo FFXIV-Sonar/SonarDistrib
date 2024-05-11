@@ -19,16 +19,16 @@ namespace SonarPlugin.Trackers
     [SingletonService]
     public sealed class RelayTrackerViews : IDisposable
     {
-        private readonly Dictionary<HuntRank, IRelayTracker<HuntRelay>> _huntViews = new();
-        private readonly IRelayTracker<FateRelay> _fateView;
+        private readonly Dictionary<HuntRank, IRelayTrackerView<HuntRelay>> _huntViews = new();
+        private readonly IRelayTrackerView<FateRelay> _fateView;
 
         private SonarPlugin Plugin { get; }
         private SonarClient Client { get; }
         public HuntTracker HuntsTracker { get; }
         public FateTracker FatesTracker { get; }
         
-        public IRelayTracker<HuntRelay> Hunts => this._huntViews[HuntRank.None];
-        public IReadOnlyDictionary<HuntRank, IRelayTracker<HuntRelay>> HuntsByRank => this._huntViews;
+        public IRelayTrackerView<HuntRelay> Hunts => this._huntViews[HuntRank.None];
+        public IReadOnlyDictionary<HuntRank, IRelayTrackerView<HuntRelay>> HuntsByRank => this._huntViews;
         public IRelayTracker<FateRelay> Fates => this._fateView;
 
 

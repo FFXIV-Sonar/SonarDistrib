@@ -52,29 +52,13 @@ namespace SonarUtils
             return result;
         }
 
-        // === vvv Obsolete stuff beyond this line vvv ===
+        /// <summary>Make sure <paramref name="stringA"/> and <paramref name="stringB"/> are in ordinal order</summary>
+        public static void EnsureOrdinalOrder(ref string stringA, ref string stringB)
+        {
+            if (stringA.CompareTo(stringB) >= 0) (stringA, stringB) = (stringB, stringA);
+        }
 
-        /// <summary>
-        /// Generate a 1 part key. Interned.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        [Obsolete($"This is now a wrapper for {nameof(StringUtils)}.{nameof(Intern)}")]
-        public static string GenerateKey(uint part1) => Intern($"{part1}");
-
-        /// <summary>
-        /// Generate a 2 parts key. Interned.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        [Obsolete($"This is now a wrapper for {nameof(StringUtils)}.{nameof(Intern)}")]
-        public static string GenerateKey(uint part1, uint part2) => Intern($"{part1}_{part2}");
-
-        /// <summary>
-        /// Generate a 3 parts key. Interned.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        [Obsolete($"This is now a wrapper for {nameof(StringUtils)}.{nameof(Intern)}")]
-        public static string GenerateKey(uint part1, uint part2, uint part3) => Intern($"{part1}_{part2}_{part3}");
-
+        /// <summary>Resets interned strings</summary>
         public static void Reset()
         {
             s_strings.Clear();

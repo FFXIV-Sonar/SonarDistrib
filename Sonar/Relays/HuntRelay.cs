@@ -22,6 +22,7 @@ namespace Sonar.Relays
     [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
+    [RelayType(RelayType.Hunt)]
     public sealed class HuntRelay : Relay
     {
         protected override string GetRelayKeyImpl()

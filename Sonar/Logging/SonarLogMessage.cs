@@ -11,7 +11,7 @@ namespace Sonar.Logging
     [JsonObject]
     [MessagePackObject]
     [Serializable]
-    public readonly struct SonarLogMessage : ISonarMessage
+    public sealed class SonarLogMessage : ISonarMessage
     {
         [Key(0)]
         public SonarLogLevel Level { get; init; }

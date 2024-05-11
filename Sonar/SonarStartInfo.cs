@@ -9,7 +9,7 @@ namespace Sonar
     {
         private bool _locked;
         private string? _workingDirectory;
-        private ClientSecret _pluginSecret;
+        private ClientSecret? _pluginSecret;
 
         /// <summary>Whether this <see cref="SonarStartInfo"/> is locked. This happens once its used by <see cref="SonarClient"/></summary>
         public bool Locked
@@ -30,7 +30,7 @@ namespace Sonar
             }
         }
 
-        public ClientSecret PluginSecret
+        public ClientSecret? PluginSecret
         {
             get => this._pluginSecret;
             set

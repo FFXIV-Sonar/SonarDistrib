@@ -21,6 +21,7 @@ namespace Sonar.Relays
     [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
+    [RelayType(RelayType.Fate)]
     public sealed class FateRelay : Relay
     {
         public const double DefaultGracePeriod = EarthSecond * 15;

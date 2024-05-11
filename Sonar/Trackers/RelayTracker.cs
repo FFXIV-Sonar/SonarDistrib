@@ -35,13 +35,14 @@ using SonarUtils.Text;
 namespace Sonar.Trackers
 {
     /// <summary>Handles, receives and relay hunt tracking information</summary>
-    public abstract partial class RelayTracker<T> : IRelayTracker<T> where T : Relay
+    public abstract partial class RelayTracker<T> : RelayTrackerBase<T>, IRelayTracker<T>, IDisposable where T : Relay
     {
         /// <summary>Relay Tracker Configuration. Please access it from SonarClient.</summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public abstract RelayConfig Config { get; }
         public SonarClient Client { get; }
         public RelayTrackerData<T> Data { get; } = new();
+        IRelayTrackerData IRelayTracker.Data => this.Data;
 
         private readonly ConcurrentQueue<T> _relayUpdateQueue = new();
         private readonly ConcurrentHashSetSlim<string> _confirmationRequests = new(comparer: FarmHashStringComparer.Instance);
@@ -61,7 +62,7 @@ namespace Sonar.Trackers
             this.Data.Cleared += this.Data_Clear;
         }
 
-        private void Data_Clear(RelayTrackerData<T> obj)
+        private void Data_Clear(IRelayTrackerData<T> obj)
         {
             this._relayUpdateQueue.Clear();
             this._confirmationRequests.Clear();
@@ -100,7 +101,7 @@ namespace Sonar.Trackers
         {
             if (!this._relayUpdateQueue.IsEmpty)
             {
-                if (this.Client.Connection.IsConnected && this.Config.Contribute && this.Client.Modifiers.AllowContribute!.Value)
+                if (this.Client.Connection.IsConnected && this.Config.Contribute && this.Client.Modifiers.AllowContribute2!.GetValueOrDefault(this.RelayType, true))
                 {
                     var relaysDict = new Dictionary<string, T>();
                     while (this._relayUpdateQueue.TryDequeue(out var item)) relaysDict[item.RelayKey] = item;
@@ -139,9 +140,9 @@ namespace Sonar.Trackers
             }
 
             // Local only relay, disconnected or not contributing?
-            if (localOnly || !this.Client.Connection.IsConnected || !this.Config.Contribute || !this.Client.Modifiers.AllowContribute!.Value)
+            if (localOnly || !this.Client.Connection.IsConnected || !this.Config.Contribute || !this.Client.Modifiers.AllowContribute2!.GetValueOrDefault(this.RelayType, true))
             {
-                if (this.IsTrackable(relay) && !this.FeedRelayInternal(relay)) return false;
+                if (this.IsTrackable(relay) && !((IRelayTracker<T>)this).FeedRelayInternal(relay)) return false;
                 if (this._lockOn.Count > 0 && this._lockOn.Contains(relay.RelayKey)) this._relayUpdateQueue.Enqueue(relay);
             }
             else
@@ -174,7 +175,10 @@ namespace Sonar.Trackers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal bool FeedRelayInternal(T newRelay) => this.UpdateState(newRelay, null, false);
+        bool IRelayTracker<T>.FeedRelayInternal(T relay) => this.UpdateState(relay, null, false);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        bool IRelayTracker.FeedRelayInternal(Relay relay) => relay is T trelay && this.UpdateState(trelay, null, false);
 
         [SuppressMessage("Code Smell", "S3241", Justification = "Internal API consistency")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -245,45 +249,22 @@ namespace Sonar.Trackers
             }
 
             // Successful
-            this.DispatchEvents(state, isNew);
+            if (this.Client.Modifiers.EnableRelayEventHandlers!.Value && (this.AlwaysDispatchEvents || this.IsWithinJurisdiction(null, state)))
+            {
+                this.DispatchEvents(state, isNew);
+            }
             return true;
         }
 
-        #region Event Handlers
-        private void DispatchEvents(RelayState<T> state, bool isNew)
+        public IRelayTrackerView<T> CreateView(Predicate<RelayState<T>>? predicate = null, string index = "all", bool indexing = false)
         {
-            if (this.Found is null && this.Updated is null && this.Dead is null && this.All is null) return;
-            if (!this.Client.Modifiers.EnableRelayEventHandlers!.Value) return;
-            if (this.AlwaysDispatchEvents || this.IsWithinJurisdiction(null, state))
-            {
-                var exceptions = Enumerable.Empty<Exception>();
-                if (state.IsAliveInternal())
-                {
-                    if (isNew) this.Found?.SafeInvoke(state, out exceptions);
-                    else this.Updated?.SafeInvoke(state, out exceptions);
-                }
-                else
-                {
-                    this.Dead?.SafeInvoke(state, out exceptions);
-                }
-                if (exceptions.Any() && this.Client.LogErrorEnabled) foreach (var exception in exceptions) this.Client.LogError($"{exception}");
-                this.All?.SafeInvoke(state, out exceptions);
-                if (exceptions.Any() && this.Client.LogErrorEnabled) foreach (var exception in exceptions) this.Client.LogError($"{exception}");
-            }
+            return new RelayTrackerView<T>(this, predicate, index, indexing);
         }
 
-        /// <inheritdoc/>
-        public event Action<RelayState<T>>? Found;
-
-        /// <inheritdoc/>
-        public event Action<RelayState<T>>? Updated;
-
-        /// <inheritdoc/>
-        public event Action<RelayState<T>>? Dead;
-
-        /// <inheritdoc/>
-        public event Action<RelayState<T>>? All;
-        #endregion
+        public IRelayTrackerView CreateView(Predicate<RelayState>? predicate = null, string index = "all", bool indexing = false)
+        {
+            return new RelayTrackerView<T>(this, predicate, index, indexing);
+        }
 
         #region IDisposable Pattern
         private int disposed; //Interlocked

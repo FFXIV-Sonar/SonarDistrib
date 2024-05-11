@@ -20,14 +20,18 @@ using SonarUtils.Text;
 
 namespace Sonar.Trackers
 {
-    public sealed partial class RelayTrackerData<T> where T : Relay
+    public sealed partial class RelayTrackerData<T> : IRelayTrackerData<T> where T : Relay
     {
         private readonly ConcurrentDictionarySlim<string, RelayState<T>> _states = new(comparer: FarmHashStringComparer.Instance);
         private readonly ConcurrentDictionarySlim<string, ConcurrentHashSetSlim<RelayState<T>>> _index = new(comparer: FarmHashStringComparer.Instance);
-        private readonly IReadOnlyDictionary<string, IReadOnlySet<RelayState<T>>> _indexTransform;
+        private readonly IReadOnlyDictionary<string, IReadOnlyCollection<RelayState<T>>> _indexTransform;
+
+        private readonly IReadOnlyDictionary<string, RelayState> _statesGenericTransform;
+        private readonly IReadOnlyDictionary<string, IReadOnlyCollection<RelayState>> _indexGenericTransform;
 
         public IReadOnlyDictionary<string, RelayState<T>> States => this._states;
-        public IReadOnlyDictionary<string, IReadOnlySet<RelayState<T>>> Index
+        IReadOnlyDictionary<string, RelayState> IRelayTrackerData.States => this._statesGenericTransform;
+        public IReadOnlyDictionary<string, IReadOnlyCollection<RelayState<T>>> Index
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
@@ -36,6 +40,7 @@ namespace Sonar.Trackers
                 return this._indexTransform;
             }
         }
+        IReadOnlyDictionary<string, IReadOnlyCollection<RelayState>> IRelayTrackerData.Index => this._indexGenericTransform;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ThrowIfNotIndexing()
@@ -51,7 +56,10 @@ namespace Sonar.Trackers
         internal RelayTrackerData(bool indexing = true)
         {
             this.Indexing = indexing;
-            this._indexTransform = TransformReadOnlyDictionary.Create(this._index, static entries => (IReadOnlySet<RelayState<T>>)entries);
+            this._indexTransform = TransformReadOnlyDictionary.Create(this._index, static entries => (IReadOnlyCollection<RelayState<T>>)entries);
+
+            this._statesGenericTransform = TransformReadOnlyDictionary.Create(this._states, static state => (RelayState)state);
+            this._indexGenericTransform = TransformReadOnlyDictionary.Create(this._index, static entries => (IReadOnlyCollection<RelayState>)entries);
         }
 
         internal RelayTrackerData(IEnumerable<RelayState<T>> states, bool indexing = true) : this(indexing)
@@ -59,18 +67,28 @@ namespace Sonar.Trackers
             this.TryAddStates(states);
         }
 
-        internal bool TryAddState(RelayState<T> state)
+        public bool TryAddState(RelayState<T> state)
         {
             if (this._states.TryAdd(state.RelayKey, state))
             {
                 if (this.Indexing) this.AddIndexEntries(state);
-                this.Added?.SafeInvoke(this, state);
+                this.DispatchEvent(this._addedHandlers, state);
                 return true;
             }
             return false;
         }
 
-        internal void TryAddStates(IEnumerable<RelayState<T>> states)
+        public bool TryAddState(RelayState state)
+        {
+            return state is RelayState<T> tState && this.TryAddState(tState);
+        }
+
+        public void TryAddStates(IEnumerable<RelayState<T>> states)
+        {
+            foreach (var state in states) this.TryAddState(state);
+        }
+
+        public void TryAddStates(IEnumerable<RelayState> states)
         {
             foreach (var state in states) this.TryAddState(state);
         }
@@ -84,15 +102,21 @@ namespace Sonar.Trackers
         {
             if (!this._states.Remove(key, out var state)) return false;
             if (this.Indexing) this.RemoveIndexEntries(state);
-            this.Removed?.SafeInvoke(this, state);
+            this.DispatchEvent(this._removedHandlers, state);
             return true;
         }
 
         /// <summary>Remove a state</summary>
         public bool Remove(RelayState<T> state) => this.Remove(state.RelayKey);
 
+        /// <summary>Remove a state</summary>
+        public bool Remove(RelayState state) => state is RelayState<T> && this.Remove(state.RelayKey);
+
         /// <summary>Remove a state associated with a specific relay</summary>
         public bool Remove(T relay) => this.Remove(relay.RelayKey);
+
+        /// <summary>Remove a state associated with a specific relay</summary>
+        public bool Remove(Relay relay) => relay is T && this.Remove(relay.RelayKey);
 
         /// <summary>Get states from an index</summary>
         /// <param name="indexKey"><see cref="IndexType"/></param>
@@ -107,17 +131,26 @@ namespace Sonar.Trackers
             return this.Index.GetValueOrDefault(indexKey) ?? ImmutableHashSet<RelayState<T>>.Empty;
         }
 
+        /// <summary>Get states from an index</summary>
+        /// <param name="indexKey"><see cref="IndexType"/></param>
+        /// <remarks>
+        /// <para>If index doesn't exist, an empty collection is returned</para>
+        /// <para>They're technically <see cref="IReadOnlySet{T}"/> except for <c>"all"</c>, please don't cast and assume its safe.</para>
+        /// </remarks>
+        IReadOnlyCollection<RelayState> IRelayTrackerData.GetIndexStates(string indexKey)
+        {
+            this.ThrowIfNotIndexing();
+            if (indexKey == "all") return this.States.GetNonSnapshottingValues(); // NOTE: This is the cause why this method cannot return an IReadOnlySet
+            return this.Index.GetValueOrDefault(indexKey) ?? ImmutableHashSet<RelayState<T>>.Empty;
+        }
+
         /// <summary>Clear all data</summary>
         public void Clear()
         {
             this._states.Clear();
             this._index.Clear();
-            this.Cleared?.SafeInvoke(this);
+            this.DispatchCleredEvent();
         }
-
-        public event Action<RelayTrackerData<T>, RelayState<T>>? Added;
-        public event Action<RelayTrackerData<T>, RelayState<T>>? Removed;
-        public event Action<RelayTrackerData<T>>? Cleared;
 
         [SuppressMessage("Major Code Smell", "S1121", Justification = "Used immediately")]
         private void AddIndexEntries(RelayState<T> state)

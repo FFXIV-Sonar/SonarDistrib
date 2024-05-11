@@ -1,8 +1,6 @@
 ﻿using SonarUtils.Collections;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
 
 namespace SonarUtils
 {
@@ -56,5 +54,20 @@ namespace SonarUtils
         public static void RemoveRange<T>(this ICollection<T> collection, params T[] items) => items.ForEach(item => collection.Remove(item));
 
         public static void RemoveRange<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<TKey> keys) => keys.ForEach(key => dict.Remove(key));
+
+
+
+        // Who's idea was to implement this only for IReadOnlyDictionary<TKey, TValue>?
+        public static TValue? GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key)
+        {
+            if (!dict.TryGetValue(key, out var value)) return default;
+            return value;
+        }
+
+        public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue defaultValue)
+        {
+            if (!dict.TryGetValue(key, out var value)) return defaultValue;
+            return value;
+        }
     }
 }

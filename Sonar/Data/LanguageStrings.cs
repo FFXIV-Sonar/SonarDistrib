@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 using MessagePack.Formatters;
 using SonarUtils;
 using System.Runtime.CompilerServices;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Sonar.Data
 {
@@ -20,9 +19,7 @@ namespace Sonar.Data
     {
         private readonly IDictionary<SonarLanguage, string> _strings = new Dictionary<SonarLanguage, string>();
 
-        /// <summary>
-        /// Resolve which language to return (in case not all languages are supported)
-        /// </summary>
+        /// <summary>Resolve which language to return (in case not all languages are supported)</summary>
         /// <param name="lang"></param>
         /// <returns>Resolved language, if any</returns>
         public SonarLanguage? ResolveLanguage(SonarLanguage lang = SonarLanguage.Default)
@@ -63,9 +60,7 @@ namespace Sonar.Data
         [IgnoreMember]
         public bool IsReadOnly => this._strings.IsReadOnly;
 
-        /// <summary>
-        /// Return a string of the specified language
-        /// </summary>
+        /// <summary>Return a string of the specified language</summary>
         /// <param name="lang">Language of the string</param>
         /// <returns>String</returns>
         public string ToString(SonarLanguage lang)
@@ -80,9 +75,7 @@ namespace Sonar.Data
             return this._strings[resLang.Value];
         }
 
-        /// <summary>
-        /// Return a string of the specified language
-        /// </summary>
+        /// <summary>Return a string of the specified language</summary>
         /// <returns>String</returns>
         public override string ToString() => this.ToString(Database.DefaultLanguage);
 

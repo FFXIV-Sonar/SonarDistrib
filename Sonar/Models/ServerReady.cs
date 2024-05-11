@@ -12,7 +12,7 @@ namespace Sonar.Models
 {
     [MessagePackObject]
     [JsonObject]
-    public struct ServerReady : ISonarMessage
+    public sealed class ServerReady : ISonarMessage
     {
         public ServerReady(uint connectionId = default, ConnectionType connectionType = ConnectionType.Unknown)
         {

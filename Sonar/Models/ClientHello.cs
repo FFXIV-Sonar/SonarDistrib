@@ -24,16 +24,16 @@ namespace Sonar.Models
 
         #region Additional Data
         [Key(0)]
-        public SonarVersion? Version { get; set; } = null!;
+        public SonarVersion? Version { get; set; }
 
         [Key(2)]
-        public string? HardwareIdentifier { get; set; } = null!;
+        public string? HardwareIdentifier { get; set; }
 
         [Key(3)]
-        public ClientSecret SonarSecret { get; set; } = default;
+        public ClientSecret? SonarSecret { get; set; }
 
         [Key(4)]
-        public ClientSecret PluginSecret { get; set; } = default;
+        public ClientSecret? PluginSecret { get; set; }
         #endregion
     }
 }

@@ -15,6 +15,7 @@ namespace Sonar.Relays
     [JsonObject]
     [MessagePackObject]
     [Serializable]
+    [RelayType(RelayType.Manual)]
     public sealed class ManualRelay : Relay
     {
         protected override string GetSortKeyImpl() => $"{this.Player?.Name.ToLowerInvariant() ?? "_"} <{this.Player?.GetWorld()?.Name.ToLowerInvariant() ?? this.Player?.HomeWorldId.ToString().ToLowerInvariant() ?? "_"}>";

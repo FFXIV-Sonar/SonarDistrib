@@ -9,35 +9,33 @@ using System.Threading.Tasks;
 namespace Sonar.Trackers
 {
     /// <summary>Handles, receives and relay hunt tracking information.</summary>
-    public interface IRelayTracker<T> : IRelayTracker where T : Relay
+    public interface IRelayTracker<T> : IRelayTrackerBase<T>, IRelayTracker where T : Relay
     {
         /// <summary>Relay tracker data source</summary>
-        public RelayTrackerData<T> Data { get; }
+        public new RelayTrackerData<T> Data { get; }
 
         /// <summary>Feeds a relay into this tracker</summary>
         /// <returns>Successful or sent to server</returns>
         public bool FeedRelay(T relay);
 
+        /// <summary>Feeds a relay into this tracker</summary>
+        /// <returns>Successful or sent to server</returns>
+        internal bool FeedRelayInternal(T relay);
+
         /// <summary>Feeds relays into this tracker</summary>
         public void FeedRelays(IEnumerable<T> relays);
 
-        /// <summary>Relay is found</summary>
-        public event Action<RelayState<T>>? Found;
-
-        /// <summary>Relay is updated</summary>
-        public event Action<RelayState<T>>? Updated;
-
-        /// <summary>Relay is dead</summary>
-        public event Action<RelayState<T>>? Dead;
-
-        /// <summary>Found, Updated or Dead</summary>
-        public event Action<RelayState<T>>? All;
+        /// <summary>Create a view of this tracker based on <paramref name="predicate"/> and <paramref name="index"/>, and optionally perform its own <paramref name="indexing"/></summary>
+        public IRelayTrackerView<T> CreateView(Predicate<RelayState<T>>? predicate = null, string index = "all", bool indexing = false);
     }
 
     /// <summary>Handles, receives and relay hunt tracking information.</summary>
     /// <remarks>Please cast to the correct <see cref="IRelayTracker{T}"/> before use.</remarks>
-    public interface IRelayTracker : IDisposable
+    public interface IRelayTracker : IRelayTrackerBase
     {
+        /// <summary>Relay tracker data source</summary>
+        public IRelayTrackerData Data { get; }
+
         /// <summary>Associated Sonar Client</summary>
         public SonarClient Client { get; }
         
@@ -45,8 +43,15 @@ namespace Sonar.Trackers
         /// <returns>Successful or sent to server</returns>
         public bool FeedRelay(Relay relay);
 
+        /// <summary>Feeds a relay into this tracker</summary>
+        /// <returns>Successful or sent to server</returns>
+        internal bool FeedRelayInternal(Relay relay);
+
         /// <summary>Feeds relays into this tracker</summary>
         public void FeedRelays(IEnumerable<Relay> relays);
+
+        /// <summary>Create a view of this tracker based on <paramref name="predicate"/> and <paramref name="index"/>, and optionally perform its own <paramref name="indexing"/></summary>
+        public IRelayTrackerView CreateView(Predicate<RelayState>? predicate = null, string index = "all", bool indexing = false);
     }
 
     public static class IRelayTrackerExtensions

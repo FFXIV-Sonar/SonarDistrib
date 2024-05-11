@@ -8,7 +8,7 @@ using System.Text;
 namespace Sonar.Models
 {
     [MessagePackObject]
-    public readonly partial struct ClientSecret : ISonarMessage
+    public sealed partial class ClientSecret : ISonarMessage
     {
         /// <summary>Secret name</summary>
         [Key(0)]

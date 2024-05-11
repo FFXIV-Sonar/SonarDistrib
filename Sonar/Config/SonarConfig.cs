@@ -86,7 +86,25 @@ namespace Sonar.Config
                 this.HuntConfig.Sanitize(repair, debug),
                 this.FateConfig.Sanitize(repair, debug)
             };
-            return ret.All(r => r);
+            return ret.TrueForAll(r => r);
+        }
+
+        /// <summary>
+        /// Get a specific Relay Tracker Configuration
+        /// </summary>
+        public RelayConfig? GetRelayTrackerConfig(RelayType type)
+        {
+            if (type == RelayType.Hunt) return this.HuntConfig;
+            if (type == RelayType.Fate) return this.FateConfig;
+            return null;
+        }
+
+        /// <summary>
+        /// Get a specific Relay Tracker Configuration
+        /// </summary>
+        public RelayConfig? GetRelayTrackerConfig(Type type)
+        {
+            return this.GetRelayTrackerConfig(RelayUtils.GetRelayType(type));
         }
 
         /// <summary>
@@ -94,10 +112,7 @@ namespace Sonar.Config
         /// </summary>
         public RelayConfig? GetRelayTrackerConfig<T>() where T : Relay
         {
-            var type = typeof(T);
-            if (type == typeof(HuntRelay)) return this.HuntConfig;
-            if (type == typeof(FateRelay)) return this.FateConfig;
-            return null;
+            return this.GetRelayTrackerConfig(typeof(T));
         }
 
         internal void VersionUpdate()

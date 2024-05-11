@@ -51,7 +51,7 @@ namespace Sonar.Trackers
             this.Fates.Data.Added -= this.Data_Added;
         }
 
-        private void Data_Added<T>(RelayTrackerData<T> tracker, RelayState<T> state) where T : Relay
+        private void Data_Added<T>(IRelayTrackerData<T> tracker, RelayState<T> state) where T : Relay
         {
             var relay = state.Relay;
             this._seenRelayIds.GetOrAdd(relay.GetType(), static _ => new()).Add(relay.Id);

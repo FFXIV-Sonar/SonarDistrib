@@ -12,6 +12,7 @@ using SonarUtils;
 using DryIoc;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using DryIoc.FastExpressionCompiler.LightExpression;
 
 namespace Sonar.Sockets
 {
@@ -19,8 +20,8 @@ namespace Sonar.Sockets
     {
         protected readonly Func<byte[], ISonarMessage> ConvertBytesToMessage;
         protected readonly Func<ISonarMessage, byte[]> ConvertMessageToBytes;
-        private readonly ConcurrentDictionary<Type, ImmutableList<Action<ISonarSocket, ISonarMessage>>> _messageHandlers = new();
-        private readonly ConcurrentDictionary<Type, ImmutableList<Func<ISonarSocket, ISonarMessage, Task>>> _asyncMessageHandlers = new();
+        private readonly ConcurrentDictionary<Type, ImmutableArray<object>> _messageHandlers = new();
+        private readonly ConcurrentDictionary<Type, ImmutableArray<object>> _asyncMessageHandlers = new();
 
         public abstract Task Completion { get; protected set; }
 
@@ -37,30 +38,6 @@ namespace Sonar.Sockets
             await this.ProcessMessageAsync(message);
         }
 
-        private IEnumerable<Action<ISonarSocket, ISonarMessage>> GetHandlers(Type type)
-        {
-            var types = type.GetAllTypes();
-            foreach (var candidateType in types)
-            {
-                if (this._messageHandlers.TryGetValue(candidateType, out var handlers))
-                {
-                    foreach (var handler in handlers) yield return handler;
-                }
-            }
-        }
-
-        private IEnumerable<Func<ISonarSocket, ISonarMessage, Task>> GetAsyncHandlers(Type type)
-        {
-            var types = type.GetAllTypes();
-            foreach (var candidateType in types)
-            {
-                if (this._asyncMessageHandlers.TryGetValue(candidateType, out var handlers))
-                {
-                    foreach (var handler in handlers) yield return handler;
-                }
-            }
-        }
-
         private async Task ProcessMessageAsync(ISonarMessage message)
         {
             if (message is null) // Should never happen but... its happening with very old versions of Sonar
@@ -70,43 +47,43 @@ namespace Sonar.Sockets
             }
             if (message is MessageList messages)
             {
-                foreach (var item in messages)
-                {
-                    await this.ProcessMessageAsync(item);
-                }
+                foreach (var item in messages) await this.ProcessMessageAsync(item);
+                return;
             }
-            else
+            await this.ProcessMessageCoreAsync(message);
+        }
+
+        private async Task ProcessMessageCoreAsync(ISonarMessage message)
+        {
+            var types = message.GetAllTypes();
+            foreach (var type in types)
             {
-                var types = message.GetAllTypes();
-                foreach (var type in types)
+                if (this._messageHandlers.TryGetValue(type, out var handlers) && !handlers.IsEmpty)
                 {
-                    if (this._messageHandlers.TryGetValue(type, out var handlers) && !handlers.IsEmpty)
+                    for (var i = 0; i < handlers.Length; i++)
                     {
-                        for (var i = 0; i < handlers.Count; i++)
+                        try
                         {
-                            try
-                            {
-                                handlers[i](this, message);
-                            }
-                            catch (Exception ex)
-                            {
-                                this.DispatchExceptionEvent(ex);
-                            }
+                            Unsafe.As<Action<ISonarSocket, ISonarMessage>>(handlers[i])(this, message);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.DispatchExceptionEvent(ex);
                         }
                     }
+                }
 
-                    if (this._asyncMessageHandlers.TryGetValue(type, out var asyncHandlers) && !asyncHandlers.IsEmpty)
+                if (this._asyncMessageHandlers.TryGetValue(type, out var asyncHandlers) && !asyncHandlers.IsEmpty)
+                {
+                    for (var i = 0; i < asyncHandlers.Length; i++)
                     {
-                        for (var i = 0; i < asyncHandlers.Count; i++)
+                        try
                         {
-                            try
-                            {
-                                await asyncHandlers[i](this, message);
-                            }
-                            catch (Exception ex)
-                            {
-                                this.DispatchExceptionEvent(ex);
-                            }
+                            await Unsafe.As<Func<ISonarSocket, ISonarMessage, Task>>(asyncHandlers[i])(this, message);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.DispatchExceptionEvent(ex);
                         }
                     }
                 }
@@ -115,12 +92,12 @@ namespace Sonar.Sockets
 
         public void AddHandler(Type type, Action<ISonarSocket, ISonarMessage> handler)
         {
-            this._messageHandlers.AddOrUpdate(type, type => ImmutableList.Create(handler), (type, handlers) => handlers.Add(handler));
+            this._messageHandlers.AddOrUpdate(type, static (type, handler) => ImmutableArray.Create((object)handler), static (type, handlers, handler) => handlers.Add(handler), handler);
         }
 
         public void AddHandler(Type type, Func<ISonarSocket, ISonarMessage, Task> handler)
         {
-            this._asyncMessageHandlers.AddOrUpdate(type, type => ImmutableList.Create(handler), (type, handlers) => handlers.Add(handler));
+            this._asyncMessageHandlers.AddOrUpdate(type, static (type, handler) => ImmutableArray.Create((object)handler), (type, handlers, handler) => handlers.Add(handler), handler);
         }
 
         public void AddHandler<T>(Action<ISonarSocket, T> handler) where T : ISonarMessage
@@ -139,7 +116,7 @@ namespace Sonar.Sockets
             {
                 if (!this._messageHandlers.TryGetValue(type, out var handlers)) return false;
                 var newHandlers = handlers.Remove(handler);
-                if (ReferenceEquals(handlers, newHandlers)) return false;
+                if (handlers.Equals(newHandlers)) return false;
                 if (this._messageHandlers.TryUpdate(type, newHandlers, handlers)) return true;
             }
         }
@@ -150,7 +127,7 @@ namespace Sonar.Sockets
             {
                 if (!this._asyncMessageHandlers.TryGetValue(type, out var handlers)) return false;
                 var newHandlers = handlers.Remove(handler);
-                if (ReferenceEquals(handlers, newHandlers)) return false;
+                if (handlers.Equals(newHandlers)) return false;
                 if (this._asyncMessageHandlers.TryUpdate(type, newHandlers, handlers)) return true;
             }
         }

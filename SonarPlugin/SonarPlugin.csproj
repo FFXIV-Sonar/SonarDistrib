@@ -57,7 +57,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ConcurrencyLab.ParallelChecker" Version="2.7.0" />
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>

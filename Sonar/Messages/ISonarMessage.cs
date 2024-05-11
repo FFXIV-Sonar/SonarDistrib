@@ -6,6 +6,7 @@ using Sonar.Logging;
 using Sonar.Data.Details;
 using Sonar.Trackers;
 using Sonar.Relays;
+using Sonar.Tokens;
 
 namespace Sonar.Messages
 {
@@ -33,6 +34,7 @@ namespace Sonar.Messages
     [Union(0x29, typeof(ClientSecret))]
     [Union(0x2A, typeof(ClientIdentifier))]
     [Union(0x2B, typeof(HardwareIdentifier))]
+
     //[Union(0x2C, typeof(object))] // RESERVED: XivAuth?
     //[Union(0x2D, typeof(object))] // RESERVED: XivAuth?
     //[Union(0x2E, typeof(object))] // RESERVED: XivAuth?
@@ -59,17 +61,21 @@ namespace Sonar.Messages
     [Union(0x60, typeof(RelayConfirmationRequest<HuntRelay>))]
     [Union(0x61, typeof(RelayConfirmationRequest<FateRelay>))]
 
-    // Relay Confirmation Responses
-    [Union(0x70, typeof(RelayConfirmationResponse<HuntRelay>))]
-    [Union(0x71, typeof(RelayConfirmationResponse<FateRelay>))]
-
     // Unified and simplified implementation of relay confirmations
     [Union(0x62, typeof(RelayConfirmationSlim<HuntRelay>))]
     [Union(0x63, typeof(RelayConfirmationSlim<FateRelay>))]
 
+    // Relay Confirmation Responses
+    [Union(0x70, typeof(RelayConfirmationResponse<HuntRelay>))]
+    [Union(0x71, typeof(RelayConfirmationResponse<FateRelay>))]
+
     // Client Requests
     [Union(0x80, typeof(RelayDataRequest))]
     //[Union(0x81, typeof(RelayDataIndexCapacities))]
+
+    // Tokens
+    [Union(0x90, typeof(SonarAuthToken))]
+    [Union(0x91, typeof(SonarAuthTokenRequest))]
 
     // Database handling
     [Union(0xb0, typeof(SonarDbInfo))]

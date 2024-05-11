@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Sonar.Trackers
 {
-    public sealed class RelayTrackerView<T> : IRelayTracker<T>, IDisposable where T : Relay
+    public sealed partial class RelayTrackerView<T> : RelayTrackerBase<T>, IRelayTrackerView<T> where T : Relay
     {
         private readonly object _processLock = new();
         private readonly ConcurrentQueue<RelayState<T>> _statesQueue = new();
@@ -31,6 +31,7 @@ namespace Sonar.Trackers
         private IRelayTracker<T> Tracker { get; }
 
         public RelayTrackerData<T> Data { get; }
+        IRelayTrackerData IRelayTracker.Data => this.Data;
 
         private static int GetCountToProcess(int count) => (int)Math.Max(Math.Min(Math.Max(1, count), 16), Math.Sqrt(count));
 
@@ -59,13 +60,13 @@ namespace Sonar.Trackers
             this.Tracker.Updated += this.Tracker_Updated;
             this.Tracker.Dead += this.Tracker_Updated; // NOTE: This is not a typo
             this.Tracker.Data.Added += this.Data_Added; // NOTE: Do not add "Added" states as they'll cause the "Found" event not to be dispatched properly.
-            this.Tracker.Data.Removed += this.Data_Removed; 
+            this.Tracker.Data.Removed += this.Data_Removed;
             this.Tracker.Data.Cleared += this.Data_Cleared;
 
             this.ProcessAllStates();
         }
 
-        private void Data_Cleared(RelayTrackerData<T> obj)
+        private void Data_Cleared(IRelayTrackerData<T> obj)
         {
             lock (this._processLock)
             {
@@ -76,9 +77,9 @@ namespace Sonar.Trackers
             }
         }
 
-        private void Data_Added(RelayTrackerData<T> arg1, RelayState<T> arg2) => Interlocked.Increment(ref this._addedCount);
+        private void Data_Added(IRelayTrackerData<T> arg1, RelayState<T> arg2) => Interlocked.Increment(ref this._addedCount);
 
-        private void Data_Removed(RelayTrackerData<T> arg1, RelayState<T> arg2) => this.Data.Remove(arg2);
+        private void Data_Removed(IRelayTrackerData<T> arg1, RelayState<T> arg2) => this.Data.Remove(arg2);
 
         private void Tracker_Found(RelayState<T> obj) => this.ProcessState(obj, true);
 
@@ -129,7 +130,7 @@ namespace Sonar.Trackers
                 for (var i = 0; i < queueCount * multiplier && i < queueSize; i++)
                 {
                     if (!this._statesQueue.TryDequeue(out var state)) break;
-                    
+
                     // Check if the state exists in the tracker.
                     // "all" index key is a special case as its a Values enumerable and should be treated as such
                     var exists = this._indexKey.Equals("all") ? this.Tracker.Data.States.ContainsKey(state.RelayKey) : entries.Contains(state);
@@ -187,30 +188,27 @@ namespace Sonar.Trackers
                 isFound = true;
             }
 
-            var exceptions = Enumerable.Empty<Exception>();
-            if (state.IsAliveInternal())
-            {
-                if (isFound) this.Found?.SafeInvoke(state, out exceptions);
-                else this.Updated?.SafeInvoke(state, out exceptions);
-            }
-            else
-            {
-                this.Dead?.SafeInvoke(state, out exceptions);
-            }
-            if (exceptions.Any() && this.Client.LogErrorEnabled) foreach (var exception in exceptions) this.Client.LogError($"{exception}");
-            this.All?.SafeInvoke(state, out exceptions);
-            if (exceptions.Any() && this.Client.LogErrorEnabled) foreach (var exception in exceptions) this.Client.LogError($"{exception}");
+            this.DispatchEvents(state, isFound);
         }
 
-        public event Action<RelayState<T>>? Found;
-        public event Action<RelayState<T>>? Updated;
-        public event Action<RelayState<T>>? Dead;
-        public event Action<RelayState<T>>? All;
-
         public bool FeedRelay(T relay) => throw new NotSupportedException($"{nameof(RelayTrackerView<T>)} does not support this operation");
-        public void FeedRelays(IEnumerable<T> relays) => throw new NotSupportedException($"{nameof(RelayTrackerView<T>)} does not support this operation");
         public bool FeedRelay(Relay relay) => throw new NotSupportedException($"{nameof(RelayTrackerView<T>)} does not support this operation");
+        public bool FeedRelayInternal(T relay) => throw new NotSupportedException($"{nameof(RelayTrackerView<T>)} does not support this operation");
+        public bool FeedRelayInternal(Relay relay) => throw new NotSupportedException($"{nameof(RelayTrackerView<T>)} does not support this operation");
+        public void FeedRelays(IEnumerable<T> relays) => throw new NotSupportedException($"{nameof(RelayTrackerView<T>)} does not support this operation");
         public void FeedRelays(IEnumerable<Relay> relays) => throw new NotSupportedException($"{nameof(RelayTrackerView<T>)} does not support this operation");
+        public void FeedRelaysInternal(IEnumerable<T> relays) => throw new NotSupportedException($"{nameof(RelayTrackerView<T>)} does not support this operation");
+        public void FeedRelaysInternal(IEnumerable<Relay> relays) => throw new NotSupportedException($"{nameof(RelayTrackerView<T>)} does not support this operation");
+
+        public IRelayTrackerView<T> CreateView(Predicate<RelayState<T>>? predicate = null, string index = "all", bool indexing = false)
+        {
+            return new RelayTrackerView<T>(this, predicate, index, indexing);
+        }
+
+        public IRelayTrackerView CreateView(Predicate<RelayState>? predicate = null, string index = "all", bool indexing = false)
+        {
+            return new RelayTrackerView<T>(this, predicate, index, indexing);
+        }
 
         public void Dispose()
         {

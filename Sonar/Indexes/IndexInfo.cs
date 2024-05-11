@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sonar.Data;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -83,21 +84,9 @@ namespace Sonar.Indexes
 
         public static bool TryParse(string indexKey, [MaybeNullWhen(false)] out IndexInfo indexInfo)
         {
-            foreach (var (type, regex) in GetRegexComparers())
+            foreach (var type in GetRegexComparers().Keys)
             {
-                var match = regex.Match(indexKey);
-                if (!match.Success) continue;
-                indexInfo = new IndexInfo()
-                {
-                    Type = type,
-                    WorldId = ParseUintOrNull(match.Groups.GetValueOrDefault("world")?.Value),
-                    ZoneId = ParseUintOrNull(match.Groups.GetValueOrDefault("zone")?.Value),
-                    InstanceId = ParseUintOrNull(match.Groups.GetValueOrDefault("instance")?.Value),
-                    DatacenterId = ParseUintOrNull(match.Groups.GetValueOrDefault("datacenter")?.Value),
-                    RegionId = ParseUintOrNull(match.Groups.GetValueOrDefault("region")?.Value),
-                    AudienceId = ParseUintOrNull(match.Groups.GetValueOrDefault("audience")?.Value),
-                };
-                return true;
+                if (TryParse(indexKey, type, out indexInfo)) return true;
             }
             indexInfo = default!;
             return false;
@@ -112,18 +101,52 @@ namespace Sonar.Indexes
                 indexInfo = new IndexInfo()
                 {
                     Type = type,
-                    WorldId = uint.Parse(match.Groups.GetValueOrDefault("worldId")?.Value!),
-                    ZoneId = uint.Parse(match.Groups.GetValueOrDefault("zoneId")?.Value!),
-                    InstanceId = uint.Parse(match.Groups.GetValueOrDefault("instanceId")?.Value!),
-                    DatacenterId = uint.Parse(match.Groups.GetValueOrDefault("datacenterId")?.Value!),
-                    RegionId = uint.Parse(match.Groups.GetValueOrDefault("regionId")?.Value!),
-                    AudienceId = uint.Parse(match.Groups.GetValueOrDefault("audienceId")?.Value!),
+                    WorldId = ParseUintOrNull(match.Groups.GetValueOrDefault("worldId")?.Value),
+                    ZoneId = ParseUintOrNull(match.Groups.GetValueOrDefault("zoneId")?.Value),
+                    InstanceId = ParseUintOrNull(match.Groups.GetValueOrDefault("instanceId")?.Value),
+                    DatacenterId = ParseUintOrNull(match.Groups.GetValueOrDefault("datacenterId")?.Value),
+                    RegionId = ParseUintOrNull(match.Groups.GetValueOrDefault("regionId")?.Value),
+                    AudienceId = ParseUintOrNull(match.Groups.GetValueOrDefault("audienceId")?.Value),
                 };
                 return true;
             }
-
             indexInfo = default!;
             return false;
+        }
+
+        public IndexInfo WithPopulatedMissingData()
+        {
+            var worldId = this.WorldId;
+            var datacenterId = this.DatacenterId;
+            var regionId = this.RegionId;
+            var audienceId = this.AudienceId;
+
+            if (datacenterId is null && worldId is not null && Database.Worlds.TryGetValue(worldId.Value, out var world))
+            {
+                datacenterId = world.DatacenterId;
+                regionId = world.RegionId;
+                audienceId = world.AudienceId;
+            }
+            if (regionId is null && datacenterId is not null && Database.Datacenters.TryGetValue(datacenterId.Value, out var dc))
+            {
+                regionId = dc.RegionId;
+                audienceId = dc.AudienceId;
+            }
+            if (audienceId is null && regionId is not null && Database.Regions.TryGetValue(regionId.Value, out var region))
+            {
+                audienceId = region.AudienceId;
+            }
+
+            return new()
+            {
+                Type = this.Type,
+                WorldId = worldId,
+                ZoneId = this.ZoneId,
+                InstanceId = this.InstanceId,
+                DatacenterId = datacenterId,
+                RegionId = regionId,
+                AudienceId = audienceId,
+            };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
