@@ -19,8 +19,6 @@ namespace Sonar.Data.Rows
         public LanguageStrings Name { get; set; } = new();
         [Key(3)]
         public LanguageStrings Description { get; set; } = new();
-        [IgnoreMember]
-        string IDataRow.Name => this.Name.ToString();
         public override string ToString() => this.Name.ToString();
         public string ToString(SonarLanguage lang) => this.Name.ToString(lang);
     }

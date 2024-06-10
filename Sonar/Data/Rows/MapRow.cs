@@ -36,9 +36,6 @@ namespace Sonar.Data.Rows
         [Key(8)]
         public uint ZoneId { get; set; }
 
-        [IgnoreMember]
-        string IDataRow.Name => this.Name.ToString();
-
         public override string ToString() => this.Name.ToString();
         public string ToString(SonarLanguage lang) => this.Name.ToString(lang);
     }

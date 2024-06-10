@@ -37,7 +37,7 @@ namespace Sonar.Data.Extensions
         #endregion
 
         #region Zone Extensions
-        public static IEnumerable<ZoneRow> GetSpawnZones(this HuntRow h) => h.SpawnZoneIds.Select(z => Database.Zones[z]);
+        public static IEnumerable<ZoneRow> GetSpawnZones(this HuntRow h) => h.ZoneIds.Select(z => Database.Zones[z]);
         public static ZoneRow? GetZone(this FateRow f) => Database.Zones.GetValueOrDefault(f.ZoneId);
         public static ZoneRow? GetZone(this GamePlace p) => Database.Zones.GetValueOrDefault(p.ZoneId);
         public static ZoneRow? GetZone<T>(this RelayConfirmationBase<T> c) where T : Relay => Database.Zones.GetValueOrDefault(c.ZoneId);

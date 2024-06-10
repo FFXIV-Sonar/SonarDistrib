@@ -13,12 +13,14 @@ namespace Sonar.Data.Rows
     /// </summary>
     [Serializable]
     [MessagePackObject]
-    public sealed class FateRow : IDataRow
+    public sealed class FateRow : IRelayDataRow
     {
+        private IReadOnlyCollection<uint>? _zoneIds;
+
         [Key(0)]
         public uint Id { get; set; }
         [Key(1)]
-        public byte Level { get; set; }
+        public int Level { get; set; }
         [Key(2)]
         public uint IconId { get; set; }
         [Key(3)]
@@ -50,8 +52,8 @@ namespace Sonar.Data.Rows
         [Key(16)]
         public uint GroupId { get; set; }
 
-        [IgnoreMember]
-        string IDataRow.Name => this.Name.ToString();
+        HuntRank IRelayDataRow.Rank => HuntRank.None;
+        IReadOnlyCollection<uint> IRelayDataRow.ZoneIds => this._zoneIds ??= [this.ZoneId];
 
         public override string ToString() => this.Name.ToString();
         public string ToString(SonarLanguage lang) => this.Name.ToString(lang);

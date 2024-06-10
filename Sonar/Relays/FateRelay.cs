@@ -50,6 +50,7 @@ namespace Sonar.Relays
         #endregion
 
         protected override string GetSortKeyImpl() => this.GetFate()?.Name.ToString().ToLowerInvariant() ?? base.GetSortKeyImpl();
+        protected override IRelayDataRow? GetRelayInfoImpl() => this.GetFate();
 
         [JsonIgnore]
         [IgnoreMember]

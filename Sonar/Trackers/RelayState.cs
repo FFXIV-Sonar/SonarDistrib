@@ -16,6 +16,7 @@ using System.Threading;
 using Sonar.Indexes;
 using Sonar.Relays;
 using Sonar.Utilities;
+using Sonar.Data.Rows;
 
 namespace Sonar.Trackers
 {
@@ -61,74 +62,59 @@ namespace Sonar.Trackers
         }
 
         #region Relay Properties (forwarded)
-        /// <summary>
-        /// Relay Key
-        /// </summary>
+        /// <summary>Relay Key</summary>
         [JsonIgnore]
         [IgnoreMember]
         public string RelayKey => this.Relay.RelayKey;
 
-        /// <summary>
-        /// Place Key
-        /// </summary>
+        /// <summary>Place Key</summary>
         [JsonIgnore]
         [IgnoreMember]
         public string PlaceKey => this.Relay.PlaceKey;
 
-        /// <summary>
-        /// Index Keys
-        /// </summary>
+        /// <summary>Index Keys</summary>
         [JsonIgnore]
         [IgnoreMember]
         public IEnumerable<string> IndexKeys => this.Relay.IndexKeys;
 
-        /// <summary>
-        /// Sort Key
-        /// </summary>
+        /// <summary>Sort Key</summary>
         [JsonIgnore]
         [IgnoreMember]
         public string SortKey => this.Relay.SortKey;
 
-        /// <summary>
-        /// Relay ID
-        /// </summary>
+        /// <summary>Relay information</summary>
+        [JsonIgnore]
+        [IgnoreMember]
+        public IRelayDataRow Info => this.Relay.Info;
+
+        /// <summary>Relay ID</summary>
         [JsonIgnore]
         [IgnoreMember]
         public uint Id => this.Relay.Id;
 
-        /// <summary>
-        /// World ID
-        /// </summary>
+        /// <summary>World ID</summary>
         [JsonIgnore]
         [IgnoreMember]
         public uint WorldId => this.Relay.WorldId;
 
-        /// <summary>
-        /// Place ID
-        /// </summary>
+        /// <summary>Place ID</summary>
         [JsonIgnore]
         [IgnoreMember]
         public uint ZoneId => this.Relay.ZoneId;
 
-        /// <summary>
-        /// Instance ID
-        /// </summary>
+        /// <summary>Instance ID</summary>
         [JsonIgnore]
         [IgnoreMember]
         public uint InstanceId => this.Relay.InstanceId;
         #endregion
 
         #region Properties
-        /// <summary>
-        /// Last Seen
-        /// </summary>
+        /// <summary>Last Seen</summary>
         [JsonProperty]
         [IgnoreMember]
         public double LastSeen { get; set; }
 
-        /// <summary>
-        /// Relay this state is for
-        /// </summary>
+        /// <summary>Relay this state is for</summary>
         [IgnoreMember]
         public Relay Relay { get; set; }
 
@@ -140,9 +126,7 @@ namespace Sonar.Trackers
             set => this.LastSeen = value;
         }
 
-        /// <summary>
-        /// Last Found
-        /// </summary>
+        /// <summary>Last Found</summary>
         [JsonProperty]
         [IgnoreMember]
         public double LastFound { get; set; } // Updated once something is found for the first time
@@ -154,9 +138,7 @@ namespace Sonar.Trackers
             get => unchecked((long)this.LastFound);
             set => this.LastFound = value;
         }
-        /// <summary>
-        /// Last Killed
-        /// </summary>
+        /// <summary>Last Killed</summary>
         [JsonProperty]
         [IgnoreMember]
         public double LastKilled { get; set; } // Updated once killed
@@ -169,16 +151,12 @@ namespace Sonar.Trackers
             set => this.LastKilled = value;
         }
 
-        /// <summary>
-        /// Last Updated. This is a synonym of LastSeen.
-        /// </summary>
+        /// <summary>Last Updated. This is a synonym of LastSeen.</summary>
         [JsonProperty]
         [IgnoreMember]
         public double LastUpdated => this.LastSeen;
 
-        /// <summary>
-        /// Last Untouched
-        /// </summary>
+        /// <summary>Last Untouched</summary>
         [JsonProperty]
         [IgnoreMember]
         public double LastUntouched { get; set; }
@@ -193,39 +171,27 @@ namespace Sonar.Trackers
         #endregion
 
         #region Ago properties
-        /// <summary>
-        /// Last Seen Ago
-        /// </summary>
+        /// <summary>Last Seen Ago</summary>
         [IgnoreMember]
         public double LastSeenAgo => SyncedUnixNow - this.LastSeen;
 
-        /// <summary>
-        /// Last Found Ago
-        /// </summary>
+        /// <summary>Last Found Ago</summary>
         [IgnoreMember]
         public double LastFoundAgo => SyncedUnixNow - this.LastFound;
 
-        /// <summary>
-        /// Last Killed Ago
-        /// </summary>
+        /// <summary>Last Killed Ago</summary>
         [IgnoreMember]
         public double LastKilledAgo => SyncedUnixNow - this.LastKilled;
 
-        /// <summary>
-        /// Last Updated Ago
-        /// </summary>
+        /// <summary>Last Updated Ago</summary>
         [IgnoreMember]
         public double LastUpdatedAgo => SyncedUnixNow - this.LastUpdated;
 
-        /// <summary>
-        /// Last Untouched Ago
-        /// </summary>
+        /// <summary>Last Untouched Ago</summary>
         [IgnoreMember]
         public double LastUntouchedAgo => SyncedUnixNow - this.LastUntouched;
 
-        /// <summary>
-        /// DPS Time
-        /// </summary>
+        /// <summary>DPS Time</summary>
         [IgnoreMember]
         public double DpsTime => this.LastSeen - this.LastUntouched;
         #endregion
@@ -251,9 +217,7 @@ namespace Sonar.Trackers
         internal bool IsDeadInternal() => this.Relay.IsDeadInternal();
         #endregion
 
-        /// <summary>
-        /// Relay State Status (based on <see cref="LastFound"/>, <see cref="LastSeen"/> and <see cref="LastKilled"/>)
-        /// </summary>
+        /// <summary>Relay State Status (based on <see cref="LastFound"/>, <see cref="LastSeen"/> and <see cref="LastKilled"/>)</summary>
         [JsonIgnore]
         [IgnoreMember]
         public RelayStateStatus Status =>
@@ -261,23 +225,17 @@ namespace Sonar.Trackers
             this.LastSeen == this.LastKilled ? RelayStateStatus.Killed :
             RelayStateStatus.Updated;
 
-        /// <summary>
-        /// Update the state with another state
-        /// </summary>
+        /// <summary>Update the state with another state</summary>
         internal void UpdateWith(RelayState state, double now)
         {
             this.UpdateWithState(state);
             this.UpdateWithRelay(state.Relay, now);
         }
 
-        /// <summary>
-        /// Update the state with another state
-        /// </summary>
+        /// <summary>Update the state with another state</summary>
         internal void UpdateWith(RelayState state) => this.UpdateWith(state, SyncedUnixNow);
 
-        /// <summary>
-        /// Update the state time information with another state
-        /// </summary>
+        /// <summary>Update the state time information with another state</summary>
         internal void UpdateWithState(RelayState state)
         {
             this.Relay.UpdateWith(state.Relay);
@@ -287,9 +245,7 @@ namespace Sonar.Trackers
             this.LastUntouched = this.LastUntouched.Max(state.LastUntouched);
         }
 
-        /// <summary>
-        /// Update the state time information with another state
-        /// </summary>
+        /// <summary>Update the state time information with another state</summary>
         internal bool UpdateWithRelay(Relay relay, double now)
         {
             this.LastSeen = now;
@@ -310,9 +266,7 @@ namespace Sonar.Trackers
             return true;
         }
 
-        /// <summary>
-        /// Update the state time information with another state
-        /// </summary>
+        /// <summary>Update the state time information with another state</summary>
         internal bool UpdateWithRelay(Relay relay, double now, bool newEntity)
         {
             this.LastSeen = now;
@@ -333,9 +287,7 @@ namespace Sonar.Trackers
             return true;
         }
 
-        /// <summary>
-        /// Update the state time information with another state
-        /// </summary>
+        /// <summary>Update the state time information with another state</summary>
         internal bool UpdateWithRelay(Relay relay) => this.UpdateWithRelay(relay, SyncedUnixNow);
 
         public bool IsValid() => this.Relay.IsValid();
@@ -360,9 +312,7 @@ namespace Sonar.Trackers
         public string GetIndexKey(IndexType type) => this.Relay.GetIndexKey(type);
     }
 
-    /// <summary>
-    /// Represents a relay with state information. This class is managed by <see cref="RelayTracker{T}"/> and its not intended to be created manually.
-    /// </summary>
+    /// <summary>Represents a relay with state information. This class is managed by <see cref="RelayTracker{T}"/> and its not intended to be created manually.</summary>
     [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
@@ -377,9 +327,7 @@ namespace Sonar.Trackers
         public RelayState(T r) : base(r) { }
         public RelayState(T r, double now) : base(r, now) { }
 
-        /// <summary>
-        /// Relay this state is for
-        /// </summary>
+        /// <summary>Relay this state is for</summary>
         [JsonProperty]
         [Key(0)]
         public new T Relay
@@ -395,14 +343,10 @@ namespace Sonar.Trackers
 
     public static class RelayStateExtensions
     {
-        /// <summary>
-        /// Get the Estimated Time To Death
-        /// </summary>
+        /// <summary>Get the Estimated Time To Death</summary>
         public static double GetEstimatedTimeToDeath(this RelayState<HuntRelay> state) => state.DpsTime * (100.0f / state.Relay.Progress);
 
-        /// <summary>
-        /// Get the Estimated Time To Completion
-        /// </summary>
+        /// <summary>Get the Estimated Time To Completion</summary>
         public static double GetEstimatedTimeToCompletion(this RelayState<FateRelay> state) => state.DpsTime * (100.0f / state.Relay.Progress);
     }
 }

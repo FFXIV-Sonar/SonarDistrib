@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Sonar.Data.Rows
 {
     [MessagePackObject]
-    public sealed class AudienceRow : IDataRow
+    public sealed class AudienceRow : INamedRow
     {
         [Key(0)]
         public uint Id { get; set; }

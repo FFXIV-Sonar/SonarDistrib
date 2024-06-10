@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace SonarUtils
 {
@@ -87,6 +88,13 @@ namespace SonarUtils
                 if (IsPrime(number)) return number;
             }
             throw new OverflowException();
+        }
+
+        public static int Triangular(int n) // 0, 1, 3, 6, 10, 15, 21, 28, 36, 45...
+        {
+            if (n < 0) return -Triangular(-n);
+            // https://en.wikipedia.org/wiki/1_%2B_2_%2B_3_%2B_4_%2B_%E2%8B%AF
+            return n * (n + 1) / 2;
         }
     }
 }

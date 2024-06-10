@@ -369,7 +369,7 @@ namespace SonarResources.Readers
             foreach (var zoneName in zoneNames)
             {
                 var zone = this.Db.Zones.Values.First(z => z.Name.ToString().Equals(zoneName, StringComparison.InvariantCultureIgnoreCase));
-                hunt.SpawnZoneIds.Add(zone.Id);
+                hunt.ZoneIds.Add(zone.Id);
                 zone.HuntIds.Add(hunt.Id);
             }
         }

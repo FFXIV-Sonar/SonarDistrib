@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Sonar.Data.Rows
 {
     [MessagePackObject]
-    public sealed class AetheryteRow : IDataRow
+    public sealed class AetheryteRow : ILanguageNamedRow
     {
         [Key(0)]
         public uint Id { get; set; }
@@ -31,8 +31,6 @@ namespace Sonar.Data.Rows
 
         [Key(6)]
         public int AethernetGroup { get; set; }
-
-        string IDataRow.Name => this.Name.ToString();
 
         public override string ToString() => this.Name.ToString();
     }

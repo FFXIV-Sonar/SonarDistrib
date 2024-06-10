@@ -6,6 +6,7 @@ using Sonar.Enums;
 using Sonar.Data.Extensions;
 using System.Runtime.CompilerServices;
 using Sonar.Models;
+using Sonar.Data.Rows;
 
 namespace Sonar.Relays
 {
@@ -19,6 +20,7 @@ namespace Sonar.Relays
     public sealed class ManualRelay : Relay
     {
         protected override string GetSortKeyImpl() => $"{this.Player?.Name.ToLowerInvariant() ?? "_"} <{this.Player?.GetWorld()?.Name.ToLowerInvariant() ?? this.Player?.HomeWorldId.ToString().ToLowerInvariant() ?? "_"}>";
+        protected override IRelayDataRow? GetRelayInfoImpl() => null;
 
         /// <summary>
         /// Player that sent this relay (will be set Server side)

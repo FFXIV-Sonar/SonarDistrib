@@ -9,7 +9,7 @@ namespace Sonar.Data.Rows
     /// </summary>
     [Serializable]
     [MessagePackObject]
-    public sealed class DatacenterRow : IDataRow
+    public sealed class DatacenterRow : INamedRow
     {
         [Key(0)]
         public uint Id { get; set; }

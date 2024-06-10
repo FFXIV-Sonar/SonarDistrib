@@ -1,4 +1,5 @@
-﻿using SonarUtils;
+﻿using Sonar.Trackers;
+using SonarUtils;
 using SonarUtils.Threading;
 using System;
 using System.Collections.Concurrent;
@@ -37,6 +38,9 @@ namespace Sonar.Relays
 
         /// <summary>Gets a <see cref="RelayType"/> for a specified <paramref name="relay"/></summary>
         public static RelayType GetRelayType(this IRelay relay) => GetRelayType(relay.GetType());
+
+        /// <summary>Gets a <see cref="RelayType"/> for a specified <paramref name="state"/></summary>
+        public static RelayType GetRelayType(this RelayState state) => GetRelayType(state.Relay.GetType());
 
         /// <summary>Clears <see cref="RelayType"/> cache</summary>
         public static void Reset() => s_types.Clear();

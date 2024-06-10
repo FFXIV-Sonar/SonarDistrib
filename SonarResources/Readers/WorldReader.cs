@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using SonarUtils;
 
 namespace SonarResources.Readers
 {
@@ -131,6 +132,10 @@ namespace SonarResources.Readers
             {
                 this.SetWorldDc(world.Id, "Korea", true); // Only seen Korean data twice
             }
+
+            // Temporary: Set all worlds public for Dynamis
+            SetAllWorldsPublic("Dynamis");
+            SetAllWorldsPublic("Shadow");
         }
 
         private void SetWorldDc(string worldName, string dcName, bool? isPublic = null)
@@ -183,6 +188,24 @@ namespace SonarResources.Readers
                 world.AudienceId = dc.AudienceId;
                 world.IsPublic = isPublic ?? world.IsPublic;
             }
+        }
+
+        private void SetAllWorldsPublic(string datacenterName)
+        {
+            SetAllWorldsPublic(this.Db.Datacenters.Values.First(dc => dc.Name.Equals(datacenterName, StringComparison.InvariantCultureIgnoreCase)).Id);
+        }
+
+        private void SetAllWorldsPublic(uint datacenterId)
+        {
+            Console.WriteLine($"Setting all worlds public for {this.Db.Datacenters[datacenterId].Name} data center");
+            this.Db.Worlds.Values
+                .Where(world => world.DatacenterId == datacenterId)
+                .ForEach(world =>
+                {
+                    var oldPublic = world.IsPublic;
+                    world.IsPublic = true;
+                    Console.WriteLine($"- {world.Name}: {oldPublic} => {world.IsPublic}");
+                });
         }
 
         private void PropagatePublic()

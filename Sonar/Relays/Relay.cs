@@ -17,6 +17,7 @@ using System.Runtime.CompilerServices;
 using Cysharp.Text;
 using Sonar.Models;
 using SonarUtils.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Sonar.Relays
 {
@@ -26,12 +27,14 @@ namespace Sonar.Relays
     [Serializable]
     [MessagePackObject]
     [JsonObject(MemberSerialization.OptIn)]
+    [SuppressMessage("Major Code Smell", "S4035")]
     public abstract class Relay : GamePosition, IRelay, ISonarMessage, IEquatable<Relay>
     {
         private string? _relayKey;
         private string? _sortKey;
         private uint _id;
         private int? _hash;
+        private IRelayDataRow? _info;
 
         protected override void ResetKeyCache()
         {
@@ -58,6 +61,13 @@ namespace Sonar.Relays
         public string SortKey => this._sortKey ??= StringUtils.Intern(this.GetSortKeyImpl());
 
         protected virtual string GetSortKeyImpl() => ZString.Format("{0}_{1}_{2}", this.Id, this.WorldId, this.InstanceId);
+
+
+        /// <summary>Relay Information</summary>
+        [JsonIgnore]
+        [IgnoreMember]
+        public IRelayDataRow Info => this._info ??= (this.GetRelayInfoImpl() ?? EmptyRelayRow.Instance);
+        protected abstract IRelayDataRow? GetRelayInfoImpl();
 
         /// <summary>
         /// Relay ID (Hunt ID, Fate ID, Player ID)
@@ -175,6 +185,7 @@ namespace Sonar.Relays
         public ReleaseMode Release { get; set; } = ReleaseMode.Normal;
         #endregion
 
+        [SuppressMessage("Minor Bug", "S2328", Justification = "Not mutable")]
         public override int GetHashCode() => this._hash ??= FarmHashStringComparer.GetHashCodeStatic(this.RelayKey);
         public bool Equals(Relay? relay) => relay is not null && (ReferenceEquals(this, relay) || this.RelayKey.Equals(relay.RelayKey));
         public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is Relay relay && this.RelayKey.Equals(relay.RelayKey));

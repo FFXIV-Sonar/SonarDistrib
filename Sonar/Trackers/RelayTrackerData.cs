@@ -17,6 +17,7 @@ using SonarUtils;
 using SonarUtils.Collections;
 using DryIoc;
 using SonarUtils.Text;
+using System.Collections.Frozen;
 
 namespace Sonar.Trackers
 {
@@ -128,7 +129,7 @@ namespace Sonar.Trackers
         {
             this.ThrowIfNotIndexing();
             if (indexKey == "all") return this.States.GetNonSnapshottingValues(); // NOTE: This is the cause why this method cannot return an IReadOnlySet
-            return this.Index.GetValueOrDefault(indexKey) ?? ImmutableHashSet<RelayState<T>>.Empty;
+            return this.Index.GetValueOrDefault(indexKey) ?? FrozenSet<RelayState<T>>.Empty;
         }
 
         /// <summary>Get states from an index</summary>
@@ -139,9 +140,7 @@ namespace Sonar.Trackers
         /// </remarks>
         IReadOnlyCollection<RelayState> IRelayTrackerData.GetIndexStates(string indexKey)
         {
-            this.ThrowIfNotIndexing();
-            if (indexKey == "all") return this.States.GetNonSnapshottingValues(); // NOTE: This is the cause why this method cannot return an IReadOnlySet
-            return this.Index.GetValueOrDefault(indexKey) ?? ImmutableHashSet<RelayState<T>>.Empty;
+            return this.GetIndexStates(indexKey);
         }
 
         /// <summary>Clear all data</summary>

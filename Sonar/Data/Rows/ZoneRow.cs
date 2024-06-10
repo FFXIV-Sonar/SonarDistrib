@@ -50,8 +50,6 @@ namespace Sonar.Data.Rows
         [Key(12)]
         public HashSet<uint> FateIds { get; set; } = new();
 
-        [IgnoreMember]
-        string IDataRow.Name => this.Name.ToString();
         public override string ToString() => this.Name.ToString();
         public string ToString(SonarLanguage lang) => this.Name.ToString(lang);
     }

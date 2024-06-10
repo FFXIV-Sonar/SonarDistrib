@@ -10,6 +10,7 @@ namespace Sonar.Trackers
 
     public interface IRelayTrackerView : IRelayTracker, IDisposable
     {
-        /* Empty */
+        public ViewScanRate ScanRate { get; set; }
+        public ViewScanAcceleration ScanAcceleration { get; set; }
     }
 }

@@ -36,6 +36,7 @@ namespace Sonar.Relays
         }
 
         protected override string GetSortKeyImpl() => this.GetHunt()?.Name.ToString().ToLowerInvariant() ?? base.GetSortKeyImpl();
+        protected override IRelayDataRow? GetRelayInfoImpl() => this.GetHunt();
 
         /// <summary>
         /// Actor ID
@@ -173,7 +174,7 @@ namespace Sonar.Relays
         {
             if (this.ActorId == InvalidActorId) return false;
             return Database.Hunts.TryGetValue(this.Id, out var hunt) &&
-                hunt.SpawnZoneIds.Contains(this.ZoneId);
+                hunt.ZoneIds.Contains(this.ZoneId);
         }
 
         public override string ToString() => $"Rank {this.GetRank()}: {this.GetHunt()} {this.HpPercent:F2}%% {base.ToString()}{(this.IsDead() ? " DEAD" : "")}";
