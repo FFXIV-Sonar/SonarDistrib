@@ -31,7 +31,7 @@ namespace SonarPlugin.Utility
             set
             {
                 this._volume = value;
-                this.Core.VolumeProvider.Volume = value;
+                try { this.Core.VolumeProvider.Volume = value; } catch { /* Swallow */ }
             }
         }
 

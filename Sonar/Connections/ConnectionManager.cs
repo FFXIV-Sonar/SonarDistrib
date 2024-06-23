@@ -20,6 +20,7 @@ using DryIoc.FastExpressionCompiler.LightExpression;
 using SonarUtils;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 
 namespace Sonar.Connections
 {
@@ -165,7 +166,7 @@ namespace Sonar.Connections
             var webSocket = new ClientWebSocket();
             try
             {
-                await webSocket.ConnectAsync(url, token);
+                await webSocket.ConnectAsync(url, HappyHttpUtils.CreateHttpClient(), token);
                 var socket = SonarSocketWebSocket.CreateClientSocket(webSocket); // webSocket is now "owned" by this SonarSocket
                 this._sockets.TryAdd(socket, new() { Url = url });
                 this.PrepareSocket(socket);
@@ -190,7 +191,7 @@ namespace Sonar.Connections
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(this._cts.Token, cts.Token);
             var token = linkedCts.Token;
             var connection = new HubConnectionBuilder()
-                .WithUrl(url.Url)
+                .WithUrl(url.Url, configureHttpConnection: options => options.HttpMessageHandlerFactory = _ => HappyHttpUtils.CreateHttpHandler())
                 .AddMessagePackProtocol(configure => configure.SerializerOptions = SonarSerializer.MessagePackOptions)
                 .Build();
             try
