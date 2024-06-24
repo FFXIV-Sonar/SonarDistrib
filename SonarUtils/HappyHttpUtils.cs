@@ -34,11 +34,18 @@ namespace SonarUtils
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             using var semaphore = new SemaphoreSlim(1);
 
-            var entries = new Queue<IPAddress>((await Dns.GetHostAddressesAsync(context.DnsEndPoint.Host, cancellationToken).ConfigureAwait(false))
-                .OrderBy(entry => System.Random.Shared.Next()));
+            var entries = new List<IPAddress>();
+            var dnsTasks = new Task[] {
+                PerformDnsAsync(entries, AddressFamily.InterNetwork, context, cts.Token),
+                PerformDnsAsync(entries, AddressFamily.InterNetworkV6, context, cts.Token),
+            };
+
+            await Task.WhenAny(dnsTasks);
+            if (entries.Count == 0) await Task.WhenAll(dnsTasks);
 
             _ = TickRunnerAsync(semaphore, cts.Token);
 
+            var attempted = new HashSet<int>();
             var streamTasks = new List<Task<Stream>>();
             do
             {
@@ -55,29 +62,44 @@ namespace SonarUtils
 
                 lock (entries)
                 {
-                    if (entries.TryDequeue(out var entry))
+                    var index = System.Random.Shared.Next(entries.Count);
+                    if (attempted.Add(index))
                     {
-                        streamTasks.Add(CreateStreamAsync(entry, semaphore, context, cts.Token));
+                        var entry = entries[index];
+                        streamTasks.Add(CreateStreamAsync(entry, semaphore, context, cancellationToken));
                     }
                 }
 
                 await Task.Delay(1, cts.Token).ConfigureAwait(false);
             }
-            while (entries.Count != 0 || streamTasks.FindIndex(task => !task.IsCompleted) != -1);
+            while (attempted.Count < entries.Count || Array.FindIndex(dnsTasks, task => !task.IsCompleted) != -1 || streamTasks.FindIndex(task => !task.IsCompleted) != -1);
             
             cancellationToken.ThrowIfCancellationRequested();
 
-            var exceptions = streamTasks.Where(task => task.IsFaulted && !task.IsCanceled).Select(task => task.Exception).ToArray();
+            var exceptions = dnsTasks.Concat(streamTasks).Where(task => task.IsFaulted && !task.IsCanceled).Select(task => task.Exception).ToArray();
             AggregateException? aex = null;
             if (exceptions.Length > 0) aex = new(exceptions!);
-            throw new HappySocketException($"Unable to happily connect to {context.DnsEndPoint.Host}:{context.DnsEndPoint.Port}", aex);
+            throw new HappySocketException($"Unable to happily connect to {context.DnsEndPoint.Host}:{context.DnsEndPoint.Port} (Resolved addresses: {string.Join(", ", entries)})", aex);
+        }
+
+        private static async Task PerformDnsAsync(List<IPAddress> entries, AddressFamily family, SocketsHttpConnectionContext context, CancellationToken cancellationToken)
+        {
+            var results = await Dns.GetHostAddressesAsync(context.DnsEndPoint.Host, family, cancellationToken).ConfigureAwait(false);
+            lock (entries)
+            {
+                foreach (var address in results)
+                {
+                    if (entries.Count >= 256) break;
+                    if (!entries.Contains(address)) entries.Add(address);
+                }
+            }
         }
 
         private static async Task<Stream> CreateStreamAsync(IPAddress entry, SemaphoreSlim semaphore, SocketsHttpConnectionContext context, CancellationToken cancellationToken)
         {
-            var socket = new Socket(SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
-            semaphore.Release();
+            var socket = new Socket(entry.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
             await socket.ConnectAsync(entry, context.DnsEndPoint.Port, cancellationToken).ConfigureAwait(false);
+            semaphore.Release();
             return new NetworkStream(socket, true);
         }
 
@@ -85,7 +107,7 @@ namespace SonarUtils
         {
             try
             {
-                while (true)
+                while (!cancellationToken.IsCancellationRequested)
                 {
                     await Task.Delay(DelayMsTick, cancellationToken).ConfigureAwait(false);
                     if (semaphore.CurrentCount == 0) semaphore.Release();
