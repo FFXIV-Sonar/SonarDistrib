@@ -76,7 +76,7 @@ namespace SonarResources.Readers
 
                         var fates = this.Db.Fates.Values
                             .Where(fate => fate.Name[SonarLanguage.English]?.Equals(fateName, StringComparison.InvariantCultureIgnoreCase) ?? false);
-                        if (!fates.Any()) throw new KeyNotFoundException($"FATE {fateName} not found!");
+                        if (!fates.Any()) continue;// throw new KeyNotFoundException($"FATE {fateName} not found!");
 
                         foreach (var fate in fates)
                         {

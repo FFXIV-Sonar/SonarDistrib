@@ -57,6 +57,7 @@ namespace SonarResources.Readers
                 var nmId = nm.RowId;
                 var rank = GetHuntRank(nm);
                 var expansion = GetHuntExpansion(nmId);
+                var level = GetHuntLevel(nmId);
 
                 var id = nm.BNpcName.Row;
                 if (!this.Db.Hunts.TryGetValue(id, out var hunt))
@@ -66,6 +67,7 @@ namespace SonarResources.Readers
                         Id = id,
                         Rank = rank,
                         Expansion = expansion,
+                        Level = level,
                         SpawnTimers = GetDefaultSpawnTimers(rank),
                     };
                 }
@@ -404,6 +406,20 @@ namespace SonarResources.Readers
             if (nmId >= 172 && nmId <= 231) return ExpansionPack.Endwalker;
             if (nmId >= 232 && nmId <= 9999 /* TODO */) return ExpansionPack.Dawntrail;
             return ExpansionPack.Unknown;
+        }
+
+        public static int GetHuntLevel(uint nmId)
+        {
+            return GetHuntExpansion(nmId) switch
+            {
+                ExpansionPack.ARealmReborn => 50,
+                ExpansionPack.Heavensward => 60,
+                ExpansionPack.Stormblood => 70,
+                ExpansionPack.Shadowbringers => 80,
+                ExpansionPack.Endwalker => 90,
+                ExpansionPack.Dawntrail => 100,
+                _ => 0
+            };
         }
     }
 }

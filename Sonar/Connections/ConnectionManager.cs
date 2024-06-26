@@ -166,7 +166,7 @@ namespace Sonar.Connections
             var webSocket = new ClientWebSocket();
             try
             {
-                await webSocket.ConnectAsync(url, HappyHttpUtils.CreateHttpClient(), token);
+                await webSocket.ConnectAsync(url, HappyHttpUtils.CreateRandomlyHappyClient(), token);
                 var socket = SonarSocketWebSocket.CreateClientSocket(webSocket); // webSocket is now "owned" by this SonarSocket
                 this._sockets.TryAdd(socket, new() { Url = url });
                 this.PrepareSocket(socket);
@@ -191,7 +191,7 @@ namespace Sonar.Connections
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(this._cts.Token, cts.Token);
             var token = linkedCts.Token;
             var connection = new HubConnectionBuilder()
-                .WithUrl(url.Url, configureHttpConnection: options => options.HttpMessageHandlerFactory = _ => HappyHttpUtils.CreateHttpHandler())
+                .WithUrl(url.Url, configureHttpConnection: options => options.HttpMessageHandlerFactory = _ => HappyHttpUtils.CreateRandomlyHappyHandler())
                 .AddMessagePackProtocol(configure => configure.SerializerOptions = SonarSerializer.MessagePackOptions)
                 .Build();
             try

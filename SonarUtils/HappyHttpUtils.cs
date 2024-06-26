@@ -29,6 +29,19 @@ namespace SonarUtils
             };
         }
 
+        public static HttpClient CreateRandomlyHappyClient()
+        {
+            return System.Random.Shared.NextDouble() < 0.5 ?
+                new HttpClient() : CreateHttpClient();
+        }
+
+
+        public static SocketsHttpHandler CreateRandomlyHappyHandler()
+        {
+            return System.Random.Shared.NextDouble() < 0.5 ?
+                new SocketsHttpHandler() : CreateHttpHandler();
+        }
+
         private static async ValueTask<Stream> ConnectCallbackAsync(SocketsHttpConnectionContext context, CancellationToken cancellationToken)
         {
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
