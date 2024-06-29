@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <AssemblyVersion>0.6.4.0</AssemblyVersion>
+    <AssemblyVersion>0.6.4.1</AssemblyVersion>
 
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>

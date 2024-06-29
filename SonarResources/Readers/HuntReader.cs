@@ -353,8 +353,45 @@ namespace SonarResources.Readers
             this.SetHuntZones("Fan Ail", "Ultima Thule");
             this.SetHuntZones("Narrow-rift", "Ultima Thule");
 
-            // Hunt Zones (DT) TODO
+            // Hunt Zones (DT)
+            this.SetHuntZones("Mad Maguey", "Urqopacha");
+            this.SetHuntZones("Chupacabra", "Urqopacha");
+            this.SetHuntZones("Queen Hawk", "Urqopacha");
+            this.SetHuntZones("Nechuciho", "Urqopacha");
+            this.SetHuntZones("Kirlirger the Abhorrent", "Urqopacha");
 
+            this.SetHuntZones("The Slammer", "Kozama'uka");
+            this.SetHuntZones("Go'ozoabek'be", "Kozama'uka");
+            this.SetHuntZones("The Raintriller", "Kozama'uka");
+            this.SetHuntZones("Pkuucha", "Kozama'uka");
+            this.SetHuntZones("Ihnuxokiy", "Kozama'uka");
+
+            this.SetHuntZones("Leafscourge Hadoll Ja", "Yak T'el");
+            this.SetHuntZones("Xty'iinbek", "Yak T'el");
+            this.SetHuntZones("Starcrier", "Yak T'el");
+            this.SetHuntZones("Rrax Yity'a", "Yak T'el");
+            this.SetHuntZones("Neyoozoteel", "Yak T'el");
+
+            this.SetHuntZones("Nopalitender Fabuloso", "Shaaloani");
+            this.SetHuntZones("Uktena", "Shaaloani");
+            this.SetHuntZones("Yehehetoaua'pyo", "Shaaloani");
+            this.SetHuntZones("Keheniheyamewi", "Shaaloani");
+            this.SetHuntZones("Sansheya", "Shaaloani");
+
+            this.SetHuntZones("Gallowsbeak", "Heritage Found");
+            this.SetHuntZones("Gargant", "Heritage Found");
+            this.SetHuntZones("Heshuala", "Heritage Found");
+            this.SetHuntZones("Urna Variabilis", "Heritage Found");
+            this.SetHuntZones("Atticus the Primogenitor", "Heritage Found");
+
+            this.SetHuntZones("Jewel Bearer", "Living Memory");
+            this.SetHuntZones("13th Child", "Living Memory");
+            this.SetHuntZones("Sally the Sweeper", "Living Memory");
+            this.SetHuntZones("Cat's Eye", "Living Memory");
+            this.SetHuntZones("The Forecaster", "Living Memory");
+
+            this.SetHuntZones("Crystal Incarnation", "Urqopacha", "Kozama'uka", "Yak T'el", "Shaaloani", "Heritage Found", "Living Memory");
+            this.SetHuntZones("Arch Aethereater", "Urqopacha", "Kozama'uka", "Yak T'el", "Shaaloani", "Heritage Found", "Living Memory");
         }
 
         private static SpawnTimers GetDefaultSpawnTimers(HuntRank rank) // If things were this easy but... ARR why?!
