@@ -36,7 +36,7 @@ namespace SonarPlugin
         private readonly Container _container = new();
         private FileDialogManager? _fileDialogs;
 
-        public DalamudPluginInterface PluginInterface { get; set; }
+        public IDalamudPluginInterface PluginInterface { get; set; }
         [EditorBrowsable(EditorBrowsableState.Never)]
         public Container Container => this._container; // Only stub should access this
         private SonarPluginStub Stub { get; set; }
@@ -55,7 +55,7 @@ namespace SonarPlugin
         [PluginService] private IPluginLog Logger { get; set; } = default!;
         [PluginService] private ITextureProvider Textures { get; set; } = default!;
 
-        public SonarPluginIoC(SonarPluginStub stub, DalamudPluginInterface pluginInterface)
+        public SonarPluginIoC(SonarPluginStub stub, IDalamudPluginInterface pluginInterface)
         {
             this.Stub = stub;
             this.PluginInterface = pluginInterface;
@@ -132,7 +132,7 @@ namespace SonarPlugin
             this._container.RegisterInstance(this.Textures, setup: Setup.With(preventDisposal: true));
 
             // Additional Dalamud Services
-            this._container.Register(Made.Of(r => ServiceInfo.Of<DalamudPluginInterface>(), pi => pi.UiBuilder), Reuse.Singleton, Setup.With(preventDisposal: true));
+            this._container.Register(Made.Of(r => ServiceInfo.Of<IDalamudPluginInterface>(), pi => pi.UiBuilder), Reuse.Singleton, Setup.With(preventDisposal: true));
             this._container.Register(Made.Of(r => ServiceInfo.Of<IDataManager>(), d => d.GameData), Reuse.Singleton, Setup.With(preventDisposal: true));
 
 #if DEBUG

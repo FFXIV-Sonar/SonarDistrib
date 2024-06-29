@@ -31,7 +31,7 @@ namespace SonarPlugin
 
         private readonly object _pluginLock = new object();
         private SonarPluginIoC? Plugin;
-        private DalamudPluginInterface PluginInterface { get; }
+        private IDalamudPluginInterface PluginInterface { get; }
 
         [PluginService] public ICommandManager Commands { get; private set; } = default!;
         [PluginService] public IChatGui Chat { get; private set; } = default!;
@@ -40,7 +40,7 @@ namespace SonarPlugin
         private readonly object _taskLock = new();
         private Task _sonarTask = Task.CompletedTask;
 
-        public SonarPluginStub(DalamudPluginInterface pluginInterface)
+        public SonarPluginStub(IDalamudPluginInterface pluginInterface)
         {
             pluginInterface.Inject(this);
             this.Logger.Debug("Initializing Sonar [Stub]");

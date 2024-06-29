@@ -46,7 +46,7 @@ namespace SonarPlugin
     [SingletonService]
     public sealed class SonarPlugin : IDisposable
     {
-        private DalamudPluginInterface PluginInterface { get; }
+        private IDalamudPluginInterface PluginInterface { get; }
         private SonarClient Client { get; }
         private IFramework Framework { get; }
         private IChatGui Chat { get; }
@@ -56,7 +56,7 @@ namespace SonarPlugin
 
         public bool IsDuty { get; private set; }
 
-        public SonarPlugin(DalamudPluginInterface pluginInterface, SonarClient client, IFramework framework, IChatGui chat, ICondition condition, AudioPlaybackEngine audio, IPluginLog logger)
+        public SonarPlugin(IDalamudPluginInterface pluginInterface, SonarClient client, IFramework framework, IChatGui chat, ICondition condition, AudioPlaybackEngine audio, IPluginLog logger)
         {
             this.PluginInterface = pluginInterface;
             this.Client = client;

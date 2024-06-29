@@ -42,7 +42,7 @@ namespace SonarPlugin.GUI
 
         private SonarPlugin Plugin { get; }
         private SonarPluginStub Stub { get; }
-        private DalamudPluginInterface PluginInterface { get; }
+        private IDalamudPluginInterface PluginInterface { get; }
         private SonarClient Client { get; }
         private IDataManager Data { get; }
         private FileDialogManager FileDialogs { get; }
@@ -67,7 +67,7 @@ namespace SonarPlugin.GUI
         private readonly Dictionary<uint, HashSet<uint>> _combinedFates = new();
         private readonly int fateTableColumnCount = Enum.GetNames(typeof(FateSelectionColumns)).Length;
 
-        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, DalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs, IndexProvider index, IPluginLog logger) : base("Sonar Configuration")
+        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, IDalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs, IndexProvider index, IPluginLog logger) : base("Sonar Configuration")
         {
             this.Plugin = plugin;
             this.Stub = stub;
