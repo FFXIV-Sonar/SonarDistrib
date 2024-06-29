@@ -32,6 +32,7 @@ using System.Diagnostics.CodeAnalysis;
 using Dalamud.Interface.Internal;
 using SonarPlugin.Managers;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using Dalamud.Interface.Textures.TextureWraps;
 
 namespace SonarPlugin.GUI
 {
@@ -55,7 +56,7 @@ namespace SonarPlugin.GUI
         private AetheryteManager Aetherytes { get; }
         private MapTextureProvider MapTextures { get; }
         private ResourceHelper Resources { get; }
-        private UiBuilder Ui { get; }
+        private IUiBuilder Ui { get; }
         private IGameGui GameGui { get; }
         private IFramework Framework { get; }
         private IPluginLog Logger { get; }
@@ -69,7 +70,7 @@ namespace SonarPlugin.GUI
 
         private readonly IDalamudTextureWrap _redFlag;
 
-        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, AetheryteManager aetherytes, MapTextureProvider mapTextures, ResourceHelper resources, UiBuilder ui, IGameGui gameGui, IFramework framework, IPluginLog logger)
+        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, AetheryteManager aetherytes, MapTextureProvider mapTextures, ResourceHelper resources, IUiBuilder ui, IGameGui gameGui, IFramework framework, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;

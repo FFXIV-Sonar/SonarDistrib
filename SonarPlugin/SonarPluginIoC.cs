@@ -53,6 +53,7 @@ namespace SonarPlugin
         [PluginService] private ISigScanner SigScanner { get; set; } = default!;
         [PluginService] private IDataManager Data { get; set; } = default!;
         [PluginService] private IPluginLog Logger { get; set; } = default!;
+        [PluginService] private ITextureProvider Textures { get; set; } = default!;
 
         public SonarPluginIoC(SonarPluginStub stub, DalamudPluginInterface pluginInterface)
         {
@@ -75,11 +76,11 @@ namespace SonarPlugin
             var client = new SonarClient(startInfo) { VersionInfo = versionInfo };
             Database.DefaultLanguage = this.Data.Language switch
             {
-                Dalamud.ClientLanguage.Japanese => SonarLanguage.Japanese,
-                Dalamud.ClientLanguage.English => SonarLanguage.English,
-                Dalamud.ClientLanguage.German => SonarLanguage.German,
-                Dalamud.ClientLanguage.French => SonarLanguage.French,
-                (Dalamud.ClientLanguage/*.ChineseSimplified*/)4 => SonarLanguage.ChineseSimplified, // https://github.com/ottercorp/Dalamud/blob/cn/Dalamud/ClientLanguage.cs#L31
+                ClientLanguage.Japanese => SonarLanguage.Japanese,
+                ClientLanguage.English => SonarLanguage.English,
+                ClientLanguage.German => SonarLanguage.German,
+                ClientLanguage.French => SonarLanguage.French,
+                (ClientLanguage/*.ChineseSimplified*/)4 => SonarLanguage.ChineseSimplified, // https://github.com/ottercorp/Dalamud/blob/cn/Dalamud/ClientLanguage.cs#L31
                 _ => SonarLanguage.English
             };
             return client;
@@ -128,6 +129,7 @@ namespace SonarPlugin
             this._container.RegisterInstance(this.SigScanner, setup: Setup.With(preventDisposal: true));
             this._container.RegisterInstance(this.Data, setup: Setup.With(preventDisposal: true));
             this._container.RegisterInstance(this.Logger, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterInstance(this.Textures, setup: Setup.With(preventDisposal: true));
 
             // Additional Dalamud Services
             this._container.Register(Made.Of(r => ServiceInfo.Of<DalamudPluginInterface>(), pi => pi.UiBuilder), Reuse.Singleton, Setup.With(preventDisposal: true));

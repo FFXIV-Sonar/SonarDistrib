@@ -120,7 +120,7 @@ namespace SonarPlugin.Config
             // Instance Jurisdiction was introduced, however this means that all jurisdiction values from there on is increased by 1...
             if (this.Version == 1)
             {
-                PluginLog.LogInformation("Updating Sonar Configuration from v1 => v2: New Instance Jurisdiction added");
+                //PluginLog.LogInformation("Updating Sonar Configuration from v1 => v2: New Instance Jurisdiction added");
                 foreach (var expansion in Enum.GetValues<ExpansionPack>())
                 {
                     // Hunt expansions and ranks jurisdictions
@@ -129,7 +129,7 @@ namespace SonarPlugin.Config
                         jurisdiction = huntConfig.GetJurisdiction(expansion, rank);
                         if (jurisdiction >= SonarJurisdiction.Instance)
                         {
-                            PluginLog.LogDebug($" - Hunts from {expansion} Rank {rank}: {jurisdiction} => {jurisdiction + 1}");
+                            //PluginLog.LogDebug($" - Hunts from {expansion} Rank {rank}: {jurisdiction} => {jurisdiction + 1}");
                             huntConfig.SetJurisdiction(expansion, rank, jurisdiction + 1);
                         }
                     }
@@ -141,7 +141,7 @@ namespace SonarPlugin.Config
                         if (jurisdiction >= SonarJurisdiction.Instance)
                         {
                             var name = Database.Hunts.GetValueOrDefault(or.Key)?.Name.ToString() ?? $"Unknown (id: {or.Key})";
-                            PluginLog.LogDebug($" - Hunt {name}: {jurisdiction} => {jurisdiction + 1}");
+                            //PluginLog.LogDebug($" - Hunt {name}: {jurisdiction} => {jurisdiction + 1}");
                             huntConfig.SetJurisdictionOverride(or.Key, jurisdiction + 1);
                         }
                     }
@@ -150,7 +150,7 @@ namespace SonarPlugin.Config
                 jurisdiction = fateConfig.GetDefaultJurisdiction();
                 if (jurisdiction >= SonarJurisdiction.Instance)
                 {
-                    PluginLog.LogDebug($" - Fate Default Jurisdiction: {jurisdiction} => {jurisdiction + 1}");
+                    //PluginLog.LogDebug($" - Fate Default Jurisdiction: {jurisdiction} => {jurisdiction + 1}");
                     fateConfig.SetDefaultJurisdiction(jurisdiction + 1);
                 }
 
@@ -160,7 +160,7 @@ namespace SonarPlugin.Config
                     if (jurisdiction >= SonarJurisdiction.Instance)
                     {
                         var name = Database.Fates.GetValueOrDefault(fate.Key)?.Name.ToString() ?? $"Unknown (id: {fate.Key})";
-                        PluginLog.LogDebug($" - Fate {name}: {jurisdiction} => {jurisdiction + 1}");
+                        //PluginLog.LogDebug($" - Fate {name}: {jurisdiction} => {jurisdiction + 1}");
                         fateConfig.SetJurisdiction(fate.Key, jurisdiction + 1);
                     }
                 }

@@ -44,7 +44,7 @@ namespace SonarPlugin.Trackers
 
             // Iterate throughout all hunts in the actor table
             var hunts = this.Table
-                .OfType<BattleNpc>()
+                .OfType<IBattleNpc>()
                 .Where(a => Database.Hunts.ContainsKey(a.NameId))
                 .Select(h => h.ToSonarHuntRelay(this.Player.Place, this.Player.PlayerCount));
 

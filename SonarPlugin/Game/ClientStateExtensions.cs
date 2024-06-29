@@ -9,12 +9,12 @@ namespace SonarPlugin.Game
 {
     public static class ClientStateExtensions
     {
-        public static HuntRelay ToSonarHuntRelay(this BattleNpc mob, GamePlace place, int playerCount)
+        public static HuntRelay ToSonarHuntRelay(this IBattleNpc mob, GamePlace place, int playerCount)
         {
             return new HuntRelay()
             {
                 Id = mob.NameId,
-                ActorId = mob.ObjectId,
+                ActorId = mob.EntityId, // NOTE / TODO: .GameObjectId seem to be something else
                 WorldId = place.WorldId,
                 ZoneId = place.ZoneId,
                 InstanceId = place.InstanceId,
@@ -51,7 +51,7 @@ namespace SonarPlugin.Game
         }
 
 
-        public static FateRelay ToSonarFateRelay(this Fate fate, GamePlace place)
+        public static FateRelay ToSonarFateRelay(this IFate fate, GamePlace place)
         {
             return new FateRelay()
             {

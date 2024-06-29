@@ -37,7 +37,7 @@ namespace SonarPlugin.Trackers
         private unsafe uint GetCurrentInstance()
         {
             // https://github.com/goatcorp/Dalamud/pull/1078#issuecomment-1382729843
-            return (uint)UIState.Instance()->AreaInstance.Instance;
+            return (uint)UIState.Instance()->PublicInstance.InstanceId;
         }
 
         private void FrameworkTick(IFramework framework)
@@ -57,7 +57,7 @@ namespace SonarPlugin.Trackers
 
             // Players nearby count
             this.PlayerCount = this.ObjectTable
-                .OfType<PlayerCharacter>()
+                .OfType<IPlayerCharacter>()
                 .Count();
         }
 
