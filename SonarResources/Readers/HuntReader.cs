@@ -428,6 +428,9 @@ namespace SonarResources.Readers
             if (hunt.BNpcName.Row == 10615) return HuntRank.SS; // Ker
             if (hunt.BNpcName.Row == 10616) return HuntRank.SSMinion; // Ker Shroud
 
+            if (hunt.BNpcName.Row == 13406) return HuntRank.SS; // Arch Aethereater
+            if (hunt.BNpcName.Row == 13407) return HuntRank.SSMinion; // Crystal Incarnation
+
             if (hunt.Rank == 3) return HuntRank.S;
             if (hunt.Rank == 2) return HuntRank.A;
 

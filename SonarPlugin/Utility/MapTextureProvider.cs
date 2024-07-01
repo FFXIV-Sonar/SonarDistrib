@@ -71,27 +71,18 @@ namespace SonarPlugin.Utility
         // Adapted from https://github.com/ufx/SaintCoinach/blob/master/SaintCoinach/Xiv/Map.cs
         public IDalamudTextureWrap? BuildMapImage(string mapId, string size)
         {
-            this.Logger.Info("1");
             const string MapFileFormat = "ui/map/{0}/{1}{2}_{3}.tex";
-            this.Logger.Info("2");
             var fileName = mapId.Replace("/", "");
 
-            this.Logger.Info("3");
             var filePath = string.Format(MapFileFormat, mapId, fileName, string.Empty, size);
-            this.Logger.Info("4");
             var mapTexFile = this.Data.GetFile<TexFile>(filePath);
-            this.Logger.Info("5");
             if (mapTexFile is null) return null;
 
-            this.Logger.Info("6");
             var maskPath = string.Format(MapFileFormat, mapId, fileName, "m", size);
-            this.Logger.Info("7");
             var maskTexFile = this.Data.GetFile<TexFile>(maskPath);
 
-            this.Logger.Info("8");
             try
             {
-                this.Logger.Info("9");
                 if (maskTexFile is not null)
                     return this.Textures.CreateFromRaw(new(mapTexFile.Header.Width, mapTexFile.Header.Width, 28), MultiplyBlend(mapTexFile, maskTexFile));
                 return this.Textures.CreateFromRaw(new(mapTexFile.Header.Width, mapTexFile.Header.Width, 28), mapTexFile.GetRgbaImageData());
@@ -101,8 +92,6 @@ namespace SonarPlugin.Utility
                 this.Logger.Error(ex, "Exception occured while building map image");
                 throw;
             }
-            this.Logger.Info("10");
-
         }
 
         private static byte[] MultiplyBlend(TexFile image, TexFile mask)
