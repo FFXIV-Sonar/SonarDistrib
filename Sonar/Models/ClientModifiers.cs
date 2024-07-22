@@ -8,7 +8,7 @@ namespace Sonar.Models
 {
     /// <summary>Manipulate certain <see cref="SonarClient"/> functionalities</summary>
     [MessagePackObject]
-    public sealed partial class ClientModifiers : ISonarMessage
+    public sealed class ClientModifiers : ISonarMessage
     {
         /// <summary>Default set of client modifiers</summary>
         public static ClientModifiers Defaults => new()

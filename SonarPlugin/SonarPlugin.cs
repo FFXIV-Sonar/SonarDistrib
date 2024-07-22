@@ -181,7 +181,6 @@ namespace SonarPlugin
             this.Configuration = new SonarConfiguration();
             this.Client.Configuration = new Sonar.Config.SonarConfig();
             this.Client.Configuration.Contribute.Reset();
-            this.Client.Configuration.Contribute.Reset();
             this.SaveConfiguration(true);
             this.LoadConfiguration(true);
         }
