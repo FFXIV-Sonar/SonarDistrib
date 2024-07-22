@@ -13,11 +13,13 @@ namespace Sonar.Config
     [MessagePackObject]
     public abstract class RelayConfig
     {
+        private bool _contribute = true;
+
         protected RelayConfig() { }
         protected RelayConfig(RelayConfig c)
         {
             if (c == null) return;
-            this.Contribute = c.Contribute;
+            this._contribute = c._contribute;
             this.TrackAll = c.TrackAll;
         }
 
@@ -31,7 +33,8 @@ namespace Sonar.Config
         /// </summary>
         [JsonProperty]
         [Key("contribute")]
-        public bool Contribute { get; set; } = true;
+        [Obsolete("Use RelayConfig.Contribute instead", true)]
+        public bool Contribute { get => this._contribute; set => this._contribute = value; }
 
         /// <summary>
         /// True: Track all hunts including those outside of the configured jurisdictions

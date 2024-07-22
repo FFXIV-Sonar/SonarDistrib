@@ -35,12 +35,14 @@ using SonarUtils.Text;
 namespace Sonar.Trackers
 {
     /// <summary>Handles, receives and relay hunt tracking information</summary>
-    public abstract partial class RelayTracker<T> : RelayTrackerBase<T>, IRelayTracker<T>, IDisposable where T : Relay
+    public sealed class RelayTracker<T> : RelayTrackerBase<T>, IRelayTracker<T>, IDisposable where T : Relay
     {
-        /// <summary>Relay Tracker Configuration. Please access it from SonarClient.</summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public abstract RelayConfig Config { get; }
+        private static readonly RelayType s_type = RelayUtils.GetRelayType<T>();
+
+        private RelayConfig Config { get; }
+        private SonarContributeConfig Contribute { get; }
         public SonarClient Client { get; }
+        public RelayTrackers Trackers { get; }
         public RelayTrackerData<T> Data { get; } = new();
         IRelayTrackerData IRelayTracker.Data => this.Data;
 
@@ -52,9 +54,13 @@ namespace Sonar.Trackers
         /// <summary>Dispatch events regardless of jurisdiction settings</summary>
         public bool AlwaysDispatchEvents { get; set; }
 
-        private protected RelayTracker(SonarClient sonar)
+        internal RelayTracker(RelayTrackers trackers, RelayConfig config)
         {
-            this.Client = sonar;
+            this.Trackers = trackers;
+            this.Config = config;
+            this.Contribute = trackers.Config.Contribute;
+            this.Client = trackers.Client;
+
             this.Client.Meta.PlayerPlaceChanged += this.Meta_PlayerPlaceChanged;
             this.Client.Tick += this.Client_Tick;
             this.Client.Connection.MessageReceived += this.Client_MessageReceived;
@@ -101,7 +107,7 @@ namespace Sonar.Trackers
         {
             if (!this._relayUpdateQueue.IsEmpty)
             {
-                if (this.Client.Connection.IsConnected && this.Config.Contribute && this.Client.Modifiers.AllowContribute2!.GetValueOrDefault(this.RelayType, true))
+                if (this.Client.Connection.IsConnected && this.Contribute.Compute(s_type) && this.Client.Modifiers.CanContribute(this.RelayType))
                 {
                     var relaysDict = new Dictionary<string, T>();
                     while (this._relayUpdateQueue.TryDequeue(out var item)) relaysDict[item.RelayKey] = item;
@@ -140,7 +146,7 @@ namespace Sonar.Trackers
             }
 
             // Local only relay, disconnected or not contributing?
-            if (localOnly || !this.Client.Connection.IsConnected || !this.Config.Contribute || !this.Client.Modifiers.AllowContribute2!.GetValueOrDefault(this.RelayType, true))
+            if (localOnly || !this.Client.Connection.IsConnected || !this.Contribute.Compute(s_type) || !this.Client.Modifiers.AllowContribute!.GetValueOrDefault(this.RelayType, true))
             {
                 if (this.IsTrackable(relay) && !((IRelayTracker<T>)this).FeedRelayInternal(relay)) return false;
                 if (this._lockOn.Count > 0 && this._lockOn.Contains(relay.RelayKey)) this._relayUpdateQueue.Enqueue(relay);
@@ -200,7 +206,7 @@ namespace Sonar.Trackers
 
             if (isFromServer)
             {
-                if (!this.Config.Contribute) this.Client.Connection.SendIfConnected(this.Client.Configuration);
+                if (!this.Contribute.Compute(s_type)) this.Client.Connection.SendIfConnected(this.Contribute);
                 // Avoid storing non-receivable states
                 if (!this.IsTrackable(newRelay!)) return false;
             }
@@ -269,7 +275,7 @@ namespace Sonar.Trackers
         #region IDisposable Pattern
         private int disposed; //Interlocked
         public bool IsDisposed => this.disposed == 1;
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (Interlocked.Exchange(ref this.disposed, 1) == 1) return;
             if (disposing)

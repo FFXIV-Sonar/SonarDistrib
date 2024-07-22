@@ -173,6 +173,16 @@ namespace SonarPlugin.GUI
         {
             ImGui.BeginChild("##generalTabScrollRegion");
 
+            SonarImGui.Checkbox($"{Loc.Localize("ContributeGlobal", "Global Contribute")}##contributeHunts", this.Client.Configuration.Contribute.Global, value =>
+            {
+                this._save = this._server = true;
+                this.Client.Configuration.Contribute.Global = value;
+            });
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip($"{Loc.Localize("ContributeGlobalTooltip", "Disable this to disable contributing both hunts and fates.\nAccessible via /sonaron and /sonaroff commands.")}");
+            }
+
             this._save |= ImGui.Checkbox($"{Loc.Localize("OverlayVisibleByDefault", "Overlay Visible by default")}##overlayVisibleByDefault", ref this.Plugin.Configuration.OverlayVisibleByDefault);
             this._save |= ImGui.Checkbox($"{Loc.Localize("LockOverlaysConfig", "Lock overlays")}##lockOverlays", ref this.Plugin.Configuration.EnableLockedOverlays);
             this._save |= ImGui.Checkbox($"{Loc.Localize("HideTitleBarConfig", "Hide Title Bar")}##hideTitlebar", ref this.Plugin.Configuration.HideTitlebar);
@@ -191,12 +201,12 @@ namespace SonarPlugin.GUI
                 this.Plugin.Configuration.SortingMode = (RelayStateSortingMode)value;
             });
 
-            var index = this.jurisdictionsCombo.Keys.ToList().IndexOf(this.Client.Configuration.ReceiveJurisdiction);
+            var index = this.jurisdictionsCombo.Keys.ToList().IndexOf(this.Client.Configuration.Contribute.ReceiveJurisdiction);
             if (ImGui.Combo($"{Loc.Localize("ReceiveJurisdiction", "Receive Jurisdiction")}", ref index, this.jurisdictionsCombo.Values.ToArray(), this.jurisdictionsCombo.Count))
             {
                 this._save = this._server = true;
                 if (index == 0) index = 5;
-                this.Client.Configuration.ReceiveJurisdiction = this.jurisdictionsCombo.Keys.ToList()[index];
+                this.Client.Configuration.Contribute.ReceiveJurisdiction = this.jurisdictionsCombo.Keys.ToList()[index];
             }
 
             this._save |= ImGui.SliderFloat($"{Loc.Localize("OpacityConfig", "Opacity")}##opacitySlider", ref this.Plugin.Configuration.Opacity, 0.0f, 1.0f);
@@ -330,10 +340,10 @@ namespace SonarPlugin.GUI
         {
             ImGui.BeginChild("##huntTab2ScrollRegion");
 
-            SonarImGui.Checkbox($"{Loc.Localize("ContributeHunts", "Contribute Hunt Reports")}##contributeHunts", this.Client.Configuration.HuntConfig.Contribute, value =>
+            SonarImGui.Checkbox($"{Loc.Localize("ContributeHunts", "Contribute Hunt Reports")}{(this.Client.Configuration.Contribute.Global ? "" : " (Disabled)")}##contributeHunts", this.Client.Configuration.Contribute[Sonar.Relays.RelayType.Hunt], value =>
             {
                 this._save = this._server = true;
-                this.Client.Configuration.HuntConfig.Contribute = value;
+                this.Client.Configuration.Contribute[Sonar.Relays.RelayType.Hunt] = value;
             });
             if (ImGui.IsItemHovered())
             {
@@ -635,10 +645,10 @@ namespace SonarPlugin.GUI
         {
             ImGui.BeginChild("##fateTabScrollRegion");
 
-            SonarImGui.Checkbox($"{Loc.Localize("ContributeFates", "Contribute Fate Reports")}##contributeFates", this.Client.Configuration.FateConfig.Contribute, value =>
+            SonarImGui.Checkbox($"{Loc.Localize("ContributeFates", "Contribute Fate Reports")}{(this.Client.Configuration.Contribute.Global ? "" : " (Disabled)")}##contributeFates", this.Client.Configuration.Contribute[Sonar.Relays.RelayType.Fate], value =>
             {
                 this._save = this._server = true;
-                this.Client.Configuration.FateConfig.Contribute = value;
+                this.Client.Configuration.Contribute[Sonar.Relays.RelayType.Fate] = value;
             });
             if (ImGui.IsItemHovered())
             {

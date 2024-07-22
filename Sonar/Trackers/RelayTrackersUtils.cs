@@ -7,12 +7,11 @@ using AG;
 
 namespace Sonar.Trackers
 {
-    [SingletonReuse]
-    [ExportEx]
     public sealed class RelayTrackersUtils : IDisposable
     {
-        private HuntTracker Hunts { get; }
-        private FateTracker Fates { get; }
+        private RelayTrackers Trackers { get; }
+        private IRelayTracker<HuntRelay> Hunts => this.Trackers.Hunts;
+        private IRelayTracker<FateRelay> Fates => this.Trackers.Fates;
 
         private readonly NonBlocking.NonBlockingDictionary<Type, NonBlocking.NonBlockingHashSet<uint>> _seenRelayIds = new();
         private readonly NonBlocking.NonBlockingHashSet<uint> _seenWorldIds = new();
@@ -21,10 +20,9 @@ namespace Sonar.Trackers
         private uint _lowestInstanceId = uint.MaxValue;
         private uint _highestInstanceId = uint.MinValue;
 
-        public RelayTrackersUtils(HuntTracker hunts, FateTracker fates)
+        public RelayTrackersUtils(RelayTrackers trackers)
         {
-            this.Hunts = hunts;
-            this.Fates = fates;
+            this.Trackers = trackers;
 
             this.Hunts.Data.Added += this.Data_Added;
             this.Fates.Data.Added += this.Data_Added;

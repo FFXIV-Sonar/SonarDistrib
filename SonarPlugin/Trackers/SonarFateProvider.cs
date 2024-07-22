@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Sonar.Trackers;
 using Dalamud.Logging;
 using Dalamud.Plugin.Services;
+using Sonar.Relays;
 
 namespace SonarPlugin.Trackers
 {
@@ -17,7 +18,7 @@ namespace SonarPlugin.Trackers
     {
         private PlayerProvider Player { get; }
         private SonarPlugin Plugin { get; }
-        private FateTracker Tracker { get; }
+        private IRelayTracker<FateRelay> Tracker { get; }
         private IFateTable Fates { get; }
         private IPluginLog Logger { get; }
 
@@ -26,7 +27,7 @@ namespace SonarPlugin.Trackers
         /// </summary>
         /// <param name="plugin">Sonar Plugin object</param>
         /// <param name="debug">(Optional) Output debug logging</param>
-        public SonarFateProvider(PlayerProvider player, SonarPlugin plugin, FateTracker tracker, IFateTable fates, IPluginLog logger)
+        public SonarFateProvider(PlayerProvider player, SonarPlugin plugin, IRelayTracker<FateRelay> tracker, IFateTable fates, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
             this.Player = player;

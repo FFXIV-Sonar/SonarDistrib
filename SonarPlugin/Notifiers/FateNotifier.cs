@@ -23,13 +23,13 @@ namespace SonarPlugin.Notifiers
     public sealed class FateNotifier : IHostedService
     {
         private SonarPlugin Plugin { get; }
-        private FateTracker Tracker { get; }
+        private IRelayTracker<FateRelay> Tracker { get; }
         private PlayerProvider Player { get; }
         private IChatGui Chat { get; }
         private AudioPlaybackEngine Audio { get; }
         private IPluginLog Logger { get; }
         
-        public FateNotifier(SonarPlugin plugin, FateTracker tracker, PlayerProvider player, IChatGui chat, AudioPlaybackEngine audio, IPluginLog logger)
+        public FateNotifier(SonarPlugin plugin, IRelayTracker<FateRelay> tracker, PlayerProvider player, IChatGui chat, AudioPlaybackEngine audio, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Tracker = tracker;

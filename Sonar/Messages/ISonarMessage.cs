@@ -22,6 +22,7 @@ namespace Sonar.Messages
     [Union(0x13, typeof(SonarVersion))]
     //[Union(0x14, typeof(ClientModifiersOld))]
     [Union(0x15, typeof(ClientModifiers))]
+    [Union(0x16, typeof(SonarContributeConfig))]
     [Union(0x1A, typeof(ClientHello))]
 
     // Authentication and Verification (TODO)

@@ -80,9 +80,10 @@ namespace Sonar
                 try
                 {
                     value.VersionUpdate();
+                    value.BindClient(this);
                     this.configuration = value;
                     this.baseLogger.Level = value.LogLevel;
-                    this.Connection.SendIfConnected(value);
+                    this.Connection.SendIfConnected(value.Contribute);
                 }
                 finally
                 {
@@ -141,7 +142,13 @@ namespace Sonar
         {
             var assembly = Assembly.GetExecutingAssembly();
             this._container.RegisterInstance(this, setup: Setup.With(preventDisposal: true)); // SonarClient is disposed by the user
+            this._container.RegisterInstance(this._container, setup: Setup.With(preventDisposal: true)); // SonarClient is disposed by the user
             this._container.RegisterExports(assembly);
+
+            // Relay trackers
+            this._container.RegisterMany(Made.Of(r => ServiceInfo.Of<RelayTrackers>(), t => t.Hunts), Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterMany(Made.Of(r => ServiceInfo.Of<RelayTrackers>(), t => t.Fates), Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterMany(Made.Of(r => ServiceInfo.Of<RelayTrackers>(), t => t.Utils), Reuse.Singleton, setup: Setup.With(preventDisposal: true));
         }
 
         /// <summary>Starts the <see cref="SonarClient"/>. Calling this method multiple times has no effect and returns <see cref="false"/></summary>
@@ -176,7 +183,7 @@ namespace Sonar
                         PluginSecret = this.StartInfo.PluginSecret,
                     },
 
-                    this.Configuration,
+                    this.Configuration.Contribute,
                     this.Meta.PlayerInfo!,
                     this.Meta.PlayerPosition!,
                     Database.GetDbInfo(),
@@ -317,9 +324,6 @@ namespace Sonar
 
             this.ticker.Tick -= this.Ticker_Tick;
             this.pinger.Pong -= this.Pinger_Pong;
-
-            this.Trackers.Hunts.Dispose();
-            this.Trackers.Fates.Dispose();
 
             await this.ticker.DisposeAsync();
             await this.pinger.DisposeAsync();

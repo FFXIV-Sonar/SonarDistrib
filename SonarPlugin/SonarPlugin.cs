@@ -166,7 +166,7 @@ namespace SonarPlugin
         {
             try
             {
-                if (updateServer) this.Client.Configuration = this.Client.Configuration; // TODO: Better interface than assigning (using the setter)...
+                //if (updateServer) this.Client.Configuration = this.Client.Configuration; // TODO: Better interface than assigning (using the setter)...
                 this.Configuration.SonarConfig = this.Client.Configuration;
                 this.PluginInterface.SavePluginConfig(this.Configuration);
             }
@@ -180,8 +180,8 @@ namespace SonarPlugin
         {
             this.Configuration = new SonarConfiguration();
             this.Client.Configuration = new Sonar.Config.SonarConfig();
-            this.Client.Configuration.HuntConfig.Contribute = true;
-            this.Client.Configuration.FateConfig.Contribute = true;
+            this.Client.Configuration.Contribute.Reset();
+            this.Client.Configuration.Contribute.Reset();
             this.SaveConfiguration(true);
             this.LoadConfiguration(true);
         }

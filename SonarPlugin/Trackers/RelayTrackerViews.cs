@@ -24,15 +24,15 @@ namespace SonarPlugin.Trackers
 
         private SonarPlugin Plugin { get; }
         private SonarClient Client { get; }
-        public HuntTracker HuntsTracker { get; }
-        public FateTracker FatesTracker { get; }
+        public IRelayTracker<HuntRelay> HuntsTracker { get; }
+        public IRelayTracker<FateRelay> FatesTracker { get; }
         
         public IRelayTrackerView<HuntRelay> Hunts => this._huntViews[HuntRank.None];
         public IReadOnlyDictionary<HuntRank, IRelayTrackerView<HuntRelay>> HuntsByRank => this._huntViews;
         public IRelayTracker<FateRelay> Fates => this._fateView;
 
 
-        public RelayTrackerViews(SonarPlugin plugin, SonarClient client, HuntTracker hunts, FateTracker fates)
+        public RelayTrackerViews(SonarPlugin plugin, SonarClient client, IRelayTracker<HuntRelay> hunts, IRelayTracker<FateRelay> fates)
         {
             this.Plugin = plugin;
             this.Client = client;
@@ -48,7 +48,7 @@ namespace SonarPlugin.Trackers
             var relay = state.Relay;
             var info = relay.GetHunt()!;
             if (rank != HuntRank.None && info.Rank != rank) return false;
-            if (!this.Client.Meta.PlayerPosition?.IsWithinJurisdiction(relay, this.HuntsTracker.Config.GetReportJurisdiction(state.Id)) ?? false) return false;
+            if (!this.Client.Meta.PlayerPosition?.IsWithinJurisdiction(relay, this.Client.Configuration.HuntConfig.GetReportJurisdiction(state.Id)) ?? false) return false;
             var now = SyncedUnixNow;
 
             // List decaying
@@ -75,7 +75,7 @@ namespace SonarPlugin.Trackers
         public bool FateViewPredicate(RelayState<FateRelay> state)
         {
             var relay = state.Relay;
-            if (!this.Client.Meta.PlayerPosition?.IsWithinJurisdiction(relay, this.FatesTracker.Config.GetReportJurisdiction(state.Id)) ?? false) return false;
+            if (!this.Client.Meta.PlayerPosition?.IsWithinJurisdiction(relay, this.Client.Configuration.FateConfig.GetReportJurisdiction(state.Id)) ?? false) return false;
             var now = SyncedUnixNow;
 
             // List decaying

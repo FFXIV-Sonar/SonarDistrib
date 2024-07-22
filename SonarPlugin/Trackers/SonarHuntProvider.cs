@@ -10,13 +10,14 @@ using Sonar.Trackers;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Logging;
 using Dalamud.Plugin.Services;
+using Sonar.Relays;
 
 namespace SonarPlugin.Trackers
 {
     public sealed class SonarHuntProvider : IHostedService
     {
         private PlayerProvider Player { get; }
-        private HuntTracker Tracker { get; }
+        private IRelayTracker<HuntRelay> Tracker { get; }
         private IObjectTable Table { get; }
         private SonarPlugin Plugin { get; }
         private IPluginLog Logger { get; }
@@ -24,7 +25,7 @@ namespace SonarPlugin.Trackers
         /// <summary>
         /// Initialize monster tracker
         /// </summary>
-        public SonarHuntProvider(PlayerProvider player, HuntTracker tracker, IObjectTable table, SonarPlugin plugin, IPluginLog logger)
+        public SonarHuntProvider(PlayerProvider player, IRelayTracker<HuntRelay> tracker, IObjectTable table, SonarPlugin plugin, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
             this.Player = player;

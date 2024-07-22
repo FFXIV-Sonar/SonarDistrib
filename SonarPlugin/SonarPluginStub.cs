@@ -63,11 +63,9 @@ namespace SonarPlugin
                 this.Logger.Error(ex, "Exception occured while getting flavor");
             }
 
-            this.Commands.AddHandler("/sonaron", new CommandInfo(this.SonarOnCommand) { HelpMessage = "Turn on / enable Sonar", ShowInHelp = true });
-            this.Commands.AddHandler("/sonarenable", new CommandInfo(this.SonarOnCommand) { HelpMessage = "Turn on / enable Sonar", ShowInHelp = true });
-            this.Commands.AddHandler("/sonaroff", new CommandInfo(this.SonarOffCommand) { HelpMessage = "Turn off / disable Sonar", ShowInHelp = true });
-            this.Commands.AddHandler("/sonardisable", new CommandInfo(this.SonarOffCommand) { HelpMessage = "Turn off / disable Sonar", ShowInHelp = true });
-            this.Commands.AddHandler("/sonarreload", new CommandInfo(this.SonarReloadCommand) { HelpMessage = "Reload Sonar", ShowInHelp = true });
+            this.Commands.AddHandler("/sonarload", new CommandInfo(this.SonarOnCommand) { HelpMessage = "Turn on / enable Sonar", ShowInHelp = false });
+            this.Commands.AddHandler("/sonarunload", new CommandInfo(this.SonarOffCommand) { HelpMessage = "Turn off / disable Sonar", ShowInHelp = false });
+            this.Commands.AddHandler("/sonarreload", new CommandInfo(this.SonarReloadCommand) { HelpMessage = "Reload Sonar", ShowInHelp = false });
 
             this.InitializeSonar();
         }
@@ -154,6 +152,7 @@ namespace SonarPlugin
 
         private void SonarOnCommand(string? _ = null, string? __ = null)
         {
+            this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload is not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
             lock (this._taskLock)
             {
                 if (!this._sonarTask.IsCompleted) return;
@@ -163,6 +162,7 @@ namespace SonarPlugin
 
         private void SonarOffCommand(string? _ = null, string? __ = null)
         {
+            this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload is not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
             lock (this._taskLock)
             {
                 if (!this._sonarTask.IsCompleted) return;
@@ -172,6 +172,10 @@ namespace SonarPlugin
 
         private void SonarReloadCommand(string? _ = null, string? __ = null)
         {
+            this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload is not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
+#if !DEBUG
+            return; // TODO: Remove once fixed
+#endif
             lock (this._taskLock)
             {
                 if (!this._sonarTask.IsCompleted) return;
@@ -238,7 +242,7 @@ namespace SonarPlugin
         public void ShowError(Exception ex, string action = "initialized", bool isAsync = false)
         {
             var header = $"Sonar could not be {action} {(isAsync ? "in async context" : "")}";
-            var dalamud = "Check dalamud.log for more information";
+            var dalamud = "Check /xllog for more information";
             var footer = "Sonar may be in an undefined state, a game restart may be required.";
             var contact = "If this problem persist report it to https://discord.gg/K7y24Rr";
 
