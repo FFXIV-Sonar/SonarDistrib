@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
+using System.CodeDom;
+using SonarUtils;
 
 namespace Sonar.Config
 {
@@ -15,25 +17,6 @@ namespace Sonar.Config
     public sealed class HuntConfig : RelayConfig
     {
         #region HuntConfig Logic
-        public HuntConfig()
-        {
-            this.Jurisdiction = new Dictionary<ExpansionPack, Dictionary<HuntRank, SonarJurisdiction>>();
-            foreach (ExpansionPack expansion in Enum.GetValues(typeof(ExpansionPack)))
-            {
-                this.Jurisdiction[expansion] = new Dictionary<HuntRank, SonarJurisdiction>();
-                foreach (HuntRank rank in Enum.GetValues(typeof(HuntRank)))
-                {
-                    this.SetJurisdiction(expansion, rank, SonarJurisdiction.Default);
-                }
-            }
-        }
-
-        public HuntConfig(HuntConfig c) : base(c)
-        {
-            this.Jurisdiction = c.Jurisdiction;
-            this.JurisdictionOverride = c.JurisdictionOverride;
-        }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "API")]
         private static SonarJurisdiction GetDefaultJurisdiction(ExpansionPack expansion, HuntRank rank)
         {
@@ -45,57 +28,50 @@ namespace Sonar.Config
             };
         }
 
-        /// <summary>
-        /// Jurisdictions
-        /// </summary>
+        /// <summary>Jurisdictions</summary>
         [JsonProperty]
         [Key("jurisdiction")]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public Dictionary<ExpansionPack, Dictionary<HuntRank, SonarJurisdiction>> Jurisdiction { get; set; }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public Dictionary<ExpansionPack, Dictionary<HuntRank, SonarJurisdiction>> Jurisdiction { get; init; } = new();
 
-        /// <summary>
-        /// Jurisdiction Overrides
-        /// </summary>
+        /// <summary>Jurisdiction Overrides</summary>
         [JsonProperty]
         [Key("jurisdictionOverride")]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public Dictionary<uint, SonarJurisdiction> JurisdictionOverride { get; set; } = new Dictionary<uint, SonarJurisdiction>();
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public Dictionary<uint, SonarJurisdiction> JurisdictionOverride { get; init; } = new();
         #endregion
 
-        /// <summary>
-        /// Get report jurisdiction for a specific expansion and rank
-        /// </summary>
+        /// <summary>Get report jurisdiction for a specific expansion and rank</summary>
         /// <param name="expansion"></param>
         /// <param name="rank"></param>
         /// <returns>Report jurisdiction</returns>
         public SonarJurisdiction GetJurisdiction(ExpansionPack expansion, HuntRank rank)
         {
-            return this.Jurisdiction[expansion][rank];
+            if (!this.Jurisdiction.TryGetValue(expansion, out var expansionJurisdiction)) return GetDefaultJurisdiction(expansion, rank);
+            if (!expansionJurisdiction.TryGetValue(rank, out var result)) return GetDefaultJurisdiction(expansion, rank);
+            if (result is SonarJurisdiction.Default) return GetDefaultJurisdiction(expansion, rank);
+            return result;
         }
 
-        /// <summary>
-        /// Set report jurisdiction for a specific expansion and rank
-        /// </summary>
+        /// <summary>Set report jurisdiction for a specific expansion and rank</summary>
         /// <param name="expansion">Expansion Pack</param>
         /// <param name="rank">Hunt Rank</param>
         /// <param name="jurisdiction">Jurisdiction to receive reports from</param>
         public void SetJurisdiction(ExpansionPack expansion, HuntRank rank, SonarJurisdiction jurisdiction)
         {
-            this.Jurisdiction[expansion][rank] = (jurisdiction != SonarJurisdiction.Default)? jurisdiction : GetDefaultJurisdiction(expansion, rank);
+            if (!this.Jurisdiction.TryGetValue(expansion, out var expansionJurisdiction)) this.Jurisdiction[expansion] = expansionJurisdiction = new();
+            expansionJurisdiction[rank] = jurisdiction;
         }
 
-        /// <summary>
-        /// Get jurisdiction override for a specific ID
-        /// </summary>
+        /// <summary>Get jurisdiction override for a specific ID</summary>
         /// <param name="id">ID to set the report jurisdiction for</param>
         public SonarJurisdiction GetJurisdictionOverride(uint id)
         {
-            return this.JurisdictionOverride.GetValueOrDefault(id, SonarJurisdiction.Default);
+            if (!this.JurisdictionOverride.TryGetValue(id, out var result)) return SonarJurisdiction.Default;
+            return result;
         }
 
-        /// <summary>
-        /// Override report jurisdiction for a specific ID
-        /// </summary>
+        /// <summary>Override report jurisdiction for a specific ID</summary>
         /// <param name="id">ID to set the report jurisdiction for</param>
         /// <param name="jurisdiction">Jurisdiction to receive reports from</param>
         public void SetJurisdictionOverride(uint id, SonarJurisdiction jurisdiction)
@@ -105,35 +81,26 @@ namespace Sonar.Config
             else this.JurisdictionOverride[id] = jurisdiction;
         }
 
-        /// <summary>
-        /// Remove a report jurisdiction override for a specific ID
-        /// </summary>
+        /// <summary>Remove a report jurisdiction override for a specific ID</summary>
         public bool RemoveJurisdictionOverride(uint id)
         {
             return this.JurisdictionOverride.Remove(id);
         }
 
-        /// <summary>
-        /// Remove all jurisdiction overrides
-        /// </summary>
+        /// <summary>Remove all jurisdiction overrides</summary>
         public void RemoveAllJurisdictionOverrides()
         {
             this.JurisdictionOverride.Clear();
         }
 
-        /// <summary>
-        /// Get all jurisdiction overrides
-        /// </summary>
-        /// <returns></returns>
+        /// <summary>Get all jurisdiction overrides</summary>
         public IDictionary<uint, SonarJurisdiction> GetJurisdictionOverrides()
         {
             // Force a copy
             return this.JurisdictionOverride.ToDictionary(o => o.Key, o => o.Value);
         }
 
-        /// <summary>
-        /// Main jurisdiction check function
-        /// </summary>
+        /// <summary>Main jurisdiction check function</summary>
         protected override SonarJurisdiction GetReportJurisdictionImpl(uint id)
         {
             var jurisdiction = this.GetJurisdictionOverride(id);
@@ -141,7 +108,7 @@ namespace Sonar.Config
             {
                 var hunt = Database.Hunts[id];
                 jurisdiction = this.GetJurisdiction(hunt.Expansion, hunt.Rank);
-                if (jurisdiction == SonarJurisdiction.Default)
+                if (jurisdiction == SonarJurisdiction.Default) // This if is no longer needed, always GetJurisdiction now returns the proper defaults
                 {
                     jurisdiction = GetDefaultJurisdiction(hunt.Expansion, hunt.Rank);
                 }
@@ -149,9 +116,26 @@ namespace Sonar.Config
             return jurisdiction;
         }
 
-        /// <summary>
-        /// Sanitize configuration
-        /// </summary>
+        public override void ReadFrom(RelayConfig config)
+        {
+            if (config is not HuntConfig huntConfig) throw new ArgumentException($"{nameof(config)} must be of type {nameof(HuntConfig)}", nameof(config));
+            this.ReadFrom(huntConfig);
+            base.ReadFrom(huntConfig);
+        }
+
+        public void ReadFrom(HuntConfig config)
+        {
+            this.Jurisdiction.Clear();
+            foreach (var (expansion, expansionJurisdiction) in config.Jurisdiction)
+            {
+                this.Jurisdiction.Add(expansion, new(expansionJurisdiction));
+            }
+            this.JurisdictionOverride.Clear();
+            this.JurisdictionOverride.AddRange(config.JurisdictionOverride);
+            for (var attempt = 0; attempt < 3 && !this.Sanitize(); attempt++) { /* Empty */ }
+        }
+
+        /// <summary>Sanitize configuration</summary>
         /// <param name="repair">Allow repairs</param>
         /// <param name="debug">Output debug messages to console</param>
         /// <returns>Sanitized status</returns>

@@ -14,10 +14,10 @@
     <PackageReference Include="DryIoc.MefAttributedModel.dll" Version="7.0.2" />
     <PackageReference Include="Humanizer" Version="2.14.1" />
     <PackageReference Include="Lumina" Version="4.1.0" />
-    <PackageReference Include="Lumina.Excel" Version="6.5.2" />
-    <PackageReference Include="MessagePack" Version="2.5.140" />
+    <PackageReference Include="Lumina.Excel" Version="7.0.1" />
+    <PackageReference Include="MessagePack" Version="2.5.171" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>

@@ -66,31 +66,8 @@ namespace Sonar
 
         public SonarMeta Meta { get; }
 
-        private SonarConfig configuration;
-        /// <summary>
-        /// Sonar Configuration. Remember to set this on every modification even if the instance modified is the same.
-        /// </summary>
-        public SonarConfig Configuration
-        {
-            get => this.configuration;
-            set
-            {
-                var taken = false;
-                this.Meta._lock.Enter(ref taken);
-                try
-                {
-                    value.VersionUpdate();
-                    value.BindClient(this);
-                    this.configuration = value;
-                    this.baseLogger.Level = value.LogLevel;
-                    this.Connection.SendIfConnected(value.Contribute);
-                }
-                finally
-                {
-                    this.Meta._lock.Exit();
-                }
-            }
-        }
+        /// <summary>Sonar Configuration</summary>
+        public SonarConfig Configuration { get; }
 
         /// <summary>Sonar relay trackers</summary>
         public RelayTrackers Trackers { get; }
@@ -128,14 +105,15 @@ namespace Sonar
 
             this.ticker = new(this);
             this.pinger = new(this);
-            this.configuration = new();
+            this.Configuration = new();
+            this.Configuration.BindClient(this);
             this.Meta = this._container.Resolve<SonarMeta>();
             this.Trackers = this._container.Resolve<RelayTrackers>();
 
             this.ticker.Tick += this.Ticker_Tick;
             this.pinger.Pong += this.Pinger_Pong;
 
-            this.baseLogger.Level = this.configuration.LogLevel;
+            this.baseLogger.Level = this.Configuration.LogLevel;
         }
 
         private void PrepareDryIoc()

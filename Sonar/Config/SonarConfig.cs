@@ -17,8 +17,6 @@ namespace Sonar.Config
     [MessagePackObject(true)] // WARNING: Obscure bug if (true) is removed because of previous releases having it from SonarConfigMessage (meaning all Key attributes are ignored and names are simply the property name as is).
     public sealed class SonarConfig : ISonarMessage
     {
-        private SonarClient? _client;
-
         public SonarConfig() { }
         public SonarConfig(SonarConfig c)
         {
@@ -29,16 +27,17 @@ namespace Sonar.Config
 
         internal void BindClient(SonarClient? client)
         {
-            this._client = client;
             this.Contribute.BindClient(client);
         }
 
 
         [JsonProperty]
         [Key("version")]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        /// <summary>Configuration version. Do not change.</summary>
         public int Version { get; set; }
 
-        /// <summary>Server side log level</summary>
+        /// <summary>Sonar client log level</summary>
         [JsonProperty]
         [Key("logLevel")]
 #if DEBUG
@@ -47,28 +46,19 @@ namespace Sonar.Config
         public SonarLogLevel LogLevel { get; set; } = SonarLogLevel.Warning; //Warn
 #endif
 
-        private HuntConfig huntConfig = new();
         /// <summary>Hunt reporting configuration</summary>
         [JsonProperty]
         [Key("huntConfig")]
-        public HuntConfig HuntConfig
-        {
-            get => this.huntConfig;
-            set => this.huntConfig = new HuntConfig(value);
-        }
+        public HuntConfig HuntConfig { get; init; } = new();
 
-        private FateConfig fateConfig = new();
         /// <summary>Fate reporting configuration</summary>
         [JsonProperty]
         [Key("fateConfig")]
-        public FateConfig FateConfig
-        {
-            get => this.fateConfig;
-            set => this.fateConfig = new FateConfig(value);
-        }
+        public FateConfig FateConfig { get; init; } = new();
 
+        /// <summary>Contributing configuration</summary>
         [JsonProperty]
-        [Key("server")]
+        [Key("server")] // "contribute" but too late to change
         public SonarContributeConfig Contribute { get; init; } = new();
 
         /// <summary>Jurisdiction to receive from Server</summary>
@@ -78,9 +68,7 @@ namespace Sonar.Config
         [EditorBrowsable(EditorBrowsableState.Never)]
         public SonarJurisdiction ReceiveJurisdiction { get; set; } = SonarJurisdiction.Datacenter;
 
-        /// <summary>
-        /// Sanitize all configuration
-        /// </summary>
+        /// <summary>Sanitize all configuration</summary>
         /// <param name="repair">Allow repairs</param>
         /// <param name="debug">Output debug messages to console</param>
         /// <returns>Sanitized status</returns>
@@ -94,9 +82,7 @@ namespace Sonar.Config
             return ret.TrueForAll(r => r);
         }
 
-        /// <summary>
-        /// Get a specific Relay Tracker Configuration
-        /// </summary>
+        /// <summary>Get a specific Relay Tracker Configuration</summary>
         public RelayConfig? GetRelayTrackerConfig(RelayType type)
         {
             if (type == RelayType.Hunt) return this.HuntConfig;
@@ -104,23 +90,27 @@ namespace Sonar.Config
             return null;
         }
 
-        /// <summary>
-        /// Get a specific Relay Tracker Configuration
-        /// </summary>
-        public RelayConfig? GetRelayTrackerConfig(Type type)
+        /// <summary>Get a specific Relay Tracker Configuration</summary>
+        public RelayConfig? GetRelayTrackerConfig(Type type) => this.GetRelayTrackerConfig(RelayUtils.GetRelayType(type));
+
+        /// <summary>Get a specific Relay Tracker Configuration</summary>
+        public RelayConfig? GetRelayTrackerConfig<T>() where T : Relay => this.GetRelayTrackerConfig(typeof(T));
+
+        /// <summary>Reads another configuration into this configuration.</summary>
+        /// <remarks><see cref="VersionUpdate"/> is run on <paramref name="config"/> before reading.</remarks>
+        public void ReadFrom(SonarConfig config)
         {
-            return this.GetRelayTrackerConfig(RelayUtils.GetRelayType(type));
+            config.VersionUpdate();
+            this.Version = config.Version;
+            this.LogLevel = config.LogLevel;
+            this.HuntConfig.ReadFrom(config.HuntConfig);
+            this.FateConfig.ReadFrom(config.FateConfig);
+            this.Contribute.ReadFrom(config.Contribute);
         }
 
-        /// <summary>
-        /// Get a specific Relay Tracker Configuration
-        /// </summary>
-        public RelayConfig? GetRelayTrackerConfig<T>() where T : Relay
-        {
-            return this.GetRelayTrackerConfig(typeof(T));
-        }
-
-        internal void VersionUpdate()
+        /// <summary>Update configuration version.</summary>
+        /// <exception cref="InvalidOperationException">Accessor failure.</exception>
+        public void VersionUpdate()
         {
             // I cannot bypass an [Obsolete] as error, but that doesn't stop me from using reflection based property accesors
             var receiveAccessor = typeof(SonarConfig).GetProperty("ReceiveJurisdiction", BindingFlags.Instance | BindingFlags.Public)

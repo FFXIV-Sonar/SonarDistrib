@@ -40,7 +40,7 @@ namespace Sonar.Trackers
         private static readonly RelayType s_type = RelayUtils.GetRelayType<T>();
 
         private RelayConfig Config { get; }
-        private SonarContributeConfig Contribute => this.Client.Configuration.Contribute; //{ get; }
+        private SonarContributeConfig Contribute { get; }
         public SonarClient Client { get; }
         public RelayTrackers Trackers { get; }
         public RelayTrackerData<T> Data { get; } = new();
@@ -58,7 +58,7 @@ namespace Sonar.Trackers
         {
             this.Trackers = trackers;
             this.Config = config;
-            //this.Contribute = trackers.Config.Contribute;
+            this.Contribute = trackers.Config.Contribute;
             this.Client = trackers.Client;
 
             this.Client.Meta.PlayerPlaceChanged += this.Meta_PlayerPlaceChanged;

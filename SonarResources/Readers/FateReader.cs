@@ -66,7 +66,7 @@ namespace SonarResources.Readers
                         ZoneId = zone.Id,
                         Coordinates = lgbInstance.Coords,
                         Scale = lgbInstance.Scale,
-                        IsHidden = fateRow.Unknown8 == 1, // || f.ScreenImageAccept.Row == 37, NOTE: Unknown8 = parser.ReadOffset< byte >( 133 ); <-- Look for offset 133 if changed. Used to be Unknown24.
+                        IsHidden = fateRow.Unknown8, // || f.ScreenImageAccept.Row == 37, NOTE: Unknown8 = parser.ReadOffset< byte >( 133 ); <-- Look for offset 133 if changed. Used to be Unknown24.
                         Expansion = zone.Expansion,
                     };
                     zone.FateIds.Add(fate.Id);

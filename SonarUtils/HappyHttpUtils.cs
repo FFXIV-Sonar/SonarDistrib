@@ -52,6 +52,7 @@ namespace SonarUtils
                 PerformDnsAsync(entries, AddressFamily.InterNetwork, context, cts.Token),
                 PerformDnsAsync(entries, AddressFamily.InterNetworkV6, context, cts.Token),
             };
+            _ = ObserveExceptions(dnsTasks);
 
             await Task.WhenAny(dnsTasks);
             if (entries.Count == 0) await Task.WhenAll(dnsTasks);
@@ -68,8 +69,8 @@ namespace SonarUtils
                 var streamTask = streamTasks.Find(task => task.IsCompletedSuccessfully);
                 if (streamTask is not null)
                 {
-                    try { cts.Cancel(); } catch { /* Swallow */ }
-                    foreach (var task in streamTasks.Where(task => task != streamTask && task.IsCompletedSuccessfully)) task.Result.Dispose();
+                    try { await cts.CancelAsync(); } catch { /* Swallow */ }
+                    foreach (var task in streamTasks.Where(task => task != streamTask && task.IsCompletedSuccessfully)) await task.Result.DisposeAsync();
                     return streamTask.Result;
                 }
 
@@ -127,6 +128,22 @@ namespace SonarUtils
                 }
             }
             catch { /* Swallow */ }
+        }
+
+        private static async Task ObserveExceptions(Task[] tasks)
+        {
+            try
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+                foreach (var task in tasks)
+                {
+                    if (task.IsFaulted) _ = task.Exception;
+                }
+            }
+            catch
+            {
+                /* Swallow */
+            }
         }
     }
 }

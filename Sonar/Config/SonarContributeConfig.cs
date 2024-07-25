@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Sonar.Enums;
 using Sonar.Messages;
 using Sonar.Relays;
+using SonarUtils;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -75,6 +76,14 @@ namespace Sonar.Config
         internal void BindClient(SonarClient? client)
         {
             this._client = client;
+        }
+
+        public void ReadFrom(SonarContributeConfig config)
+        {
+            this.Disabled.Clear();
+            this.Disabled.AddRange(config.Disabled);
+            this.Global = config.Global;
+            this.ReceiveJurisdiction = config.ReceiveJurisdiction;
         }
 
         public void Reset()

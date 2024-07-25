@@ -70,8 +70,8 @@ namespace SonarResources.Readers
                         HasOffsetZ = hasOffsetZ,
                         MapResourcePath = territory.Map.Value.Id,
                         Expansion = GetZoneExpansion(territory.Bg),
-                        IsField = territory.TerritoryIntendedUse == 1 || territory.TerritoryIntendedUse == 41 || territory.TerritoryIntendedUse == 48, // && t.Stealth && t.Mount && t.Aetheryte.Row != 0 && !t.IsPvpZone,
-                        LocalOnly = territory.TerritoryIntendedUse == 41 || territory.TerritoryIntendedUse == 48,
+                        IsField = territory.TerritoryIntendedUse.Value?.RowId == 1 || territory.TerritoryIntendedUse.Value?.RowId == 41 || territory.TerritoryIntendedUse.Value?.RowId == 48, // && t.Stealth && t.Mount && t.Aetheryte.Row != 0 && !t.IsPvpZone,
+                        LocalOnly = territory.TerritoryIntendedUse.Value?.RowId == 41 || territory.TerritoryIntendedUse.Value?.RowId == 48,
                     };
                 }
 

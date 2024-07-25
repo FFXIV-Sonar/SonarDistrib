@@ -153,7 +153,8 @@ namespace SonarPlugin
                     this.Logger.Warning($"Your Sonar configuration v{this.Configuration.Version} is from the future! Please turn off your time machine and go back to v{SonarConfiguration.SonarConfigurationVersion}.");
                 }
                 this.Configuration.Sanitize();
-                this.Client.Configuration = this.Configuration.SonarConfig;
+                this.Client.Configuration.ReadFrom(this.Configuration.SonarConfig);
+                this.Configuration.SonarConfig = this.Client.Configuration;
             }
             catch (Exception e)
             {
@@ -179,7 +180,8 @@ namespace SonarPlugin
         public void ResetConfiguration()
         {
             this.Configuration = new SonarConfiguration();
-            this.Client.Configuration = new Sonar.Config.SonarConfig();
+            this.Client.Configuration.ReadFrom(new());
+            this.Configuration.SonarConfig = this.Client.Configuration;
             this.Client.Configuration.Contribute.Reset();
             this.SaveConfiguration(true);
             this.LoadConfiguration(true);
