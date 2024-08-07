@@ -108,7 +108,7 @@ namespace Sonar.Config
             {
                 var hunt = Database.Hunts[id];
                 jurisdiction = this.GetJurisdiction(hunt.Expansion, hunt.Rank);
-                if (jurisdiction == SonarJurisdiction.Default) // This if is no longer needed, always GetJurisdiction now returns the proper defaults
+                if (jurisdiction == SonarJurisdiction.Default) // This if is no longer needed, GetJurisdiction now always return the proper defaults
                 {
                     jurisdiction = GetDefaultJurisdiction(hunt.Expansion, hunt.Rank);
                 }
