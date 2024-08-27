@@ -180,7 +180,7 @@ namespace Sonar.Relays
 
         public new Relay Clone() => Unsafe.As<Relay>(this.MemberwiseClone());
 
-        [JsonIgnore]
+        [JsonProperty]
         [Key(5)]
         public ReleaseMode Release { get; set; } = ReleaseMode.Normal;
         #endregion
