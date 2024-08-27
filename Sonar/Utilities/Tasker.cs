@@ -1,4 +1,5 @@
-﻿using SonarUtils.Collections;
+﻿using AG.Collections.Concurrent;
+using SonarUtils.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace Sonar.Utilities
     /// </summary>
     public sealed class Tasker : IDisposable, IAsyncDisposable ,IEnumerable<Task>
     {
-        private readonly ConcurrentHashSetSlim<Task> _tasks = new();
+        private readonly ConcurrentTrieSet<Task> _tasks = new();
 
         #region User functions
         /// <summary>

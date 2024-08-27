@@ -18,13 +18,14 @@ using SonarUtils.Collections;
 using DryIoc;
 using SonarUtils.Text;
 using System.Collections.Frozen;
+using AG.Collections.Concurrent;
 
 namespace Sonar.Trackers
 {
     public sealed partial class RelayTrackerData<T> : IRelayTrackerData<T> where T : Relay
     {
         private readonly ConcurrentDictionarySlim<string, RelayState<T>> _states = new(comparer: FarmHashStringComparer.Instance);
-        private readonly ConcurrentDictionarySlim<string, ConcurrentHashSetSlim<RelayState<T>>> _index = new(comparer: FarmHashStringComparer.Instance);
+        private readonly ConcurrentDictionarySlim<string, ConcurrentTrieSet<RelayState<T>>> _index = new(comparer: FarmHashStringComparer.Instance);
         private readonly IReadOnlyDictionary<string, IReadOnlyCollection<RelayState<T>>> _indexTransform;
 
         private readonly IReadOnlyDictionary<string, RelayState> _statesGenericTransform;
@@ -157,7 +158,7 @@ namespace Sonar.Trackers
             if (!this.Indexing) return;
             foreach (var indexKey in Unsafe.As<string[]>(state.IndexKeys))
             {
-                ConcurrentHashSetSlim<RelayState<T>> entries;
+                ConcurrentTrieSet<RelayState<T>> entries;
                 while (true)
                 {
                     if (this._index.TryGetValue(indexKey, out entries!)) break;

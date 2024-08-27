@@ -45,10 +45,13 @@ namespace SonarPlugin.Trackers
             // Don't proceed if the structures aren't ready
             if (!this.Plugin.SafeToReadTables || !this.ClientState.IsLoggedIn) return;
 
+            // Make sure player is not role-playing as someone else
+
+
             var player = this.ClientState.LocalPlayer;
 
             // Player Information
-            var info = new PlayerInfo() { Name = player!.Name.TextValue, HomeWorldId = player.HomeWorld.Id };
+            var info = new PlayerInfo() { Name = player!.Name.TextValue, HomeWorldId = player.HomeWorld.Id, Hash = AG.SplitHash64.Compute(this.ClientState.LocalContentId) };
             if (this.Client.Meta.UpdatePlayerInfo(info)) this.Logger.Verbose("Logged in as {player}", info);
 
             // Player Place

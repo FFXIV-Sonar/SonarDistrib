@@ -31,6 +31,7 @@ using Sonar.Relays;
 using SonarUtils.Collections;
 using Sonar.Utilities;
 using SonarUtils.Text;
+using AG.Collections.Concurrent;
 
 namespace Sonar.Trackers
 {
@@ -47,8 +48,8 @@ namespace Sonar.Trackers
         IRelayTrackerData IRelayTracker.Data => this.Data;
 
         private readonly ConcurrentQueue<T> _relayUpdateQueue = new();
-        private readonly ConcurrentHashSetSlim<string> _confirmationRequests = new(comparer: FarmHashStringComparer.Instance);
-        private readonly ConcurrentHashSetSlim<string> _lockOn = new(comparer: FarmHashStringComparer.Instance);
+        private readonly ConcurrentTrieSet<string> _confirmationRequests = new(comparer: FarmHashStringComparer.Instance);
+        private readonly ConcurrentTrieSet<string> _lockOn = new(comparer: FarmHashStringComparer.Instance);
         private readonly ConcurrentDictionarySlim<string, double> _lastSeen = new(comparer: FarmHashStringComparer.Instance);
 
         /// <summary>Dispatch events regardless of jurisdiction settings</summary>

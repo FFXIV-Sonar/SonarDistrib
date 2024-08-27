@@ -1,4 +1,5 @@
-﻿using SonarUtils.Collections;
+﻿using AG.Collections.Concurrent;
+using SonarUtils.Collections;
 using SonarUtils.Text;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,10 @@ namespace SonarUtils
     /// <summary>String utilities for Sonar</summary>
     public static class StringUtils
     {
-        private static readonly ConcurrentHashSetSlim<string> s_strings = new(comparer: FarmHashStringComparer.Instance);
+        private static readonly ConcurrentTrieSet<string> s_strings = new(comparer: FarmHashStringComparer.Instance);
         private static readonly ConcurrentDictionarySlim<int, string> s_spansCache = new();
 
-        /// <summary>Interns a <see cref="string"/> into a <see cref="ConcurrentHashSetSlim{T}"/></summary>
+        /// <summary>Interns a <see cref="string"/> into a <see cref="ConcurrentTrieSet{T}"/></summary>
         /// <remarks>This is faster than <see cref="string.Intern(string)"/></remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static string Intern(string key)
@@ -44,7 +45,7 @@ namespace SonarUtils
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static string Intern(ReadOnlyMemory<char> memory) => Intern(memory.Span);
 
-        /// <summary>Try to get an interned <see cref="string"/> from the <see cref="ConcurrentHashSetSlim{T}"/></summary>
+        /// <summary>Try to get an interned <see cref="string"/> from the <see cref="ConcurrentTrieSet{T}"/></summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static string? GetInternedIfExist(string key)
         {

@@ -27,6 +27,11 @@ namespace Sonar.Models
         [Key(1)]
         public required uint HomeWorldId { get; init; }
 
+        /// <summary>Player Hash</summary>
+        [JsonProperty]
+        [Key(2)]
+        public required long Hash { get; init; }
+
         /// <summary>Check name validity</summary>
         /// <returns>Validity of the name</returns>
         public bool IsValid() => this._valid ??= this.Name.Length <= 32 && (this.GetWorld()?.IsPublic ?? false); // Due to CN (and maybe KR) other properties of the name cannot be checked

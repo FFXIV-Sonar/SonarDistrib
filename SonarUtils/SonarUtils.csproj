@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AG.Collections.Concurrent" Version="0.0.2-alpha" />
     <PackageReference Include="Farmhash.Sharp" Version="0.9.0" />
     <PackageReference Include="XoshiroPRNG.Net" Version="1.6.0" />
   </ItemGroup>

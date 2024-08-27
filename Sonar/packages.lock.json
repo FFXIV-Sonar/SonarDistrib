@@ -154,6 +154,28 @@
         "resolved": "2.6.0",
         "contentHash": "XE8a+11nZg0LRaf+RGABEWaHIf8yGd5w8v/Ra1iWxMBmAVzwuKbW7G21mS0U7w7sh1lYcgckInWGgnz4qyET8A=="
       },
+      "AG": {
+        "type": "Transitive",
+        "resolved": "0.0.2-alpha",
+        "contentHash": "GWUPucUf0fPIK1rAEDF4TTMoWkTQ78UCBbCqatATOTdD+D7xilPlaeKowVjb7X8u+s6j+Q/prvhjxQbBcRNDhg=="
+      },
+      "AG.Collections.Concurrent": {
+        "type": "Transitive",
+        "resolved": "0.0.2-alpha",
+        "contentHash": "dYyWg+X8Nk2Ax169IhObwxsY7gf9QDN97/V05huCca0N0EWGBFCs0DV/MlQN+bABBRJqNFEbYFHtfbRrkFLM/Q==",
+        "dependencies": {
+          "AG": "0.0.2-alpha",
+          "AG.Collections.Generic": "0.0.2-alpha"
+        }
+      },
+      "AG.Collections.Generic": {
+        "type": "Transitive",
+        "resolved": "0.0.2-alpha",
+        "contentHash": "6FdFplFvKxxShS5eQvarJrulroN6U60lw2FVtBKuFr1yjJaZ6lRWFsjNb0IE2kBDGQ9cT4Uo1m6QH1gxNM65dA==",
+        "dependencies": {
+          "AG": "0.0.2-alpha"
+        }
+      },
       "DryIocAttributes.dll": {
         "type": "Transitive",
         "resolved": "7.0.0",
@@ -360,6 +382,7 @@
       "sonarutils": {
         "type": "Project",
         "dependencies": {
+          "AG.Collections.Concurrent": "[0.0.2-alpha, )",
           "Farmhash.Sharp": "[0.9.0, )",
           "XoshiroPRNG.Net": "[1.6.0, )"
         }
