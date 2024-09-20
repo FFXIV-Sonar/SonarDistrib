@@ -9,6 +9,7 @@ using Sonar.Data;
 using AG;
 using System.Threading;
 using System.Text;
+using System.Data;
 
 namespace Sonar.Models
 {
@@ -24,7 +25,7 @@ namespace Sonar.Models
         /// <summary>Logged in</summary>
         [JsonProperty]
         [Key(3)]
-        public required bool LoggedIn { get; init; }
+        public required bool? LoggedIn { get; init; }
 
         /// <summary>Player Full Name</summary>
         [JsonProperty]
@@ -59,11 +60,11 @@ namespace Sonar.Models
         }
 
         /// <summary>Check that its logged in and valid</summary>
-        public bool IsLoggedInAndValid() => this.LoggedIn && this.IsValid();
+        public bool IsLoggedInAndValid() => this.LoggedIn is not false && this.IsValid();
 
         private int IsValidCore()
         {
-            if (this.LoggedIn)
+            if (this.LoggedIn is not false)
             {
                 // Due to CN (and maybe KR) other properties of the name cannot be checked
                 if (this.Name is not null && this.Name.Length <= 32 && (this.GetWorld()?.IsPublic ?? false)) return 1;
