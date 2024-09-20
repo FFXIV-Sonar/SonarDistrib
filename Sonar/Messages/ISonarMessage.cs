@@ -26,12 +26,10 @@ namespace Sonar.Messages
     [Union(0x1A, typeof(ClientHello))]
 
     // Authentication and Verification (TODO)
-    //[Union(0x20, typeof(AuthLogin))]
-    //[Union(0x21, typeof(AuthRegister))]
-    //[Union(0x22, typeof(AuthChange))]
-    //[Union(0x23, typeof(VerificationRequest))]
-    // 0x24 AuthResult
-    // 0x25 VerificationResult
+    [Union(0x20, typeof(LodestoneVerificationNeeded))]
+    [Union(0x21, typeof(LodestoneVerificationRequest))]
+    [Union(0x22, typeof(LodestoneVerificationResult))]
+
     [Union(0x29, typeof(ClientSecret))]
     [Union(0x2A, typeof(ClientIdentifier))]
     [Union(0x2B, typeof(HardwareIdentifier))]

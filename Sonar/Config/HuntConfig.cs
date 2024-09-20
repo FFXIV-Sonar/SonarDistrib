@@ -9,6 +9,7 @@ using System.Linq;
 using System.ComponentModel;
 using System.CodeDom;
 using SonarUtils;
+using Sonar.Config.Experimental;
 
 namespace Sonar.Config
 {
@@ -119,8 +120,7 @@ namespace Sonar.Config
         public override void ReadFrom(RelayConfig config)
         {
             if (config is not HuntConfig huntConfig) throw new ArgumentException($"{nameof(config)} must be of type {nameof(HuntConfig)}", nameof(config));
-            this.ReadFrom(huntConfig);
-            base.ReadFrom(huntConfig);
+            this.ReadFrom(huntConfig); // NOTE: base.ReadFrom(config); is done inside
         }
 
         public void ReadFrom(HuntConfig config)
@@ -133,6 +133,7 @@ namespace Sonar.Config
             this.JurisdictionOverride.Clear();
             this.JurisdictionOverride.AddRange(config.JurisdictionOverride);
             for (var attempt = 0; attempt < 3 && !this.Sanitize(); attempt++) { /* Empty */ }
+            base.ReadFrom(config);
         }
 
         /// <summary>Sanitize configuration</summary>

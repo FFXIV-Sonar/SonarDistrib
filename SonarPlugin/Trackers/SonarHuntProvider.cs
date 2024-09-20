@@ -20,18 +20,20 @@ namespace SonarPlugin.Trackers
         private IRelayTracker<HuntRelay> Tracker { get; }
         private IObjectTable Table { get; }
         private SonarPlugin Plugin { get; }
+        private IClientState ClientState { get; }
         private IPluginLog Logger { get; }
 
         /// <summary>
         /// Initialize monster tracker
         /// </summary>
-        public SonarHuntProvider(PlayerProvider player, IRelayTracker<HuntRelay> tracker, IObjectTable table, SonarPlugin plugin, IPluginLog logger)
+        public SonarHuntProvider(PlayerProvider player, IRelayTracker<HuntRelay> tracker, IObjectTable table, SonarPlugin plugin, IClientState clientState, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
             this.Player = player;
             this.Tracker = tracker;
             this.Table = table;
             this.Plugin = plugin;
+            this.ClientState = clientState;
             this.Logger = logger;
 
             // Initialization feedback
@@ -41,7 +43,7 @@ namespace SonarPlugin.Trackers
         private void FrameworkTick(IFramework framework)
         {
             // Don't proceed if the structures aren't ready
-            if (!this.Plugin.SafeToReadTables) return;
+            if (!this.Plugin.SafeToReadTables || !this.ClientState.IsLoggedIn) return;
 
             // Iterate throughout all hunts in the actor table
             var hunts = this.Table

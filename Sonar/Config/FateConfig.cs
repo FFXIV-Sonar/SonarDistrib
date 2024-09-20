@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using SonarUtils;
+using Sonar.Config.Experimental;
 
 namespace Sonar.Config
 {
@@ -96,8 +97,7 @@ namespace Sonar.Config
         public override void ReadFrom(RelayConfig config)
         {
             if (config is not FateConfig fateConfig) throw new ArgumentException($"{nameof(config)} must be of type {nameof(FateConfig)}", nameof(config));
-            this.ReadFrom(fateConfig);
-            base.ReadFrom(fateConfig);
+            this.ReadFrom(fateConfig); // NOTE: base.ReadFrom(config); is done inside
         }
 
         public void ReadFrom(FateConfig config)
@@ -106,6 +106,7 @@ namespace Sonar.Config
             this.Jurisdiction.Clear();
             this.Jurisdiction.AddRange(config.Jurisdiction);
             for (var attempt = 0; attempt < 3 && !this.Sanitize(); attempt++) { /* Empty */ }
+            base.ReadFrom(config);
         }
 
         /// <summary>Sanitize configuration</summary>

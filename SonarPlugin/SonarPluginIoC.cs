@@ -28,6 +28,7 @@ using Container = DryIoc.Container;
 using Sonar.Trackers;
 using Sonar.Models;
 using Dalamud.Plugin.Services;
+using SonarPlugin.GUI;
 
 namespace SonarPlugin
 {
@@ -61,6 +62,7 @@ namespace SonarPlugin
             this.PluginInterface = pluginInterface;
             pluginInterface.Inject(this);
             this.ConfigureServices();
+            this.Container.Resolve<LodestoneVerifyWindow>();
         }
 
         private SonarClient GetSonarClient()
@@ -109,6 +111,7 @@ namespace SonarPlugin
             // Sonar Services
             this._container.RegisterDelegate(this.GetSonarClient, Reuse.Singleton);
             this._container.Register(Made.Of(r => ServiceInfo.Of<SonarClient>(), c => c.Trackers), Reuse.Singleton, Setup.With(preventDisposal: true));
+            this._container.Register(Made.Of(r => ServiceInfo.Of<SonarClient>(), c => c.Configuration), Reuse.Singleton, Setup.With(preventDisposal: true));
             this._container.Register(Made.Of(r => ServiceInfo.Of<RelayTrackers>(), c => c.Hunts), Reuse.Singleton, Setup.With(preventDisposal: true));
             this._container.Register(Made.Of(r => ServiceInfo.Of<RelayTrackers>(), c => c.Fates), Reuse.Singleton, Setup.With(preventDisposal: true));
             this._container.Register(Made.Of(r => ServiceInfo.Of<SonarPlugin>(), p => p.Windows), Reuse.Singleton, Setup.With(preventDisposal: true));

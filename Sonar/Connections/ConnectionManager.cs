@@ -310,7 +310,7 @@ namespace Sonar.Connections
 
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
-            this._cts.Cancel();
+            await this._cts.CancelAsync();
             await Task.WhenAll(this._sockets.Keys.Select(s => s.DisposeAsync().AsTask()));
         }
     }

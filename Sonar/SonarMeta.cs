@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sonar.Numerics;
 using static Sonar.SonarConstants;
+using Sonar.Extensions;
 
 namespace Sonar
 {
@@ -27,6 +28,21 @@ namespace Sonar
         internal SonarMeta(SonarClient client)
         {
             this.Client = client;
+            this.Client.Connection.MessageReceived += this.MessageHandler;
+        }
+
+        private void MessageHandler(Connections.SonarConnectionManager _, Messages.ISonarMessage message)
+        {
+            switch (message)
+            {
+                case LodestoneVerificationNeeded need:
+                    this.VerificationNeeded?.SafeInvoke(this, need);
+                    break;
+
+                case LodestoneVerificationResult result:
+                    this.VerificationResult?.SafeInvoke(this, result);
+                    break;
+            }
         }
 
         /// <summary>Update player information</summary>
@@ -46,7 +62,7 @@ namespace Sonar
             this._lock.Enter(ref lockTaken);
             try
             {
-                if (playerInfo is null || playerInfo.Equals(this.PlayerInfo)) return false;
+                if (playerInfo.Equals(this.PlayerInfo)) return false;
                 this.PlayerInfo = playerInfo;
                 this.PlayerInfoChanged?.Invoke(this.PlayerInfo);
                 this.Client.Connection.SendIfConnected(playerInfo);
@@ -95,8 +111,16 @@ namespace Sonar
             return (placeUpdated, positionUpdated);
         }
 
+        public void RequestVerification()
+        {
+            this.Client.Connection.SendIfConnected(new LodestoneVerificationRequest());
+        }
+
         internal event Action<PlayerInfo>? PlayerInfoChanged;
         internal event Action<PlayerPosition>? PlayerPlaceChanged;
         internal event Action<PlayerPosition>? PlayerPositionChanged;
+
+        public event Action<SonarMeta, LodestoneVerificationNeeded>? VerificationNeeded;
+        public event Action<SonarMeta, LodestoneVerificationResult>? VerificationResult;
     }
 }

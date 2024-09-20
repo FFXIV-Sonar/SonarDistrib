@@ -43,20 +43,25 @@ namespace SonarPlugin.Trackers
         private void FrameworkTick(IFramework framework)
         {
             // Don't proceed if the structures aren't ready
-            if (!this.Plugin.SafeToReadTables || !this.ClientState.IsLoggedIn) return;
-
-            // Make sure player is not role-playing as someone else
-
-
-            var player = this.ClientState.LocalPlayer;
+            if (!this.Plugin.SafeToReadTables) return;
 
             // Player Information
-            var info = new PlayerInfo() { Name = player!.Name.TextValue, HomeWorldId = player.HomeWorld.Id, Hash = AG.SplitHash64.Compute(this.ClientState.LocalContentId) };
-            if (this.Client.Meta.UpdatePlayerInfo(info)) this.Logger.Verbose("Logged in as {player}", info);
+            var player = this.ClientState.LocalPlayer;
+            var loggedIn = this.ClientState.IsLoggedIn;
+            if ((player is null && loggedIn) || (player is not null && !loggedIn)) this.Logger.Warning("Inconsistent logged in status detected");
+            var info = new PlayerInfo() { LoggedIn = loggedIn, Name = player?.Name.TextValue ?? null, HomeWorldId = player?.HomeWorld.Id ?? 0, Hash = loggedIn ? AG.SplitHash64.Compute(this.ClientState.LocalContentId) : 0 };
+            if (this.Client.Meta.UpdatePlayerInfo(info))
+            {
+                if (loggedIn) this.Logger.Verbose("Logged in as {player:X16}", AG.SplitHash64.Compute(info.ToString()));
+                else this.Logger.Verbose("Logged out");
+            }
 
             // Player Place
-            var place = new PlayerPosition() { WorldId = player.CurrentWorld.Id, ZoneId = this.ClientState.TerritoryType, InstanceId = this.GetCurrentInstance(), Coords = player.Position.SwapYZ() };
-            if (this.Client.Meta.UpdatePlayerPosition(place).PlaceUpdated) this.Logger.Verbose("Moved to {place}", place);
+            if (loggedIn && player is not null)
+            {
+                var place = new PlayerPosition() { WorldId = player.CurrentWorld.Id, ZoneId = this.ClientState.TerritoryType, InstanceId = this.GetCurrentInstance(), Coords = player.Position.SwapYZ() };
+                if (this.Client.Meta.UpdatePlayerPosition(place).PlaceUpdated) this.Logger.Verbose("Moved to {place}", place);
+            }
 
             // Players nearby count
             this.PlayerCount = this.ObjectTable

@@ -20,6 +20,7 @@ namespace SonarPlugin.Trackers
         private SonarPlugin Plugin { get; }
         private IRelayTracker<FateRelay> Tracker { get; }
         private IFateTable Fates { get; }
+        private IClientState ClientState { get; }
         private IPluginLog Logger { get; }
 
         /// <summary>
@@ -27,13 +28,14 @@ namespace SonarPlugin.Trackers
         /// </summary>
         /// <param name="plugin">Sonar Plugin object</param>
         /// <param name="debug">(Optional) Output debug logging</param>
-        public SonarFateProvider(PlayerProvider player, SonarPlugin plugin, IRelayTracker<FateRelay> tracker, IFateTable fates, IPluginLog logger)
+        public SonarFateProvider(PlayerProvider player, SonarPlugin plugin, IRelayTracker<FateRelay> tracker, IFateTable fates, IClientState clientState, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
             this.Player = player;
             this.Plugin = plugin;
             this.Tracker = tracker;
             this.Fates = fates;
+            this.ClientState = clientState;
             this.Logger = logger;
 
             // Initialization feedback
@@ -44,7 +46,7 @@ namespace SonarPlugin.Trackers
         private void Framework(IFramework framework)
         {
             // Don't proceed if the structures aren't ready
-            if (!this.Plugin.SafeToReadTables)
+            if (!this.Plugin.SafeToReadTables || !this.ClientState.IsLoggedIn)
             {
                 this._lastFateKeys.Clear();
                 return;

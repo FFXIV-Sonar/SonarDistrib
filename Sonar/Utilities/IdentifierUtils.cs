@@ -66,7 +66,9 @@ namespace Sonar.Utilities
             return hwId;
         }
 
-        private static byte[] GetSecureHash(byte[] data)
+        private static byte[] GetSecureHash(byte[] data, bool allowFallback = true) => GetSecureHash(data, data, allowFallback);
+
+        private static byte[] GetSecureHash(byte[] data, byte[] salt, bool allowFallback = true)
         {
             var exceptions = new List<Exception>();
 
@@ -74,7 +76,7 @@ namespace Sonar.Utilities
             {
                 // 65536 iterations only takes 100ms on my machine
                 // Originally wanted 16 million cycles but that takes 25 seconds
-                var pbkdf2 = new Rfc2898DeriveBytes(data, data, 65536, HashAlgorithmName.SHA256);
+                var pbkdf2 = new Rfc2898DeriveBytes(data, salt, 65536, HashAlgorithmName.SHA256);
                 return pbkdf2.GetBytes(32);
             }
             catch (Exception ex)
@@ -85,7 +87,7 @@ namespace Sonar.Utilities
             try
             {
                 // Since I tend to have bad luck. Hopefully this never happens.
-                return SHA256.HashData(data);
+                if (allowFallback) return SHA256.HashData(data);
             }
             catch (Exception ex)
             {
@@ -94,6 +96,14 @@ namespace Sonar.Utilities
 
             // I seriously have bad luck, inform me
             throw new AggregateException(exceptions);
+        }
+
+        public static string? GenerateClientHash(string? clientId, string? clientSecret)
+        {
+            if (clientId is null || clientSecret is null) return null;
+            var bytes = Encoding.UTF8.GetBytes($"{clientId}{clientSecret}");
+            var hash = SHA256.HashData(bytes);
+            return UrlBase64.Encode(hash)[..12];
         }
     }
 }

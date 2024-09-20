@@ -269,6 +269,19 @@ namespace SonarPlugin.GUI
                 ImGui.Unindent();
             }
 
+            if (ImGui.TreeNodeEx("##generalTabLodestone", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("LodestoneSettings", "Lodestone Verification Settings")}"))
+            {
+                ImGui.Indent();
+                var suppressions = EnumCheapLocExtensions.CheapLoc<SuppressVerification>().Values.ToArray();
+                SonarImGui.Combo($"{Loc.Localize("SuppressVerification", "Suppress Verification Requests")}##suppressVerification", (int)this.Plugin.Configuration.SuppressVerification, suppressions, index =>
+                {
+                    this._save = true;
+                    this.Plugin.Configuration.SuppressVerification = EnumCheapLocExtensions.CheapLoc<SuppressVerification>().Keys.ToArray()[index];
+                });
+
+                ImGui.Unindent();
+            }
+
             if (ImGui.TreeNodeEx("##generalTabColorScheme", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("ColorScheme", "Sonar Color Scheme")}"))
             {
                 ImGui.Indent();
@@ -991,16 +1004,29 @@ namespace SonarPlugin.GUI
             ImGui.EndChild(); // End scroll region
         }
 
+        private bool _showIdentifier;
         private void DrawDebugTab()
         {
             ImGui.BeginChild("##debugTabScrollRegion");
             {
                 ImGui.Text("Version Information");
-                ImGui.BeginChild("##debugVersionInfo", new Vector2(0, 80 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
+                ImGui.BeginChild("##debugVersionInfo", new Vector2(0, 100 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
                     ImGui.Text($"{this.Stub.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
                     ImGui.Text($"Dalamud {VersionUtils.GetDalamudVersion()} (Git: {VersionUtils.GetDalamudBuild()})");
                     ImGui.Text($"FFXIV {VersionUtils.GetGameVersion(this.Data)}");
+
+                    ImGui.Text($"Client Hash: ");
+                    ImGui.SameLine();
+                    if (this._showIdentifier)
+                    {
+                        ImGui.Text($"{this.Client.ClientHash ?? "Unknown"}");
+                        ImGui.SameLine();
+                    }
+
+                    if (ImGui.Button($"{(this._showIdentifier ? "Hide" : "Show")}")) this._showIdentifier = !this._showIdentifier;
+                    ImGui.SameLine();
+                    if (ImGui.Button($"Copy")) ImGui.SetClipboardText(this.Client.ClientHash);
                 }
                 ImGui.EndChild(); // debugVersionInfo
 

@@ -81,6 +81,9 @@ namespace Sonar
         /// <summary>Sonar Start Info</summary>
         public SonarStartInfo StartInfo { get; }
 
+        /// <summary>Sonar ID</summary>
+        public string? ClientHash => this.ClientIdentifier.ClientHash;
+
         /// <summary>Constructs a <see cref="SonarClient"/>. Only one can exist at a time. Remember to call <see cref="Start"/>.</summary>
         public SonarClient(SonarStartInfo? startInfo = null)
         {

@@ -130,7 +130,7 @@ namespace Sonar.Trackers
         {
             this.ThrowIfNotIndexing();
             if (indexKey == "all") return this.States.GetNonSnapshottingValues(); // NOTE: This is the cause why this method cannot return an IReadOnlySet
-            return this.Index.GetValueOrDefault(indexKey) ?? FrozenSet<RelayState<T>>.Empty;
+            return this.Index.GetValueOrDefault(indexKey) ?? [];
         }
 
         /// <summary>Get states from an index</summary>

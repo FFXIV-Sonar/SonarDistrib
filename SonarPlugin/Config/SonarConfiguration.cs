@@ -39,6 +39,7 @@ namespace SonarPlugin.Config
         public float Opacity = 0.75f;
         public float SoundVolume = 0.5f;
         public PluginLanguage Language = PluginLanguage.English;
+        public SuppressVerification SuppressVerification = SuppressVerification.None;
 
         public ClickAction MiddleClick = ClickAction.Chat;
         public ClickAction RightClick = ClickAction.Map;
@@ -52,7 +53,7 @@ namespace SonarPlugin.Config
             set => this._sortingMode = value;
         }
 
-        // Instances
+        // Duty Instances
         public bool DisableChatInDuty = false;
         public bool DisableSoundInDuty = false;
 
