@@ -1,5 +1,5 @@
 ﻿using DryIocAttributes;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using SonarResources.Lgb;
 using SonarResources.Lumina;
@@ -40,7 +40,7 @@ namespace SonarResources.Readers
 
         public bool Read(LuminaEntry lumina)
         {
-            var fateSheet = lumina.Data.GetExcelSheet<global::Lumina.Excel.GeneratedSheets2.Fate>(lumina.LuminaLanguage)?
+            var fateSheet = lumina.Data.GetExcelSheet<global::Lumina.Excel.Sheets.Fate>(lumina.LuminaLanguage)?
                 .Where(fate => fate.Location != 0);
             if (fateSheet is null) return false;
 
@@ -74,7 +74,7 @@ namespace SonarResources.Readers
 
                 if (!fate.Name.ContainsKey(lumina.SonarLanguage))
                 {
-                    var name = fateRow.Name.ToTextString();
+                    var name = fateRow.Name.ExtractText();
                     if (!string.IsNullOrWhiteSpace(name))
                     {
                         fate.Name[lumina.SonarLanguage] = name;
@@ -84,7 +84,7 @@ namespace SonarResources.Readers
 
                 if (!fate.Description.ContainsKey(lumina.SonarLanguage))
                 {
-                    var description = fateRow.Description.ToTextString();
+                    var description = fateRow.Description.ExtractText();
                     if (!string.IsNullOrWhiteSpace(description))
                     {
                         fate.Description[lumina.SonarLanguage] = description;
@@ -94,7 +94,7 @@ namespace SonarResources.Readers
 
                 if (!fate.Objective.ContainsKey(lumina.SonarLanguage))
                 {
-                    var objective = fateRow.Objective.ToTextString();
+                    var objective = fateRow.Objective.ExtractText();
                     if (!string.IsNullOrWhiteSpace(objective))
                     {
                         fate.Objective[lumina.SonarLanguage] = objective;

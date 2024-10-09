@@ -3,7 +3,7 @@ using DryIocAttributes;
 using Lumina;
 using Lumina.Data;
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using Sonar.Enums;
 using System;
 using System.Collections.Generic;
@@ -64,13 +64,13 @@ namespace SonarResources.Lumina
 
         public void AddLumina(GameData lumina)
         {
+            var languages = GetLanguages(lumina).ToList();
+            if (languages.Count == 0) return;
+
             lock (this._lock)
             {
-                var sheet = lumina.GetExcelSheet<PlaceName>(); // TODO: Sheet angoistic method
-                if (sheet is null || sheet.Languages.Length == 0) return;
-
                 var added = false;
-                foreach (var language in sheet.Languages)
+                foreach (var language in languages)
                 {
                     var languagePair = s_languagePairs.First(pair => pair.LuminaLanguage == language);
                     lock (this._entries) this._entries.Add(new(lumina, languagePair.LuminaLanguage, languagePair.SonarLanguage));
@@ -84,6 +84,15 @@ namespace SonarResources.Lumina
                 //    lock (this._entries) this._entries.Add(new(lumina, languagePair.LuminaLanguage, languagePair.SonarLanguage));
                 //    added = true;
                 //}
+            }
+        }
+
+        public static IEnumerable<Language> GetLanguages(GameData lumina)
+        {
+            foreach (var language in Enum.GetValues<Language>())
+            {
+                var sheet = lumina.GetExcelSheet<PlaceName>(language);
+                if (sheet?.Language == language) yield return language;
             }
         }
 

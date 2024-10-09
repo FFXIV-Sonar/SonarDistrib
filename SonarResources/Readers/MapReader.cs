@@ -1,6 +1,6 @@
 ﻿using DryIocAttributes;
 using Humanizer;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using SonarResources.Lumina;
 using System;
@@ -46,11 +46,11 @@ namespace SonarResources.Readers
             foreach (var luminaMap in mapSheet)
             {
                 var id = luminaMap.RowId;
-                var zoneId = luminaMap.TerritoryType.Row;
+                var zoneId = luminaMap.TerritoryType.RowId;
 
                 // OffsetZ
                 float offsetZ;
-                try { offsetZ = transientSheet.GetRow(zoneId)?.OffsetZ ?? -10000; } catch { offsetZ = -10000; }
+                try { offsetZ = transientSheet.GetRow(zoneId).OffsetZ; } catch { offsetZ = -10000; }
                 var hasOffsetZ = offsetZ != -10000;
                 if (!hasOffsetZ) offsetZ = 0;
 
@@ -62,14 +62,14 @@ namespace SonarResources.Readers
                         Scale = luminaMap.SizeFactor / 100f,
                         Offset = new(luminaMap.OffsetX, luminaMap.OffsetY, offsetZ),
                         HasOffsetZ = hasOffsetZ,
-                        MapResourcePath = luminaMap.Id,
+                        MapResourcePath = luminaMap.Id.ExtractText(),
                         ZoneId = zoneId,
                     };
                 }
 
                 if (!map.Name.ContainsKey(lumina.SonarLanguage))
                 {
-                    var name = placeNames.GetRow(luminaMap.PlaceName.Row)?.Name?.ToTextString()?.Transform(To.TitleCase);
+                    var name = placeNames.GetRowOrDefault(luminaMap.PlaceName.RowId)?.Name.ExtractText().Transform(To.TitleCase);
                     if (!string.IsNullOrWhiteSpace(name))
                     {
                         map.Name[lumina.SonarLanguage] = name;
@@ -79,7 +79,7 @@ namespace SonarResources.Readers
 
                 if (!map.SubName.ContainsKey(lumina.SonarLanguage))
                 {
-                    var name = placeNames.GetRow(luminaMap.PlaceNameSub.Row)?.Name?.ToTextString()?.Transform(To.TitleCase);
+                    var name = placeNames.GetRowOrDefault(luminaMap.PlaceNameSub.RowId)?.Name.ExtractText().Transform(To.TitleCase);
                     if (!string.IsNullOrWhiteSpace(name))
                     {
                         map.SubName[lumina.SonarLanguage] = name;
@@ -89,7 +89,7 @@ namespace SonarResources.Readers
 
                 if (!map.Region.ContainsKey(lumina.SonarLanguage))
                 {
-                    var name = placeNames.GetRow(luminaMap.PlaceNameRegion.Row)?.Name?.ToTextString()?.Transform(To.TitleCase);
+                    var name = placeNames.GetRowOrDefault(luminaMap.PlaceNameRegion.RowId)?.Name.ExtractText().Transform(To.TitleCase);
                     if (!string.IsNullOrWhiteSpace(name))
                     {
                         map.Region[lumina.SonarLanguage] = name;

@@ -173,11 +173,11 @@ namespace Sonar.Messages
             if (!indexes.Any()) return;
             var queue = new Queue<int>(indexes.Distinct().OrderBy(i => i));
             if (queue.First() < 0 || queue.Last() > this.Count) throw new ArgumentOutOfRangeException(nameof(indexes));
-            int nextIndex = queue.Dequeue();
+            var nextIndex = queue.Dequeue();
 
-            int deleted = 0;
+            var deleted = 0;
             var array = this.list.InternalArray;
-            for (int index = 0; index < this.Count; index++)
+            for (var index = 0; index < this.Count; index++)
             {
                 if (index == nextIndex)
                 {

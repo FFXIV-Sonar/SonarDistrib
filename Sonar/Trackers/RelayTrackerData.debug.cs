@@ -46,7 +46,7 @@ namespace Sonar.Trackers
                 }
 
                 // Make sure state can be found on all indexes it belongs into
-                foreach (var indexKey in Unsafe.As<string[]>(state.IndexKeys))
+                foreach (var indexKey in state.IndexKeysCore.Items.AsSpan())
                 {
                     // Check that the index entries exist
                     if (!this._index.TryGetValue(indexKey, out var entries))
@@ -73,7 +73,7 @@ namespace Sonar.Trackers
 
             Parallel.ForEach(this._index, options, kvp =>
             {
-                var (indexKey, index) = kvp;
+                var (indexKey, entries) = kvp;
 
                 // Make sure the index key is valid
                 if (!IndexInfo.TryParse(indexKey, out _))
@@ -82,7 +82,7 @@ namespace Sonar.Trackers
                     if (Debugger.IsAttached) Debugger.Break();
                 }
 
-                foreach (var state in index)
+                foreach (var state in entries)
                 {
                     var key = state.RelayKey;
                     
@@ -101,7 +101,7 @@ namespace Sonar.Trackers
                     }
 
                     // Make sure it does belong to the index
-                    else if (!state.IndexKeys.Contains(indexKey))
+                    else if (!state.IndexKeysCore.Contains(indexKey))
                     {
                         lock (output) output.Add($"{typeName} state does not belong to index {indexKey}: {state.RelayKey} (Expected indexes: {string.Join(", ", state.IndexKeys)})");
                         if (Debugger.IsAttached) Debugger.Break();
@@ -125,9 +125,9 @@ namespace Sonar.Trackers
         public void DebugCleanupIndex()
         {
             this.ThrowIfNotIndexing();
-            foreach (var (indexKey, index) in this.Index)
+            foreach (var (indexKey, entries) in this.Index)
             {
-                if (index.Count == 0)
+                if (entries.Count == 0)
                 {
                     this._index.Remove(indexKey, out _);
                 }

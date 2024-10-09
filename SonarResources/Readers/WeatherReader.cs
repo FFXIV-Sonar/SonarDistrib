@@ -1,6 +1,6 @@
 ﻿using DryIocAttributes;
 using Humanizer;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using SonarResources.Lumina;
 using System;
@@ -51,7 +51,7 @@ namespace SonarResources.Readers
 
                 if (!weather.Name.ContainsKey(lumina.SonarLanguage))
                 {
-                    var name = weatherRow.Name.ToTextString();
+                    var name = weatherRow.Name.ExtractText();
                     if (!string.IsNullOrWhiteSpace(name))
                     {
                         weather.Name[lumina.SonarLanguage] = name;
@@ -61,7 +61,7 @@ namespace SonarResources.Readers
 
                 if (!weather.Description.ContainsKey(lumina.SonarLanguage))
                 {
-                    var description = weatherRow.Description.ToTextString();
+                    var description = weatherRow.Description.ExtractText();
                     if (!string.IsNullOrWhiteSpace(description))
                     {
                         weather.Description[lumina.SonarLanguage] = description;

@@ -20,6 +20,7 @@ using static Sonar.SonarConstants;
 using Sonar.Relays;
 using SonarPlugin.GUI;
 using Dalamud.Plugin.Services;
+using Sonar;
 
 namespace SonarPlugin.Notifiers
 {
@@ -29,15 +30,19 @@ namespace SonarPlugin.Notifiers
         private readonly Dictionary<string, double> _lastSSMinionSignals = new();
 
         private SonarPlugin Plugin { get; }
+        private IClientState ClientState { get; }
+        private SonarClient Client { get; }
         private IRelayTracker<HuntRelay> Tracker { get; }
         private PlayerProvider Player { get; }
         private IChatGui Chat { get; }
         private AudioPlaybackEngine Audio { get; }
         private IPluginLog Logger { get; }
 
-        public HuntNotifier(SonarPlugin plugin, RelayTrackerViews views, PlayerProvider player, IChatGui chat, AudioPlaybackEngine audio, IPluginLog logger)
+        public HuntNotifier(SonarPlugin plugin, IClientState clientState, SonarClient client, RelayTrackerViews views, PlayerProvider player, IChatGui chat, AudioPlaybackEngine audio, IPluginLog logger)
         {
             this.Plugin = plugin;
+            this.ClientState = clientState;
+            this.Client = client;
             this.Tracker = views.Hunts;
             this.Player = player;
             this.Chat = chat;
@@ -49,7 +54,7 @@ namespace SonarPlugin.Notifiers
 
         private void HuntFound(RelayState<HuntRelay> state)
         {
-            if (!this.Player.IsLoggedIn) return;
+            if (!this.ClientState.IsLoggedIn) return;
             if (this.Plugin.Configuration.SSMinionReportingMode == NotifyMode.Single && state.GetRank() == HuntRank.SSMinion && !this.CheckSSMinionSpawn(state)) return;
             var allowChat = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
             var allowSound = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableSoundInDuty);
@@ -72,7 +77,7 @@ namespace SonarPlugin.Notifiers
 
         private void HuntDead(RelayState<HuntRelay> state)
         {
-            if (!this.Player.IsLoggedIn) return;
+            if (!this.ClientState.IsLoggedIn) return;
             var allowChat = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
             if (allowChat && this.Plugin.Configuration.EnableGameChatReports && this.Plugin.Configuration.EnableGameChatReportsDeaths)
             {
@@ -86,7 +91,7 @@ namespace SonarPlugin.Notifiers
         {
             if (type == XivChatType.None) type = this.Plugin.Configuration.HuntOutputChannel;
             if (type == XivChatType.None) type = XivChatType.Echo;
-            var cwIcon = this.Plugin.Configuration.EnableGameChatCrossworldIcon && this.Player.Place.WorldId != relay.WorldId;
+            var cwIcon = this.Plugin.Configuration.EnableGameChatCrossworldIcon && this.Client.Meta.PlayerPosition?.WorldId != relay.WorldId;
 
             var builder = new SeStringBuilder();
             if (this.Plugin.Configuration.EnableGameChatItalicFont) builder.AddItalicsOn();

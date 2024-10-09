@@ -1,6 +1,6 @@
 ﻿using DryIocAttributes;
 using Lumina;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using SonarResources.Lumina;
 using SonarResources.Providers;
@@ -51,7 +51,7 @@ namespace SonarResources.Readers
             foreach (var worldRow in worldSheet)
             {
                 var id = worldRow.RowId;
-                var dcId = worldRow.DataCenter.Row;
+                var dcId = worldRow.DataCenter.RowId;
                 var dc = this.Db.Datacenters[dcId];
 
                 if (!this.Db.Worlds.TryGetValue(id, out var world))
@@ -59,7 +59,7 @@ namespace SonarResources.Readers
                     this.Db.Worlds[id] = world = new()
                     {
                         Id = id,
-                        Name = worldRow.Name.ToTextString(),
+                        Name = worldRow.Name.ExtractText(),
                         DatacenterId = dcId,
                         RegionId = dc.RegionId,
                         AudienceId = dc.AudienceId,

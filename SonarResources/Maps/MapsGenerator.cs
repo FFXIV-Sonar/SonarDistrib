@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using SixLabors.ImageSharp.Processing;
 using System.Diagnostics;
 using System.IO;
@@ -51,13 +51,13 @@ namespace SonarResources.Maps
 
         public bool GenerateMapImages(GameData data, bool parallel)
         {
-            var maps = data.GetExcelSheet<Map>(Language.None)!
-                .Where(m => !string.IsNullOrWhiteSpace(m.Id));
-            if (maps is null) return false;
+            Console.WriteLine($"Generating Map Images from {data.DataPath}");
+            var maps = data.GetExcelSheet<Map>()!;
 
             this._count = 0;
-            Console.WriteLine($"Generating Map Images from {data.DataPath}");
-            maps.Where(map => this._processedMaps.Add(map.RowId))
+            maps
+                .Where(m => !string.IsNullOrWhiteSpace(m.Id.ExtractText()))
+                .Where(map => this._processedMaps.Add(map.RowId))
                 .AsParallel().WithDegreeOfParallelism(parallel ? Environment.ProcessorCount : 1)
                 .ForAll(map => this.GenerateMapImages(data, map));
 
@@ -68,14 +68,14 @@ namespace SonarResources.Maps
         /// <summary>WARNING: Assumes <see cref="GenerateMapImages(GameData, bool)"/> has been run</summary>
         public bool GenerateZoneImages(GameData data)
         {
-            var zones = data.GetExcelSheet<TerritoryType>(Language.None)!
-                .Where(t => t.Map.Value is not null && !string.IsNullOrWhiteSpace(t.Map.Value!.Id));
-            if (zones is null) return false;
+            Console.WriteLine($"Generating Zone Images from {data.DataPath}");
+            var zones = data.GetExcelSheet<TerritoryType>()!;
 
             this._count = 0;
-            Console.WriteLine($"Generating Zone Images from {data.DataPath}");
-            zones.Where(territory => this._processedZones.Add(territory.RowId))
-                .ForEach(this.GenerateZoneImages);
+            zones
+                .Where(t => t.Map.IsValid && !string.IsNullOrWhiteSpace(t.Map.Value.Id.ExtractText()))
+                .Where(territory => this._processedZones.Add(territory.RowId))
+                .ForEach(territory => this.GenerateZoneImages(data, territory));
 
             Console.WriteLine($"Generated {this._count} zone images");
             return true;
@@ -83,7 +83,9 @@ namespace SonarResources.Maps
 
         private void GenerateMapImages(GameData data, Map map)
         {
-            Console.WriteLine($"Processing {map.PlaceName.Value?.Name.ToString() ?? "UNKNOWN MAP"} ({map.RowId})");
+            var placeNames = data.GetExcelSheet<PlaceName>()!;
+            Console.WriteLine($"Processing {placeNames.GetRowOrDefault(map.PlaceName.RowId)?.Name.ExtractText() ?? "UNKNOWN MAP"} ({map.RowId})");
+
             var textures = map.GetMapTextures(data);
             if (textures.Image is null) return;
             using var mapImage = textures.Image.ToImage();
@@ -100,9 +102,10 @@ namespace SonarResources.Maps
             Interlocked.Increment(ref this._count);
         }
 
-        private void GenerateZoneImages(TerritoryType territoryType)
+        private void GenerateZoneImages(GameData data, TerritoryType territoryType)
         {
-            Console.WriteLine($"Processing {territoryType.PlaceName.Value?.Name.ToString() ?? "UNKNOWN ZONE"} ({territoryType.RowId})");
+            var placeNames = data.GetExcelSheet<PlaceName>()!;
+            Console.WriteLine($"Processing {placeNames?.GetRowOrDefault(territoryType.PlaceName.RowId)?.Name.ExtractText() ?? "UNKNOWN ZONE"} ({territoryType.RowId})");
             foreach (var size in Enum.GetValues<MapSize>())
             {
                 foreach (var extension in new[] { "jpg", "png", "gif", "webp" })

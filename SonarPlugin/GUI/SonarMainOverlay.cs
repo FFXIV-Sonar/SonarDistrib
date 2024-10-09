@@ -536,7 +536,7 @@ namespace SonarPlugin.GUI
             if (fateStatus == FateStatus.Running && state.Relay.Progress > 0) statusColor = this.Plugin.Configuration.Colors.FateProgress;
 
             ImGui.PushStyleColor(ImGuiCol.Text, statusColor);
-            bool isHeaderOpen = ImGui.TreeNodeEx($"##fate_{relay.RelayKey}", ImGuiTreeNodeFlags.CollapsingHeader, $"{relay}");
+            bool isHeaderOpen = ImGui.TreeNodeEx($"##fate_{relay.RelayKey}", ImGuiTreeNodeFlags.CollapsingHeader, $"{relay} [{relay.Players}]");
             ImGui.PopStyleColor();
 
             this.PerformClickAction(state);
@@ -620,6 +620,10 @@ namespace SonarPlugin.GUI
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastUntouched();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
+
+                    ImGui.Text(Loc.Localize("HuntDetailsPlayersNearby", "Players Nearby"));
+                    ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
+                    ImGui.Text($"{state.Relay.Players}");
                 }
 
                 ImGui.Dummy(new Vector2(0.0f, 10.0f) * ImGui.GetIO().FontGlobalScale);

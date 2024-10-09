@@ -61,14 +61,14 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DryIoc.dll" Version="5.4.3" />
-    <PackageReference Include="Fody" Version="6.8.1">
+    <PackageReference Include="Fody" Version="6.8.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NAudio.Core" Version="2.2.1" />
     <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
     <PackageReference Include="NAudio.WinMM" Version="2.2.1" />
-    <PackageReference Include="AG" Version="0.0.2-alpha" />
+    <PackageReference Include="AG" Version="0.0.4-alpha" />
   </ItemGroup>
 
   <ItemGroup>

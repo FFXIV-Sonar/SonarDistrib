@@ -14,6 +14,9 @@ namespace Sonar.Connections
             this._uri = new(this.GenerateUri, LazyThreadSafetyMode.None);
         }
 
+        [Key(6)]
+        public required string Key { get; init; }
+
         [Key(0)]
         public required string Url { get; init; }
 

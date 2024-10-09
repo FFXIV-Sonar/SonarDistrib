@@ -2,7 +2,7 @@
 using DryIocAttributes;
 using Lumina;
 using Lumina.Data.Files;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using Sonar.Numerics;
 using SonarResources.Lumina;
@@ -80,7 +80,7 @@ namespace SonarResources.Lgb
         private bool ReadFilenames(GameData data)
         {
             var territories = data.GetExcelSheet<TerritoryType>()?
-                .Where(t => !string.IsNullOrWhiteSpace(t.Bg));
+                .Where(t => !string.IsNullOrWhiteSpace(t.Bg.ExtractText()));
             if (territories is null) return false;
 
             var result = false;

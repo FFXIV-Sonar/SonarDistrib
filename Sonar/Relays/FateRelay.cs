@@ -157,6 +157,11 @@ namespace Sonar.Relays
             set => this.Duration = value * TimeMultiple;
         }
 
+        /// <summary>Players Nearby Count</summary>
+        [Key(10)]
+        [JsonProperty]
+        public int Players { get; set; }
+
         /// <summary>
         /// Fate's ending time
         /// </summary>
@@ -278,6 +283,7 @@ namespace Sonar.Relays
         public void UpdateWith(FateRelay relay)
         {
             base.UpdateWith(relay);
+            if (this.IsDead() || this.Players < relay.Players) this.Players = relay.Players;
             this.Coords = relay.Coords;
             this.StartTime = relay.StartTime;
             this.Progress = relay.Progress;

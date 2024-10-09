@@ -29,19 +29,19 @@ namespace Sonar.Indexes
         [GeneratedRegex(@"^(?<worldId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetWorldRegex();
 
-        [GeneratedRegex(@"^(?<worldId>\d+)_(?<zoneId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^(?<worldId>\d+?)_(?<zoneId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetWorldZoneRegex();
 
-        [GeneratedRegex(@"^(?<worldId>\d+)_(?<zoneId>\d+)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^(?<worldId>\d+?)_(?<zoneId>\d+?)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetWorldZoneInstanceRegex();
 
-        [GeneratedRegex(@"^wi(?<worldId>\d+)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^wi(?<worldId>\d+?)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetWorldInstanceRegex();
 
         [GeneratedRegex(@"^z(?<zoneId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetZoneRegex();
 
-        [GeneratedRegex(@"^z(?<zoneId>\d+)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^z(?<zoneId>\d+?)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetZoneInstanceRegex();
 
         [GeneratedRegex(@"^i(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
@@ -50,37 +50,37 @@ namespace Sonar.Indexes
         [GeneratedRegex(@"^d(?<datacenterId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetDatacenterRegex();
 
-        [GeneratedRegex(@"^d(?<datacenterId>\d+)_(?<zoneId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^d(?<datacenterId>\d+?)_(?<zoneId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetDatacenterZoneRegex();
 
-        [GeneratedRegex(@"^d(?<datacenterId>\d+)_(?<zoneId>\d+)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^d(?<datacenterId>\d+?)_(?<zoneId>\d+?)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetDatacenterZoneInstanceRegex();
 
-        [GeneratedRegex(@"^di(?<datacenterId>\d+)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^di(?<datacenterId>\d+?)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetDatacenterInstanceRegex();
 
         [GeneratedRegex(@"^r(?<regionId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetRegionRegex();
 
-        [GeneratedRegex(@"^r(?<regionId>\d+)_(?<zoneId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^r(?<regionId>\d+?)_(?<zoneId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetRegionZoneRegex();
 
-        [GeneratedRegex(@"^r(?<regionId>\d+)_(?<zoneId>\d+)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^r(?<regionId>\d+?)_(?<zoneId>\d+?)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetRegionZoneInstanceRegex();
 
-        [GeneratedRegex(@"^ri(?<regionId>\d+)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^ri(?<regionId>\d+?)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetRegionInstanceRegex();
 
         [GeneratedRegex(@"^a(?<audienceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetAudienceRegex();
 
-        [GeneratedRegex(@"^a(?<audienceId>\d+)_(?<zoneId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^a(?<audienceId>\d+?)_(?<zoneId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetAudienceZoneRegex();
 
-        [GeneratedRegex(@"^a(?<audienceId>\d+)_(?<zoneId>\d+)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^a(?<audienceId>\d+?)_(?<zoneId>\d+?)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetAudienceZoneInstanceRegex();
 
-        [GeneratedRegex(@"^ai(?<audienceId>\d+)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"^ai(?<audienceId>\d+?)_(?<instanceId>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]
         private static partial Regex GetAudienceInstanceRegex();
 
         [GeneratedRegex(@"^all$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase)]

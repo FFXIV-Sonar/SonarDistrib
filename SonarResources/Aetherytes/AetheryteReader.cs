@@ -1,5 +1,5 @@
 ﻿using Lumina;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using SonarResources.Lgb;
 using SonarResources.Lumina;
@@ -70,7 +70,7 @@ namespace SonarResources.Aetherytes
         private bool Read(LuminaEntry lumina)
         {
             var aetheryteSheet = lumina.Data.GetExcelSheet<Aetheryte>(lumina.LuminaLanguage);
-            if (aetheryteSheet is null || !aetheryteSheet.Languages.Contains(lumina.LuminaLanguage)) return false;
+            if (aetheryteSheet is null || aetheryteSheet.Language != lumina.LuminaLanguage) return false;
 
             var result = false;
             foreach (var aetheryteRow in aetheryteSheet)
@@ -81,7 +81,7 @@ namespace SonarResources.Aetherytes
                     this.Db.Aetherytes[id] = aetheryte = new()
                     {
                         Id = id,
-                        ZoneId = aetheryteRow.Territory.Row,
+                        ZoneId = aetheryteRow.Territory.RowId,
                         AethernetGroup = aetheryteRow.AethernetGroup,
                         Teleportable = aetheryteRow.IsAetheryte,
                     };
@@ -90,7 +90,7 @@ namespace SonarResources.Aetherytes
 
                 if (!aetheryte.Name.ContainsKey(lumina.SonarLanguage))
                 {
-                    var name = aetheryteRow.PlaceName.Value?.Name.ToTextString();
+                    var name = aetheryteRow.PlaceName.Value.Name.ExtractText();
                     if (!string.IsNullOrWhiteSpace(name))
                     {
                         aetheryte.Name[lumina.SonarLanguage] = name;
@@ -103,14 +103,15 @@ namespace SonarResources.Aetherytes
 
         private bool ScanMapMarkers(GameData data)
         {
-            var markerSheet = data.GetExcelSheet<MapMarker>(Language.None)?
+            var markerSheet = data.GetSubrowExcelSheet<MapMarker>(Language.None)?
+                .SelectMany(markers => markers)
                 .Where(marker => marker.DataType is 3);
             if (markerSheet is null) return false;
 
             var result = false;
             foreach (var marker in markerSheet)
             {
-                var id = marker.DataKey.Row;
+                var id = marker.DataKey.RowId;
                 var aetheryte = this.Db.Aetherytes[id];
                 if (aetheryte.Coords is { X: 0, Y: 0, Z: 0 })
                 {

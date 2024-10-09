@@ -21,7 +21,7 @@ namespace SonarPlugin.Game
                 Coords = mob.Position.SwapYZ(),
                 CurrentHp = mob.CurrentHp,
                 MaxHp = mob.MaxHp,
-                Players = playerCount
+                Players = playerCount,
             };
         }
 
@@ -51,7 +51,7 @@ namespace SonarPlugin.Game
         }
 
 
-        public static FateRelay ToSonarFateRelay(this IFate fate, GamePlace place)
+        public static FateRelay ToSonarFateRelay(this IFate fate, GamePlace place, int playerCount)
         {
             return new FateRelay()
             {
@@ -64,6 +64,7 @@ namespace SonarPlugin.Game
                 Duration = fate.Duration * EarthSecond,
                 Progress = fate.Progress,
                 Status = fate.State.ToSonarFateStatus(),
+                Players = playerCount,
             };
         }
     }

@@ -51,6 +51,7 @@ namespace Sonar.Trackers
         }
 
         [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowNotIndexing() => throw new InvalidOperationException($"Indexing is disabled on this {nameof(RelayTrackerData<T>)}");
 
         public bool Indexing { get; set; }
@@ -156,13 +157,13 @@ namespace Sonar.Trackers
         private void AddIndexEntries(RelayState<T> state)
         {
             if (!this.Indexing) return;
-            foreach (var indexKey in Unsafe.As<string[]>(state.IndexKeys))
+            foreach (var indexKey in state.IndexKeysCore.Items.AsSpan())
             {
                 ConcurrentTrieSet<RelayState<T>> entries;
                 while (true)
                 {
                     if (this._index.TryGetValue(indexKey, out entries!)) break;
-                    if (this._index.TryAdd(indexKey, entries = new())) break;
+                    if (this._index.TryAdd(indexKey, entries = [])) break;
                 }
                 entries.Add(state);
             }
@@ -171,7 +172,7 @@ namespace Sonar.Trackers
         private void RemoveIndexEntries(RelayState<T> state)
         {
             if (!this.Indexing) return;
-            foreach (var indexKey in state.IndexKeys)
+            foreach (var indexKey in state.IndexKeysCore.Items.AsSpan())
             {
                 if (!this._index.TryGetValue(indexKey, out var entries)) continue;
                 entries.Remove(state);

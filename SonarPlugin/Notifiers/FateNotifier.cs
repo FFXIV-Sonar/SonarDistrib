@@ -17,21 +17,26 @@ using Sonar.Data.Extensions;
 using Dalamud.Logging;
 using Sonar.Relays;
 using Dalamud.Plugin.Services;
+using Sonar;
 
 namespace SonarPlugin.Notifiers
 {
     public sealed class FateNotifier : IHostedService
     {
         private SonarPlugin Plugin { get; }
+        private IClientState ClientState { get; }
+        private SonarClient Client { get; }
         private IRelayTracker<FateRelay> Tracker { get; }
         private PlayerProvider Player { get; }
         private IChatGui Chat { get; }
         private AudioPlaybackEngine Audio { get; }
         private IPluginLog Logger { get; }
         
-        public FateNotifier(SonarPlugin plugin, IRelayTracker<FateRelay> tracker, PlayerProvider player, IChatGui chat, AudioPlaybackEngine audio, IPluginLog logger)
+        public FateNotifier(SonarPlugin plugin, IClientState clientState, SonarClient client, IRelayTracker<FateRelay> tracker, PlayerProvider player, IChatGui chat, AudioPlaybackEngine audio, IPluginLog logger)
         {
             this.Plugin = plugin;
+            this.ClientState = clientState;
+            this.Client = client;
             this.Tracker = tracker;
             this.Player = player;
             this.Chat = chat;
@@ -43,7 +48,7 @@ namespace SonarPlugin.Notifiers
 
         private void FateFound(RelayState<FateRelay> state)
         {
-            if (!this.Player.IsLoggedIn) return;
+            if (!this.ClientState.IsLoggedIn) return;
             var allowChat = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
             var allowSound = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableSoundInDuty);
 
@@ -63,7 +68,7 @@ namespace SonarPlugin.Notifiers
         {
             if (type == XivChatType.None) type = this.Plugin.Configuration.FateOutputChannel;
             if (type == XivChatType.None) type = XivChatType.Echo;
-            var cwIcon = this.Plugin.Configuration.EnableGameChatCrossworldIcon && this.Player.Place.WorldId != relay.WorldId;
+            var cwIcon = this.Plugin.Configuration.EnableGameChatCrossworldIcon && this.Client.Meta.PlayerPosition?.WorldId != relay.WorldId;
 
             var builder = new SeStringBuilder();
             if (this.Plugin.Configuration.EnableFateChatItalicFont) builder.AddItalicsOn();

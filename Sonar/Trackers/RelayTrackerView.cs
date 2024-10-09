@@ -199,7 +199,7 @@ namespace Sonar.Trackers
 
         private void ProcessState(RelayState<T> state, bool isFound)
         {
-            if (this._indexKey != "all" && !state.IndexKeys.Contains(this._indexKey)) return;
+            if (this._indexKey != "all" && !state.IndexKeysCore.Contains(this._indexKey)) return;
 
             if (!this._predicate(state))
             {

@@ -1,7 +1,7 @@
 ﻿using DryIocAttributes;
 using Humanizer;
 using Lumina;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using Sonar.Enums;
 using SonarResources.Lumina;
@@ -55,7 +55,7 @@ namespace SonarResources.Readers
 
                 // OffsetZ
                 float offsetZ;
-                try { offsetZ = transientSheet.GetRow(id)?.OffsetZ ?? -10000; } catch { offsetZ = -10000; }
+                try { offsetZ = transientSheet.GetRow(id).OffsetZ; } catch { offsetZ = -10000; }
                 var hasOffsetZ = offsetZ != -10000;
                 if (!hasOffsetZ) offsetZ = 0;
 
@@ -64,20 +64,20 @@ namespace SonarResources.Readers
                     this.Db.Zones[id] = zone = new()
                     {
                         Id = id,
-                        MapId = territory.Map.Row,
+                        MapId = territory.Map.RowId,
                         Scale = territory.Map.Value!.SizeFactor / 100f,
                         Offset = new(territory.Map.Value.OffsetX, territory.Map.Value.OffsetY, offsetZ),
                         HasOffsetZ = hasOffsetZ,
-                        MapResourcePath = territory.Map.Value.Id,
-                        Expansion = GetZoneExpansion(territory.Bg),
-                        IsField = territory.TerritoryIntendedUse.Value?.RowId == 1 || territory.TerritoryIntendedUse.Value?.RowId == 41 || territory.TerritoryIntendedUse.Value?.RowId == 48, // && t.Stealth && t.Mount && t.Aetheryte.Row != 0 && !t.IsPvpZone,
-                        LocalOnly = territory.TerritoryIntendedUse.Value?.RowId == 41 || territory.TerritoryIntendedUse.Value?.RowId == 48,
+                        MapResourcePath = territory.Map.Value.Id.ExtractText(),
+                        Expansion = GetZoneExpansion(territory.Bg.ExtractText()),
+                        IsField = territory.TerritoryIntendedUse.Value.RowId == 1 || territory.TerritoryIntendedUse.Value.RowId == 41 || territory.TerritoryIntendedUse.Value.RowId == 48, // && t.Stealth && t.Mount && t.Aetheryte.Row != 0 && !t.IsPvpZone,
+                        LocalOnly = territory.TerritoryIntendedUse.Value.RowId == 41 || territory.TerritoryIntendedUse.Value.RowId == 48,
                     };
                 }
 
                 if (!zone.Name.ContainsKey(lumina.SonarLanguage))
                 {
-                    var name = placeNames.GetRow(territory.PlaceName.Row)?.Name?.ToTextString()?.Transform(To.TitleCase);
+                    var name = placeNames.GetRowOrDefault(territory.PlaceName.RowId)?.Name.ExtractText().Transform(To.TitleCase);
                     if (!string.IsNullOrWhiteSpace(name))
                     {
                         zone.Name[lumina.SonarLanguage] = name;
@@ -87,7 +87,7 @@ namespace SonarResources.Readers
 
                 if (!zone.Region.ContainsKey(lumina.SonarLanguage))
                 {
-                    var name = placeNames.GetRow(territory.PlaceNameRegion.Row)?.Name?.ToTextString()?.Transform(To.TitleCase);
+                    var name = placeNames.GetRowOrDefault(territory.PlaceNameRegion.RowId)?.Name.ExtractText().Transform(To.TitleCase);
                     if (!string.IsNullOrWhiteSpace(name))
                     {
                         zone.Region[lumina.SonarLanguage] = name;

@@ -1,7 +1,7 @@
 ﻿using DryIocAttributes;
 using Humanizer;
 using Lumina;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using Sonar.Data.Rows;
 using Sonar.Enums;
@@ -45,7 +45,7 @@ namespace SonarResources.Readers
         private bool Read(LuminaEntry lumina)
         {
             var nmSheet = lumina.Data.GetExcelSheet<NotoriousMonster>(lumina.LuminaLanguage)?
-                .Where(nm => nm.BNpcName.Row != 0 && nm.BNpcBase.Row != 0);
+                .Where(nm => nm.BNpcName.RowId != 0 && nm.BNpcBase.RowId != 0);
             if (nmSheet is null) return false;
 
             var bNpcName = lumina.Data.GetExcelSheet<BNpcName>(lumina.LuminaLanguage);
@@ -59,7 +59,7 @@ namespace SonarResources.Readers
                 var expansion = GetHuntExpansion(nmId);
                 var level = GetHuntLevel(nmId);
 
-                var id = nm.BNpcName.Row;
+                var id = nm.BNpcName.RowId;
                 if (!this.Db.Hunts.TryGetValue(id, out var hunt))
                 {
                     this.Db.Hunts[id] = hunt = new()
@@ -74,7 +74,7 @@ namespace SonarResources.Readers
 
                 if (!hunt.Name.ContainsKey(lumina.SonarLanguage))
                 {
-                    var name = bNpcName.GetRow(nm.BNpcName.Row)?.Singular?.ToTextString()?.Transform(To.TitleCase);
+                    var name = bNpcName.GetRowOrDefault(nm.BNpcName.RowId)?.Singular.ExtractText().Transform(To.TitleCase);
                     if (!string.IsNullOrWhiteSpace(name))
                     {
                         hunt.Name[lumina.SonarLanguage] = name;
@@ -422,14 +422,14 @@ namespace SonarResources.Readers
         private static HuntRank GetHuntRank(NotoriousMonster hunt)
         {
             // Stolen from https://github.com/quisquous/cactbot/blob/master/util/gen_hunt_data.py
-            if (hunt.BNpcBase.Row == 10422) return HuntRank.SS; // Forgiven Rebellion
-            if (hunt.BNpcBase.Row == 10755) return HuntRank.SSMinion; // Forgiven Gossip
+            if (hunt.BNpcBase.RowId == 10422) return HuntRank.SS; // Forgiven Rebellion
+            if (hunt.BNpcBase.RowId == 10755) return HuntRank.SSMinion; // Forgiven Gossip
 
-            if (hunt.BNpcName.Row == 10615) return HuntRank.SS; // Ker
-            if (hunt.BNpcName.Row == 10616) return HuntRank.SSMinion; // Ker Shroud
+            if (hunt.BNpcName.RowId == 10615) return HuntRank.SS; // Ker
+            if (hunt.BNpcName.RowId == 10616) return HuntRank.SSMinion; // Ker Shroud
 
-            if (hunt.BNpcName.Row == 13406) return HuntRank.SS; // Arch Aethereater
-            if (hunt.BNpcName.Row == 13407) return HuntRank.SSMinion; // Crystal Incarnation
+            if (hunt.BNpcName.RowId == 13406) return HuntRank.SS; // Arch Aethereater
+            if (hunt.BNpcName.RowId == 13407) return HuntRank.SSMinion; // Crystal Incarnation
 
             if (hunt.Rank == 3) return HuntRank.S;
             if (hunt.Rank == 2) return HuntRank.A;

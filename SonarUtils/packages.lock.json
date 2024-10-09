@@ -4,12 +4,12 @@
     "net8.0": {
       "AG.Collections.Concurrent": {
         "type": "Direct",
-        "requested": "[0.0.2-alpha, )",
-        "resolved": "0.0.2-alpha",
-        "contentHash": "dYyWg+X8Nk2Ax169IhObwxsY7gf9QDN97/V05huCca0N0EWGBFCs0DV/MlQN+bABBRJqNFEbYFHtfbRrkFLM/Q==",
+        "requested": "[0.0.4-alpha, )",
+        "resolved": "0.0.4-alpha",
+        "contentHash": "FLquebXHqINLK0wMYE+L6fNSuGDxnECvEW8Gxl/kADCBwxybNxGk6MHNT+y5ERSAYONaEA/VvJRkLgs9YdLamA==",
         "dependencies": {
-          "AG": "0.0.2-alpha",
-          "AG.Collections.Generic": "0.0.2-alpha"
+          "AG": "0.0.4-alpha",
+          "AG.Collections.Generic": "0.0.4-alpha"
         }
       },
       "Farmhash.Sharp": {
@@ -26,15 +26,15 @@
       },
       "AG": {
         "type": "Transitive",
-        "resolved": "0.0.2-alpha",
-        "contentHash": "GWUPucUf0fPIK1rAEDF4TTMoWkTQ78UCBbCqatATOTdD+D7xilPlaeKowVjb7X8u+s6j+Q/prvhjxQbBcRNDhg=="
+        "resolved": "0.0.4-alpha",
+        "contentHash": "jdsl8eVNf7+L3Dr52AyQI9BFa3QsC9sMvg9pEhCLM/wb8K3czJj2Q/KIuVOka/uL27ZIzznToderYwNVR4FVWg=="
       },
       "AG.Collections.Generic": {
         "type": "Transitive",
-        "resolved": "0.0.2-alpha",
-        "contentHash": "6FdFplFvKxxShS5eQvarJrulroN6U60lw2FVtBKuFr1yjJaZ6lRWFsjNb0IE2kBDGQ9cT4Uo1m6QH1gxNM65dA==",
+        "resolved": "0.0.4-alpha",
+        "contentHash": "3VO7pW4QlPzebzDXGSqC/PumviQ0Onep9GtcaUcS4hqwWAFQclLEHK2nZyBNVtk8uavcakjYKI0+48S5+ZfcFg==",
         "dependencies": {
-          "AG": "0.0.2-alpha"
+          "AG": "0.0.4-alpha"
         }
       }
     },

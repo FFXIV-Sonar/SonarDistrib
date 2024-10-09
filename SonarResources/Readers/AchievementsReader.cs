@@ -1,5 +1,5 @@
 ﻿using Lumina;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using System;
 using System.Collections.Generic;
@@ -56,7 +56,7 @@ namespace SonarResources.Readers
             {
                 var achievementId = achievement.RowId;
 
-                var description = achievement.Description.ToTextString();
+                var description = achievement.Description.ExtractText();
                 var match = s_achievementRegex.Match(description);
                 if (match.Success)
                 {
@@ -100,13 +100,13 @@ namespace SonarResources.Readers
                 var fate = this.Db.Fates[fateId];
 
                 var achievementId = fateAchievement.Value;
-                var achievement = achievementSheet.GetRow(achievementId);
+                var achievement = achievementSheet.GetRowOrDefault(achievementId);
                 if (achievement is null) continue;
 
                 fate.HasAchievement = true;
                 if (!fate.AchievementName.ContainsKey(lumina.SonarLanguage))
                 {
-                    result |= fate.AchievementName.TryAdd(lumina.SonarLanguage, achievement.Name.ToTextString());
+                    result |= fate.AchievementName.TryAdd(lumina.SonarLanguage, achievement.Value.Name.ExtractText());
                 }
             }
             return result;

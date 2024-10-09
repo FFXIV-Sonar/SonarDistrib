@@ -1,6 +1,6 @@
 ﻿using Lumina;
 using Lumina.Data.Files;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +30,7 @@ namespace SonarResources.Maps
                 Mask = string.Format(MapFileFormat, mapId, fileName, "m")
             };
         }
-        public static MapPaths GetMapGameDataPaths(this Map map) => GetMapGameDataPaths(map.Id);
+        public static MapPaths GetMapGameDataPaths(this Map map) => GetMapGameDataPaths(map.Id.ExtractText());
 
         public static string GetZoneImageAssetPath(uint id, MapSize size, string extension) => $"../../../Assets/images/zone-{id}-{SizeSuffix[size]}.{extension}";
         public static string GetZoneImageAssetPath(this TerritoryType territoryType, MapSize size, string extension) => GetZoneImageAssetPath(territoryType.RowId, size, extension);

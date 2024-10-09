@@ -153,7 +153,7 @@ namespace Sonar.Connections
             {
                 ConnectionType.WebSocket => this.ConnectionAttemptWebSocket(url),
                 ConnectionType.SignalR => this.ConnectionAttemptSignalR(url),
-                _ => throw new ArgumentException($"Invalid Connection Type: {url.Type}")
+                _ => throw new ArgumentException($"Invalid Connection Type for {url.Key}: {url.Type}")
             };
 
         }
@@ -180,7 +180,7 @@ namespace Sonar.Connections
             catch (Exception ex)
             {
                 // Only log exception if not connected.
-                if (this._socket is null && ex is not OperationCanceledException) this.Client.LogError(ex, "Connection exception");
+                if (this._socket is null && ex is not OperationCanceledException) this.Client.LogError(ex, $"Connection exception at {url.Key} ({url.Type})");
                 webSocket.Dispose(); // Dispose faulty socket
             }
         }
@@ -208,8 +208,8 @@ namespace Sonar.Connections
             catch (Exception ex)
             {
                 // Only log exception if not connected.
-                if (this._socket is null && ex is not OperationCanceledException) this.Client.LogError(ex, "Connection exception");
-                connection.DisposeAsync().AsTask().GetAwaiter().GetResult(); // Dispose faulty socket
+                if (this._socket is null && ex is not OperationCanceledException) this.Client.LogError(ex, $"Connection exception at {url.Key} ({url.Type})");
+                await connection.DisposeAsync(); // Dispose faulty socket
             }
         }
 
@@ -306,12 +306,15 @@ namespace Sonar.Connections
                 socket.Dispose();
             }
             this.Client.LogDebug(() => $"{nameof(SonarConnectionManager)} disposed");
+            this._cts.Dispose();
         }
 
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
             await this._cts.CancelAsync();
             await Task.WhenAll(this._sockets.Keys.Select(s => s.DisposeAsync().AsTask()));
+            this.Client.LogDebug(() => $"{nameof(SonarConnectionManager)} disposed (async)");
+            this._cts.Dispose();
         }
     }
 }

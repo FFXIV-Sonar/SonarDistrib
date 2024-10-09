@@ -11,6 +11,7 @@ using Sonar.Trackers;
 using Dalamud.Logging;
 using Dalamud.Plugin.Services;
 using Sonar.Relays;
+using Sonar;
 
 namespace SonarPlugin.Trackers
 {
@@ -18,6 +19,7 @@ namespace SonarPlugin.Trackers
     {
         private PlayerProvider Player { get; }
         private SonarPlugin Plugin { get; }
+        private SonarClient Client { get; }
         private IRelayTracker<FateRelay> Tracker { get; }
         private IFateTable Fates { get; }
         private IClientState ClientState { get; }
@@ -28,11 +30,12 @@ namespace SonarPlugin.Trackers
         /// </summary>
         /// <param name="plugin">Sonar Plugin object</param>
         /// <param name="debug">(Optional) Output debug logging</param>
-        public SonarFateProvider(PlayerProvider player, SonarPlugin plugin, IRelayTracker<FateRelay> tracker, IFateTable fates, IClientState clientState, IPluginLog logger)
+        public SonarFateProvider(PlayerProvider player, SonarPlugin plugin, SonarClient client, IRelayTracker<FateRelay> tracker, IFateTable fates, IClientState clientState, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
             this.Player = player;
             this.Plugin = plugin;
+            this.Client = client;
             this.Tracker = tracker;
             this.Fates = fates;
             this.ClientState = clientState;
@@ -52,12 +55,16 @@ namespace SonarPlugin.Trackers
                 return;
             }
 
+            // Get player position information
+            var playerPosition = this.Client.Meta.PlayerPosition;
+            if (playerPosition is null) return;
+
             // Iterate throughout all fates in the fates table
             var fates = this.Fates
                 .Where(f => f.State != 0)
                 .Where(f => f.State == FateState.Preparation || (f.StartTimeEpoch != 0 && f.Duration != 0 && f.TimeRemaining != 0))
                 .Where(f => f.Position.X != 0 || f.Position.Y != 0 || f.Position.Z != 0)
-                .Select(f => f.ToSonarFateRelay(this.Player.Place))
+                .Select(f => f.ToSonarFateRelay(playerPosition, this.Player.GetNearbyPlayerCount(f.Position.SwapYZ())))
                 .ToList();
 
             this.Tracker.FeedRelays(fates);

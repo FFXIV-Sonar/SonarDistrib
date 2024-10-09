@@ -37,10 +37,15 @@ namespace Sonar.Models
         [Key(1)]
         public required uint HomeWorldId { get; init; }
 
-        /// <summary>Player Hash</summary>
+        /// <summary>Player Hash 1</summary>
         [JsonProperty]
         [Key(2)]
-        public required long Hash { get; init; }
+        public required long Hash1 { get; init; }
+
+        /// <summary>Player Hash 2</summary>
+        [JsonProperty]
+        [Key(4)]
+        public required long Hash2 { get; init; }
 
         /// <summary>Lodestone ID</summary>
         [IgnoreMember]
@@ -69,15 +74,15 @@ namespace Sonar.Models
                 // Due to CN (and maybe KR) other properties of the name cannot be checked
                 if (this.Name is not null && this.Name.Length <= 32 && (this.GetWorld()?.IsPublic ?? false)) return 1;
             }
-            else if (this.Name is null && this.HomeWorldId == 0 && this.Hash == 0) return 1;
+            else if (this.Name is null && this.HomeWorldId == 0 && this.Hash1 == 0 && this.Hash2 == 0) return 1;
             return -1;
         }
 
         public override string ToString() => this._toString ??= $"{this.Name} <{this.GetWorld()}>";
-        public static bool Equals(PlayerInfo? left, PlayerInfo? right) => ReferenceEquals(left, right) || (left is not null && right is not null && left.Hash == right.Hash && left.HomeWorldId == right.HomeWorldId && string.Equals(left.Name, right.Name, StringComparison.Ordinal));
+        public static bool Equals(PlayerInfo? left, PlayerInfo? right) => ReferenceEquals(left, right) || (left is not null && right is not null && left.Hash1 == right.Hash1 && left.Hash2 == right.Hash2  && left.HomeWorldId == right.HomeWorldId && string.Equals(left.Name, right.Name, StringComparison.Ordinal));
         public bool Equals(PlayerInfo? other) => Equals(this, other);
         public override bool Equals(object? obj) => obj is PlayerInfo info && this.Equals(info);
-        public override int GetHashCode() => HashCode.Combine(this.Name?.GetHashCode() ?? 0, this.HomeWorldId.GetHashCode(), SplitHash64.ConvertTo32Bit(this.Hash));
+        public override int GetHashCode() => HashCode.Combine(this.Name?.GetHashCode() ?? 0, this.HomeWorldId.GetHashCode(), BitUtils.Fold(this.Hash1), BitUtils.Fold(this.Hash2));
         public static bool operator ==(PlayerInfo left, PlayerInfo right) => left.Equals(right);
         public static bool operator !=(PlayerInfo left, PlayerInfo right) => !left.Equals(right);
     }

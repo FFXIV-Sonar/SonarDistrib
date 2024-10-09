@@ -17,6 +17,7 @@ using Sonar.Indexes;
 using Sonar.Relays;
 using Sonar.Utilities;
 using Sonar.Data.Rows;
+using System.Collections.Frozen;
 
 namespace Sonar.Trackers
 {
@@ -76,6 +77,10 @@ namespace Sonar.Trackers
         [JsonIgnore]
         [IgnoreMember]
         public IEnumerable<string> IndexKeys => this.Relay.IndexKeys;
+
+        [JsonIgnore]
+        [IgnoreMember]
+        internal FrozenSet<string> IndexKeysCore => this.Relay.IndexKeysCore;
 
         /// <summary>Sort Key</summary>
         [JsonIgnore]

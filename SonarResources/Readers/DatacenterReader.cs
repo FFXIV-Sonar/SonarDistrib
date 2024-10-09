@@ -1,7 +1,7 @@
 ﻿using DryIocAttributes;
 using Lumina;
 using Lumina.Data;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using SonarResources.Lumina;
 using SonarResources.Providers;
@@ -56,7 +56,7 @@ namespace SonarResources.Readers
                     this.Db.Datacenters[id] = dc = new()
                     {
                         Id = id,
-                        Name = dcRow.Name.ToTextString(),
+                        Name = dcRow.Name.ExtractText(),
                         RegionId = region.Id,
                         AudienceId = region.AudienceId,
                     };
