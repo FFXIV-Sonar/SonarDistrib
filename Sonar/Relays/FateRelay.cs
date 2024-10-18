@@ -249,7 +249,7 @@ namespace Sonar.Relays
         /// <summary>
         /// Check if another relay is similar (only Progress, Coords, Status and Start time are checked)
         /// </summary>
-        public bool IsSimilarData(FateRelay relay, double now) => this.ProgressRoughlyEquals(relay.Progress) && this.Coords.Delta(relay.Coords).LengthSquared() < RoughDistanceSquared && this.GetStatus(now) == relay.GetStatus(now);
+        public bool IsSimilarData(FateRelay relay, double now) => this.ProgressRoughlyEquals(relay.Progress) && this.Coords.Delta(relay.Coords).LengthSquared() < RoughDistanceSquared && this.GetStatus(now) == relay.GetStatus(now) && this.Players >= relay.Players;
 
         /// <summary>
         /// Check if another relay is similar (only Progress, Coords, Status and Start time are checked)

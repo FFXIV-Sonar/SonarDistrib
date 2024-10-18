@@ -114,7 +114,7 @@ namespace Sonar.Relays
         /// Check if another relay is similar (only HP, Coords and Actor ID are checked)
         /// </summary>
         /// <param name="relay">Relay to check</param>
-        public bool IsSimilarData(HuntRelay relay) => this.HpPercentRoughlyEquals(relay.HpPercent) && this.Coords.Delta(relay.Coords).LengthSquared() < RoughDistanceSquared;
+        public bool IsSimilarData(HuntRelay relay) => this.HpPercentRoughlyEquals(relay.HpPercent) && this.Coords.Delta(relay.Coords).LengthSquared() < RoughDistanceSquared && this.Players >= relay.Players;
 
         /// <summary>
         /// Check if another relay is similar (only HP, Coords and Actor ID are checked)

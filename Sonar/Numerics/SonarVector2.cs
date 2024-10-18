@@ -67,7 +67,7 @@ namespace Sonar.Numerics
             set => this.Y = (float)(value / MessagePackAccuracy);
         }
 
-        public readonly float Length() => (float)Math.Sqrt(this.LengthSquared());
+        public readonly float Length() => MathF.Sqrt(this.LengthSquared());
         public readonly float LengthSquared() => this * this;
         public readonly SonarVector2 Unit()
         {
