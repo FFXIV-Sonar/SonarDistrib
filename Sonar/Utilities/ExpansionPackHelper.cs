@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Sonar.Enums;
+﻿using Sonar.Enums;
 
 namespace Sonar.Utilities
 {
@@ -16,6 +12,7 @@ namespace Sonar.Utilities
             "STORMBLOOD" => ExpansionPack.Stormblood,
             "SHADOWBRINGERS" => ExpansionPack.Shadowbringers,
             "ENDWALKER" => ExpansionPack.Endwalker,
+            "DAWNTRAIL" => ExpansionPack.Dawntrail,
 
             // Short strings (as we players abbreviate)
             "ARR" => ExpansionPack.ARealmReborn,
@@ -23,6 +20,7 @@ namespace Sonar.Utilities
             "SB" => ExpansionPack.Stormblood,
             "SHB" => ExpansionPack.Shadowbringers,
             "EW" => ExpansionPack.Endwalker,
+            "DT" => ExpansionPack.Dawntrail,
 
             // Alternative abbreviations (because we players don't agree on one) and names
             "AREALMREBORN" => ExpansionPack.ARealmReborn, // Because of the enum
@@ -34,6 +32,7 @@ namespace Sonar.Utilities
             "SHBR" => ExpansionPack.Shadowbringers,
             "SHADOWBRINGER" => ExpansionPack.Shadowbringers, // <== who knows...
             "ENDWALKERS" => ExpansionPack.Endwalker,
+            "DAWNTRAILS" => ExpansionPack.Dawntrail,
 
             // In case we decide to use short names
             "REALM" => ExpansionPack.ARealmReborn,
@@ -48,6 +47,9 @@ namespace Sonar.Utilities
             "BRINGER" => ExpansionPack.Shadowbringers,
             "END" => ExpansionPack.Endwalker,
             "WALKER" => ExpansionPack.Endwalker,
+            "DAWN" => ExpansionPack.Dawntrail,
+            "TRAIL" => ExpansionPack.Dawntrail,
+            "TRAILS" => ExpansionPack.Dawntrail,
 
             // Unable to determnine
             _ => ExpansionPack.Unknown
@@ -60,6 +62,7 @@ namespace Sonar.Utilities
             ExpansionPack.Stormblood => "Stormblood",
             ExpansionPack.Shadowbringers => "Shadowbringers",
             ExpansionPack.Endwalker => "Endwalker",
+            ExpansionPack.Dawntrail => "Dawntrail",
             ExpansionPack.Unknown => "Unknown",
             _ => "INVALID"
         };
@@ -72,6 +75,7 @@ namespace Sonar.Utilities
             ExpansionPack.Stormblood => "SB",
             ExpansionPack.Shadowbringers => "ShB",
             ExpansionPack.Endwalker => "EW",
+            ExpansionPack.Dawntrail => "DT",
             ExpansionPack.Unknown => "Unknown",
             _ => "INVALID"
         };

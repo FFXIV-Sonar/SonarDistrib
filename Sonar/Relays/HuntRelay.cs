@@ -91,6 +91,12 @@ namespace Sonar.Relays
         [JsonProperty]
         public int Players { get; set; }
 
+        /// <summary>Client provided, server-side validation only</summary>
+        /// <remarks>Please fill this with <see cref="SyncedUnixNow"/>. Server will zero out this field.</remarks>
+        [Key(11)]
+        [JsonIgnore]
+        public double CheckTimestamp { get; set; }
+
         /// <summary>
         /// Check if this hunt is alive
         /// </summary>

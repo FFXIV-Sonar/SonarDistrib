@@ -3,6 +3,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Sonar.Enums;
 using Sonar.Models;
 using Sonar.Relays;
+using Sonar.Utilities;
 using static Sonar.SonarConstants;
 
 namespace SonarPlugin.Game
@@ -22,6 +23,7 @@ namespace SonarPlugin.Game
                 CurrentHp = mob.CurrentHp,
                 MaxHp = mob.MaxHp,
                 Players = playerCount,
+                CheckTimestamp = UnixTimeHelper.SyncedUnixNow,
             };
         }
 
@@ -65,6 +67,7 @@ namespace SonarPlugin.Game
                 Progress = fate.Progress,
                 Status = fate.State.ToSonarFateStatus(),
                 Players = playerCount,
+                CheckTimestamp = UnixTimeHelper.SyncedUnixNow,
             };
         }
     }

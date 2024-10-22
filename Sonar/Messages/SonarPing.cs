@@ -8,7 +8,7 @@ namespace Sonar.Messages
     [JsonObject]
     [MessagePackObject]
     [Serializable]
-    public readonly struct SonarPing : ISonarMessage
+    public sealed class SonarPing : ISonarMessage
     {
         /// <summary>Sequence ID</summary>
         [Key(0)]

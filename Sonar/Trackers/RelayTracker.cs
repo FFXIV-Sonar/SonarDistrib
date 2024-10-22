@@ -108,7 +108,7 @@ namespace Sonar.Trackers
         {
             if (!this._relayUpdateQueue.IsEmpty)
             {
-                if (this.Client.Connection.IsConnected && this.Contribute.Compute(s_type) && this.Client.Modifiers.CanContribute(this.RelayType))
+                if (this.Client.Connection.IsConnected)
                 {
                     var relaysDict = new Dictionary<string, T>();
                     while (this._relayUpdateQueue.TryDequeue(out var item)) relaysDict[item.RelayKey] = item;
@@ -154,7 +154,12 @@ namespace Sonar.Trackers
             }
             else
             {
-                this._relayUpdateQueue.Enqueue(relay);
+                if (this.Data.States.TryGetValue(relay.RelayKey, out var state))
+                {
+                    if (!state.IsSimilarData(relay) || !state.IsSameEntity(relay)) this._relayUpdateQueue.Enqueue(relay);
+                    else { /* Do nothing */ } // <-- so I don't confused the meaning of this nested if
+                }
+                else this._relayUpdateQueue.Enqueue(relay);
             }
             return true;
         }
@@ -275,7 +280,9 @@ namespace Sonar.Trackers
 
         #region IDisposable Pattern
         private int disposed; //Interlocked
+
         public bool IsDisposed => this.disposed == 1;
+
         private void Dispose(bool disposing)
         {
             if (Interlocked.Exchange(ref this.disposed, 1) == 1) return;

@@ -100,8 +100,8 @@ namespace Sonar
                 if (!placeUpdated && !positionUpdated) return (false, false);
 
                 this.PlayerPosition = playerPosition;
+                this.PlayerPositionChanged?.Invoke(playerPosition);
                 if (placeUpdated) this.PlayerPlaceChanged?.Invoke(playerPosition);
-                if (positionUpdated) this.PlayerPlaceChanged?.Invoke(playerPosition);
                 this.Client.Connection.SendIfConnected(playerPosition);
             }
             finally
