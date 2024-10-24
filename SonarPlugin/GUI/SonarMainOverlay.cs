@@ -188,12 +188,13 @@ namespace SonarPlugin.GUI
             try
             {
                 var place = this.Client.Meta.PlayerPosition;
+                if (place is null) return false;
                 var rank = this._huntRank;
 
                 HuntRank[]? searchRanks = null;
                 if (rank == HuntRank.S && !this.Plugin.Configuration.AllSRankSettings)
                 {
-                    searchRanks = new HuntRank[] { HuntRank.S, HuntRank.SSMinion, HuntRank.SS };
+                    searchRanks = [HuntRank.S, HuntRank.SSMinion, HuntRank.SS];
                 }
 
 #if DEBUG

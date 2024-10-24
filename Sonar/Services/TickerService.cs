@@ -1,71 +1,86 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Sonar.Utilities;
 
 namespace Sonar.Services
 {
-    /// <summary>
-    /// Handles sonar ticks
-    /// </summary>
+    /// <summary>Handles sonar ticks</summary>
     public sealed class TickerService : IDisposable
     {
-        private readonly Timer Timer;
-
-        private double tickInterval;
-        public double TickInterval
-        {
-            get => this.tickInterval;
-            set
-            {
-                this.Timer.Change((int)value, (int)value);
-                this.tickInterval = (int)value;
-            }
-        }
+        private readonly Timer _timer;
+        private ImmutableArray<Action<TickerService>> _tickHandlers = [];
+        private double _tickInterval;
 
         private SonarClient Client { get; }
 
-        /// <summary>
-        /// Initializes a TickerService with a specified tick size
-        /// </summary>
+        /// <summary>Tick Interval in milliseconds</summary>
+        public double TickInterval
+        {
+            get => this._tickInterval;
+            set
+            {
+                if (this._timer.Change((int)value, (int)value)) this._tickInterval = (int)value;
+            }
+        }
+
+        /// <summary>Initializes a TickerService with a specified tick size</summary>
         internal TickerService(SonarClient client)
         {
-            this.tickInterval = SonarConstants.SonarTick;
+            this._tickInterval = SonarConstants.SonarTick;
             this.Client = client;
-            this.Timer = new Timer(this.TickHandler, null, (int)this.tickInterval, (int)this.tickInterval);
+            this._timer = new Timer(this.TickHandler, null, (int)this._tickInterval, (int)this._tickInterval);
         }
 
         private void TickHandler(object? _)
         {
-            try
+            foreach (var handler in this._tickHandlers)
             {
-                this.Tick?.Invoke(this);
-            }
-            catch (Exception ex)
-            {
-                if (this.Client.LogErrorEnabled) this.Client.LogError(ex, string.Empty);
+                try
+                {
+                    handler.Invoke(this);
+                }
+                catch (Exception ex)
+                {
+                    if (this.Client.LogErrorEnabled) this.Client.LogError(ex, string.Empty);
+                }
             }
         }
 
-        #region Event Handlers
-        /// <summary>
-        /// Ticks every raw tick
-        /// </summary>
-        public event TickerTickHandler? Tick;
-        #endregion
-
-        #region IDisposable Pattern
-        private int disposed;
-        public bool IsDisposed => this.disposed == 1;
+        /// <summary>Ticks every raw tick</summary>
+        public event Action<TickerService>? Tick
+        {
+            add
+            {
+                if (value is null) return;
+                while (true)
+                {
+                    var handlers = this._tickHandlers;
+                    if (ImmutableInterlocked.InterlockedCompareExchange(ref this._tickHandlers, handlers.Add(value), handlers) == handlers) return;
+                }
+            }
+            remove
+            {
+                if (value is null) return;
+                while (true)
+                {
+                    var handlers = this._tickHandlers;
+                    if (ImmutableInterlocked.InterlockedCompareExchange(ref this._tickHandlers, handlers.Remove(value), handlers) == handlers) return;
+                }
+            }
+        }
 
         public async ValueTask DisposeAsync()
         {
-            if (Interlocked.Exchange(ref this.disposed, 1) == 1) return;
-            await this.Timer.DisposeAsync();
+            this._tickHandlers = [];
+            await this._timer.DisposeAsync();
         }
-        public void Dispose() => this.DisposeAsync().AsTask().GetAwaiter().GetResult();
-        #endregion
-    }
 
-    public delegate void TickerTickHandler(TickerService ticker);
+        public void Dispose()
+        {
+            this._tickHandlers = [];
+            this._timer.Dispose();
+        }
+    }
 }
