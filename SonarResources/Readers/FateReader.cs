@@ -10,6 +10,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Sonar.Enums;
+using System.Diagnostics;
+using Lumina.Data;
 
 namespace SonarResources.Readers
 {
@@ -48,6 +50,7 @@ namespace SonarResources.Readers
             foreach (var fateRow in fateSheet)
             {
                 var id = fateRow.RowId;
+                //if (id == 1873) Debugger.Break();
 
                 var lgbId = fateRow.Location;
                 var lgbInstance = this.Lgb.GetInstance(lgbId) ?? throw new KeyNotFoundException($"LGB Instance not found: {lgbId}");
@@ -74,7 +77,7 @@ namespace SonarResources.Readers
 
                 if (!fate.Name.ContainsKey(lumina.SonarLanguage))
                 {
-                    var name = fateRow.Name.ExtractText();
+                    var name = fateRow.Name.ExtractTextWithSheets(lumina.Data, lumina.LuminaLanguage);
                     if (!string.IsNullOrWhiteSpace(name))
                     {
                         fate.Name[lumina.SonarLanguage] = name;
@@ -84,7 +87,7 @@ namespace SonarResources.Readers
 
                 if (!fate.Description.ContainsKey(lumina.SonarLanguage))
                 {
-                    var description = fateRow.Description.ExtractText();
+                    var description = fateRow.Description.ExtractTextWithSheets(lumina.Data, lumina.LuminaLanguage);
                     if (!string.IsNullOrWhiteSpace(description))
                     {
                         fate.Description[lumina.SonarLanguage] = description;
@@ -94,7 +97,7 @@ namespace SonarResources.Readers
 
                 if (!fate.Objective.ContainsKey(lumina.SonarLanguage))
                 {
-                    var objective = fateRow.Objective.ExtractText();
+                    var objective = fateRow.Objective.ExtractTextWithSheets(lumina.Data, lumina.LuminaLanguage);
                     if (!string.IsNullOrWhiteSpace(objective))
                     {
                         fate.Objective[lumina.SonarLanguage] = objective;
