@@ -14,6 +14,8 @@ using Dalamud.Plugin.Services;
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Textures.TextureWraps;
 using System.Linq.Expressions;
+using MessagePack.Resolvers;
+using DryIoc.FastExpressionCompiler.LightExpression;
 
 namespace SonarPlugin.Utility
 {
@@ -55,7 +57,7 @@ namespace SonarPlugin.Utility
         private async Task LoadMapTextureAsync(string path)
         {
             await Task.Yield();
-            var texture = this.BuildMapImage(path, "s");
+            var texture = this.BuildMapImage(path, "m");
             if (texture is null) return;
             lock (this._texturesLock)
             {
@@ -75,17 +77,22 @@ namespace SonarPlugin.Utility
             var fileName = mapId.Replace("/", "");
 
             var filePath = string.Format(MapFileFormat, mapId, fileName, string.Empty, size);
-            var mapTexFile = this.Data.GetFile<TexFile>(filePath);
-            if (mapTexFile is null) return null;
-
             var maskPath = string.Format(MapFileFormat, mapId, fileName, "m", size);
-            var maskTexFile = this.Data.GetFile<TexFile>(maskPath);
 
             try
             {
-                if (maskTexFile is not null)
-                    return this.Textures.CreateFromRaw(new(mapTexFile.Header.Width, mapTexFile.Header.Width, 28), MultiplyBlend(mapTexFile, maskTexFile));
-                return this.Textures.CreateFromRaw(new(mapTexFile.Header.Width, mapTexFile.Header.Width, 28), mapTexFile.GetRgbaImageData());
+                var mapTexBuffer = this.Data.GetFile<TexFile>(filePath)?.TextureBuffer.Filter(0, 0, TexFile.TextureFormat.B8G8R8A8);
+                if (mapTexBuffer is null) return null;
+                var mapTexBytes = Downscale(Downscale(mapTexBuffer.RawData, mapTexBuffer.Width, mapTexBuffer.Height), mapTexBuffer.Width / 2, mapTexBuffer.Height / 2);
+
+                var maskTexBuffer = this.Data.GetFile<TexFile>(maskPath)?.TextureBuffer.Filter(0, 0, TexFile.TextureFormat.B8G8R8A8);
+
+                if (maskTexBuffer is not null)
+                {
+                    var maskTexBytes = Downscale(Downscale(maskTexBuffer.RawData, mapTexBuffer.Width, mapTexBuffer.Height), mapTexBuffer.Width / 2, mapTexBuffer.Height / 2);
+                    return this.Textures.CreateFromRaw(new(mapTexBuffer.Width / 4, mapTexBuffer.Height / 4, 87), MultiplyBlend(mapTexBytes, maskTexBytes), $"Sonar MAP {mapId}");
+                }
+                return this.Textures.CreateFromRaw(new(mapTexBuffer.Width / 4, mapTexBuffer.Height / 4, 87), mapTexBytes, $"Sonar MAP {mapId}");
             }
             catch (Exception ex)
             {
@@ -94,16 +101,48 @@ namespace SonarPlugin.Utility
             }
         }
 
-        private static byte[] MultiplyBlend(TexFile image, TexFile mask)
+        public static byte[] Downscale(ReadOnlySpan<byte> origImage, int origWidth, int origHeight)
         {
-            if (image.Header.Width != mask.Header.Width || image.Header.Height != mask.Header.Height)
-                throw new ArgumentException("image and mask sizes are not the same");
+            static int GetOffset(int x, int y, int width) => (y * width + x) * 4;
+            var newWidth = origWidth / 2; var newHeight = origHeight / 2;
+            var newImage = new byte[newWidth * newHeight * 4];
+
+            for (var y = 0; y < newHeight; y++)
+            {
+                for (var x = 0; x < newWidth; x++)
+                {
+                    var newOffset = GetOffset(x, y, newWidth);
+                    var c0 = 0; var c1 = 0; var c2 = 0; var c3 = 0;
+                    for (var oy = 0; oy < 2; oy++)
+                    {
+                        for (var ox = 0; ox < 2; ox++)
+                        {
+                            var origOffset = GetOffset(x * 2 + ox, y * 2 + oy, origWidth);
+                            c0 += origImage[origOffset + 0];
+                            c1 += origImage[origOffset + 1];
+                            c2 += origImage[origOffset + 2];
+                            c3 += origImage[origOffset + 3];
+                        }
+                    }
+                    newImage[newOffset + 0] = (byte)(c0 / 4);
+                    newImage[newOffset + 1] = (byte)(c1 / 4);
+                    newImage[newOffset + 2] = (byte)(c2 / 4);
+                    newImage[newOffset + 3] = (byte)(c3 / 4);
+                }
+            }
+            return newImage;
+        }
+
+
+        private static byte[] MultiplyBlend(byte[] image, byte[] mask)
+        {
+            if (image.Length != mask.Length) throw new InvalidOperationException("Image sizes are not the same");
 
             // Using 32bit color
             const int BytesPerPixel = 4;
 
-            var aRgba = image.GetRgbaImageData();
-            var bRgba = mask.GetRgbaImageData();
+            var aRgba = image;
+            var bRgba = mask;
             var result = new byte[aRgba.Length];
 
             for (var i = 0; i < aRgba.Length; i += BytesPerPixel)

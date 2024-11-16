@@ -51,6 +51,8 @@ namespace Sonar.Data.Rows
         public bool GroupMain { get; set; }
         [Key(16)]
         public uint GroupId { get; set; }
+        [Key(17)]
+        public uint LgbId { get; set; }
 
         HuntRank IRelayDataRow.Rank => HuntRank.None;
         IReadOnlyCollection<uint> IRelayDataRow.ZoneIds => this._zoneIds ??= [this.ZoneId];

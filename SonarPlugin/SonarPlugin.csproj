@@ -80,6 +80,10 @@
     <Reference Include="CheapLoc" Private="false" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="DalamudPackager" Version="11.0.0" />
+  </ItemGroup>
+
   <Target Name="Secrets" BeforeTargets="PrepareForBuild" Condition="'$(PLOGON_SECRET_PLUGIN)' != ''">
     <Warning Text="Adding Secret: PLOGON_SECRET_PLUGIN" />
     <WriteLinesToFile File="Resources\Secret.data" Lines="$(PLOGON_SECRET_PLUGIN)" Overwrite="true" />

@@ -168,6 +168,10 @@ namespace Sonar.Relays
         [JsonIgnore]
         public double CheckTimestamp { get; set; }
 
+        /// <inheritdoc/>
+        [Key(12)]
+        public bool Bonus { get; set; }
+
         /// <summary>
         /// Fate's ending time
         /// </summary>
@@ -301,7 +305,7 @@ namespace Sonar.Relays
         [JsonProperty]
         public override string Type => "Fate";
 
-        public override string ToString() => $"{this.GetFate()}: {base.ToString()} {this.GetRemainingTimeAndProgressString()}";
+        public override string ToString() => $"{this.GetFate()}{(this.Bonus ? " [B]" : string.Empty)}: {base.ToString()} {this.GetRemainingTimeAndProgressString()}";
         public new FateRelay Clone() => Unsafe.As<FateRelay>(this.MemberwiseClone());
     }
 }

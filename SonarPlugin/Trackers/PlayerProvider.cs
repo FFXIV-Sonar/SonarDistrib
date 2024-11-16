@@ -57,7 +57,7 @@ namespace SonarPlugin.Trackers
             var player = this.ClientState.LocalPlayer;
             var loggedIn = this.ClientState.IsLoggedIn;
             if ((player is null && loggedIn) || (player is not null && !loggedIn)) this.Logger.Warning("Inconsistent logged in status detected");
-            var info = new PlayerInfo() { LoggedIn = loggedIn, Name = player?.Name.TextValue ?? null, HomeWorldId = player?.HomeWorld.Id ?? 0, Hash1 = this.GetContentHash(), Hash2 = this.GetAccountHash() };
+            var info = new PlayerInfo() { LoggedIn = loggedIn, Name = player?.Name.TextValue ?? null, HomeWorldId = player?.HomeWorld.RowId ?? 0, Hash1 = this.GetContentHash(), Hash2 = this.GetAccountHash() };
             if (this.Client.Meta.UpdatePlayerInfo(info))
             {
                 if (loggedIn) this.Logger.Verbose("Logged in as {player:X16}", AG.SplitHash64.Compute(info.ToString()));
@@ -67,7 +67,7 @@ namespace SonarPlugin.Trackers
             // Player Place
             if (loggedIn && player is not null)
             {
-                var place = new PlayerPosition() { WorldId = player.CurrentWorld.Id, ZoneId = this.ClientState.TerritoryType, InstanceId = this.GetCurrentInstance(), Coords = player.Position.SwapYZ() };
+                var place = new PlayerPosition() { WorldId = player.CurrentWorld.RowId, ZoneId = this.ClientState.TerritoryType, InstanceId = this.GetCurrentInstance(), Coords = player.Position.SwapYZ() };
                 if (this.Client.Meta.UpdatePlayerPosition(place).PlaceUpdated) this.Logger.Verbose("Moved to {place}", place);
             }
 

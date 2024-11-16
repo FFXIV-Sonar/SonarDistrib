@@ -24,5 +24,8 @@ namespace Sonar.Relays
 
         /// <summary>End Time</summary>
         public double EndTime { get; }
+
+        /// <summary>Bonus EXP</summary>
+        public bool Bonus { get; }
     }
 }

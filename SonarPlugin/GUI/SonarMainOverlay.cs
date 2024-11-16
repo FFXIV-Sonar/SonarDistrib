@@ -33,6 +33,7 @@ using Dalamud.Interface.Internal;
 using SonarPlugin.Managers;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Dalamud.Interface.Textures.TextureWraps;
+using Dalamud.Plugin;
 
 namespace SonarPlugin.GUI
 {
@@ -59,6 +60,7 @@ namespace SonarPlugin.GUI
         private IUiBuilder Ui { get; }
         private IGameGui GameGui { get; }
         private IFramework Framework { get; }
+        private IDalamudPluginInterface PluginInterface { get; }
         private IPluginLog Logger { get; }
 
         private static readonly string windowTitle = Loc.Localize("MainWindowTitle", "Sonar");
@@ -70,7 +72,7 @@ namespace SonarPlugin.GUI
 
         private readonly IDalamudTextureWrap _redFlag;
 
-        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, AetheryteManager aetherytes, MapTextureProvider mapTextures, ResourceHelper resources, IUiBuilder ui, IGameGui gameGui, IFramework framework, IPluginLog logger)
+        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, AetheryteManager aetherytes, MapTextureProvider mapTextures, ResourceHelper resources, IUiBuilder ui, IGameGui gameGui, IFramework framework, IDalamudPluginInterface pluginInterface, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;
@@ -83,12 +85,20 @@ namespace SonarPlugin.GUI
             this.Ui = ui;
             this.GameGui = gameGui;
             this.Framework = framework;
+            this.PluginInterface = pluginInterface;
             this.Logger = logger;
 
             this._visible = this.Plugin.Configuration.OverlayVisibleByDefault;
             this._redFlag = this.Resources.LoadIcon("redflag.png");
 
             this.Logger.Information("Sonar Main Overlay Initialized");
+
+            this.PluginInterface.UiBuilder.OpenMainUi += this.OpenWindow;
+        }
+
+        private void OpenWindow()
+        {
+            this.IsVisible = !this.IsVisible;
         }
 
         private ImGuiWindowFlags WindowFlags

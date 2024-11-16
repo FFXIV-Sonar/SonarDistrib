@@ -76,29 +76,29 @@
       },
       "Lumina": {
         "type": "Direct",
-        "requested": "[5.1.0, )",
-        "resolved": "5.1.0",
-        "contentHash": "Xmwe8n/pqG1H0OH8s6J6yjcYFGd8bi0Yy408+zFjgEd/c9HigTeJG3S4u/r0OxFL5oX5nG9SbdcRKm45xzBj0w==",
+        "requested": "[5.2.1, )",
+        "resolved": "5.2.1",
+        "contentHash": "WQld2p7eWfcItfxjFwvySpiuUCT+fmJWh9GdCHgKS7vOjYGhPH6SWq6gh0ie+vHp0eaSIB2Tigv6i4qKT+HRSA==",
         "dependencies": {
           "Microsoft.Extensions.ObjectPool": "8.0.7"
         }
       },
       "Lumina.Excel": {
         "type": "Direct",
-        "requested": "[7.0.2, )",
-        "resolved": "7.0.2",
-        "contentHash": "iMpnjONlTW8dqQJYOki2L8umxIuksQw6ZpCnsXLDx0OCBaGNKmF0mY6biXDwyErq4u1dmCIl6bMdK47u7uHjjA==",
+        "requested": "[7.1.0, )",
+        "resolved": "7.1.0",
+        "contentHash": "rDlA336de7au4VKiEv8XhnmWSLqpJLrcRE9rGeJATj27lljm9aPkERPavifu0bWyrIy0GGhpan2w1dMJw8I25A==",
         "dependencies": {
-          "Lumina": "5.0.0"
+          "Lumina": "5.2.1"
         }
       },
       "MessagePack": {
         "type": "Direct",
-        "requested": "[2.5.187, )",
-        "resolved": "2.5.187",
-        "contentHash": "uW4j8m4Nc+2Mk5n6arOChavJ9bLjkis0qWASOj2h2OwmfINuzYv+mjCHUymrYhmyyKTu3N+ObtTXAY4uQ7jIhg==",
+        "requested": "[2.5.192, )",
+        "resolved": "2.5.192",
+        "contentHash": "Jtle5MaFeIFkdXtxQeL9Tu2Y3HsAQGoSntOzrn6Br/jrl6c8QmG22GEioT5HBtZJR0zw0s46OnKU8ei2M3QifA==",
         "dependencies": {
-          "MessagePack.Annotations": "2.5.187",
+          "MessagePack.Annotations": "2.5.192",
           "Microsoft.NET.StringTools": "17.6.3"
         }
       },
@@ -594,8 +594,8 @@
       },
       "MessagePack.Annotations": {
         "type": "Transitive",
-        "resolved": "2.5.187",
-        "contentHash": "/IvvMMS8opvlHjEJ/fR2Cal4Co726Kj77Z8KiohFhuHfLHHmb9uUxW5+tSCL4ToKFfkQlrS3HD638mRq83ySqA=="
+        "resolved": "2.5.192",
+        "contentHash": "jaJuwcgovWIZ8Zysdyf3b7b34/BrADw4v82GaEZymUhDd3ScMPrYd/cttekeDteJJPXseJxp04yTIcxiVUjTWg=="
       },
       "Microsoft.AspNetCore.Connections.Abstractions": {
         "type": "Transitive",
@@ -827,8 +827,8 @@
           "DryIoc.MefAttributedModel.dll": "[7.0.2, )",
           "DryIoc.dll": "[5.4.3, )",
           "InterlockedUtils": "[1.0.1, )",
-          "MessagePack": "[2.5.187, )",
-          "MessagePack.Annotations": "[2.5.187, )",
+          "MessagePack": "[2.5.192, )",
+          "MessagePack.Annotations": "[2.5.192, )",
           "Microsoft.AspNetCore.SignalR.Client": "[8.0.10, )",
           "Microsoft.AspNetCore.SignalR.Protocols.MessagePack": "[8.0.10, )",
           "SonarUtils": "[1.0.0, )",
