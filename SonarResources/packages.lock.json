@@ -76,9 +76,9 @@
       },
       "Lumina": {
         "type": "Direct",
-        "requested": "[5.2.1, )",
-        "resolved": "5.2.1",
-        "contentHash": "WQld2p7eWfcItfxjFwvySpiuUCT+fmJWh9GdCHgKS7vOjYGhPH6SWq6gh0ie+vHp0eaSIB2Tigv6i4qKT+HRSA==",
+        "requested": "[5.3.0, )",
+        "resolved": "5.3.0",
+        "contentHash": "W9d48gPLYZFWY0EDp1n4n9rfnmLBfnb7q3yFEKy2hqPXnz8zR074TyhLFyGdlJUYbtfLWCPwyWjT0Gq1To0ptw==",
         "dependencies": {
           "Microsoft.Extensions.ObjectPool": "8.0.7"
         }

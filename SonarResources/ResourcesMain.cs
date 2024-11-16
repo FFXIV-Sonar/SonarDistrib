@@ -95,6 +95,9 @@ namespace SonarResources
                 if (Debugger.IsAttached && !this.Db.HashString.Equals(db2.HashString, StringComparison.Ordinal)) Debugger.Break();
             }
 
+            // Data Views
+            DataViewer.ShowWorlds(this.Db);
+
             // Save resources
             Console.WriteLine("Saving resources");
             this.SaveSonarDb();

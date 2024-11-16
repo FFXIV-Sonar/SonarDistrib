@@ -76,66 +76,15 @@ namespace SonarResources.Readers
             // Special Case for Sonar
             this.Db.Worlds[0] = new() { Id = 0, Name = "INVALID" };
 
-            // Setup CN Worlds
-            // Attempt to support Chinesse worlds (https://ff.web.sdo.com/web8/index.html#/servers)
-            // Range taken from https://github.com/xivapi/ffxiv-datamining/blob/master/csv/World.csv 164 worlds
-            foreach (var world in this.Db.Worlds.Values.Where(world => world.Id is >= 1040 and <= 1203))
-            {
-                //this.SetWorldDc(world.Id, "China", true); // No longer needed. Keeping foreach loop just in case
-            }
-            this.SetWorldDc2("水晶塔", "豆豆柴", true); //3
-            this.SetWorldDc2("银泪湖", "豆豆柴", true); //5
-            this.SetWorldDc2("太阳海岸", "豆豆柴", true); //2
-            this.SetWorldDc2("伊修加德", "豆豆柴", true); //1
-            this.SetWorldDc2("红茶川", "豆豆柴", true); //4
-            this.SetWorldDc2("黄金谷", "豆豆柴", true);
-            this.SetWorldDc2("月牙湾", "豆豆柴", true);
-            this.SetWorldDc2("雪松原", "豆豆柴", true);
-            this.Db.Worlds[1057].IsPublic = false;
-            this.Db.Worlds[1048].IsPublic = false;
-            this.Db.Worlds[1064].IsPublic = false; // So far, all 10xx worlds are fake
-            this.Db.Worlds[1074].IsPublic = false; // Correct worlds are 11xx and 12xx
-            this.Db.Worlds[1056].IsPublic = false;
-            this.Db.Worlds[1050].IsPublic = false;
-            this.Db.Worlds[1058].IsPublic = false;
-            this.Db.Worlds[1068].IsPublic = false;
-
-            this.SetWorldDc("紫水栈桥", "猫小胖", true);
-            this.SetWorldDc("延夏", "猫小胖", true);
-            this.SetWorldDc("静语庄园", "猫小胖", true);
-            this.SetWorldDc("摩杜纳", "猫小胖", true);
-            this.SetWorldDc("海猫茶屋", "猫小胖", true);
-            this.SetWorldDc("柔风海湾", "猫小胖", true);
-            this.SetWorldDc("琥珀原", "猫小胖", true);
-
-            this.SetWorldDc("白银乡", "莫古力", true);
-            this.SetWorldDc("白金幻象", "莫古力", true);
-            this.SetWorldDc("神拳痕", "莫古力", true);
-            this.SetWorldDc("潮风亭", "莫古力", true);
-            this.SetWorldDc("旅人栈桥", "莫古力", true);
-            this.SetWorldDc("拂晓之间", "莫古力", true);
-            this.SetWorldDc("龙巢神殿", "莫古力", true);
-            this.SetWorldDc("梦羽宝境", "莫古力", true);
-
-            this.SetWorldDc("红玉海", "陆行鸟", true);
-            this.SetWorldDc("神意之地", "陆行鸟", true);
-            this.SetWorldDc("拉诺西亚", "陆行鸟", true);
-            this.SetWorldDc("幻影群岛", "陆行鸟", true);
-            this.SetWorldDc("萌芽池", "陆行鸟", true);
-            this.SetWorldDc("宇宙和音", "陆行鸟", true);
-            this.SetWorldDc("沃仙曦染", "陆行鸟", true);
-            this.SetWorldDc("晨曦王座", "陆行鸟", true);
-
-            // Attempt to support Korean worlds
-            // Range taken from https://github.com/xivapi/ffxiv-datamining/blob/master/csv/World.csv 33 worlds
-            foreach (var world in this.Db.Worlds.Values.Where(world => world.Id is >= 2048 and <= 2080))
-            {
-                this.SetWorldDc(world.Id, "Korea", true); // Only seen Korean data twice
-            }
-
             // Temporary: Set all worlds public for Dynamis
-            SetAllWorldsPublic("Dynamis");
-            SetAllWorldsPublic("Shadow");
+            this.SetAllWorldsPublic("Dynamis");
+            this.SetAllWorldsPublic("Shadow");
+
+            this.SetAllWorldsPublic(101);
+            this.SetAllWorldsPublic(102);
+            this.SetAllWorldsPublic(103);
+            this.SetAllWorldsPublic(104);
+            this.SetAllWorldsPublic(201);
         }
 
         private void SetWorldDc(string worldName, string dcName, bool? isPublic = null)

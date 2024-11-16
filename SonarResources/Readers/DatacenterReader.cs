@@ -68,7 +68,7 @@ namespace SonarResources.Readers
         private void SetLodestones()
         {
             this.HasLodestone("Aether", "Crystal", "Primal", "Dynamis");
-            this.HasLodestone("Chaos", "Light");
+            this.HasLodestone("Chaos", "Light", "Shadow");
             this.HasLodestone("Elemental", "Gaia", "Mana", "Meteor");
             this.HasLodestone("Materia");
         }
@@ -77,13 +77,13 @@ namespace SonarResources.Readers
         {
             // Attempt to support Chinesse worlds
             //CustomDC(1000, "China", 1000, 1000, "China");
-            this.SetCustomDatacenter(1001, "豆豆柴", "CN");
-            this.SetCustomDatacenter(1002, "猫小胖", "CN");
-            this.SetCustomDatacenter(1003, "莫古力", "CN");
-            this.SetCustomDatacenter(1004, "陆行鸟", "CN");
+            //this.SetCustomDatacenter(1001, "豆豆柴", "CN");
+            //this.SetCustomDatacenter(1002, "猫小胖", "CN");
+            //this.SetCustomDatacenter(1003, "莫古力", "CN");
+            //this.SetCustomDatacenter(1004, "陆行鸟", "CN");
 
             // Attempt to support Korean worlds
-            this.SetCustomDatacenter(2000, "Korea", "KR");
+            //this.SetCustomDatacenter(2000, "Korea", "KR");
         }
 
         private void SetCustomDatacenter(uint id, string dcName, string regionName)
