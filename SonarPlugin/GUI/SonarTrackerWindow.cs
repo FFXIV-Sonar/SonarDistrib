@@ -4,7 +4,7 @@ using DryIoc;
 using DryIoc.FastExpressionCompiler.LightExpression;
 using ImGuiNET;
 using Lumina.Data.Parsing.Layer;
-using Lumina.Excel.Sheets;
+using Lumina.Excel.GeneratedSheets;
 using Sonar.Data;
 using Sonar.Data.Rows;
 using Sonar.Relays;

@@ -12,7 +12,7 @@ using Sonar.Utilities;
 using Sonar.Data;
 using Sonar.Data.Extensions;
 using Sonar;
-using Lumina.Excel.Sheets;
+using Lumina.Excel.GeneratedSheets;
 
 namespace SonarPlugin.Trackers
 {

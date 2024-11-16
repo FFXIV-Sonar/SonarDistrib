@@ -9,7 +9,7 @@ using SonarPlugin.Utility;
 using System.Linq;
 using System.Threading;
 using Sonar.Indexes;
-using Lumina.Excel.Sheets;
+using Lumina.Excel.GeneratedSheets;
 using Dalamud.Interface.Components;
 using Dalamud.Interface;
 using SonarPlugin.Game;
