@@ -68,7 +68,7 @@ namespace SonarPlugin.Game
                 Status = fate.State.ToSonarFateStatus(),
                 Players = playerCount,
                 CheckTimestamp = UnixTimeHelper.SyncedUnixNow,
-                Bonus = fate.HasExpBonus,
+                Bonus = fate.HasBonus,
             };
         }
     }

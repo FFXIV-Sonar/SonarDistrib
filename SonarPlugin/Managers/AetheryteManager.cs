@@ -103,7 +103,7 @@ namespace SonarPlugin.Managers
 
         public bool TeleportToClosest(GamePosition position, bool checkWorld)
         {
-            if (checkWorld && this.ClientState.LocalPlayer?.CurrentWorld.Id != position.WorldId)
+            if (checkWorld && this.ClientState.LocalPlayer?.CurrentWorld.RowId != position.WorldId)
             {
                 var cityStateMeta = this.Configuration.PreferredCityState.GetMeta();
                 return this.Teleport(this.FindFirstAttuned(cityStateMeta?.AetheryteId ?? 0, 8, 2, 9)); // Limsa, Gridania, Uldah
