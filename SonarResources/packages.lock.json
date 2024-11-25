@@ -76,20 +76,20 @@
       },
       "Lumina": {
         "type": "Direct",
-        "requested": "[5.3.0, )",
-        "resolved": "5.3.0",
-        "contentHash": "W9d48gPLYZFWY0EDp1n4n9rfnmLBfnb7q3yFEKy2hqPXnz8zR074TyhLFyGdlJUYbtfLWCPwyWjT0Gq1To0ptw==",
+        "requested": "[5.4.0, )",
+        "resolved": "5.4.0",
+        "contentHash": "WRAxXQ7PZDJSjnM9hP2NI7oI8ro8B6brju6Qy4A7TW935mhSf9sXhK9O1Dr4nbCj5YPp7s7kveocsGqP6nus5Q==",
         "dependencies": {
           "Microsoft.Extensions.ObjectPool": "8.0.7"
         }
       },
       "Lumina.Excel": {
         "type": "Direct",
-        "requested": "[7.1.0, )",
-        "resolved": "7.1.0",
-        "contentHash": "rDlA336de7au4VKiEv8XhnmWSLqpJLrcRE9rGeJATj27lljm9aPkERPavifu0bWyrIy0GGhpan2w1dMJw8I25A==",
+        "requested": "[7.1.2, )",
+        "resolved": "7.1.2",
+        "contentHash": "6FLmGfQXDVKUoDjG83df9Mmcq0cRez1bqXaLiByY+rp6x3MoQjvuSpr2p3DF4Hte+L6iDXCYTjwQM2DoQfBXMg==",
         "dependencies": {
-          "Lumina": "5.2.1"
+          "Lumina": "5.4.0"
         }
       },
       "MessagePack": {
