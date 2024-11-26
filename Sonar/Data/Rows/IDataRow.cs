@@ -2,7 +2,6 @@
 {
     public interface IDataRow
     {
-        uint Id { get; }
-        //public string Name { get; }
+        public uint Id { get; }
     }
 }

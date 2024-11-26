@@ -27,6 +27,8 @@ namespace Sonar.Data.Extensions
         public static WorldRow? GetWorld(this RelayState s) => s.Relay.GetWorld();
         public static WorldRow? GetWorld<T>(this RelayConfirmationBase<T> c) where T : Relay => Database.Worlds.GetValueOrDefault(c.WorldId);
         public static WorldRow? GetHomeWorld(this PlayerInfo i) => Database.Worlds.GetValueOrDefault(i.HomeWorldId); // duplicate...
+        public static WorldRow? GetStartWorld(this WorldTravelRow t) => Database.Worlds.GetValueOrDefault(t.StartWorldId);
+        public static WorldRow? GetEndWorld(this WorldTravelRow t) => Database.Worlds.GetValueOrDefault(t.EndWorldId);
         #endregion
 
         #region GetDatacenter

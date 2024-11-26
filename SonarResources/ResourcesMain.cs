@@ -43,6 +43,7 @@ namespace SonarResources
             // Providers
             AudienceProvider _9,
             RegionProvider _10,
+            WorldTravelProvider _12,
 
             // Database
             LuminaManager luminas,
@@ -113,6 +114,7 @@ namespace SonarResources
             SaveToJson(this.Db.Fates);
             SaveToJson(this.Db.Weathers);
             SaveToJson(this.Db.Aetherytes);
+            SaveToJson(this.Db.WorldTravelData);
             this.GenerateMapAssets();
 
             Console.WriteLine("\nDatabase Result");

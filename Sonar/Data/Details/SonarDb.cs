@@ -7,23 +7,24 @@ using Sonar.Messages;
 using System.Security.Cryptography;
 using System.ComponentModel;
 using SonarUtils.Collections;
-
-
-#if NET8_0_OR_GREATER
-using System.Collections.Frozen; // FrozenDictionary
-#else
-using System.Collections.ObjectModel; // ReadOnlyDictionary
-#endif
+using System.Collections.Frozen;
 
 namespace Sonar.Data.Details
 {
     [MessagePackObject]
     public sealed class SonarDb : ISonarMessage
     {
+        public SonarDb()
+        {
+            this._worldTravelHelper = new(this.WorldTravelHelperFactory);
+        }
+
         [Key(0)]
         public double Timestamp { get; set; }
+
         [Key(1)]
-        public byte[] Hash { get; set; } = Array.Empty<byte>();
+        public byte[] Hash { get; set; } = [];
+
         [IgnoreMember]
         public string HashString => UrlBase64.Encode(this.Hash);
 
@@ -57,12 +58,22 @@ namespace Sonar.Data.Details
 
         [Key(11)]
         public IDictionary<uint, AetheryteRow> Aetherytes { get; set; } = new Dictionary<uint, AetheryteRow>();
+
+        [Key(12)]
+        public IDictionary<uint, WorldTravelRow> WorldTravelData { get; set; } = new Dictionary<uint, WorldTravelRow>();
+        #endregion
+
+        #region Helper Utilities
+        private readonly Lazy<WorldTravelHelper> _worldTravelHelper;
+        [IgnoreMember]
+        public WorldTravelHelper WorldTravel => this._worldTravelHelper.Value;
+
+        private WorldTravelHelper WorldTravelHelperFactory() => new(this);
         #endregion
 
         /// <summary>Freeze all dictionaries</summary>
         public void Freeze()
         {
-#if NET8_0_OR_GREATER
             this.Worlds = this.Worlds.ToFrozenDictionary();
             this.Datacenters = this.Datacenters.ToFrozenDictionary();
             this.Regions = this.Regions.ToFrozenDictionary();
@@ -73,18 +84,7 @@ namespace Sonar.Data.Details
             this.Zones = this.Zones.ToFrozenDictionary();
             this.Weathers = this.Weathers.ToFrozenDictionary();
             this.Aetherytes = this.Aetherytes.ToFrozenDictionary();
-#else
-            this.Worlds = this.Worlds.AsReadOnly();
-            this.Datacenters = this.Datacenters.AsReadOnly();
-            this.Regions = this.Regions.AsReadOnly();
-            this.Audiences = this.Audiences.AsReadOnly();
-            this.Hunts = this.Hunts.AsReadOnly();
-            this.Fates = this.Fates.AsReadOnly();
-            this.Maps = this.Maps.AsReadOnly();
-            this.Zones = this.Zones.AsReadOnly();
-            this.Weathers = this.Weathers.AsReadOnly();
-            this.Aetherytes = this.Aetherytes.AsReadOnly();
-#endif
+            this.WorldTravelData = this.WorldTravelData.ToFrozenDictionary();
         }
 
         /// <summary>Thaw all dictionaries</summary>
@@ -102,6 +102,7 @@ namespace Sonar.Data.Details
             this.Zones = this.Zones.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             this.Weathers = this.Weathers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             this.Aetherytes = this.Aetherytes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.WorldTravelData = this.WorldTravelData.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         /// <summary>Warning: Slow</summary>
@@ -118,6 +119,7 @@ namespace Sonar.Data.Details
             byteList.AddRange(MessagePackSerializer.Serialize(this.Zones.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.Weathers.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.Aetherytes.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
+            byteList.AddRange(MessagePackSerializer.Serialize(this.WorldTravelData.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
 
             var hash = new byte[SHA256.HashSizeInBytes];
             if (!SHA256.TryHashData(byteList.AsSpan(), hash, out var bytesWritten)) return Array.Empty<byte>();
@@ -145,6 +147,7 @@ namespace Sonar.Data.Details
                 $"Zones: {this.Zones.Count} (Fields: {this.Zones.Values.Count(zone => zone.IsField)})",
                 $"Weathers: {this.Weathers.Count}",
                 $"Aetherytes: {this.Aetherytes.Count} (Teleportable: {this.Aetherytes.Values.Count(aetheryte => aetheryte.Teleportable)})",
+                $"World Travel: {this.WorldTravelData.Count}",
             };
             return string.Join('\n', lines);
         }
