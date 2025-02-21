@@ -190,7 +190,7 @@ namespace Sonar
                     UnixTimeOffset = (heartbeat.UnixTime - UnixNow) - this.Ping / 2;
                     if (this.LogVerboseEnabled)
                     {
-                        var syncMessage = UnixTimeOffset == 0 ? "perfectly synchronized with the server" :
+                        var syncMessage = UnixTimeOffset is 0 ? "perfectly synchronized with the server" :
                             $"{Math.Abs(UnixTimeOffset)}ms {(UnixTimeOffset > 0 ? "behind" : "ahead")}";
 
                         var placeCounts = heartbeat.ClientPlaceCounts;

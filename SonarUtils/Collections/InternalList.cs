@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace SonarUtils.Collections
@@ -203,7 +204,7 @@ namespace SonarUtils.Collections
         {
             if (count > this.InternalArray.Length)
             {
-                this.Capacity = MathUtils.AlignPowerOfTwo(count);
+                this.Capacity = (int)BitOperations.RoundUpToPowerOf2((uint)count);
             }
         }
 
@@ -230,7 +231,7 @@ namespace SonarUtils.Collections
         {
             if (count < this._count && allowReduceCapacity)
             {
-                var capacity = MathUtils.AlignPowerOfTwo(count);
+                var capacity = (int)BitOperations.RoundUpToPowerOf2((uint)count);
                 if (capacity < this.Capacity) this.Capacity = capacity;
             }
             this.Count = count;

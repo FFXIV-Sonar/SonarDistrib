@@ -18,7 +18,7 @@ namespace Sonar.Messages
     // Session Information Updates (Client to Server)
     [Union(0x10, typeof(PlayerInfo))]
     [Union(0x11, typeof(PlayerPosition))]
-    [Union(0x12, typeof(SonarConfig))]
+    //[Union(0x12, typeof(SonarConfig))] // Replaced by SonarContributeConfig... note: SonarConfig is still used client side
     [Union(0x13, typeof(SonarVersion))]
     //[Union(0x14, typeof(ClientModifiersOld))]
     [Union(0x15, typeof(ClientModifiers))]

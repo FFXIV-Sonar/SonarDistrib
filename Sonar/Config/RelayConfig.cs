@@ -10,19 +10,10 @@ using System.Threading.Tasks;
 
 namespace Sonar.Config
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    [MessagePackObject]
     public abstract class RelayConfig
     {
         /// <summary>Get Report Jurisdiction Implementation</summary>
         protected virtual SonarJurisdiction GetReportJurisdictionImpl(uint id) => SonarJurisdiction.None;
-
-        /// <summary>Contribute reports</summary>
-        [JsonProperty]
-        [Key("contribute")]
-        [Obsolete("Use RelayConfig.Contribute instead", true)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool Contribute { get; set; } = true;
 
         /// <summary>
         /// <list type="bullet">
@@ -30,8 +21,6 @@ namespace Sonar.Config
         /// <item><see langword="false"/>: Track hunts within configured jurisdictions only</item>
         /// </list>
         /// </summary>
-        [JsonProperty]
-        [Key("trackAll")]
         public bool TrackAll { get; set; } = true;
 
         /// <summary>Main jurisdiction check function</summary>

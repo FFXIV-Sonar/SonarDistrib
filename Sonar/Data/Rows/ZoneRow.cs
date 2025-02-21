@@ -50,6 +50,9 @@ namespace Sonar.Data.Rows
         [Key(12)]
         public HashSet<uint> FateIds { get; set; } = new();
 
+        [Key(13)]
+        public string? BlurHash { get; set; }
+
         public override string ToString() => this.Name.ToString();
         public string ToString(SonarLanguage lang) => this.Name.ToString(lang);
     }

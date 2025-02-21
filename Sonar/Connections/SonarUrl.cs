@@ -25,7 +25,7 @@ namespace Sonar.Connections
 
         /// <summary>Disable to remove during bootstrap process. Default: <c>true</c></summary>
         [Key(1)]
-        public bool Enabled { get; init; } = true;
+        public bool Enabled { get; set; } = true;
 
         /// <summary>Specifies this url is a proxy.</summary>
         [Key(2)]

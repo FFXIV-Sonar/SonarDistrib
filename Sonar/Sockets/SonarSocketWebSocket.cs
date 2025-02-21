@@ -122,7 +122,7 @@ namespace Sonar.Sockets
                 }
             }
 
-            this.Dispose();
+            await this.DisposeAsync();
 
             try
             {
@@ -153,7 +153,7 @@ namespace Sonar.Sockets
         {
             try
             {
-                this._cts.Cancel();
+                await this._cts.CancelAsync();
                 this._cts.Dispose();
                 this.WebSocket.Dispose();
             }

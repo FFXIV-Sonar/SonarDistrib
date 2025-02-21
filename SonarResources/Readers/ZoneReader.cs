@@ -2,6 +2,7 @@
 using Humanizer;
 using Lumina;
 using Lumina.Excel.Sheets;
+using Sonar.Data;
 using Sonar.Data.Details;
 using Sonar.Enums;
 using SonarResources.Lumina;
@@ -72,6 +73,7 @@ namespace SonarResources.Readers
                         Expansion = GetZoneExpansion(territory.Bg.ExtractText()),
                         IsField = territory.TerritoryIntendedUse.Value.RowId == 1 || territory.TerritoryIntendedUse.Value.RowId == 41 || territory.TerritoryIntendedUse.Value.RowId == 48, // && t.Stealth && t.Mount && t.Aetheryte.Row != 0 && !t.IsPvpZone,
                         LocalOnly = territory.TerritoryIntendedUse.Value.RowId == 41 || territory.TerritoryIntendedUse.Value.RowId == 48,
+                        BlurHash = Database.Zones.GetValueOrDefault(id)?.BlurHash, // NOTE: MapGenerator generates this.
                     };
                 }
 

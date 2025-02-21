@@ -16,8 +16,14 @@ using Lumina;
 using Lumina.Data;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using SixLabors.ImageSharp.Formats.Jpeg;
 using Lumina.Data.Files;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Webp;
+using Spectre.Console;
+using static System.Net.Mime.MediaTypeNames;
+using FileSystemLinks;
+using Blurhash.ImageSharp;
+using Sonar.Data;
 
 namespace SonarResources.Maps
 {
@@ -45,119 +51,156 @@ namespace SonarResources.Maps
 
     public sealed class MapsGenerator
     {
-        private readonly HashSet<uint> _processedMaps = new();
-        private readonly HashSet<uint> _processedZones = new();
-        private volatile int _count; // Interlocked increment
+        private readonly HashSet<uint> _processedMaps = [];
+        private readonly HashSet<uint> _processedZones = [];
 
-        public bool GenerateMapImages(GameData data, bool parallel)
+        public async Task GenerateAllMapImagesAsync(GameData data, SonarDb db, bool parallel, CancellationToken cancellationToken = default)
         {
-            Console.WriteLine($"Generating Map Images from {data.DataPath}");
-            var maps = data.GetExcelSheet<Map>()!;
+            AnsiConsole.MarkupLineInterpolated($"[yellow bold]Generating map images from:[/] [white bold]{data.DataPath}[/]");
+            var maps = data.GetExcelSheet<Map>()!
+                .Where(map => this._processedMaps.Add(map.RowId) && !string.IsNullOrWhiteSpace(map.Id.ExtractText()))
+                .ToList();
 
-            this._count = 0;
-            maps
-                .Where(m => !string.IsNullOrWhiteSpace(m.Id.ExtractText()))
-                .Where(map => this._processedMaps.Add(map.RowId))
-                .AsParallel().WithDegreeOfParallelism(parallel ? Environment.ProcessorCount : 1)
-                .ForAll(map => this.GenerateMapImages(data, map));
-
-            Console.WriteLine($"Generated {this._count} map images");
-            return true;
-        }
-
-        /// <summary>WARNING: Assumes <see cref="GenerateMapImages(GameData, bool)"/> has been run</summary>
-        public bool GenerateZoneImages(GameData data)
-        {
-            Console.WriteLine($"Generating Zone Images from {data.DataPath}");
-            var zones = data.GetExcelSheet<TerritoryType>()!;
-
-            this._count = 0;
-            zones
-                .Where(t => t.Map.IsValid && !string.IsNullOrWhiteSpace(t.Map.Value.Id.ExtractText()))
-                .Where(territory => this._processedZones.Add(territory.RowId))
-                .ForEach(territory => this.GenerateZoneImages(data, territory));
-
-            Console.WriteLine($"Generated {this._count} zone images");
-            return true;
-        }
-
-        private void GenerateMapImages(GameData data, Map map)
-        {
-            var placeNames = data.GetExcelSheet<PlaceName>()!;
-            Console.WriteLine($"Processing {placeNames.GetRowOrDefault(map.PlaceName.RowId)?.Name.ExtractText() ?? "UNKNOWN MAP"} ({map.RowId})");
-
-            var textures = map.GetMapTextures(data);
-            if (textures.Image is null) return;
-            using var mapImage = textures.Image.ToImage();
-            if (textures.Mask is not null)
+            await AnsiConsole.Progress()
+                .HideCompleted(true)
+                .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn(), new RemainingTimeColumn())
+                .StartAsync(async ctx =>
             {
-                using var maskImage = textures.Mask.ToImage();
-                using var resultImage = mapImage.MultiplyWith(maskImage);
-                SaveMap(resultImage, map);
-            }
-            else
-            {
-                SaveMap(mapImage, map);
-            }
-            Interlocked.Increment(ref this._count);
-        }
-
-        private void GenerateZoneImages(GameData data, TerritoryType territoryType)
-        {
-            var placeNames = data.GetExcelSheet<PlaceName>()!;
-            Console.WriteLine($"Processing {placeNames?.GetRowOrDefault(territoryType.PlaceName.RowId)?.Name.ExtractText() ?? "UNKNOWN ZONE"} ({territoryType.RowId})");
-            foreach (var size in Enum.GetValues<MapSize>())
-            {
-                foreach (var extension in new[] { "jpg", "png", "gif", "webp" })
+                var progress = ctx.AddTask($"[yellow]Total Progress:[/] [white]0/{maps.Count}[/]", true, maps.Count);
+                var options = new ParallelOptions()
                 {
-                    var src = territoryType.GetMapImageAssetPath(size, extension);
-                    var dst = territoryType.GetZoneImageAssetPath(size, extension);
-                    File.Copy(src, dst, true);
-                }
-            }
-            Interlocked.Increment(ref this._count);
+                    CancellationToken = cancellationToken,
+                    MaxDegreeOfParallelism = parallel ? -1 : 1,
+                };
+                await Parallel.ForEachAsync(maps, options, async (map, ct) =>
+                {
+                    var blurHash = await this.GenerateMapAssetsAsync(data, map, ctx, ct);
+                    var mapRow = db.Maps.GetValueOrDefault(map.RowId);
+                    if (mapRow is not null) mapRow.BlurHash = blurHash;
+                    progress.Increment(1);
+                    progress.Description($"[yellow]Total Progress:[/] [white]{(int)progress.Value}/{maps.Count}[/]");
+                });
+                progress.StopTask();
+            });
         }
 
-        public static void SaveMap(Image<Bgra32> image, Map map)
+        /// <summary>WARNING: Assumes <see cref="GenerateMapImagesAsync(GameData, bool)"/> has been run</summary>
+        public async Task GenerateAllZoneImagesAsync(GameData data, CancellationToken cancellationToken = default)
         {
-            if (image.Width != 2048 || image.Height != 2048)
+            AnsiConsole.MarkupLineInterpolated($"[yellow bold]Generatring zone images from:[/] [white bold]{data.DataPath}[/]");
+            var zones = data.GetExcelSheet<TerritoryType>()!
+                .Where(zone => this._processedZones.Add(zone.RowId) && !string.IsNullOrWhiteSpace(zone.Map.ValueNullable?.Id.ExtractText()))
+                .ToList();
+
+            await AnsiConsole.Progress()
+                .HideCompleted(true)
+                .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn(), new RemainingTimeColumn())
+                .StartAsync(async ctx =>
+                {
+                    var progress = ctx.AddTask("[yellow]Total Progress:[/] [white]0/{zones.Count}[/]", true, zones.Count);
+                    foreach (var zone in zones)
+                    {
+                        await this.GenerateMapAssetsAsync(data, zone, ctx, cancellationToken);
+                        progress.Increment(1);
+                        progress.Description($"[yellow]Total Progress:[/] [white]{(int)progress.Value}/{zones.Count}[/]");
+                    }
+                });
+        }
+
+        private async Task<string?> GenerateMapAssetsAsync(GameData data, Map map, ProgressContext progressContext, CancellationToken cancellationToken = default)
+        {
+            var placeNames = data.GetExcelSheet<PlaceName>()!;
+            var mapName = $"{placeNames?.GetRowOrDefault(map.PlaceName.RowId)?.Name.ExtractText() ?? "UNKNOWN MAP"} ({map.RowId})";
+
+            var progress = progressContext.AddTask($"[green]{mapName.EscapeMarkup()}[/]", true, (64 + 16 + 4 + 1) * 4 + 1 + 1);
+
+            using var image = map.ToMapImage(data);
+            if (image is null)
             {
-                if (Debugger.IsAttached) Debugger.Break();
-                throw new ArgumentException("Image is not 2048x2048", nameof(image));
+                progress.StopTask();
+                return null;
             }
+            progress.Increment(1);
+
+            Debug.Assert(image.Width is 2048 && image.Height is 2048);
+
+            // Encoders
+            var pngEncoder = new PngEncoder() { CompressionLevel = PngCompressionLevel.BestCompression, };
+            var webpEncoder = new WebpEncoder() { Method = WebpEncodingMethod.BestQuality, EntropyPasses = 10, };
 
             // 2048x2048
-            image.SaveAsJpeg($@"../../../Assets/images/map-{map.RowId}-l.jpg");
-            image.SaveAsPng($@"../../../Assets/images/map-{map.RowId}-l.png");
-            image.SaveAsGif($@"../../../Assets/images/map-{map.RowId}-l.gif");
-            image.SaveAsWebp($@"../../../Assets/images/map-{map.RowId}-l.webp");
+            await image.SaveAsJpegAsync($@"../../../Assets/images/map-{map.RowId}-l.jpg", cancellationToken); progress.Increment(64);
+            await image.SaveAsPngAsync($@"../../../Assets/images/map-{map.RowId}-l.png", pngEncoder, cancellationToken); progress.Increment(64);
+            await image.SaveAsGifAsync($@"../../../Assets/images/map-{map.RowId}-l.gif", cancellationToken); progress.Increment(64);
+            await image.SaveAsWebpAsync($@"../../../Assets/images/map-{map.RowId}-l.webp", webpEncoder, cancellationToken); progress.Increment(64);
+
+            string blurHash;
 
             // 1024x1024
             using (var resized = image.Clone(x => x.Resize(1024, 1024)))
             {
-                resized.SaveAsJpeg($@"../../../Assets/images/map-{map.RowId}-m.jpg");
-                resized.SaveAsPng($@"../../../Assets/images/map-{map.RowId}-m.png");
-                resized.SaveAsGif($@"../../../Assets/images/map-{map.RowId}-m.gif");
-                resized.SaveAsWebp($@"../../../Assets/images/map-{map.RowId}-m.webp");
+                await resized.SaveAsJpegAsync($@"../../../Assets/images/map-{map.RowId}-m.jpg", cancellationToken); progress.Increment(16);
+                await resized.SaveAsPngAsync($@"../../../Assets/images/map-{map.RowId}-m.png", pngEncoder, cancellationToken); progress.Increment(16);
+                await resized.SaveAsGifAsync($@"../../../Assets/images/map-{map.RowId}-m.gif", cancellationToken); progress.Increment(16);
+                await resized.SaveAsWebpAsync($@"../../../Assets/images/map-{map.RowId}-m.webp", webpEncoder, cancellationToken); progress.Increment(16);
             }
 
             // 512x512
             using (var resized = image.Clone(x => x.Resize(512, 512)))
             {
-                resized.SaveAsJpeg($@"../../../Assets/images/map-{map.RowId}-s.jpg");
-                resized.SaveAsPng($@"../../../Assets/images/map-{map.RowId}-s.png");
-                resized.SaveAsGif($@"../../../Assets/images/map-{map.RowId}-s.gif");
-                resized.SaveAsWebp($@"../../../Assets/images/map-{map.RowId}-s.webp");
+                await resized.SaveAsJpegAsync($@"../../../Assets/images/map-{map.RowId}-s.jpg", cancellationToken); progress.Increment(4);
+                await resized.SaveAsPngAsync($@"../../../Assets/images/map-{map.RowId}-s.png", pngEncoder, cancellationToken); progress.Increment(4);
+                await resized.SaveAsGifAsync($@"../../../Assets/images/map-{map.RowId}-s.gif", cancellationToken); progress.Increment(4);
+                await resized.SaveAsWebpAsync($@"../../../Assets/images/map-{map.RowId}-s.webp", webpEncoder, cancellationToken); progress.Increment(4);
             }
 
             // 256x256
             using (var resized = image.Clone(x => x.Resize(256, 256)))
             {
-                resized.SaveAsJpeg($@"../../../Assets/images/map-{map.RowId}-t.jpg");
-                resized.SaveAsPng($@"../../../Assets/images/map-{map.RowId}-t.png");
-                resized.SaveAsGif($@"../../../Assets/images/map-{map.RowId}-t.gif");
-                resized.SaveAsWebp($@"../../../Assets/images/map-{map.RowId}-t.webp");
+                await resized.SaveAsJpegAsync($@"../../../Assets/images/map-{map.RowId}-t.jpg", cancellationToken); progress.Increment(1);
+                await resized.SaveAsPngAsync($@"../../../Assets/images/map-{map.RowId}-t.png", pngEncoder, cancellationToken); progress.Increment(1);
+                await resized.SaveAsGifAsync($@"../../../Assets/images/map-{map.RowId}-t.gif", cancellationToken); progress.Increment(1);
+                await resized.SaveAsWebpAsync($@"../../../Assets/images/map-{map.RowId}-t.webp", webpEncoder, cancellationToken); progress.Increment(1);
+
+                // Swap from BGR to RGB.
+                // BlurHash doesn't use Alpha. There's an Rgba32 overload but alpha is ignored.
+                using var blurImage = resized.CloneAs<Rgb24>();
+                blurHash = Blurhasher.Encode(blurImage, 4, 4);
+                progress.Increment(1);
             }
+
+            progress.StopTask();
+            return blurHash;
+        }
+
+        private async Task GenerateMapAssetsAsync(GameData data, TerritoryType territoryType, ProgressContext progressContext, CancellationToken cancellationToken = default)
+        {
+            var placeNames = data.GetExcelSheet<PlaceName>()!;
+            var zoneName = $"{placeNames?.GetRowOrDefault(territoryType.PlaceName.RowId)?.Name.ExtractText() ?? "UNKNOWN ZONE"} ({territoryType.RowId})";
+
+            var sizes = Enum.GetValues<MapSize>();
+            string[] extensions = ["jpg", "png", "gif", "webp"];
+
+            var progress = progressContext.AddTask($"[green]{zoneName.EscapeMarkup()}[/]", true, (64 + 16 + 4 + 1) * extensions.Length);
+            foreach (var size in sizes)
+            {
+                foreach (var extension in extensions)
+                {
+                    var src = territoryType.GetMapImageAssetPath(size, extension);
+                    var dst = territoryType.GetZoneImageAssetPath(size, extension);
+                    if (File.Exists(dst)) File.Delete(dst);
+                    try
+                    {
+                        FileSystemLink.CreateHardLink(src, dst);
+                    }
+                    catch
+                    {
+                        await File.WriteAllBytesAsync(dst, await File.ReadAllBytesAsync(src, cancellationToken), cancellationToken);
+                    }
+                    progress.Increment(Math.Pow(4, (int)size));
+                }
+            }
+            progress.StopTask();
         }
     }
 }

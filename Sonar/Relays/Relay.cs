@@ -18,6 +18,9 @@ using Cysharp.Text;
 using Sonar.Models;
 using SonarUtils.Text;
 using System.Diagnostics.CodeAnalysis;
+using SonarUtils.Text.Placeholders.Providers;
+using System.Security.AccessControl;
+using Sonar.Trackers;
 
 namespace Sonar.Relays
 {
@@ -26,6 +29,7 @@ namespace Sonar.Relays
     /// </summary>
     [Serializable]
     [MessagePackObject]
+    [Union(0, typeof(Relay))]
     [JsonObject(MemberSerialization.OptIn)]
     [SuppressMessage("Major Code Smell", "S4035")]
     public abstract class Relay : GamePosition, IRelay, ISonarMessage, IEquatable<Relay>
@@ -180,6 +184,30 @@ namespace Sonar.Relays
 
         public new Relay Clone() => Unsafe.As<Relay>(this.MemberwiseClone());
 
+        public override bool TryGetValue(ReadOnlySpan<char> name, [MaybeNullWhen(false)] out ReadOnlySpan<char> value)
+        {
+            var result = name switch
+            {
+                "key" or "relaykey" => this.RelayKey,
+                "id" or "relayid" => StringUtils.GetNumber(this.Id),
+
+                "name" => this.Info.Name.ToString(),
+                "rank" => this.Info.Rank.ToString(),
+                "level" => StringUtils.GetNumber(this.Info.Level),
+
+                "status" => this.IsAliveInternal() ? "Alive" : this.IsDeadInternal() ? "Dead" : "Unknown",
+
+                _ => null
+            };
+
+            if (result is not null)
+            {
+                value = result;
+                return true;
+            }
+            return base.TryGetValue(name, out value);
+        }
+
         [JsonProperty]
         [Key(5)]
         public ReleaseMode Release { get; set; } = ReleaseMode.Normal;
@@ -187,10 +215,23 @@ namespace Sonar.Relays
 
         [SuppressMessage("Minor Bug", "S2328", Justification = "Not mutable")]
         public override int GetHashCode() => this._hash ??= FarmHashStringComparer.GetHashCodeStatic(this.RelayKey);
-        public bool Equals(Relay? relay) => relay is not null && (ReferenceEquals(this, relay) || this.RelayKey.Equals(relay.RelayKey));
-        public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is Relay relay && this.RelayKey.Equals(relay.RelayKey));
+        public bool Equals(Relay? relay) => Equals(this, relay);
 
-        public static bool operator ==(Relay left, Relay right) => left.Equals(right);
-        public static bool operator !=(Relay left, Relay right) => !left.Equals(right);
+        public static new bool Equals(object? left, object? right)
+        {
+            if (left is not Relay leftRelay || right is not Relay rightRelay) return object.Equals(left, right);
+            return Equals(leftRelay, rightRelay);
+        }
+        public static bool Equals(Relay? left, Relay? right)
+        {
+            if (ReferenceEquals(left, right)) return true;
+            if (left is null || right is null) return false;
+            if (left.GetType() != right.GetType()) return false;
+            return string.Equals(left.RelayKey, right.RelayKey);
+        }
+        public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is Relay relay && Equals(this, relay));
+
+        public static bool operator ==(Relay left, Relay right) => Equals(left, right);
+        public static bool operator !=(Relay left, Relay right) => !Equals(left, right);
     }
 }

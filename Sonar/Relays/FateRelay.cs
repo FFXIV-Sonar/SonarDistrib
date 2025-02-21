@@ -12,6 +12,8 @@ using Sonar.Numerics;
 using Sonar.Data.Rows;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
+using SonarUtils;
 
 namespace Sonar.Relays
 {
@@ -52,8 +54,6 @@ namespace Sonar.Relays
         protected override string GetSortKeyImpl() => this.GetFate()?.Name.ToString().ToLowerInvariant() ?? base.GetSortKeyImpl();
         protected override IRelayDataRow? GetRelayInfoImpl() => this.GetFate();
 
-        [JsonIgnore]
-        [IgnoreMember]
         private byte _progress;
         /// <summary>
         /// Fate Progress (0-100)
@@ -70,8 +70,6 @@ namespace Sonar.Relays
             }
         }
 
-        [JsonIgnore]
-        [IgnoreMember]
         private FateStatus _status;
         /// <summary>
         /// Fate status
@@ -80,13 +78,7 @@ namespace Sonar.Relays
         [IgnoreMember]
         public FateStatus Status
         {
-            get
-            {
-                if (this._status != FateStatus.Running) return this._status;
-                if (this.Progress == 100) return this._status = FateStatus.Complete;
-                if (this.GetRemainingTimeWithGracePeriod(DefaultGracePeriod, SyncedUnixNow) == 0) return this._status = FateStatus.Unknown;
-                return this._status;
-            }
+            get => this.GetStatus(SyncedUnixNow);
             set
             {
                 if (!IsValidStatus(value)) throw new ArgumentOutOfRangeException(nameof(value), value, $"{nameof(value)} is not a valid status");
@@ -102,6 +94,7 @@ namespace Sonar.Relays
         /// </remarks>
         [JsonProperty("Status")]
         [Key(7)]
+        [SuppressMessage("Minor Code Smell", "S2292", Justification = "For now I want to leave this here until I change how this works.")]
         public FateStatus StatusDirect
         {
             get => this._status;
@@ -110,9 +103,9 @@ namespace Sonar.Relays
 
         public FateStatus GetStatus(double now)
         {
-            if (this._status != FateStatus.Running) return this._status;
+            if (this._status is not FateStatus.Running) return this._status;
             if (this.Progress == 100) return this._status = FateStatus.Complete;
-            if (this.GetRemainingTimeWithGracePeriod(DefaultGracePeriod, now) == 0) return this._status = FateStatus.Unknown;
+            if (this.GetRemainingTimeWithGracePeriod(DefaultGracePeriod, now) is 0) return this._status = FateStatus.Unknown;
             return this._status;
         }
 
@@ -131,23 +124,12 @@ namespace Sonar.Relays
             set => this.StartTime = value * TimeMultiple;
         }
 
-        [JsonIgnore]
-        [IgnoreMember]
-        private double _duration;
         /// <summary>
         /// Fate duration
         /// </summary>
         [JsonProperty]
         [IgnoreMember]
-        public double Duration
-        {
-            get => this._duration;
-            set
-            {
-                if (value < 0) value = 0;
-                this._duration = value;
-            }
-        }
+        public double Duration { get; set; }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Key(9)]
@@ -233,7 +215,8 @@ namespace Sonar.Relays
         /// Check if another relay regards the same fate (only Start time is checked)
         /// </summary>
         /// <param name="relay">Relay to check</param>
-        public bool IsSameEntity(FateRelay relay) => this.StatusDirect == FateStatus.Preparation && this.StartTime == 0 || this.StartTime != 0 && this.StartTime == relay.StartTime;
+        [SuppressMessage("Major Bug", "S1244", Justification = "Intended")]
+        public bool IsSameEntity(FateRelay relay) => this.StatusDirect == FateStatus.Preparation && this.StartTime is 0 || this.StartTime is not 0 && this.StartTime == relay.StartTime;
 
         /// <summary>
         /// Check if another relay regards the same fate (only Start time is checked)
@@ -300,6 +283,29 @@ namespace Sonar.Relays
             this.Duration = relay.Duration;
             this.StatusDirect = relay.StatusDirect;
         }
+
+        public override bool TryGetValue(ReadOnlySpan<char> name, [MaybeNullWhen(false)] out ReadOnlySpan<char> value)
+        {
+            var result = name switch
+            {
+                "status" => this.Status.ToString(),
+                "progress" => StringUtils.GetNumber(this.Progress),
+
+                "players" => StringUtils.GetNumber(this.Players),
+
+                "time" => this.GetRemainingTimeString(),
+
+                _ => null
+            };
+
+            if (result is not null)
+            {
+                value = result;
+                return true;
+            }
+            return base.TryGetValue(name, out value);
+        }
+
 
         [IgnoreMember]
         [JsonProperty]

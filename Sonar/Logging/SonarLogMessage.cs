@@ -17,7 +17,7 @@ namespace Sonar.Logging
         public SonarLogLevel Level { get; init; }
 
         [Key(1)]
-        public string Message { get; init; }
+        public required string Message { get; init; }
 
         public override string ToString() => $"{this.Level}|{this.Message}";
     }

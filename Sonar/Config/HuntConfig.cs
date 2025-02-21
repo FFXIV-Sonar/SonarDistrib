@@ -13,8 +13,6 @@ using Sonar.Config.Experimental;
 
 namespace Sonar.Config
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    [MessagePackObject]
     public sealed class HuntConfig : RelayConfig
     {
         #region HuntConfig Logic
@@ -30,14 +28,10 @@ namespace Sonar.Config
         }
 
         /// <summary>Jurisdictions</summary>
-        [JsonProperty]
-        [Key("jurisdiction")]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Dictionary<ExpansionPack, Dictionary<HuntRank, SonarJurisdiction>> Jurisdiction { get; init; } = new();
+        public Dictionary<ExpansionPack, Dictionary<HuntRank, SonarJurisdiction>> Jurisdiction { get; init; } = [];
 
         /// <summary>Jurisdiction Overrides</summary>
-        [JsonProperty]
-        [Key("jurisdictionOverride")]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Dictionary<uint, SonarJurisdiction> JurisdictionOverride { get; init; } = new();
         #endregion

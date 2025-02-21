@@ -6,6 +6,7 @@ using System;
 namespace Sonar.Tokens
 {
     [MessagePackObject]
+    [Union(0, typeof(SonarTokenBase))]
     public abstract class SonarTokenBase : ISonarToken
     {
         /// <inheritdoc/>

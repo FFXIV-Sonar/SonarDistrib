@@ -18,6 +18,11 @@ using Sonar.Relays;
 using Sonar.Utilities;
 using Sonar.Data.Rows;
 using System.Collections.Frozen;
+using SonarUtils.Text.Placeholders.Providers;
+using System.Numerics;
+using SonarUtils;
+using System.Xml.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Sonar.Trackers
 {
@@ -26,9 +31,11 @@ namespace Sonar.Trackers
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
+    [Union(0, typeof(RelayState))]
     [Serializable]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1721:Property names should not match get methods", Justification = "GetLastSeen, Found and Killed are Datetime getters")]
-    public abstract class RelayState : ISonarMessage, ITrackerIndexable
+    [SuppressMessage("Naming", "CA1721", Justification = "GetLastSeen, Found and Killed are Datetime getters")]
+    [SuppressMessage("Major Code Smell", "S4035", Justification = "Intended. RelayState<T> is sealed.")]
+    public abstract class RelayState : ISonarMessage, ITrackerIndexable, IEquatable<RelayState>
     {
         /// <summary>
         /// Grace period before a dead <see cref="RelayState"/> can be alive again
@@ -79,7 +86,6 @@ namespace Sonar.Trackers
         public IEnumerable<string> IndexKeys => this.Relay.IndexKeys;
 
         [JsonIgnore]
-        [IgnoreMember]
         internal FrozenSet<string> IndexKeysCore => this.Relay.IndexKeysCore;
 
         /// <summary>Sort Key</summary>
@@ -225,6 +231,7 @@ namespace Sonar.Trackers
         /// <summary>Relay State Status (based on <see cref="LastFound"/>, <see cref="LastSeen"/> and <see cref="LastKilled"/>)</summary>
         [JsonIgnore]
         [IgnoreMember]
+        [SuppressMessage("Major Bug", "S1244", Justification = "Intended.")]
         public RelayStateStatus Status =>
             this.LastSeen == this.LastFound ? RelayStateStatus.Found :
             this.LastSeen == this.LastKilled ? RelayStateStatus.Killed :
@@ -309,10 +316,25 @@ namespace Sonar.Trackers
         }
 
         public override int GetHashCode() => this.Relay.GetHashCode();
-        public bool Equals(RelayState state) => ReferenceEquals(this, state) || this.Relay.Equals(state.Relay);
-        public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is RelayState state && this.Relay.Equals(state.Relay));
-        public static bool operator ==(RelayState left, RelayState right) => left.Equals(right);
-        public static bool operator !=(RelayState left, RelayState right) => !left.Equals(right);
+        public bool Equals(RelayState? state) => Equals(this, state);
+        public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is RelayState state && Equals(this, state));
+
+        public static new bool Equals(object? left, object? right)
+        {
+            if (left is not RelayState leftState || right is not RelayState rightState) return object.Equals(left, right);
+            return Equals(leftState, rightState);
+        }
+
+        public static bool Equals(RelayState? left, RelayState? right)
+        {
+            if (ReferenceEquals(left, right)) return true;
+            if (left is null || right is null) return false;
+            if (left.GetType() != right.GetType()) return false;
+            return Relay.Equals(left.Relay, right.Relay);
+        }
+
+        public static bool operator ==(RelayState left, RelayState right) => Equals(left, right);
+        public static bool operator !=(RelayState left, RelayState right) => !Equals(left, right);
 
         public string GetIndexKey(IndexType type) => this.Relay.GetIndexKey(type);
     }
@@ -321,7 +343,7 @@ namespace Sonar.Trackers
     [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
-    public sealed class RelayState<T> : RelayState where T : Relay
+    public sealed class RelayState<T> : RelayState where T : Relay, IPlaceholderReplacementProvider
     {
         public RelayState(RelayState<T> s) : this(s.Relay)
         {
@@ -344,6 +366,30 @@ namespace Sonar.Trackers
         public bool IsSameEntity(T relay) => this.Relay.IsSameEntity(relay);
         public bool IsSameEntity(RelayState<T> state) => this.IsSameEntity(state.Relay);
 
+        public bool TryGetValue(ReadOnlySpan<char> name, out ReadOnlySpan<char> value)
+        {
+            var result = name switch
+            {
+                "lastfound" => this.GetLastFoundDateTimeOffset().ToString(),
+                "lastkilled" => this.GetLastKilledDateTimeOffset().ToString(),
+                "lastseen" => this.GetLastSeenDateTimeOffset().ToString(),
+                "lastuntouched" => this.GetLastUntouchedDateTimeOffset().ToString(),
+
+                "sincefound" => $"{this.LastFoundAgo / 1000:F2}s",
+                "sincekilled" => $"{this.LastKilledAgo / 1000:F2}s",
+                "sinceseen" => $"{this.LastSeenAgo / 1000:F2}s",
+                "sinceuntouched" => $"{this.LastUntouchedAgo / 1000:F2}s",
+
+                _ => null
+            };
+
+            if (result is not null)
+            {
+                value = result;
+                return true;
+            }
+            return this.Relay.TryGetValue(name, out value);
+        }
     }
 
     public static class RelayStateExtensions

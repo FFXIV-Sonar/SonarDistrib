@@ -55,7 +55,7 @@ namespace Sonar.Trackers
             {
                 ViewScanAcceleration.None => 1,
                 ViewScanAcceleration.Linear => multiplier,
-                ViewScanAcceleration.Triangular => MathUtils.Triangular(multiplier),
+                ViewScanAcceleration.Triangular => AG.MathUtils.Triangular(multiplier),
                 ViewScanAcceleration.Exponential => multiplier * multiplier,
                 _ => multiplier
             };

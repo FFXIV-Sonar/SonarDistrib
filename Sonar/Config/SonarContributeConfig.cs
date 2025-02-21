@@ -20,7 +20,7 @@ namespace Sonar.Config
         /// <summary>Contains contribution config for individual <see cref="RelayType"/>s.</summary>
         [Key(0)]
         [JsonProperty]
-        public HashSet<RelayType> Disabled { get; init; } = [];
+        public HashSet<RelayType> Disabled { get; set; } = [];
 
         /// <summary>Set to <see langword="false"/> to disable all contribution.</summary>
         [Key(1)]

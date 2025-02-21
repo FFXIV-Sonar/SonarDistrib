@@ -36,6 +36,9 @@ namespace Sonar.Data.Rows
         [Key(8)]
         public uint ZoneId { get; set; }
 
+        [Key(9)]
+        public string? BlurHash { get; set; }
+
         public override string ToString() => this.Name.ToString();
         public string ToString(SonarLanguage lang) => this.Name.ToString(lang);
     }

@@ -15,7 +15,6 @@ namespace SonarUtils.Collections
     {
         private readonly IReadOnlyDictionary<TKey, TSourceValue> _backingDictionary;
         private readonly Func<TSourceValue, TValue> _getterTransformFunc;
-        private readonly Func<TValue, TSourceValue> _setterTransformFunc = default!; // Not used if read-only
         private DictionaryKeys<TKey, TValue>? _keyCollection;
         private DictionaryValues<TKey, TValue>? _valueCollection;
 

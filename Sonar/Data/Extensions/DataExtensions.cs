@@ -14,7 +14,6 @@ namespace Sonar.Data.Extensions
     public static class SonarDataExtensions
     {
         #region Enumerables
-        public static IEnumerable<WorldRow> GetWorlds(this DatacenterRow dc) => Database.Worlds.Values.Where(w => w.DatacenterId == dc.Id);
         public static IEnumerable<FateRow> GetFates(this ZoneRow z) => Database.Fates.Values.Where(f => f.ZoneId == z.Id);
         public static IEnumerable<FateRow> GetFates(this ExpansionPack e) => Database.Fates.Values.Where(f => f.Expansion == e);
         public static IEnumerable<ZoneRow> GetZones(this ExpansionPack e) => Database.Zones.Values.Where(z => z.Expansion == e);
@@ -23,7 +22,6 @@ namespace Sonar.Data.Extensions
 
         #region GetWorld
         public static WorldRow? GetWorld(this GamePlace p) => Database.Worlds.GetValueOrDefault(p.WorldId);
-        public static WorldRow? GetWorld(this PlayerInfo p) => Database.Worlds.GetValueOrDefault(p.HomeWorldId);
         public static WorldRow? GetWorld(this RelayState s) => s.Relay.GetWorld();
         public static WorldRow? GetWorld<T>(this RelayConfirmationBase<T> c) where T : Relay => Database.Worlds.GetValueOrDefault(c.WorldId);
         public static WorldRow? GetHomeWorld(this PlayerInfo i) => Database.Worlds.GetValueOrDefault(i.HomeWorldId); // duplicate...
@@ -33,9 +31,20 @@ namespace Sonar.Data.Extensions
 
         #region GetDatacenter
         public static DatacenterRow? GetDatacenter(this GamePlace p) => p.GetWorld()?.GetDatacenter();
-        public static DatacenterRow? GetDatacenter(this WorldRow w) => Database.Datacenters.GetValueOrDefault(w.DatacenterId);
         public static DatacenterRow? GetDatacenter(this RelayState s) => s.Relay.GetDatacenter();
         public static DatacenterRow? GetDatacenter<T>(this RelayConfirmationBase<T> c) where T : Relay => c.GetWorld()?.GetDatacenter();
+        public static DatacenterRow? GetHomeDatacenter(this PlayerInfo i) => i.GetHomeWorld()?.GetDatacenter(); // duplicate...
+        public static DatacenterRow? GetStartDatacenter(this WorldTravelRow t) => t.GetStartWorld()?.GetDatacenter();
+        public static DatacenterRow? GetEndDatacenter(this WorldTravelRow t) => t.GetEndWorld()?.GetDatacenter();
+        #endregion
+
+        #region GetRegion
+        public static RegionRow? GetRegion(this GamePlace p) => p.GetWorld()?.GetRegion();
+        public static RegionRow? GetRegion(this RelayState s) => s.Relay.GetRegion();
+        public static RegionRow? GetRegion<T>(this RelayConfirmationBase<T> c) where T : Relay => c.GetWorld()?.GetRegion();
+        public static RegionRow? GetHomeRegion(this PlayerInfo i) => i.GetHomeWorld()?.GetRegion(); // duplicate...
+        public static RegionRow? GetStartRegion(this WorldTravelRow t) => t.GetStartWorld()?.GetRegion();
+        public static RegionRow? GetEndRegion(this WorldTravelRow t) => t.GetEndWorld()?.GetRegion();
         #endregion
 
         #region Zone Extensions

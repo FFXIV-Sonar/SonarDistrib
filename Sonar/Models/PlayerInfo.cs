@@ -3,13 +3,8 @@ using Newtonsoft.Json;
 using Sonar.Data.Extensions;
 using Sonar.Messages;
 using System;
-using System.Linq;
-using Sonar.Data.Rows;
-using Sonar.Data;
 using AG;
 using System.Threading;
-using System.Text;
-using System.Data;
 
 namespace Sonar.Models
 {
@@ -48,7 +43,6 @@ namespace Sonar.Models
         public required long Hash2 { get; init; }
 
         /// <summary>Lodestone ID</summary>
-        [IgnoreMember]
         internal int LodestoneId { get; set; } // Server-side only
 
         /// <summary>Check name validity</summary>
@@ -72,13 +66,13 @@ namespace Sonar.Models
             if (this.LoggedIn is not false)
             {
                 // Due to CN (and maybe KR) other properties of the name cannot be checked
-                if (this.Name is not null && this.Name.Length <= 32 && (this.GetWorld()?.IsPublic ?? false)) return 1;
+                if (this.Name is not null && this.Name.Length <= 32 && (this.GetHomeWorld()?.IsPublic ?? false)) return 1;
             }
             else if (this.Name is null && this.HomeWorldId == 0 && this.Hash1 == 0 && this.Hash2 == 0) return 1;
             return -1;
         }
 
-        public override string ToString() => this._toString ??= $"{this.Name} <{this.GetWorld()}>";
+        public override string ToString() => this._toString ??= $"{this.Name} <{this.GetHomeWorld()}>";
         public static bool Equals(PlayerInfo? left, PlayerInfo? right) => ReferenceEquals(left, right) || (left is not null && right is not null && left.Hash1 == right.Hash1 && left.Hash2 == right.Hash2  && left.HomeWorldId == right.HomeWorldId && string.Equals(left.Name, right.Name, StringComparison.Ordinal));
         public bool Equals(PlayerInfo? other) => Equals(this, other);
         public override bool Equals(object? obj) => obj is PlayerInfo info && this.Equals(info);

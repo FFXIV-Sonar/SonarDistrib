@@ -78,7 +78,11 @@ namespace Sonar.Trackers
                         {
                             handler(this, ex);
                         }
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
+#pragma warning disable CS0168 // Unnecessary assignment of a value
                         catch (Exception ex2)
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
+#pragma warning restore CS0168 // Unnecessary assignment of a value
                         {
                             /* Swallow: Nothing to do */
                         }
@@ -104,7 +108,11 @@ namespace Sonar.Trackers
                         {
                             handler(this, ex);
                         }
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
+#pragma warning disable CS0168 // Unnecessary assignment of a value
                         catch (Exception ex2)
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
+#pragma warning restore CS0168 // Unnecessary assignment of a value
                         {
                             /* Swallow: Nothing to do */
                         }

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SonarUtils.Threading
 {
@@ -14,6 +10,7 @@ namespace SonarUtils.Threading
     /// <remarks>
     /// Dispose is only needed if the value is IDisposable
     /// </remarks>
+    [Obsolete("Use AG.Threading.ResettableLazy (TODO: Update AG.Threading nuget)")]
     public sealed class ResettableLazy<T> : IDisposable
     {
         private sealed class ValueHolder { public T Value { get; init; } = default!; }

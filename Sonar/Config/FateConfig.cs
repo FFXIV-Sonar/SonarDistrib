@@ -12,22 +12,15 @@ using Sonar.Config.Experimental;
 
 namespace Sonar.Config
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    [MessagePackObject]
     public class FateConfig : RelayConfig
     {
         private const SonarJurisdiction _DefaultJurisdiction = SonarJurisdiction.None;
 
         /// <summary>Default Jurisdiction</summary>
-        [JsonProperty]
-        [Key("defaultJurisdiction")]
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public SonarJurisdiction DefaultJurisdiction { get; set; } = _DefaultJurisdiction;
 
         /// <summary>Jurisdictions</summary>
-        [JsonProperty]
-        [Key("jurisdiction")]
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Dictionary<uint, SonarJurisdiction> Jurisdiction { get; init; } = [];
 
         /// <summary>Get report jurisdiction for a specific expansion and rank</summary>
@@ -44,9 +37,16 @@ namespace Sonar.Config
         /// <returns>Jurisdictions</returns>
         public Dictionary<uint, SonarJurisdiction> GetJurisdictions() => this.Jurisdiction.ToDictionary(kv => kv.Key, kv => kv.Value);
 
-        /// <summary>Set all jurisdictions in the provided dictionary</summary>
+        /// <summary>Set all jurisdictions in the provided in the enumerable</summary>
         /// <returns>Jurisdictions</returns>
-        public void SetJurisdictions(Dictionary<uint, SonarJurisdiction> jurisdictions)
+        public void SetJurisdictions(IEnumerable<KeyValuePair<uint, SonarJurisdiction>> jurisdictions)
+        {
+            foreach (var (key, value) in jurisdictions) this.SetJurisdiction(key, value);
+        }
+
+        /// <summary>Set all jurisdictions in the provided in the enumerable</summary>
+        /// <returns>Jurisdictions</returns>
+        public void SetJurisdictions(IEnumerable<(uint, SonarJurisdiction)> jurisdictions)
         {
             foreach (var (key, value) in jurisdictions) this.SetJurisdiction(key, value);
         }

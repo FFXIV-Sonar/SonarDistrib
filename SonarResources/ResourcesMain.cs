@@ -17,6 +17,9 @@ using System.Text.Json;
 using SonarResources.Maps;
 using SonarResources.Lumina;
 using Sonar;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using SonarUtils;
 
 namespace SonarResources
 {
@@ -51,6 +54,9 @@ namespace SonarResources
             )
         {
             this.Luminas = luminas;
+            this.Db = db;
+
+            this.GenerateMapAssetsAsync().GetAwaiter().GetResult();
 
             Console.WriteLine("Serializing and deserializing");
             var dbBytes = SonarSerializer.SerializeServerToClient(db);
@@ -115,7 +121,6 @@ namespace SonarResources
             SaveToJson(this.Db.Weathers);
             SaveToJson(this.Db.Aetherytes);
             SaveToJson(this.Db.WorldTravelData);
-            this.GenerateMapAssets();
 
             Console.WriteLine("\nDatabase Result");
             Console.WriteLine("===============");
@@ -137,18 +142,31 @@ namespace SonarResources
             var name = typeof(T).Name;
             var filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}-newtonsoft.json";
             Console.Write($"Saving {filename} (Count: {dict.Count})...");
-            var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(dict));
+            var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(dict, Formatting.Indented));
             File.WriteAllBytes(filename, bytes);
             Console.WriteLine($"{bytes.Length} bytes saved");
 
             filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}.json";
+            Console.Write($"Saving {filename} (Count: {dict.Count})...");
+            var jsonOptions2 = new JsonSerializerOptions(JsonSerializerOptions.Default) { WriteIndented = true };
+            bytes = Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(dict, jsonOptions2));
+            File.WriteAllBytes(filename, bytes);
+            Console.WriteLine($"{bytes.Length} bytes saved");
+
+            filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}-newtonsoft.min.json";
+            Console.Write($"Saving {filename} (Count: {dict.Count})...");
+            bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(dict));
+            File.WriteAllBytes(filename, bytes);
+            Console.WriteLine($"{bytes.Length} bytes saved");
+
+            filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}.min.json";
             Console.Write($"Saving {filename} (Count: {dict.Count})...");
             bytes = Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(dict));
             File.WriteAllBytes(filename, bytes);
             Console.WriteLine($"{bytes.Length} bytes saved");
         }
 
-        private void GenerateMapAssets()
+        private async Task GenerateMapAssetsAsync(CancellationToken cancellationToken = default)
         {
             if (!ConsoleHelper.AskUserYN("This take a really long time, generate all map assets?")) return;
             var zones = ConsoleHelper.AskUserYN("Generate all zone assets?");
@@ -157,13 +175,19 @@ namespace SonarResources
             var generator = new MapsGenerator();
             foreach (var data in this.Luminas.GetAllDatas())
             {
-                generator.GenerateMapImages(data, parallel);
+                await generator.GenerateAllMapImagesAsync(data, this.Db, parallel, cancellationToken);
+            }
+
+            Console.WriteLine("Propagating blurhash from maps to zones");
+            foreach (var zone in this.Db.Zones.Values)
+            {
+                zone.BlurHash = this.Db.Maps.GetValueOrDefault(zone.MapId)?.BlurHash;
             }
             
             if (!zones) return;
             foreach (var data in this.Luminas.GetAllDatas())
             {
-                generator.GenerateZoneImages(data);
+                await generator.GenerateAllZoneImagesAsync(data, cancellationToken);
             }
         }
     }

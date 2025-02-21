@@ -151,8 +151,8 @@ namespace SonarPlugin.GUI
                 ImGui.BeginChild("##SonarTabBarWindow", (new Vector2(0, 24)) * ImGui.GetIO().FontGlobalScale, false, ImGuiWindowFlags.AlwaysAutoResize | this.TabBarFlags);
                 if (ImGui.BeginTabBar("##SonarTabBar", ImGuiTabBarFlags.None))
                 {
-                    HuntRank[] ranks = (HuntRank[])(Enum.GetValues(typeof(HuntRank)));
-                    foreach (HuntRank rank in ranks.Where(r => r != HuntRank.None).Reverse().Prepend(HuntRank.None))
+                    var ranks = Enum.GetValues<HuntRank>();
+                    foreach (var rank in ranks.Where(rank => rank != HuntRank.None && ((int)rank & 0x80) != 0x80).Reverse().Prepend(HuntRank.None))
                     {
                         if (!this.Plugin.Configuration.AllSRankSettings && (rank == HuntRank.SS || rank == HuntRank.SSMinion)) continue;
 

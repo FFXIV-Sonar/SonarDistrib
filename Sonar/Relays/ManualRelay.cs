@@ -19,7 +19,7 @@ namespace Sonar.Relays
     [RelayType(RelayType.Manual)]
     public sealed class ManualRelay : Relay
     {
-        protected override string GetSortKeyImpl() => $"{this.Player?.Name.ToLowerInvariant() ?? "_"} <{this.Player?.GetWorld()?.Name.ToLowerInvariant() ?? this.Player?.HomeWorldId.ToString().ToLowerInvariant() ?? "_"}>";
+        protected override string GetSortKeyImpl() => $"{this.Player?.Name?.ToLowerInvariant() ?? "_"} <{this.Player?.GetHomeWorld()?.Name.ToLowerInvariant() ?? this.Player?.HomeWorldId.ToString().ToLowerInvariant() ?? "_"}>";
         protected override IRelayDataRow? GetRelayInfoImpl() => null;
 
         /// <summary>

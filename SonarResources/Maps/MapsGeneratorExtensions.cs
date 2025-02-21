@@ -1,11 +1,18 @@
 ﻿using Lumina;
 using Lumina.Data.Files;
 using Lumina.Excel.Sheets;
+using Lumina.Models.Materials;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SonarResources.Maps
 {
@@ -38,6 +45,34 @@ namespace SonarResources.Maps
         public static string GetMapImageAssetPath(uint id, MapSize size, string extension) => $"../../../Assets/images/map-{id}-{SizeSuffix[size]}.{extension}";
         public static string GetMapImageAssetPath(this Map map, MapSize size, string extension) => GetMapImageAssetPath(map.RowId, size, extension);
         public static string GetMapImageAssetPath(this TerritoryType territoryType, MapSize size, string extension) => GetMapImageAssetPath(territoryType.Map.Value, size, extension);
+
+        public static Image<Bgra32>? ToMapImage(this Map map, GameData data)
+        {
+            var textures = map.GetMapTextures(data);
+
+            if (textures.Image is null) return null;
+            var result = textures.Image.ToImage();
+
+            if (textures.Mask is not null)
+            {
+                using var maskImage = textures.Mask.ToImage();
+                result.Mutate(ctx => ctx.DrawImage(maskImage, PixelColorBlendingMode.Multiply, PixelAlphaCompositionMode.SrcOver, 1.0f));
+            }
+            return result;
+        }
+
+        public static Image<Rgba32>? ToMapImageRgba(this Map map, GameData data)
+        {
+            using var image = map.ToMapImage(data);
+            return image?.CloneAs<Rgba32>();
+        }
+
+        public static Image<Bgra32>? ToMapImage(this TerritoryType zone, GameData data)
+        {
+            var map = zone.Map.ValueNullable;
+            if (map is null) return null;
+            return map.Value.ToMapImage(data);
+        }
 
         public static MapTextures GetMapTextures(this MapPaths paths, GameData data)
         {

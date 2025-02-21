@@ -509,7 +509,7 @@ namespace SonarPlugin.GUI
                 var ranks = Enum.GetValues<HuntRank>();
                 foreach (var rank in ranks.Reverse())
                 {
-                    if (rank == HuntRank.None) continue;
+                    if (rank == HuntRank.None || ((int)rank & 0x80) == 0x80) continue;
                     if (!this.Plugin.Configuration.AllSRankSettings && (rank == HuntRank.SS || rank == HuntRank.SSMinion)) continue;
                     if (!this.Plugin.Configuration.AdvancedHuntReportSettings)
                     {

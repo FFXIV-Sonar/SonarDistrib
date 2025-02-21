@@ -229,7 +229,7 @@ namespace Sonar.Messages
             return clone;
         }
 
-        private sealed class MessageListFormatter : IMessagePackFormatter<MessageList>
+        internal sealed class MessageListFormatter : IMessagePackFormatter<MessageList?>
         {
             public void Serialize(ref MessagePackWriter writer, MessageList? value, MessagePackSerializerOptions options)
             {
@@ -247,9 +247,9 @@ namespace Sonar.Messages
                 }
             }
 
-            public MessageList Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+            public MessageList? Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
             {
-                if (reader.TryReadNil()) return null!;
+                if (reader.TryReadNil()) return null;
                 options.Security.DepthStep(ref reader);
 
                 var messageFormatter = options.Resolver.GetFormatter<ISonarMessage>()!;

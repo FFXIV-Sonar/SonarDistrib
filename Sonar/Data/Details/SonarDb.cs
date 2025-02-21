@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.ComponentModel;
 using SonarUtils.Collections;
 using System.Collections.Frozen;
+using SonarUtils.Text;
 
 namespace Sonar.Data.Details
 {
@@ -17,6 +18,7 @@ namespace Sonar.Data.Details
         public SonarDb()
         {
             this._worldTravelHelper = new(this.WorldTravelHelperFactory);
+            this.Indexes = new(this);
         }
 
         [Key(0)]
@@ -27,6 +29,9 @@ namespace Sonar.Data.Details
 
         [IgnoreMember]
         public string HashString => UrlBase64.Encode(this.Hash);
+
+        [IgnoreMember]
+        public SonarDbIndexesFacade Indexes { get; private set; }
 
         #region Dictionaries and Lists
         [Key(2)]
@@ -108,7 +113,7 @@ namespace Sonar.Data.Details
         /// <summary>Warning: Slow</summary>
         public byte[] ComputeHash()
         {
-            var byteList = new InternalList<byte>(262144);
+            var byteList = new InternalList<byte>(1048576);
             byteList.AddRange(MessagePackSerializer.Serialize(this.Worlds.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.Datacenters.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.Regions.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
@@ -122,7 +127,7 @@ namespace Sonar.Data.Details
             byteList.AddRange(MessagePackSerializer.Serialize(this.WorldTravelData.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
 
             var hash = new byte[SHA256.HashSizeInBytes];
-            if (!SHA256.TryHashData(byteList.AsSpan(), hash, out var bytesWritten)) return Array.Empty<byte>();
+            if (!SHA256.TryHashData(byteList.AsSpan(), hash, out var bytesWritten)) return [];
             return hash[..bytesWritten];
         }
 
@@ -150,6 +155,13 @@ namespace Sonar.Data.Details
                 $"World Travel: {this.WorldTravelData.Count}",
             };
             return string.Join('\n', lines);
+        }
+
+        /// <summary>Reset <see cref="Indexes"/>.</summary>
+        /// <remarks>There's no need to call this method unless you're modifying the contents of this <see cref="SonarDb"/> instance.</remarks>
+        public void ResetIndexes()
+        {
+            this.Indexes = new(this);
         }
     }
 }

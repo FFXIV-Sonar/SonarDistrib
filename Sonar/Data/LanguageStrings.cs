@@ -19,35 +19,6 @@ namespace Sonar.Data
     {
         private readonly IDictionary<SonarLanguage, string> _strings = new Dictionary<SonarLanguage, string>();
 
-        /// <summary>Resolve which language to return (in case not all languages are supported)</summary>
-        /// <param name="lang"></param>
-        /// <returns>Resolved language, if any</returns>
-        public SonarLanguage? ResolveLanguage(SonarLanguage lang = SonarLanguage.Default)
-        {
-            // Fail fast if no strings are stored
-            if (this._strings.Count == 0) return null;
-
-            // If default take it from Database.Default
-            if (lang == SonarLanguage.Default) lang = Database.DefaultLanguage;
-
-            // If a string for the requested language doesn't exist try the default language
-            if (!this._strings.ContainsKey(lang)) lang = Database.DefaultLanguage;
-
-            // If a string for the default language doesn't exist fall back to English
-            if (!this._strings.ContainsKey(lang)) lang = SonarLanguage.English;
-
-            // If a string doesn't exist use whichever key is found as a last resort
-            if (!this._strings.ContainsKey(lang)) lang = this._strings.Keys.First();
-
-            // Return the resolved language
-            return lang;
-        }
-
-        private static void ThrowIfInvalidLanguage(SonarLanguage lang)
-        {
-            if (!Enum.IsDefined(lang)) throw new ArgumentException("Invalid Language");
-        }
-
         [IgnoreMember]
         public ICollection<SonarLanguage> Keys => this._strings.Keys;
 
@@ -65,14 +36,14 @@ namespace Sonar.Data
         /// <returns>String</returns>
         public string ToString(SonarLanguage lang)
         {
-            // Resolve the language to return
-            var resLang = this.ResolveLanguage(lang);
+            // Return empty string if no strings are set.
+            if (this._strings.Count == 0) return string.Empty;
 
-            // If resolving failed, return null
-            if (!resLang.HasValue) return string.Empty;
+            // Resolve the language to return
+            var resLang = Database.ResolveLanguage(lang, this._strings.Keys, throwOnInvalid: false);
 
             // Return the language string for the specified language
-            return this._strings[resLang.Value];
+            return this._strings[resLang];
         }
 
         /// <summary>Return a string of the specified language</summary>
@@ -90,16 +61,9 @@ namespace Sonar.Data
             get => this.ToString(lang);
             set
             {
-                // Avoid invalid languages
-                ThrowIfInvalidLanguage(lang);
+                lang = Database.ResolveLanguage(lang);
 
-                // Use Database.DefaultLanguage
-                if (lang == SonarLanguage.Default) lang = Database.DefaultLanguage;
-
-                // Just in case someone decides to use the Default language, we're english developers
-                if (lang == SonarLanguage.Default) lang = SonarLanguage.English;
-
-                // If the value is null, remove the string and return
+                // If the value is null or empty, remove the string and return
                 if (string.IsNullOrEmpty(value))
                 {
                     this._strings.Remove(lang);

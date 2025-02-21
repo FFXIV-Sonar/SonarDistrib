@@ -3,11 +3,16 @@ using Humanizer;
 using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using SonarResources.Lumina;
+using SonarResources.Maps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blurhash.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using Sonar.Data;
 
 namespace SonarResources.Readers
 {
@@ -64,6 +69,7 @@ namespace SonarResources.Readers
                         HasOffsetZ = hasOffsetZ,
                         MapResourcePath = luminaMap.Id.ExtractText(),
                         ZoneId = zoneId,
+                        BlurHash = Database.Maps.GetValueOrDefault(id)?.BlurHash, // NOTE: MapGenerator will regenerate these
                     };
                 }
 

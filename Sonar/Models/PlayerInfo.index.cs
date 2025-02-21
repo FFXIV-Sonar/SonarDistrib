@@ -15,6 +15,7 @@ namespace Sonar.Models
     public sealed partial class PlayerInfo : ITrackerIndexable
     {
         private static readonly NonBlocking.NonBlockingDictionary<uint, string[]> s_indexKeysCache = new();
+
         private IEnumerable<string>? _indexKeys;
 
         /// <summary>

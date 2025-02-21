@@ -68,7 +68,7 @@ namespace SonarUtils.Collections
                 var sets = this._sets;
                 if (!IsCountTooLarge(count, sets.Length)) return;
 
-                var newLength = MathUtils.FindPrime(sets.Length * 2);
+                var newLength = AG.PrimeUtils.FindNext(sets.Length * 2);
                 if (newLength < sets.Length) return;
 
                 lock (sets)
@@ -80,7 +80,7 @@ namespace SonarUtils.Collections
                         count = this._count;
                         if (!IsCountTooLarge(count, sets.Length)) return;
 
-                        newLength = MathUtils.FindPrime(sets.Length * 2);
+                        newLength = AG.PrimeUtils.FindNext(sets.Length * 2);
                         if (newLength <= sets.Length) return;
                         //Console.WriteLine($"sets resize: {sets.Length} => {newLength}");
 

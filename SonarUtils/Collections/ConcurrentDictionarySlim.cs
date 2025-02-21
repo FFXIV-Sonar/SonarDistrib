@@ -71,7 +71,7 @@ namespace SonarUtils.Collections
                 var dicts = this._dicts;
                 if (!IsCountTooLarge(count, dicts.Length)) return;
 
-                var newLength = MathUtils.FindPrime(dicts.Length * 2);
+                var newLength = AG.PrimeUtils.FindNext(dicts.Length * 2);
                 if (newLength < dicts.Length) return;
                 lock (dicts)
                 {
@@ -82,7 +82,7 @@ namespace SonarUtils.Collections
                         count = this._count;
                         if (!IsCountTooLarge(count, dicts.Length)) return;
 
-                        newLength = MathUtils.FindPrime(dicts.Length * 2);
+                        newLength = AG.PrimeUtils.FindNext(dicts.Length * 2);
                         if (newLength <= dicts.Length) return;
                         //Console.WriteLine($"dict resize: {dicts.Length} => {newLength}");
 

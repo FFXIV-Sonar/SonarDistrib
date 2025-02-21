@@ -13,9 +13,7 @@ using System.ComponentModel;
 
 namespace Sonar.Config
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    [MessagePackObject(true)] // WARNING: Obscure bug if (true) is removed because of previous releases having it from SonarConfigMessage (meaning all Key attributes are ignored and names are simply the property name as is).
-    public sealed class SonarConfig : ISonarMessage
+    public sealed class SonarConfig
     {
         public SonarConfig() { }
         public SonarConfig(SonarConfig c)
@@ -60,13 +58,6 @@ namespace Sonar.Config
         [JsonProperty]
         [Key("server")] // "contribute" but too late to change
         public SonarContributeConfig Contribute { get; init; } = new();
-
-        /// <summary>Jurisdiction to receive from Server</summary>
-        [JsonProperty]
-        [Key("receiveJurisdiction")]
-        [Obsolete("Use SonarConfig.Server.ReceiveJurisdiction", true)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public SonarJurisdiction ReceiveJurisdiction { get; set; } = SonarJurisdiction.Datacenter;
 
         /// <summary>Sanitize all configuration</summary>
         /// <param name="repair">Allow repairs</param>
@@ -113,16 +104,16 @@ namespace Sonar.Config
         public void VersionUpdate()
         {
             // I cannot bypass an [Obsolete] as error, but that doesn't stop me from using reflection based property accesors
-            var receiveAccessor = typeof(SonarConfig).GetProperty("ReceiveJurisdiction", BindingFlags.Instance | BindingFlags.Public)
-                ?? throw new InvalidOperationException("Unexpected error while getting contribute accessor");
-            var contributeAccessor = typeof(RelayConfig).GetProperty("Contribute", BindingFlags.Instance | BindingFlags.Public)
-                ?? throw new InvalidOperationException("Unexpected error while getting contribute accessor");
+            //var receiveAccessor = typeof(SonarConfig).GetProperty("ReceiveJurisdiction", BindingFlags.Instance | BindingFlags.Public)
+            //    ?? throw new InvalidOperationException("Unexpected error while getting contribute accessor");
+            //var contributeAccessor = typeof(RelayConfig).GetProperty("Contribute", BindingFlags.Instance | BindingFlags.Public)
+            //    ?? throw new InvalidOperationException("Unexpected error while getting contribute accessor");
 
             if (this.Version <= 0)
             {
                 // Initial default was intended to be Data Center, however I accidentally left it at Audience during first release of this setting.
                 // This mistaken default is only changed once as part of a configuration version update. Users can set it back to Audience as they wish.
-                if ((SonarJurisdiction)receiveAccessor.GetValue(this)! == SonarJurisdiction.Audience) receiveAccessor.SetValue(this, SonarJurisdiction.Datacenter);
+                //if ((SonarJurisdiction)receiveAccessor.GetValue(this)! == SonarJurisdiction.Audience) receiveAccessor.SetValue(this, SonarJurisdiction.Datacenter);
 
                 // Update configuration version
                 this.Version = 1;
@@ -132,15 +123,15 @@ namespace Sonar.Config
             {
                 // Contribute settings got moved into SonarConfig.Server. This moves the config previously saved at
                 // each respective hunt and fates config into their new location.
-                this.Contribute[RelayType.Hunt] = (bool)contributeAccessor.GetValue(this.HuntConfig)!;
-                this.Contribute[RelayType.Fate] = (bool)contributeAccessor.GetValue(this.FateConfig)!;
+                //this.Contribute[RelayType.Hunt] = (bool)contributeAccessor.GetValue(this.HuntConfig)!;
+                //this.Contribute[RelayType.Fate] = (bool)contributeAccessor.GetValue(this.FateConfig)!;
 
                 // Global contribute default to true. Not needed since that's the default but placed here for verbosity
                 this.Contribute.Global = true;
 
                 // Receive jurisdiction got moved into SonarConfig.Server as well. This moves the config previously
                 // saved here into the server configuration.
-                this.Contribute.ReceiveJurisdiction = (SonarJurisdiction)receiveAccessor.GetValue(this)!;
+                //this.Contribute.ReceiveJurisdiction = (SonarJurisdiction)receiveAccessor.GetValue(this)!;
 
                 // Update configuration version
                 this.Version = 2;

@@ -13,6 +13,8 @@ using Sonar.Numerics;
 using Sonar.Utilities;
 using System.Runtime.CompilerServices;
 using Cysharp.Text;
+using SonarUtils;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Sonar.Relays
 {
@@ -63,7 +65,7 @@ namespace Sonar.Relays
         /// HP Percentage
         /// </summary>
         [IgnoreMember]
-        public float HpPercent => 100f * this.CurrentHp / this.MaxHp;
+        public float HpPercent => 100f * ((float)this.CurrentHp / this.MaxHp);
 
         /// <summary>
         /// Kill Progress
@@ -141,6 +143,7 @@ namespace Sonar.Relays
         /// <summary>
         /// Check if this hunt hp roughly equals another's hp
         /// </summary>
+        [SuppressMessage("Major Bug", "S1244", Justification = "Intended")]
         public bool HpPercentRoughlyEquals(float otherHpPercent)
         {
             var thisHpPercent = this.HpPercent;
@@ -175,6 +178,31 @@ namespace Sonar.Relays
         [IgnoreMember]
         [JsonProperty]
         public override string Type => "Hunt";
+
+        public override bool TryGetValue(ReadOnlySpan<char> name, [MaybeNullWhen(false)] out ReadOnlySpan<char> value)
+        {
+            var result = name switch
+            {
+                "status" => this.CurrentHp == this.MaxHp ? "Alive" : this.CurrentHp > 0 ? "Pulled" : this.CurrentHp == 0 ? "Dead" : null,
+                "hpp" => $"{this.HpPercent:F1}%",
+
+                "players" => StringUtils.GetNumber(this.Players),
+
+                "curhp" => this.CurrentHp.ToString(),
+                "maxhp" => this.MaxHp.ToString(),
+
+                "actorid" or "objectid" => $"{this.ActorId:X8}",
+
+                _ => null
+            };
+
+            if (result is not null)
+            {
+                value = result;
+                return true;
+            }
+            return base.TryGetValue(name, out value);
+        }
 
         protected override bool IsValidImpl(WorldRow world, ZoneRow zone)
         {

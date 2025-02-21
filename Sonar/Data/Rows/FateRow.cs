@@ -54,7 +54,7 @@ namespace Sonar.Data.Rows
         [Key(17)]
         public uint LgbId { get; set; }
 
-        HuntRank IRelayDataRow.Rank => HuntRank.None;
+        HuntRank IRelayDataRow.Rank => HuntRank.Fate;
         IReadOnlyCollection<uint> IRelayDataRow.ZoneIds => this._zoneIds ??= [this.ZoneId];
 
         public override string ToString() => this.Name.ToString();

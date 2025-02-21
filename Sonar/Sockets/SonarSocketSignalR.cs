@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Connections;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Sonar.Messages;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -94,13 +90,15 @@ namespace Sonar.Sockets
         protected override void Dispose(bool disposing)
         {
             this._cts.Cancel();
+            this._cts.Dispose();
             this._connection.DisposeAsync().AsTask().GetAwaiter().GetResult();
             base.Dispose(disposing);
         }
 
         public override async ValueTask DisposeAsync()
         {
-            this._cts.Cancel();
+            await this._cts.CancelAsync();
+            this._cts.Dispose();
             await this._connection.DisposeAsync();
             await base.DisposeAsync();
         }

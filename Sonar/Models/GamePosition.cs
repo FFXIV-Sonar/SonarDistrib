@@ -7,6 +7,8 @@ using Sonar.Data;
 using System.Numerics;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using SonarUtils;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Sonar.Models
 {
@@ -63,6 +65,32 @@ namespace Sonar.Models
         /// </summary>
         public float GetDistanceTo(SonarVector2 coords) => this.GetHorizontalDistanceTo(coords);
         #endregion
+
+        public override bool TryGetValue(ReadOnlySpan<char> name, [MaybeNullWhen(false)] out ReadOnlySpan<char> value)
+        {
+            var result = name switch
+            {
+                "flag" => this.GetFlagString(MapFlagFormatFlags.IngamePreset),
+                "coords" => MapFlagUtils.FlagToString(this.GetFlag(), MapFlagFormatFlags.IngamePreset),
+
+                "x" => $"{this.GetFlag().X:F2}",
+                "y" => $"{this.GetFlag().Y:F2}",
+                "z" => $"{this.GetFlag().Z:F2}",
+
+                "rawx" => $"{this.Coords.X:F2}",
+                "rawy" => $"{this.Coords.Y:F2}",
+                "rawz" => $"{this.Coords.Z:F2}",
+
+                _ => null,
+            };
+
+            if (result is not null)
+            {
+                value = result;
+                return true;
+            }
+            return base.TryGetValue(name, out value);
+        }
 
         public override string ToString()
         {
