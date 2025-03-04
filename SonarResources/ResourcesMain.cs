@@ -1,5 +1,4 @@
 ﻿using DryIocAttributes;
-using Newtonsoft.Json;
 using Sonar.Data.Details;
 using Sonar.Data.Rows;
 using SonarResources.Aetherytes;
@@ -10,14 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using SonarResources.Maps;
 using SonarResources.Lumina;
 using Sonar;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using SonarUtils;
 
@@ -140,28 +137,17 @@ namespace SonarResources
         private static void SaveToJson<T>(IDictionary<uint, T> dict) where T : IDataRow
         {
             var name = typeof(T).Name;
-            var filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}-newtonsoft.json";
-            Console.Write($"Saving {filename} (Count: {dict.Count})...");
-            var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(dict, Formatting.Indented));
-            File.WriteAllBytes(filename, bytes);
-            Console.WriteLine($"{bytes.Length} bytes saved");
 
-            filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}.json";
+            var filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}.json";
             Console.Write($"Saving {filename} (Count: {dict.Count})...");
             var jsonOptions2 = new JsonSerializerOptions(JsonSerializerOptions.Default) { WriteIndented = true };
-            bytes = Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(dict, jsonOptions2));
-            File.WriteAllBytes(filename, bytes);
-            Console.WriteLine($"{bytes.Length} bytes saved");
-
-            filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}-newtonsoft.min.json";
-            Console.Write($"Saving {filename} (Count: {dict.Count})...");
-            bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(dict));
+            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dict, jsonOptions2));
             File.WriteAllBytes(filename, bytes);
             Console.WriteLine($"{bytes.Length} bytes saved");
 
             filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}.min.json";
             Console.Write($"Saving {filename} (Count: {dict.Count})...");
-            bytes = Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(dict));
+            bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dict));
             File.WriteAllBytes(filename, bytes);
             Console.WriteLine($"{bytes.Length} bytes saved");
         }

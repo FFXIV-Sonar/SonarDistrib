@@ -1,5 +1,4 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
 using Sonar.Data.Extensions;
 using Sonar.Messages;
 using System;
@@ -9,7 +8,6 @@ using System.Threading;
 namespace Sonar.Models
 {
     /// <summary>Represents Player Information</summary>
-    [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
     public sealed partial class PlayerInfo : IEquatable<PlayerInfo>, ISonarMessage
@@ -18,27 +16,22 @@ namespace Sonar.Models
         internal int _valid; // Interlocked 0 = Unchecked, 1 = Valid, -1 = Not valid
 
         /// <summary>Logged in</summary>
-        [JsonProperty]
         [Key(3)]
         public required bool? LoggedIn { get; init; }
 
         /// <summary>Player Full Name</summary>
-        [JsonProperty]
         [Key(0)]
         public required string? Name { get; init; }
 
         /// <summary>Player Home World ID</summary>
-        [JsonProperty]
         [Key(1)]
         public required uint HomeWorldId { get; init; }
 
         /// <summary>Player Hash 1</summary>
-        [JsonProperty]
         [Key(2)]
         public required long Hash1 { get; init; }
 
         /// <summary>Player Hash 2</summary>
-        [JsonProperty]
         [Key(4)]
         public required long Hash2 { get; init; }
 

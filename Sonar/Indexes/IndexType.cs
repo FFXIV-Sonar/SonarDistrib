@@ -63,7 +63,7 @@
         RegionZoneInstance,
 
         /// <summary>RegionInstance index key in the form of <c>"ri{regionId}_{instanceId}"</c></summary>
-        /// <example><c>"r2_0"</c></example>
+        /// <example><c>"ri2_0"</c></example>
         RegionInstance,
 
         /// <summary>Audience index key in the form of <c>"a{audienceId}"</c></summary>
@@ -79,7 +79,7 @@
         AudienceZoneInstance,
 
         /// <summary>AudienceInstance index key in the form of <c>"ai{audienceId}_{instanceId}"</c></summary>
-        /// <example><c>"a1_0"</c></example>
+        /// <example><c>"ai1_0"</c></example>
         AudienceInstance,
 
         /// <summary>All index key in the form of <c>"all"</c></summary>

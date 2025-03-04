@@ -1,16 +1,16 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Sonar.Enums;
 using Sonar.Messages;
 using Sonar.Relays;
 using SonarUtils;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace Sonar.Config
 {
     [MessagePackObject]
-    [JsonObject(MemberSerialization.OptIn)]
     public sealed class SonarContributeConfig : ISonarMessage
     {
         private SonarClient? _client;
@@ -19,12 +19,10 @@ namespace Sonar.Config
 
         /// <summary>Contains contribution config for individual <see cref="RelayType"/>s.</summary>
         [Key(0)]
-        [JsonProperty]
         public HashSet<RelayType> Disabled { get; set; } = [];
 
         /// <summary>Set to <see langword="false"/> to disable all contribution.</summary>
         [Key(1)]
-        [JsonProperty]
         public bool Global
         {
             get => this._global;
@@ -38,7 +36,6 @@ namespace Sonar.Config
 
         /// <summary>Jurisdiction to receive from Server.</summary>
         [Key(2)]
-        [JsonProperty]
         public SonarJurisdiction ReceiveJurisdiction
         {
             get => this._jurisdiction;
@@ -59,6 +56,7 @@ namespace Sonar.Config
         }
 
         [IgnoreMember]
+        [JsonIgnore]
         public bool this[RelayType type]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

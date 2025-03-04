@@ -1,5 +1,4 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
 using Sonar.Enums;
 using Sonar.Logging;
 using Sonar.Messages;
@@ -8,7 +7,6 @@ using System;
 namespace Sonar.Logging
 {
     /// <summary>Sonar log message</summary>
-    [JsonObject]
     [MessagePackObject]
     [Serializable]
     public sealed class SonarLogMessage : ISonarMessage

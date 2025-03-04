@@ -1,14 +1,10 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
 using Sonar.Data;
 using Sonar.Indexes;
-using Sonar.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace Sonar.Models
 {
@@ -21,8 +17,8 @@ namespace Sonar.Models
         /// <summary>
         /// Index Keys
         /// </summary>
-        [JsonIgnore]
         [IgnoreMember]
+        [JsonIgnore]
         public IEnumerable<string> IndexKeys => this._indexKeys ??= this.GetIndexKeysCore();
 
         [SuppressMessage("Stinky message", "S1121", Justification = "Immediately used")]

@@ -1,6 +1,4 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
-using Sonar.Messages;
 using System;
 using Sonar.Enums;
 using Sonar.Data.Extensions;
@@ -13,7 +11,6 @@ namespace Sonar.Relays
     /// <summary>
     /// Represent a parsed player relay
     /// </summary>
-    [JsonObject]
     [MessagePackObject]
     [Serializable]
     [RelayType(RelayType.Manual)]

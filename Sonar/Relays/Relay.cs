@@ -1,26 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Sonar.Data.Extensions;
-using Sonar.Data;
-using Newtonsoft.Json;
 using MessagePack;
 using Sonar.Messages;
 using Sonar.Data.Rows;
 using SonarUtils;
 using static Sonar.Utilities.UnixTimeHelper;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Cysharp.Text;
 using Sonar.Models;
 using SonarUtils.Text;
 using System.Diagnostics.CodeAnalysis;
-using SonarUtils.Text.Placeholders.Providers;
-using System.Security.AccessControl;
-using Sonar.Trackers;
+using System.Text.Json.Serialization;
 
 namespace Sonar.Relays
 {
@@ -30,7 +20,6 @@ namespace Sonar.Relays
     [Serializable]
     [MessagePackObject]
     [Union(0, typeof(Relay))]
-    [JsonObject(MemberSerialization.OptIn)]
     [SuppressMessage("Major Code Smell", "S4035")]
     public abstract class Relay : GamePosition, IRelay, ISonarMessage, IEquatable<Relay>
     {
@@ -50,8 +39,8 @@ namespace Sonar.Relays
         /// <summary>
         /// Relay Key
         /// </summary>
-        [JsonProperty("Key")]
         [IgnoreMember]
+        [JsonPropertyName("Key")]
         public string RelayKey => this._relayKey ??= StringUtils.Intern(this.GetRelayKeyImpl());
 
         protected virtual string GetRelayKeyImpl() => ZString.Format("{0}_{1}_{2}", this.WorldId, this.Id, this.InstanceId);
@@ -76,7 +65,6 @@ namespace Sonar.Relays
         /// <summary>
         /// Relay ID (Hunt ID, Fate ID, Player ID)
         /// </summary>
-        [JsonProperty]
         [Key(4)]
         public uint Id
         {
@@ -94,7 +82,6 @@ namespace Sonar.Relays
         /// Relay type
         /// </summary>
         [IgnoreMember]
-        [JsonProperty]
         public virtual string Type => "Relay";
 
         /// <summary>
@@ -208,7 +195,6 @@ namespace Sonar.Relays
             return base.TryGetValue(name, out value);
         }
 
-        [JsonProperty]
         [Key(5)]
         public ReleaseMode Release { get; set; } = ReleaseMode.Normal;
         #endregion

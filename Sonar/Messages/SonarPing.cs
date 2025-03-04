@@ -1,11 +1,9 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
 using System;
 
 namespace Sonar.Messages
 {
     /// <summary>Ping Request</summary>
-    [JsonObject]
     [MessagePackObject]
     [Serializable]
     public sealed class SonarPing : ISonarMessage

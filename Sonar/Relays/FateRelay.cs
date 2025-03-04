@@ -2,7 +2,6 @@
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
 using MessagePack;
-using Newtonsoft.Json;
 using Sonar.Data.Extensions;
 using Sonar.Enums;
 using System.Linq;
@@ -14,13 +13,13 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
 using SonarUtils;
+using System.Text.Json.Serialization;
 
 namespace Sonar.Relays
 {
     /// <summary>
     /// Represents a Fate relay
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
     [RelayType(RelayType.Fate)]
@@ -58,7 +57,6 @@ namespace Sonar.Relays
         /// <summary>
         /// Fate Progress (0-100)
         /// </summary>
-        [JsonProperty]
         [Key(6)]
         public byte Progress
         {
@@ -92,7 +90,7 @@ namespace Sonar.Relays
         /// <remarks>
         /// Please use <see cref="Status"/> instead for most purposes.
         /// </remarks>
-        [JsonProperty("Status")]
+        [JsonPropertyName("Status")]
         [Key(7)]
         [SuppressMessage("Minor Code Smell", "S2292", Justification = "For now I want to leave this here until I change how this works.")]
         public FateStatus StatusDirect
@@ -112,11 +110,11 @@ namespace Sonar.Relays
         /// <summary>
         /// Fate start time
         /// </summary>
-        [JsonProperty]
         [IgnoreMember]
         public double StartTime { get; set; }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [JsonIgnore]
         [Key(8)]
         public long msgPackStartTime
         {
@@ -127,11 +125,11 @@ namespace Sonar.Relays
         /// <summary>
         /// Fate duration
         /// </summary>
-        [JsonProperty]
         [IgnoreMember]
         public double Duration { get; set; }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [JsonIgnore]
         [Key(9)]
         public int MsgPackDuration
         {
@@ -141,13 +139,12 @@ namespace Sonar.Relays
 
         /// <summary>Players Nearby Count</summary>
         [Key(10)]
-        [JsonProperty]
         public int Players { get; set; }
 
         /// <summary>Client provided, server-side validation only</summary>
         /// <remarks>Please fill this with <see cref="SyncedUnixNow"/>. Server will zero out this field.</remarks>
         [Key(11)]
-        [JsonIgnore]
+        [JsonIgnore] // Server-only purpose
         public double CheckTimestamp { get; set; }
 
         /// <inheritdoc/>
@@ -308,7 +305,6 @@ namespace Sonar.Relays
 
 
         [IgnoreMember]
-        [JsonProperty]
         public override string Type => "Fate";
 
         public override string ToString() => $"{this.GetFate()}{(this.Bonus ? " [B]" : string.Empty)}: {base.ToString()} {this.GetRemainingTimeAndProgressString()}";

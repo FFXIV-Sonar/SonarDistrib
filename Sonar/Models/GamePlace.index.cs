@@ -1,19 +1,17 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
 using Sonar.Data;
 using Sonar.Indexes;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using SonarUtils.Text;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
+using System.Text.Json.Serialization;
 
 namespace Sonar.Models
 {
     public partial class GamePlace : ITrackerIndexable
     {
-        private static readonly ConcurrentDictionary<string, FrozenSet<string>> s_indexKeysCache = new();
+        internal static readonly ConcurrentDictionary<string, FrozenSet<string>> s_indexKeysCache = new();
         private FrozenSet<string>? _indexKeys;
 
         /// <summary>Index Keys</summary>

@@ -1,14 +1,8 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
-using Sonar.Enums;
 using Sonar.Logging;
-using Sonar.Messages;
 using Sonar.Relays;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.ComponentModel;
 
 namespace Sonar.Config
@@ -29,14 +23,12 @@ namespace Sonar.Config
         }
 
 
-        [JsonProperty]
         [Key("version")]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         /// <summary>Configuration version. Do not change.</summary>
         public int Version { get; set; }
 
         /// <summary>Sonar client log level</summary>
-        [JsonProperty]
         [Key("logLevel")]
 #if DEBUG
         public SonarLogLevel LogLevel { get; set; } = SonarLogLevel.Information; //Info
@@ -45,17 +37,14 @@ namespace Sonar.Config
 #endif
 
         /// <summary>Hunt reporting configuration</summary>
-        [JsonProperty]
         [Key("huntConfig")]
         public HuntConfig HuntConfig { get; init; } = new();
 
         /// <summary>Fate reporting configuration</summary>
-        [JsonProperty]
         [Key("fateConfig")]
         public FateConfig FateConfig { get; init; } = new();
 
         /// <summary>Contributing configuration</summary>
-        [JsonProperty]
         [Key("server")] // "contribute" but too late to change
         public SonarContributeConfig Contribute { get; init; } = new();
 

@@ -1,27 +1,22 @@
 ﻿using MessagePack;
-using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
-using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
-using Newtonsoft.Json;
 using Sonar.Data;
 using Sonar.Data.Extensions;
 using Sonar.Enums;
-using Sonar.Messages;
 using System;
 using Sonar.Data.Rows;
 using static Sonar.SonarConstants;
 using Sonar.Numerics;
-using Sonar.Utilities;
 using System.Runtime.CompilerServices;
 using Cysharp.Text;
 using SonarUtils;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Sonar.Relays
 {
     /// <summary>
     /// Represent a Hunt relay
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
     [RelayType(RelayType.Hunt)]
@@ -43,21 +38,18 @@ namespace Sonar.Relays
         /// <summary>
         /// Actor ID
         /// </summary>
-        [JsonProperty]
         [Key(6)]
         public uint ActorId { get; set; }
 
         /// <summary>
         /// Current HP
         /// </summary>
-        [JsonProperty]
         [Key(7)]
         public uint CurrentHp { get; set; } = 1;
 
         /// <summary>
         /// Max Hp
         /// </summary>
-        [JsonProperty]
         [Key(8)]
         public uint MaxHp { get; set; } = 1;
 
@@ -65,12 +57,14 @@ namespace Sonar.Relays
         /// HP Percentage
         /// </summary>
         [IgnoreMember]
+        [JsonIgnore]
         public float HpPercent => 100f * ((float)this.CurrentHp / this.MaxHp);
 
         /// <summary>
         /// Kill Progress
         /// </summary>
         [IgnoreMember]
+        [JsonIgnore]
         public float Progress => 100f - this.HpPercent;
 
         #region Status functions
@@ -78,19 +72,20 @@ namespace Sonar.Relays
         /// Check if hunt is unharmed
         /// </summary>
         [IgnoreMember]
+        [JsonIgnore]
         public bool IsMaxHp => this.CurrentHp == this.MaxHp;
 
         /// <summary>
         /// Check if hunt is pulled (or harmed in this case)
         /// </summary>
         [IgnoreMember]
+        [JsonIgnore]
         public bool IsPulled => this.CurrentHp != this.MaxHp;
 
         /// <summary>
         /// Players Nearby Count
         /// </summary>
         [Key(9)]
-        [JsonProperty]
         public int Players { get; set; }
 
         /// <summary>Client provided, server-side validation only</summary>
@@ -176,7 +171,6 @@ namespace Sonar.Relays
         }
 
         [IgnoreMember]
-        [JsonProperty]
         public override string Type => "Hunt";
 
         public override bool TryGetValue(ReadOnlySpan<char> name, [MaybeNullWhen(false)] out ReadOnlySpan<char> value)

@@ -1,5 +1,5 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using Sonar.Data.Extensions;
 using System;
 using Sonar.Data;
@@ -15,7 +15,6 @@ namespace Sonar.Models
     /// <summary>
     /// Represent a game place (World, Zone and Instance)
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
     public partial class GamePlace : ICloneable
@@ -45,21 +44,18 @@ namespace Sonar.Models
         /// <summary>
         /// World ID
         /// </summary>
-        [JsonProperty]
         [Key(0)]
         public uint WorldId { get; init; }
 
         /// <summary>
         /// Zone ID
         /// </summary>
-        [JsonProperty]
         [Key(1)]
         public uint ZoneId { get; init; }
 
         /// <summary>
         /// Instance ID
         /// </summary>
-        [JsonProperty]
         [Key(2)]
         public uint InstanceId { get; init; }
 

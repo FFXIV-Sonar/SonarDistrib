@@ -1,11 +1,9 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
 using System;
 
 namespace Sonar.Messages
 {
     /// <summary>Sonar message meant to be shown in chat or popup</summary>
-    [JsonObject]
     [MessagePackObject]
     [Serializable]
     public sealed class SonarMessage : ISonarMessage

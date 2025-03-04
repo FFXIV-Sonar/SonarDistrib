@@ -1,12 +1,4 @@
-﻿using MessagePack;
-using Newtonsoft.Json;
-using Sonar.Enums;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Sonar.Enums;
 
 namespace Sonar.Config
 {

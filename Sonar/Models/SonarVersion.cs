@@ -1,5 +1,4 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
 using System;
 using System.Reflection;
 using System.Collections.Generic;
@@ -15,7 +14,6 @@ namespace Sonar.Models
     /// - PluginHash (Integrity checking)
     /// - Dalamud (if in Dalamud) (future: rename this field since I may include ACT in)
     /// </summary>
-    [JsonObject]
     [MessagePackObject] // TODO: Change to key indexes
     [Serializable]
     public sealed class SonarVersion : ISonarMessage, ICloneable
@@ -23,7 +21,7 @@ namespace Sonar.Models
         [Key("version")]
         public int Version { get; set; } = SonarConstants.SonarVersion;
 
-        [Key("sonarNETVersion")] // TODO: Rename to sonar
+        [Key("sonarNETVersion")]
         public string? Sonar { get; set; }
 
         [Key("sonarHash")]
@@ -38,7 +36,7 @@ namespace Sonar.Models
         [Key("game")]
         public string? Game { get; set; }
 
-        [Key("dalamudVersion")] // TODO: Rename to dalamud
+        [Key("dalamudVersion")]
         public string? Dalamud { get; set; }
 
         [Key("dalamudHash")]

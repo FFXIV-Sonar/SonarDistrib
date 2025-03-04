@@ -1,6 +1,5 @@
 ﻿using System;
 using Sonar.Numerics;
-using Newtonsoft.Json;
 using MessagePack;
 using Sonar.Data.Extensions;
 using Sonar.Data;
@@ -15,7 +14,6 @@ namespace Sonar.Models
     /// <summary>
     /// Represent a game position (World, Zone, Instance and Coords)
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
     public class GamePosition : GamePlace
@@ -30,7 +28,6 @@ namespace Sonar.Models
         /// <summary>
         /// Game coordinates
         /// </summary>
-        [JsonProperty]
         [Key(3)]
         public SonarVector3 Coords { get; set; } = new();
 

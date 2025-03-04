@@ -1,11 +1,7 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
-using Sonar.Services;
 using System;
 using System.Linq;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Reflection;
 using static Sonar.Utilities.UnixTimeHelper;
 using Sonar.Messages;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
@@ -15,21 +11,17 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Sonar.Indexes;
 using Sonar.Relays;
-using Sonar.Utilities;
 using Sonar.Data.Rows;
 using System.Collections.Frozen;
 using SonarUtils.Text.Placeholders.Providers;
-using System.Numerics;
-using SonarUtils;
-using System.Xml.Linq;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Sonar.Trackers
 {
     /// <summary>
     /// Represents a relay with state information. This class is managed by <see cref="RelayTracker{T}"/> and its not intended to be created manually.
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Union(0, typeof(RelayState))]
     [Serializable]
@@ -121,7 +113,6 @@ namespace Sonar.Trackers
 
         #region Properties
         /// <summary>Last Seen</summary>
-        [JsonProperty]
         [IgnoreMember]
         public double LastSeen { get; set; }
 
@@ -131,6 +122,7 @@ namespace Sonar.Trackers
 
         [Key(1)]
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [JsonIgnore]
         public long msgPackLastSeen
         {
             get => unchecked((long)this.LastSeen);
@@ -138,24 +130,24 @@ namespace Sonar.Trackers
         }
 
         /// <summary>Last Found</summary>
-        [JsonProperty]
         [IgnoreMember]
         public double LastFound { get; set; } // Updated once something is found for the first time
 
         [Key(2)]
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [JsonIgnore]
         public long msgPackLastFound
         {
             get => unchecked((long)this.LastFound);
             set => this.LastFound = value;
         }
         /// <summary>Last Killed</summary>
-        [JsonProperty]
         [IgnoreMember]
         public double LastKilled { get; set; } // Updated once killed
 
         [Key(3)]
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [JsonIgnore]
         public long msgPackLastKilled
         {
             get => unchecked((long)this.LastKilled);
@@ -163,17 +155,16 @@ namespace Sonar.Trackers
         }
 
         /// <summary>Last Updated. This is a synonym of LastSeen.</summary>
-        [JsonProperty]
         [IgnoreMember]
         public double LastUpdated => this.LastSeen;
 
         /// <summary>Last Untouched</summary>
-        [JsonProperty]
         [IgnoreMember]
         public double LastUntouched { get; set; }
 
         [Key(4)]
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [JsonIgnore]
         public long msgPackLastUntouched
         {
             get => unchecked((long)this.LastUntouched);
@@ -184,26 +175,32 @@ namespace Sonar.Trackers
         #region Ago properties
         /// <summary>Last Seen Ago</summary>
         [IgnoreMember]
+        [JsonIgnore]
         public double LastSeenAgo => SyncedUnixNow - this.LastSeen;
 
         /// <summary>Last Found Ago</summary>
         [IgnoreMember]
+        [JsonIgnore]
         public double LastFoundAgo => SyncedUnixNow - this.LastFound;
 
         /// <summary>Last Killed Ago</summary>
         [IgnoreMember]
+        [JsonIgnore]
         public double LastKilledAgo => SyncedUnixNow - this.LastKilled;
 
         /// <summary>Last Updated Ago</summary>
         [IgnoreMember]
+        [JsonIgnore]
         public double LastUpdatedAgo => SyncedUnixNow - this.LastUpdated;
 
         /// <summary>Last Untouched Ago</summary>
         [IgnoreMember]
+        [JsonIgnore]
         public double LastUntouchedAgo => SyncedUnixNow - this.LastUntouched;
 
         /// <summary>DPS Time</summary>
         [IgnoreMember]
+        [JsonIgnore]
         public double DpsTime => this.LastSeen - this.LastUntouched;
         #endregion
 
@@ -340,7 +337,6 @@ namespace Sonar.Trackers
     }
 
     /// <summary>Represents a relay with state information. This class is managed by <see cref="RelayTracker{T}"/> and its not intended to be created manually.</summary>
-    [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
     public sealed class RelayState<T> : RelayState where T : Relay, IPlaceholderReplacementProvider
@@ -355,7 +351,6 @@ namespace Sonar.Trackers
         public RelayState(T r, double now) : base(r, now) { }
 
         /// <summary>Relay this state is for</summary>
-        [JsonProperty]
         [Key(0)]
         public new T Relay
         {

@@ -119,12 +119,6 @@
           "Microsoft.NET.StringTools": "17.11.4"
         }
       },
-      "Newtonsoft.Json": {
-        "type": "Direct",
-        "requested": "[13.0.3, )",
-        "resolved": "13.0.3",
-        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
-      },
       "SixLabors.ImageSharp": {
         "type": "Direct",
         "requested": "[3.1.6, )",

@@ -1,12 +1,9 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
 using Sonar.Messages;
-using Sonar.Relays;
 using System;
 
 namespace Sonar.Models
 {
-    [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
     public sealed class PlayerPosition : GamePosition, ISonarMessage

@@ -1,16 +1,10 @@
-﻿using Sonar.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MessagePack;
-using Newtonsoft.Json;
 
 namespace Sonar.Messages
 {
     /// <summary>Sonar Heartbeat with some server information</summary>
-    [JsonObject]
     [MessagePackObject]
     [Serializable]
     public readonly struct SonarHeartbeat : ISonarMessage // This used to be TimeSyncMessage

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Numerics;
-using Newtonsoft.Json;
 using MessagePack;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
@@ -12,7 +7,6 @@ using System.Text.Json.Serialization;
 
 namespace Sonar.Numerics
 {
-    [JsonObject(MemberSerialization.OptIn)]
     [MessagePackObject]
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1104:Fields should not have public accessibility", Justification = "Intentional")]
@@ -43,21 +37,20 @@ namespace Sonar.Numerics
         public SonarVector3(SonarVector2 vec, float z) : this(vec.X, vec.Y, z) { }
         public SonarVector3(SonarVector3 vec) : this(vec.X, vec.Y, vec.Z) { }
 
-        [JsonProperty]
-        [JsonInclude]
         [IgnoreMember]
+        [JsonInclude]
         public float X;
-        [JsonProperty]
-        [JsonInclude]
+
         [IgnoreMember]
+        [JsonInclude]
         public float Y;
-        [JsonProperty]
-        [JsonInclude]
+
         [IgnoreMember]
+        [JsonInclude]
         public float Z;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         [Key(0)]
         public int msgPackX
         {
@@ -66,7 +59,7 @@ namespace Sonar.Numerics
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         [Key(1)]
         public int msgPackY
         {
@@ -75,7 +68,7 @@ namespace Sonar.Numerics
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         [Key(2)]
         public int msgPackZ
         {
