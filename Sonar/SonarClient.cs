@@ -294,7 +294,7 @@ namespace Sonar
         public event SonarClientPingHandler? Pong;
 
         public event SonarServerMessageHandler? ServerMessage;
-        public event Action<SonarClient, ISonarToken>? TokenReceived;
+        public event Action<SonarClient, SonarToken>? TokenReceived;
 
 #region Disposable Interface
         private int disposed; // Interlocked

@@ -74,6 +74,16 @@ namespace SonarPlugin
                 PluginSecret = ClientSecret.ReadEmbeddedSecret(typeof(SonarPluginIoC).Assembly, "SonarPlugin.Resources.Secret.data"),
             };
 
+            SonarLanguage DetermineLanguage(int num)
+            {
+                var name = Enum.GetName((ClientLanguage)num);
+                if (name is "Korean") return SonarLanguage.Korean;
+                if (name is "ChineseSimplified") return SonarLanguage.ChineseSimplified;
+                
+                this.Logger.Warning($"Unable to determine ClientLanguage {num}");
+                return SonarLanguage.ChineseSimplified;
+            }
+
             var versionInfo = VersionUtils.GetSonarVersionModel(this.Data);
             var client = new SonarClient(startInfo) { VersionInfo = versionInfo };
             Database.DefaultLanguage = this.Data.Language switch
@@ -82,7 +92,7 @@ namespace SonarPlugin
                 ClientLanguage.English => SonarLanguage.English,
                 ClientLanguage.German => SonarLanguage.German,
                 ClientLanguage.French => SonarLanguage.French,
-                (ClientLanguage/*.ChineseSimplified*/)4 => SonarLanguage.ChineseSimplified, // https://github.com/ottercorp/Dalamud/blob/cn/Dalamud/ClientLanguage.cs#L31
+                (ClientLanguage/*.ChineseSimplified*/)4 => DetermineLanguage(4), // https://github.com/ottercorp/Dalamud/blob/cn/Dalamud/ClientLanguage.cs#L31
                 _ => SonarLanguage.English
             };
             return client;

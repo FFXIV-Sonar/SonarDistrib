@@ -29,6 +29,7 @@ namespace SonarResources
             // TODO: Move this to a configuration file.
             manager.LoadLumina(@"R:\SquareEnix\FINAL FANTASY XIV - A Realm Reborn\game\sqpack");
             manager.LoadLumina(@"R:\SquareEnix\FFXIV_CN\game\sqpack");
+            manager.LoadLumina(@"R:\SquareEnix\FFXIV_KR\game\sqpack");
 
             ShowProgress = false;
             Container.Resolve<ResourcesMain>();

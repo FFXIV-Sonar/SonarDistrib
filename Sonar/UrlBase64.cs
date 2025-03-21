@@ -14,7 +14,7 @@ namespace Sonar
     {
         private static readonly char[] TwoPads = { '=', '=' };
 
-        public static string Encode(byte[] bytes, UrlBase64PaddingPolicy padding = UrlBase64PaddingPolicy.Discard)
+        public static string Encode(ReadOnlySpan<byte> bytes, UrlBase64PaddingPolicy padding = UrlBase64PaddingPolicy.Discard)
         {
             var encoded = Convert.ToBase64String(bytes).Replace('+', '-').Replace('/', '_');
             if (padding == UrlBase64PaddingPolicy.Discard)

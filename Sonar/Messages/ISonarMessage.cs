@@ -73,7 +73,7 @@ namespace Sonar.Messages
     //[Union(0x81, typeof(RelayDataIndexCapacities))]
 
     // Tokens
-    [Union(0x90, typeof(SonarAuthToken))]
+    [Union(0x90, typeof(SonarToken))]
     [Union(0x91, typeof(SonarAuthTokenRequest))]
 
     // Database handling

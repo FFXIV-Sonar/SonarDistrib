@@ -175,14 +175,11 @@ namespace SonarUtils.Random
             return (long)random.Next64U() & 0x7FFFFFFFFFFFFFFFL;
         }
 
-        public static void NextBytes(this RandomNumberGenerator random, byte[] bytes)
+        public static byte[] GetBytes(this RandomNumberGenerator random, int length)
         {
+            var bytes = GC.AllocateUninitializedArray<byte>(length);
             random.GetBytes(bytes);
-        }
-
-        public static void NextBytes(this RandomNumberGenerator random, Span<byte> bytes)
-        {
-            random.GetBytes(bytes);
+            return bytes;
         }
 
         public static double NextDouble(this RandomNumberGenerator random)
