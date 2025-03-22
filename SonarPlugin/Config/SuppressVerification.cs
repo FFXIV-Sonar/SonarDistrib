@@ -4,13 +4,13 @@ namespace SonarPlugin.Config
 {
     public enum SuppressVerification
     {
-        [EnumCheapLoc("SuppressVerificationNone", "Never")]
+        [EnumCheapLoc("SuppressVerificationNone", "표시")]
         None,
 
-        [EnumCheapLoc("SuppressVerificationNone", "Yes unless its required")]
+        [EnumCheapLoc("SuppressVerificationNone", "필수가 아닌 경우 숨기기")]
         UnlessRequired,
 
-        [EnumCheapLoc("SuppressVerificationNone", "Always")]
+        [EnumCheapLoc("SuppressVerificationNone", "숨기기")]
         Always
     }
 }

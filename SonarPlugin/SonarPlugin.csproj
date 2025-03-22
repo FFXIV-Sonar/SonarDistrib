@@ -28,31 +28,31 @@
     <CopyToOutputDirectory>Never</CopyToOutputDirectory>
   </EmbeddedResource>
   <EmbeddedResource Include="Resources\Sounds\FFXIV_Enter_Chat.mp3">
-		<LogicalName>Enter Chat</LogicalName>
+		<LogicalName>대화 창 입력</LogicalName>
 	</EmbeddedResource>
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Fanfare.mp3">
-		<LogicalName>Fanfare</LogicalName>
+		<LogicalName>팡파레</LogicalName>
 	</EmbeddedResource>
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Feature_Unlocked.mp3">
-		<LogicalName>Feature Unlocked</LogicalName>
+		<LogicalName>도전 가능</LogicalName>
 	</EmbeddedResource>
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Incoming_Tell_1.mp3">
-		<LogicalName>Incoming Tell 1</LogicalName>
+		<LogicalName>효과음 1</LogicalName>
 	</EmbeddedResource>
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Incoming_Tell_2.mp3">
-		<LogicalName>Incoming Tell 2</LogicalName>
+		<LogicalName>효과음 2</LogicalName>
 	</EmbeddedResource>	
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Limit_Break_Charged.mp3">
-		<LogicalName>Limit Break Charged</LogicalName>
+		<LogicalName>리미트 브레이크 충전</LogicalName>
 	</EmbeddedResource>	
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Limit_Break_Unlocked.mp3">
-		<LogicalName>Limit Break Unlocked</LogicalName>
+		<LogicalName>리미트 브레이크 잠금해제</LogicalName>
 	</EmbeddedResource>	
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Linkshell_Transmission.mp3">
-		<LogicalName>Linkshell Transmission</LogicalName>
+		<LogicalName>링크셸 통신</LogicalName>
 	</EmbeddedResource>	
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Notification.mp3">
-		<LogicalName>Notification</LogicalName>
+		<LogicalName>알림음</LogicalName>
 	</EmbeddedResource>	
   </ItemGroup>
 

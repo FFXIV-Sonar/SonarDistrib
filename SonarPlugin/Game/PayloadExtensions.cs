@@ -62,7 +62,7 @@ namespace SonarPlugin.Game
         {
             var info = relay.GetHunt();
             SeStringBuilder builder = new();
-            builder.AddText($"Rank {info?.Rank ?? HuntRank.None}: {info?.Name.ToString() ?? "INVALID"} ");
+            builder.AddText($"랭크 {info?.Rank ?? HuntRank.None}: {info?.Name.ToString() ?? "INVALID"} ");
             builder.AddSeString(((GamePosition)relay).GetMapLinkSeString(cwIcon));
             return builder.Build();
         }
@@ -71,15 +71,15 @@ namespace SonarPlugin.Game
         {
             var info = relay.GetFate();
             SeStringBuilder builder = new();
-            builder.AddText($"FATE: {info?.Name.ToString() ?? "INVALID"} ");
+            builder.AddText($"돌발: {info?.Name.ToString() ?? "INVALID"} ");
             builder.AddSeString(((GamePosition)relay).GetMapLinkSeString(cwIcon));
             switch (relay.Status)
             {
-                case FateStatus.Running:
-                    builder.AddSeString($" ({relay.Progress}% with {relay.GetRemainingTimeString()} remaining)");
+                case FateStatus.진행중:
+                    builder.AddSeString($" ( 진행도 {relay.Progress}% / 남은 시간 {relay.GetRemainingTimeString()} )");
                     break;
-                case FateStatus.Preparation:
-                    builder.AddSeString($" (in Preparation)");
+                case FateStatus.준비중:
+                    builder.AddSeString($" ( 준비 중 )");
                     break;
             }
             return builder.Build();

@@ -31,16 +31,16 @@ namespace SonarPlugin.Game
         {
             return state switch
             {
-                FateState.Preparation => FateStatus.Preparation,
-                FateState.Running => FateStatus.Running,
-                FateState.WaitingForEnd => FateStatus.Running,
-                FateState.Ended => FateStatus.Complete,
-                FateState.Failed => FateStatus.Failed,
+                FateState.Preparation => FateStatus.준비중,
+                FateState.Running => FateStatus.진행중,
+                FateState.WaitingForEnd => FateStatus.진행중,
+                FateState.Ended => FateStatus.완료,
+                FateState.Failed => FateStatus.실패,
 
-                (FateState)0x00 => FateStatus.Preparation,     /* Just spawned / Uninitialized */
-                (FateState)0x09 => FateStatus.Failed,          /* Expired? */
+                (FateState)0x00 => FateStatus.준비중,     /* Just spawned / Uninitialized */
+                (FateState)0x09 => FateStatus.실패,          /* Expired? */
 
-                _ => FateStatus.Unknown,
+                _ => FateStatus.알수없음,
             };
 
             // https://github.com/SapphireServer/Sapphire/blob/d9777084c55ac686f8027eaa09c7ad93f8c94f88/src/common/Common.h#L769

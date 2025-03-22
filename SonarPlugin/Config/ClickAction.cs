@@ -9,19 +9,19 @@ namespace SonarPlugin.Config
 {
     public enum ClickAction
     {
-        [EnumCheapLoc("ClickActionDefault", "Default")]
+        [EnumCheapLoc("ClickActionDefault", "기본값")]
         Default,
 
-        [EnumCheapLoc("ClickActionNone", "None")]
+        [EnumCheapLoc("ClickActionNone", "사용 안 함")]
         None,
 
-        [EnumCheapLoc("ClickActionChat", "Send to Chat")]
+        [EnumCheapLoc("ClickActionChat", "대화 창에 전송")]
         Chat,
 
-        [EnumCheapLoc("ClickActionMap", "Create Flag")]
+        [EnumCheapLoc("ClickActionMap", "지도에 표시")]
         Map,
 
-        [EnumCheapLoc("ClickActionTeleport", "Teleport")]
+        [EnumCheapLoc("ClickActionTeleport", "텔레포")]
         Teleport,
     }
 }

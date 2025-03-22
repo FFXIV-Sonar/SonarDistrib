@@ -177,7 +177,7 @@ namespace Sonar.Relays
         {
             var result = name switch
             {
-                "status" => this.CurrentHp == this.MaxHp ? "Alive" : this.CurrentHp > 0 ? "Pulled" : this.CurrentHp == 0 ? "Dead" : null,
+                "status" => this.CurrentHp == this.MaxHp ? "생존" : this.CurrentHp > 0 ? "토벌 중" : this.CurrentHp == 0 ? "토벌 완료" : null,
                 "hpp" => $"{this.HpPercent:F1}%",
 
                 "players" => StringUtils.GetNumber(this.Players),
@@ -205,7 +205,7 @@ namespace Sonar.Relays
                 hunt.ZoneIds.Contains(this.ZoneId);
         }
 
-        public override string ToString() => $"Rank {this.GetRank()}: {this.GetHunt()} {this.HpPercent:F2}%% {base.ToString()}{(this.IsDead() ? " DEAD" : "")}";
+        public override string ToString() => $"{this.GetRank()}급: {this.GetHunt()} {this.HpPercent:F2}%% {base.ToString()}{(this.IsDead() ? " 토벌 완료" : "")}";
 
         public new HuntRelay Clone() => Unsafe.As<HuntRelay>(this.MemberwiseClone());
     }

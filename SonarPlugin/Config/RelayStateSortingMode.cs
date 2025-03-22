@@ -13,37 +13,37 @@ namespace SonarPlugin.Config
 {
     public enum RelayStateSortingMode
     {
-        [EnumCheapLoc("SortingModeDefault", "Default")]
+        [EnumCheapLoc("SortingModeDefault", "기본값")]
         Default,
 
-        [EnumCheapLoc("SortingModeLastFound", "Last Found")]
+        [EnumCheapLoc("SortingModeLastFound", "마지막 발견")]
         LastFound,
 
-        [EnumCheapLoc("SortingModeLastUpdated", "Last Updated")]
+        [EnumCheapLoc("SortingModeLastUpdated", "마지막 갱신")]
         LastUpdated,
 
-        [EnumCheapLoc("SortingModeAlphabetical", "Alphabetical")]
+        [EnumCheapLoc("SortingModeAlphabetical", "이름")]
         Alphabetical,
 
-        [EnumCheapLoc("SortingModeDatacenter", "Data Center ID")]
+        [EnumCheapLoc("SortingModeDatacenter", "데이터 센터 ID")]
         Datacenter,
 
-        [EnumCheapLoc("SortingModeWorld", "World ID")]
+        [EnumCheapLoc("SortingModeWorld", "서버 ID")]
         World,
 
-        [EnumCheapLoc("SortingModeZone", "Zone ID")]
+        [EnumCheapLoc("SortingModeZone", "지역 ID")]
         Zone,
 
-        [EnumCheapLoc("SortingModeWorldZoneInstanceRelay", "World then Zone then Instance then Relay IDs")]
+        [EnumCheapLoc("SortingModeWorldZoneInstanceRelay", "서버, 지역, 인스턴스, 릴레이 ID")]
         WorldZoneInstanceRelay,
 
-        [EnumCheapLoc("SortingModeZoneInstanceRelay", "Zone then Instance then Relay IDs")]
+        [EnumCheapLoc("SortingModeZoneInstanceRelay", "지역, 인스턴스, 릴레이 ID")]
         ZoneInstanceRelay,
 
-        [EnumCheapLoc("SortingModeJurisdiction", "Jurisdiction")]
+        [EnumCheapLoc("SortingModeJurisdiction", "관할구역")]
         Jurisdiction,
 
-        [EnumCheapLoc("SortingModeJurisdictionWorldZoneInstanceRelay", "Jurisdiction then World then Zone then Instance then Relay IDs")]
+        [EnumCheapLoc("SortingModeJurisdictionWorldZoneInstanceRelay", "관할구역, 서버, 인스턴스,릴레이 ID")]
         JurisdictionWorldZoneInstanceRelay,
     }
 

@@ -73,7 +73,7 @@ namespace SonarPlugin.Notifiers
             var builder = new SeStringBuilder();
             if (this.Plugin.Configuration.EnableFateChatItalicFont) builder.AddItalicsOn();
             builder.AddSeString(relay.GetMapLinkSeString(cwIcon));
-            if (relay.IsDead()) builder.AddText(" was just killed");
+            if (relay.IsDead()) builder.AddText(" 토벌 완료");
             if (this.Plugin.Configuration.EnableFateChatItalicFont) builder.AddItalicsOff();
 
             this.Chat.Print(new()

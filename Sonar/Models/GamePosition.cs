@@ -92,7 +92,7 @@ namespace Sonar.Models
         public override string ToString()
         {
             var ret = new List<string>() { $"{this.GetZone()}", MapFlagUtils.FlagToString(this.GetFlag()) };
-            if (this.InstanceId > 0) ret.Add($"i{this.InstanceId}");
+            if (this.InstanceId > 0) ret.Add($"{this.InstanceId}인스");
             ret.Add($"<{this.GetWorld()}>");
             return string.Join(' ', ret);
         }

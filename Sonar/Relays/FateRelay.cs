@@ -101,9 +101,9 @@ namespace Sonar.Relays
 
         public FateStatus GetStatus(double now)
         {
-            if (this._status is not FateStatus.Running) return this._status;
-            if (this.Progress == 100) return this._status = FateStatus.Complete;
-            if (this.GetRemainingTimeWithGracePeriod(DefaultGracePeriod, now) is 0) return this._status = FateStatus.Unknown;
+            if (this._status is not FateStatus.진행중) return this._status;
+            if (this.Progress == 100) return this._status = FateStatus.완료;
+            if (this.GetRemainingTimeWithGracePeriod(DefaultGracePeriod, now) is 0) return this._status = FateStatus.알수없음;
             return this._status;
         }
 
@@ -161,7 +161,7 @@ namespace Sonar.Relays
         /// <summary>
         /// Check if this fate is alive
         /// </summary>
-        public override bool IsAlive() => this.Status is FateStatus.Running or FateStatus.Preparation;
+        public override bool IsAlive() => this.Status is FateStatus.진행중 or FateStatus.준비중;
 
         /// <summary>
         /// Check if this fate is alive (might be outdated if <see cref="StatusDirect"/> is <see cref="FateStatus.Running"/>)
@@ -169,7 +169,7 @@ namespace Sonar.Relays
         /// <remarks>
         /// Please use <see cref="IsAlive"/> instead for most purposes.
         /// </remarks>
-        internal override bool IsAliveInternal() => this._status is FateStatus.Running or FateStatus.Preparation;
+        internal override bool IsAliveInternal() => this._status is FateStatus.진행중 or FateStatus.준비중;
 
         /// <summary>
         /// Remaining time in milliseconds
@@ -185,7 +185,7 @@ namespace Sonar.Relays
         /// Get remaining time and progress or completed / failed
         /// </summary>
         /// <returns></returns>
-        public string GetRemainingTimeAndProgressString() => this.Status == FateStatus.Running ? $"{this.GetRemainingTimeString()} {this.Progress}%%" : string.Empty;
+        public string GetRemainingTimeAndProgressString() => this.Status == FateStatus.진행중 ? $"{this.GetRemainingTimeString()} {this.Progress}%%" : string.Empty;
 
         /// <summary>
         /// Get remaining time in MM:SS
@@ -213,7 +213,7 @@ namespace Sonar.Relays
         /// </summary>
         /// <param name="relay">Relay to check</param>
         [SuppressMessage("Major Bug", "S1244", Justification = "Intended")]
-        public bool IsSameEntity(FateRelay relay) => this.StatusDirect == FateStatus.Preparation && this.StartTime is 0 || this.StartTime is not 0 && this.StartTime == relay.StartTime;
+        public bool IsSameEntity(FateRelay relay) => this.StatusDirect == FateStatus.진행중 && this.StartTime is 0 || this.StartTime is not 0 && this.StartTime == relay.StartTime;
 
         /// <summary>
         /// Check if another relay regards the same fate (only Start time is checked)

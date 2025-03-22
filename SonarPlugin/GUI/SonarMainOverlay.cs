@@ -343,17 +343,17 @@ namespace SonarPlugin.GUI
 
             if (relay.IsMaxHp)
             {
-                statusText = Loc.Localize("HealthyText", $"Healthy ({healthText})");
+                statusText = Loc.Localize("HealthyText", $"생존 ({healthText})");
                 statusColor = this.Plugin.Configuration.Colors.HuntHealthy;
             }
             else if (!relay.IsDead())
             {
-                statusText = Loc.Localize("PulledText", $"Pulled ({healthText})");
+                statusText = Loc.Localize("PulledText", $"토벌 중 ({healthText})");
                 statusColor = this.Plugin.Configuration.Colors.HuntPulled;
             }
             else
             {
-                statusText = Loc.Localize("DeadText", "Dead");
+                statusText = Loc.Localize("DeadText", "토벌 완료");
                 statusColor = this.Plugin.Configuration.Colors.HuntDead;
             }
 
@@ -382,19 +382,19 @@ namespace SonarPlugin.GUI
                 ImGui.SameLine(0, 25 * ImGui.GetIO().FontGlobalScale);
                 ImGui.BeginGroup(); // Detail Group 
 
-                ImGui.Text($"Actor ID");
+                ImGui.Text($"액터 ID");
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.ActorId:X8}");
 
-                ImGui.Text(Loc.Localize("HuntDetailNameText", "Name"));
+                ImGui.Text(Loc.Localize("HuntDetailNameText", "이름"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetHunt()} ({relay.RelayKey})");
 
-                ImGui.Text(Loc.Localize("HuntDetailRankText", "Rank"));
+                ImGui.Text(Loc.Localize("HuntDetailRankText", "등급"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetRank()}");
 
-                ImGui.Text(Loc.Localize("HuntDetailStatusText", "Status"));
+                ImGui.Text(Loc.Localize("HuntDetailStatusText", "상태"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.TextColored(statusColor, statusText);
 
@@ -402,11 +402,11 @@ namespace SonarPlugin.GUI
                 ImGui.Spacing();
                 ImGui.Spacing();
 
-                ImGui.Text(Loc.Localize("HuntDetailLocationText", "Location"));
+                ImGui.Text(Loc.Localize("HuntDetailLocationText", "지역"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
-                ImGui.Text($"{relay.GetZone()} {relay.GetFlagString()} i{relay.InstanceId}");
+                ImGui.Text($"{relay.GetZone()} {relay.GetFlagString()} {relay.InstanceId}인스");
 
-                ImGui.Text(Loc.Localize("HuntDetailWorldText", "World"));
+                ImGui.Text(Loc.Localize("HuntDetailWorldText", "서버"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetWorld()}");
 
@@ -417,27 +417,27 @@ namespace SonarPlugin.GUI
                 {
                     DateTime dt;
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastFoundText", "Last Found"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastFoundText", "마지막 발견"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastFound();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastSeenText", "Last Seen"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastSeenText", "마지막 목격"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastSeen();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastKilledText", "Last Killed"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastKilledText", "마지막 토벌"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastKilled();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastUntouchedText", "Last Untouched"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastUntouchedText", "마지막 미토벌"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastUntouched();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailsPlayersNearby", "Players Nearby"));
+                    ImGui.Text(Loc.Localize("HuntDetailsPlayersNearby", "주변 플레이어 수"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     ImGui.Text($"{state.Relay.Players}");
                 }
@@ -458,7 +458,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "Show coordinates in chat window"));
+                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "대화 창에 좌표 표시"));
                 }
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
@@ -476,7 +476,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "Set flag and open map"));
+                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "지도에 표시"));
                 }
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
@@ -493,7 +493,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("TeleportButtonTooltip", "Teleport to Closest Aetheryte"));
+                    ImGui.SetTooltip(Loc.Localize("TeleportButtonTooltip", "가까운 에테라이트로 텔레포"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
 
@@ -509,7 +509,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("RemoveHuntButtonTooltip", "Remove hunt from the list until next update"));
+                    ImGui.SetTooltip(Loc.Localize("RemoveHuntButtonTooltip", "다음 갱신까지 이 마물을 목록에서 제거"));
 
                 ImGui.EndGroup(); // End Detail Group
             }
@@ -525,26 +525,26 @@ namespace SonarPlugin.GUI
 
             switch (fateStatus)
             {
-                case FateStatus.Running:
+                case FateStatus.진행중:
                     statusColor = this.Plugin.Configuration.Colors.FateRunning;
                     break;
-                case FateStatus.Complete:
+                case FateStatus.완료:
                     statusColor = this.Plugin.Configuration.Colors.FateComplete;
                     break;
-                case FateStatus.Failed:
+                case FateStatus.실패:
                     statusColor = this.Plugin.Configuration.Colors.FateFailed;
                     break;
-                case FateStatus.Preparation:
+                case FateStatus.준비중:
                     statusColor = this.Plugin.Configuration.Colors.FatePreparation;
                     break;
-                case FateStatus.Unknown:
+                case FateStatus.알수없음:
                     statusColor = this.Plugin.Configuration.Colors.FateUnknown;
                     break;
                 default:
                     statusColor = ColorPalette.Grey; // Hardcoded, should never happen
                     break;
             }
-            if (fateStatus == FateStatus.Running && state.Relay.Progress > 0) statusColor = this.Plugin.Configuration.Colors.FateProgress;
+            if (fateStatus == FateStatus.진행중 && state.Relay.Progress > 0) statusColor = this.Plugin.Configuration.Colors.FateProgress;
 
             ImGui.PushStyleColor(ImGuiCol.Text, statusColor);
             bool isHeaderOpen = ImGui.TreeNodeEx($"##fate_{relay.RelayKey}", ImGuiTreeNodeFlags.CollapsingHeader, $"{relay} [{relay.Players}]");
@@ -571,23 +571,23 @@ namespace SonarPlugin.GUI
                 ImGui.SameLine(0, 25 * ImGui.GetIO().FontGlobalScale);
                 ImGui.BeginGroup(); // Detail Group 
 
-                ImGui.Text(Loc.Localize("FateDetailNameText", "Name"));
+                ImGui.Text(Loc.Localize("FateDetailNameText", "이름"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetFate()} ({relay.RelayKey})");
 
-                ImGui.Text(Loc.Localize("FateDetailLevelText", "Level"));
+                ImGui.Text(Loc.Localize("FateDetailLevelText", "레벨"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetFate()?.Level}");
 
-                ImGui.Text(Loc.Localize("FateDetailStatusText", "Status"));
+                ImGui.Text(Loc.Localize("FateDetailStatusText", "상태"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.TextColored(statusColor, statusText);
 
-                ImGui.Text(Loc.Localize("FateDetailDurationText", "Duration"));
+                ImGui.Text(Loc.Localize("FateDetailDurationText", "남은 시간"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text(relay.GetRemainingTimeString());
 
-                ImGui.Text(Loc.Localize("FateDetailProgressText", "Progress"));
+                ImGui.Text(Loc.Localize("FateDetailProgressText", "진행도"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 float progress = (float)relay.Progress / 100f;
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetTextLineHeight() / 2 - 2f);
@@ -597,11 +597,11 @@ namespace SonarPlugin.GUI
                 ImGui.Spacing();
                 ImGui.Spacing();
 
-                ImGui.Text(Loc.Localize("FateDetailLocationText", "Location"));
+                ImGui.Text(Loc.Localize("FateDetailLocationText", "지역"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
-                ImGui.Text($"{relay.GetZone()} {relay.GetFlagString()} i{relay.InstanceId}");
+                ImGui.Text($"{relay.GetZone()} {relay.GetFlagString()} {relay.InstanceId}인스");
 
-                ImGui.Text(Loc.Localize("FateDetailWorldText", "World"));
+                ImGui.Text(Loc.Localize("FateDetailWorldText", "서버"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetWorld()}");
 
@@ -612,27 +612,27 @@ namespace SonarPlugin.GUI
                 {
                     DateTime dt;
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastFoundText", "Last Found"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastFoundText", "마지막 발견"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastFound();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastSeenText", "Last Seen"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastSeenText", "마지막 목격"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastSeen();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastKilledText", "Last Killed"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastKilledText", "마지막 완료"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastKilled();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastUntouchedText", "Last Untouched"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastUntouchedText", "마지막 미완료"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastUntouched();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailsPlayersNearby", "Players Nearby"));
+                    ImGui.Text(Loc.Localize("HuntDetailsPlayersNearby", "주변 플레이어 수"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     ImGui.Text($"{state.Relay.Players}");
                 }
@@ -652,7 +652,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "Show coordinates in chat window"));
+                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "대화 창에 좌표 표시"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
 
@@ -668,7 +668,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "Set flag and open map"));
+                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "지도에 표시"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
 
@@ -684,7 +684,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("TeleportButtonTooltip", "Teleport to Closest Aetheryte"));
+                    ImGui.SetTooltip(Loc.Localize("TeleportButtonTooltip", "가까운 에테라이트로 텔레포"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
 
@@ -700,7 +700,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("RemoveFateButtonTooltip", "Remove fate from the list till next update"));
+                    ImGui.SetTooltip(Loc.Localize("RemoveFateButtonTooltip", "다음 갱신까지 이 돌발을 목록에서 제거"));
 
                 ImGui.EndGroup(); // End Detail Group
             }

@@ -2,12 +2,12 @@
 {
     public enum FateStatus : byte
     {
-        Unknown, // 0
+        알수없음, // 0
 
-        Preparation, // 1
-        Running, // 2
+        준비중, // 1
+        진행중, // 2
 
-        Complete, // 3
-        Failed, // 4
+        완료, // 3
+        실패, // 4
     }
 }
