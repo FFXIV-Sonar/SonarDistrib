@@ -1,4 +1,4 @@
-using System.Diagnostics;
+ï»¿using System.Diagnostics;
 using CheapLoc;
 using SonarPlugin.Config;
 using Dalamud.Interface;
@@ -343,17 +343,17 @@ namespace SonarPlugin.GUI
 
             if (relay.IsMaxHp)
             {
-                statusText = Loc.Localize("HealthyText", $"»ıÁ¸ ({healthText})");
+                statusText = Loc.Localize("HealthyText", $"ìƒì¡´ ({healthText})");
                 statusColor = this.Plugin.Configuration.Colors.HuntHealthy;
             }
             else if (!relay.IsDead())
             {
-                statusText = Loc.Localize("PulledText", $"Åä¹ú Áß ({healthText})");
+                statusText = Loc.Localize("PulledText", $"í† ë²Œ ì¤‘ ({healthText})");
                 statusColor = this.Plugin.Configuration.Colors.HuntPulled;
             }
             else
             {
-                statusText = Loc.Localize("DeadText", "Åä¹ú ¿Ï·á");
+                statusText = Loc.Localize("DeadText", "í† ë²Œ ì™„ë£Œ");
                 statusColor = this.Plugin.Configuration.Colors.HuntDead;
             }
 
@@ -382,19 +382,19 @@ namespace SonarPlugin.GUI
                 ImGui.SameLine(0, 25 * ImGui.GetIO().FontGlobalScale);
                 ImGui.BeginGroup(); // Detail Group 
 
-                ImGui.Text($"¾×ÅÍ ID");
+                ImGui.Text($"ì•¡í„° ID");
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.ActorId:X8}");
 
-                ImGui.Text(Loc.Localize("HuntDetailNameText", "ÀÌ¸§"));
+                ImGui.Text(Loc.Localize("HuntDetailNameText", "ì´ë¦„"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetHunt()} ({relay.RelayKey})");
 
-                ImGui.Text(Loc.Localize("HuntDetailRankText", "µî±Ş"));
+                ImGui.Text(Loc.Localize("HuntDetailRankText", "ë“±ê¸‰"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetRank()}");
 
-                ImGui.Text(Loc.Localize("HuntDetailStatusText", "»óÅÂ"));
+                ImGui.Text(Loc.Localize("HuntDetailStatusText", "ìƒíƒœ"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.TextColored(statusColor, statusText);
 
@@ -402,11 +402,11 @@ namespace SonarPlugin.GUI
                 ImGui.Spacing();
                 ImGui.Spacing();
 
-                ImGui.Text(Loc.Localize("HuntDetailLocationText", "Áö¿ª"));
+                ImGui.Text(Loc.Localize("HuntDetailLocationText", "ì§€ì—­"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
-                ImGui.Text($"{relay.GetZone()} {relay.GetFlagString()} {relay.InstanceId}ÀÎ½º");
+                ImGui.Text($"{relay.GetZone()} {relay.GetFlagString()} {relay.InstanceId}ì¸ìŠ¤");
 
-                ImGui.Text(Loc.Localize("HuntDetailWorldText", "¼­¹ö"));
+                ImGui.Text(Loc.Localize("HuntDetailWorldText", "ì„œë²„"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetWorld()}");
 
@@ -417,27 +417,27 @@ namespace SonarPlugin.GUI
                 {
                     DateTime dt;
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastFoundText", "¸¶Áö¸· ¹ß°ß"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastFoundText", "ë§ˆì§€ë§‰ ë°œê²¬"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastFound();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastSeenText", "¸¶Áö¸· ¸ñ°İ"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastSeenText", "ë§ˆì§€ë§‰ ëª©ê²©"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastSeen();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastKilledText", "¸¶Áö¸· Åä¹ú"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastKilledText", "ë§ˆì§€ë§‰ í† ë²Œ"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastKilled();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastUntouchedText", "¸¶Áö¸· ¹ÌÅä¹ú"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastUntouchedText", "ë§ˆì§€ë§‰ ë¯¸í† ë²Œ"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastUntouched();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailsPlayersNearby", "ÁÖº¯ ÇÃ·¹ÀÌ¾î ¼ö"));
+                    ImGui.Text(Loc.Localize("HuntDetailsPlayersNearby", "ì£¼ë³€ í”Œë ˆì´ì–´ ìˆ˜"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     ImGui.Text($"{state.Relay.Players}");
                 }
@@ -458,7 +458,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "´ëÈ­ Ã¢¿¡ ÁÂÇ¥ Ç¥½Ã"));
+                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "ëŒ€í™” ì°½ì— ì¢Œí‘œ í‘œì‹œ"));
                 }
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
@@ -476,7 +476,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "Áöµµ¿¡ Ç¥½Ã"));
+                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "ì§€ë„ì— í‘œì‹œ"));
                 }
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
@@ -493,7 +493,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("TeleportButtonTooltip", "°¡±î¿î ¿¡Å×¶óÀÌÆ®·Î ÅÚ·¹Æ÷"));
+                    ImGui.SetTooltip(Loc.Localize("TeleportButtonTooltip", "ê°€ê¹Œìš´ ì—í…Œë¼ì´íŠ¸ë¡œ í…”ë ˆí¬"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
 
@@ -509,7 +509,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("RemoveHuntButtonTooltip", "´ÙÀ½ °»½Å±îÁö ÀÌ ¸¶¹°À» ¸ñ·Ï¿¡¼­ Á¦°Å"));
+                    ImGui.SetTooltip(Loc.Localize("RemoveHuntButtonTooltip", "ë‹¤ìŒ ê°±ì‹ ê¹Œì§€ ì´ ë§ˆë¬¼ì„ ëª©ë¡ì—ì„œ ì œê±°"));
 
                 ImGui.EndGroup(); // End Detail Group
             }
@@ -525,26 +525,26 @@ namespace SonarPlugin.GUI
 
             switch (fateStatus)
             {
-                case FateStatus.ÁøÇàÁß:
+                case FateStatus.ì§„í–‰ì¤‘:
                     statusColor = this.Plugin.Configuration.Colors.FateRunning;
                     break;
-                case FateStatus.¿Ï·á:
+                case FateStatus.ì™„ë£Œ:
                     statusColor = this.Plugin.Configuration.Colors.FateComplete;
                     break;
-                case FateStatus.½ÇÆĞ:
+                case FateStatus.ì‹¤íŒ¨:
                     statusColor = this.Plugin.Configuration.Colors.FateFailed;
                     break;
-                case FateStatus.ÁØºñÁß:
+                case FateStatus.ì¤€ë¹„ì¤‘:
                     statusColor = this.Plugin.Configuration.Colors.FatePreparation;
                     break;
-                case FateStatus.¾Ë¼ö¾øÀ½:
+                case FateStatus.ì•Œìˆ˜ì—†ìŒ:
                     statusColor = this.Plugin.Configuration.Colors.FateUnknown;
                     break;
                 default:
                     statusColor = ColorPalette.Grey; // Hardcoded, should never happen
                     break;
             }
-            if (fateStatus == FateStatus.ÁøÇàÁß && state.Relay.Progress > 0) statusColor = this.Plugin.Configuration.Colors.FateProgress;
+            if (fateStatus == FateStatus.ì§„í–‰ì¤‘ && state.Relay.Progress > 0) statusColor = this.Plugin.Configuration.Colors.FateProgress;
 
             ImGui.PushStyleColor(ImGuiCol.Text, statusColor);
             bool isHeaderOpen = ImGui.TreeNodeEx($"##fate_{relay.RelayKey}", ImGuiTreeNodeFlags.CollapsingHeader, $"{relay} [{relay.Players}]");
@@ -571,23 +571,23 @@ namespace SonarPlugin.GUI
                 ImGui.SameLine(0, 25 * ImGui.GetIO().FontGlobalScale);
                 ImGui.BeginGroup(); // Detail Group 
 
-                ImGui.Text(Loc.Localize("FateDetailNameText", "ÀÌ¸§"));
+                ImGui.Text(Loc.Localize("FateDetailNameText", "ì´ë¦„"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetFate()} ({relay.RelayKey})");
 
-                ImGui.Text(Loc.Localize("FateDetailLevelText", "·¹º§"));
+                ImGui.Text(Loc.Localize("FateDetailLevelText", "ë ˆë²¨"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetFate()?.Level}");
 
-                ImGui.Text(Loc.Localize("FateDetailStatusText", "»óÅÂ"));
+                ImGui.Text(Loc.Localize("FateDetailStatusText", "ìƒíƒœ"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.TextColored(statusColor, statusText);
 
-                ImGui.Text(Loc.Localize("FateDetailDurationText", "³²Àº ½Ã°£"));
+                ImGui.Text(Loc.Localize("FateDetailDurationText", "ë‚¨ì€ ì‹œê°„"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text(relay.GetRemainingTimeString());
 
-                ImGui.Text(Loc.Localize("FateDetailProgressText", "ÁøÇàµµ"));
+                ImGui.Text(Loc.Localize("FateDetailProgressText", "ì§„í–‰ë„"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 float progress = (float)relay.Progress / 100f;
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetTextLineHeight() / 2 - 2f);
@@ -597,11 +597,11 @@ namespace SonarPlugin.GUI
                 ImGui.Spacing();
                 ImGui.Spacing();
 
-                ImGui.Text(Loc.Localize("FateDetailLocationText", "Áö¿ª"));
+                ImGui.Text(Loc.Localize("FateDetailLocationText", "ì§€ì—­"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
-                ImGui.Text($"{relay.GetZone()} {relay.GetFlagString()} {relay.InstanceId}ÀÎ½º");
+                ImGui.Text($"{relay.GetZone()} {relay.GetFlagString()} {relay.InstanceId}ì¸ìŠ¤");
 
-                ImGui.Text(Loc.Localize("FateDetailWorldText", "¼­¹ö"));
+                ImGui.Text(Loc.Localize("FateDetailWorldText", "ì„œë²„"));
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.GetWorld()}");
 
@@ -612,27 +612,27 @@ namespace SonarPlugin.GUI
                 {
                     DateTime dt;
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastFoundText", "¸¶Áö¸· ¹ß°ß"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastFoundText", "ë§ˆì§€ë§‰ ë°œê²¬"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastFound();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastSeenText", "¸¶Áö¸· ¸ñ°İ"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastSeenText", "ë§ˆì§€ë§‰ ëª©ê²©"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastSeen();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastKilledText", "¸¶Áö¸· ¿Ï·á"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastKilledText", "ë§ˆì§€ë§‰ ì™„ë£Œ"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastKilled();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailLastUntouchedText", "¸¶Áö¸· ¹Ì¿Ï·á"));
+                    ImGui.Text(Loc.Localize("HuntDetailLastUntouchedText", "ë§ˆì§€ë§‰ ë¯¸ì™„ë£Œ"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     dt = state.GetLastUntouched();
                     ImGui.Text($"{dt.ToLocalTime().ToShortDateString()} {dt.ToLocalTime().ToShortTimeString()}");
 
-                    ImGui.Text(Loc.Localize("HuntDetailsPlayersNearby", "ÁÖº¯ ÇÃ·¹ÀÌ¾î ¼ö"));
+                    ImGui.Text(Loc.Localize("HuntDetailsPlayersNearby", "ì£¼ë³€ í”Œë ˆì´ì–´ ìˆ˜"));
                     ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                     ImGui.Text($"{state.Relay.Players}");
                 }
@@ -652,7 +652,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "´ëÈ­ Ã¢¿¡ ÁÂÇ¥ Ç¥½Ã"));
+                    ImGui.SetTooltip(Loc.Localize("FlagButtonTooltip", "ëŒ€í™” ì°½ì— ì¢Œí‘œ í‘œì‹œ"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
 
@@ -668,7 +668,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "Áöµµ¿¡ Ç¥½Ã"));
+                    ImGui.SetTooltip(Loc.Localize("MapButtonTooltip", "ì§€ë„ì— í‘œì‹œ"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
 
@@ -684,7 +684,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("TeleportButtonTooltip", "°¡±î¿î ¿¡Å×¶óÀÌÆ®·Î ÅÚ·¹Æ÷"));
+                    ImGui.SetTooltip(Loc.Localize("TeleportButtonTooltip", "ê°€ê¹Œìš´ ì—í…Œë¼ì´íŠ¸ë¡œ í…”ë ˆí¬"));
 
                 ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
 
@@ -700,7 +700,7 @@ namespace SonarPlugin.GUI
                 ImGui.PopStyleColor();
                 ImGui.PopFont();
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Loc.Localize("RemoveFateButtonTooltip", "´ÙÀ½ °»½Å±îÁö ÀÌ µ¹¹ßÀ» ¸ñ·Ï¿¡¼­ Á¦°Å"));
+                    ImGui.SetTooltip(Loc.Localize("RemoveFateButtonTooltip", "ë‹¤ìŒ ê°±ì‹ ê¹Œì§€ ì´ ëŒë°œì„ ëª©ë¡ì—ì„œ ì œê±°"));
 
                 ImGui.EndGroup(); // End Detail Group
             }
