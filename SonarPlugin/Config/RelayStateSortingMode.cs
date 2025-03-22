@@ -43,7 +43,7 @@ namespace SonarPlugin.Config
         [EnumCheapLoc("SortingModeJurisdiction", "관할구역")]
         Jurisdiction,
 
-        [EnumCheapLoc("SortingModeJurisdictionWorldZoneInstanceRelay", "관할구역, 서버, 인스턴스,릴레이 ID")]
+        [EnumCheapLoc("SortingModeJurisdictionWorldZoneInstanceRelay", "관할구역, 서버, 인스턴스, 릴레이 ID")]
         JurisdictionWorldZoneInstanceRelay,
     }
 
