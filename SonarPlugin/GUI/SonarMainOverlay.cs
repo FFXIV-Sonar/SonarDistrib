@@ -157,7 +157,7 @@ namespace SonarPlugin.GUI
                         if (!this.Plugin.Configuration.AllSRankSettings && (rank == HuntRank.SS || rank == HuntRank.SSMinion)) continue;
 
                         // TODO: Eventually localize these enum strings
-                        var tabText = rank == HuntRank.None ? "All##SonarHuntAllTab" : $" {rank} ##SonarHuntRank{rank}Tab";
+                        var tabText = rank == HuntRank.None ? "전체##SonarHuntAllTab" : $" {rank} ##SonarHuntRank{rank}Tab";
                         if (ImGui.BeginTabItem(tabText))
                         {
                             ImGui.EndTabItem();
@@ -167,7 +167,7 @@ namespace SonarPlugin.GUI
                         }
                     }
 
-                    if (ImGui.BeginTabItem("FATE##FateRelayTab"))
+                    if (ImGui.BeginTabItem("돌발##FateRelayTab"))
                     {
                         ImGui.EndTabItem();
                         this._huntsVisible = false;
