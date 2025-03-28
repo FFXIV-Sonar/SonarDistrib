@@ -127,7 +127,7 @@ namespace SonarResources
 
         public void SaveSonarDb()
         {
-            var filename = "../../../Sonar/Resources/Db.data";
+            var filename = Path.Join(Program.Config.ResourcesPath, "Db.data");
             Console.Write($"Saving {filename}...");
             var bytes = SonarSerializer.SerializeData(this.Db);
             File.WriteAllBytes(filename, bytes);
@@ -138,14 +138,14 @@ namespace SonarResources
         {
             var name = typeof(T).Name;
 
-            var filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}.json";
+            var filename = Path.Join(Program.Config.AssetsPath, "data", $"{name.Substring(0, name.Length - 3).ToLowerInvariant()}.json");
             Console.Write($"Saving {filename} (Count: {dict.Count})...");
             var jsonOptions2 = new JsonSerializerOptions(JsonSerializerOptions.Default) { WriteIndented = true };
             var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dict, jsonOptions2));
             File.WriteAllBytes(filename, bytes);
             Console.WriteLine($"{bytes.Length} bytes saved");
 
-            filename = $"../../../Assets/data/{name.Substring(0, name.Length - 3).ToLowerInvariant()}.min.json";
+            filename = Path.Join(Program.Config.AssetsPath, "data", $"{name.Substring(0, name.Length - 3).ToLowerInvariant()}.min.json");
             Console.Write($"Saving {filename} (Count: {dict.Count})...");
             bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dict));
             File.WriteAllBytes(filename, bytes);
@@ -154,9 +154,17 @@ namespace SonarResources
 
         private async Task GenerateMapAssetsAsync(CancellationToken cancellationToken = default)
         {
-            if (!ConsoleHelper.AskUserYN("This take a really long time, generate all map assets?")) return;
-            var zones = ConsoleHelper.AskUserYN("Generate all zone assets?");
-            var parallel = ConsoleHelper.AskUserYN("Perform image processing in parallel?");
+            var maps = Program.Config.BuildMapImages;
+            if (Program.Config.Interactive) maps = ConsoleHelper.AskUserYN("This take a really long time, generate all map assets?");
+            if (!maps) return;
+
+            var zones = Program.Config.BuildZoneImages;
+            var parallel = Program.Config.BuildMapParallel;
+            if (Program.Config.Interactive)
+            {
+                zones = ConsoleHelper.AskUserYN("Generate all zone assets?");
+                parallel = ConsoleHelper.AskUserYN("Perform image processing in parallel?") ? -1 : 1;
+            }
 
             var generator = new MapsGenerator();
             foreach (var data in this.Luminas.GetAllDatas())

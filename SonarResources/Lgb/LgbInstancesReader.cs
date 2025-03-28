@@ -28,7 +28,7 @@ namespace SonarResources.Lgb
             "planevent.lgb",
             "planlive.lgb",
             "planmap.lgb",
-            "planner.lgb", // This one doesn't seem to load properly but can be ignored
+            // "planner.lgb", // This one doesn't seem to load properly but can be ignored
             "sound.lgb",
             "vfx.lgb",
         ];
@@ -66,9 +66,9 @@ namespace SonarResources.Lgb
                     LgbResult.Error => "e",
                     _ => "?"
                 };
-                Program.WriteProgress(result);
+                Console.Write(result);
             }
-            Program.WriteProgressLine($" ({this._instances.Count})");
+            Console.WriteLine($" ({this._instances.Count})");
 
             if (this._exceptions.Count > 0)
             {

@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Dalamud.NET.Sdk/12.0.2">
   <Import Project="..\SonarCommon.props" />
-  <Import Project="Dalamud.Plugin.Bootstrap.targets" />
 
   <PropertyGroup>
     <OutputPath>bin/</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
+    <TargetFramework>net9.0-windows</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -68,7 +68,7 @@
     <PackageReference Include="NAudio.Core" Version="2.2.1" />
     <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
     <PackageReference Include="NAudio.WinMM" Version="2.2.1" />
-    <PackageReference Include="AG" Version="0.0.6-alpha" />
+    <PackageReference Include="AG" Version="0.0.7-alpha" />
   </ItemGroup>
 
   <ItemGroup>
@@ -78,10 +78,6 @@
 
   <ItemGroup>
     <Reference Include="CheapLoc" Private="false" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="DalamudPackager" Version="11.0.0" />
   </ItemGroup>
 
   <Target Name="Secrets" BeforeTargets="PrepareForBuild" Condition="'$(PLOGON_SECRET_PLUGIN)' != ''">

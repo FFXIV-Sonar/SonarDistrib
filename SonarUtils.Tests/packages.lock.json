@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net8.0": {
+    "net9.0": {
       "coverlet.collector": {
         "type": "Direct",
         "requested": "[6.0.4, )",
@@ -37,25 +37,30 @@
       },
       "AG": {
         "type": "Transitive",
-        "resolved": "0.0.6-alpha",
-        "contentHash": "sRKdbX+Hm5nFuSWTKFkPQQ2co17hhdKQgpnjPADm4AUgeCCt6ctSRpOLPRz6TJ+5zPUU78RZX4s9nUBzjML3WQ=="
+        "resolved": "0.0.7-alpha",
+        "contentHash": "UyavQnSUjxz2QQlNN6fZmqiWYf2eOevnSUossi9rWwSde/qYP/846w/LkjL1C9f5eFi4PgSZBjibGPnQHQVaww=="
       },
       "AG.Collections.Concurrent": {
         "type": "Transitive",
-        "resolved": "0.0.6-alpha",
-        "contentHash": "RzcnU58gROr8MJSIWuj/HC7S52iciS8EVk8xvsUbKUskkh9n0pj+PWfRkqbPUnls1AOf9IsJFipldV8X+H4Y+Q==",
+        "resolved": "0.0.7-alpha",
+        "contentHash": "USX4MAkP3nESPkA6EaaYRwDcSwCpmiBS/l95EV8HomP8hNUQoA3tYn4EvrYQs2nu4h3pJeRgQvn4IAgP/1OAeg==",
         "dependencies": {
-          "AG": "0.0.6-alpha",
-          "AG.Collections.Generic": "0.0.6-alpha"
+          "AG": "0.0.7-alpha",
+          "AG.Collections.Generic": "0.0.7-alpha"
         }
       },
       "AG.Collections.Generic": {
         "type": "Transitive",
-        "resolved": "0.0.6-alpha",
-        "contentHash": "GlqU758Jid5d5hsKT+fPs2E/2YutuLHnwrswN7utwlPlZRsLiq5YAyVjftefhqhk9Z4wHeEb2sqEZyIXDX9uRA==",
+        "resolved": "0.0.7-alpha",
+        "contentHash": "xdLh5ZXRBpv2ggd56lkl9X7BMM7NzBUYaTxTJLqmaEGK3pA9duiV8azH2iBIczpWR6winFerY0MKIvSG/7r5jw==",
         "dependencies": {
-          "AG": "0.0.6-alpha"
+          "AG": "0.0.7-alpha"
         }
+      },
+      "AG.EnumLocalization": {
+        "type": "Transitive",
+        "resolved": "0.0.7-alpha",
+        "contentHash": "2gmb3g9egcBy0mqwez9AZcHzsRK56ZfqQ7N/KaSLsOsMFzQ/TfrTrdAbIxdcvl7NOG2ieU7vLdY6sC/UbqQqEw=="
       },
       "Farmhash.Sharp": {
         "type": "Transitive",
@@ -142,7 +147,8 @@
       "sonarutils": {
         "type": "Project",
         "dependencies": {
-          "AG.Collections.Concurrent": "[0.0.6-alpha, )",
+          "AG.Collections.Concurrent": "[0.0.7-alpha, )",
+          "AG.EnumLocalization": "[0.0.7-alpha, )",
           "Farmhash.Sharp": "[0.9.0, )",
           "XoshiroPRNG.Net": "[1.6.0, )"
         }

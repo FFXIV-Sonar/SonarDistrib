@@ -9,16 +9,26 @@ using DryIoc.MefAttributedModel;
 using SonarResources.Readers;
 using Sonar.Data.Details;
 using SonarResources.Lgb;
+using System.Text.Json.Nodes;
+using System.IO;
+using System.Text.Json;
+using System.Threading;
+using Lumina.Data;
 
 namespace SonarResources
 {
     public static class Program
     {
         public static bool ShowProgress { get; set; }
+
         public static Container Container { get; private set; } = default!;
+        public static SonarResourcesConfig Config { get; private set; } = default!;
         
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
+            var config = await LoadConfigurationAsync(File.Exists("config.json") ? "config.json" : null);
+            Config = config;
+
             using var container = new Container();
             Container = container;
 
@@ -26,13 +36,25 @@ namespace SonarResources
             Container.RegisterInstance(new SonarDb());
 
             var manager = Container.Resolve<LuminaManager>();
-            // TODO: Move this to a configuration file.
-            manager.LoadLumina(@"R:\SquareEnix\FINAL FANTASY XIV - A Realm Reborn\game\sqpack");
-            manager.LoadLumina(@"R:\SquareEnix\FFXIV_CN\game\sqpack");
-            manager.LoadLumina(@"R:\SquareEnix\FFXIV_KR\game\sqpack");
+            foreach (var sqpack in config.GameSqpacks)
+            {
+                Console.WriteLine($"Initializing Game Data: {sqpack}");
+                manager.LoadLumina(sqpack);
+            }
 
             ShowProgress = false;
             Container.Resolve<ResourcesMain>();
+        }
+
+        public static async Task<SonarResourcesConfig> LoadConfigurationAsync(string? file = null, CancellationToken cancellationToken = default)
+        {
+            if (file is not null)
+            {
+                using var stream = File.OpenRead(file);
+                var config = await JsonSerializer.DeserializeAsync<SonarResourcesConfig>(stream, cancellationToken: cancellationToken);
+                if (config is not null) return config;
+            }
+            return new SonarResourcesConfig();
         }
 
         public static void WriteProgress(string mark)

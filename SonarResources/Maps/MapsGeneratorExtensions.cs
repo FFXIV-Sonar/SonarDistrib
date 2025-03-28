@@ -7,6 +7,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -39,10 +40,10 @@ namespace SonarResources.Maps
         }
         public static MapPaths GetMapGameDataPaths(this Map map) => GetMapGameDataPaths(map.Id.ExtractText());
 
-        public static string GetZoneImageAssetPath(uint id, MapSize size, string extension) => $"../../../Assets/images/zone-{id}-{SizeSuffix[size]}.{extension}";
+        public static string GetZoneImageAssetPath(uint id, MapSize size, string extension) => Path.Join(Program.Config.AssetsPath, "images", $"zone-{id}-{SizeSuffix[size]}.{extension}");
         public static string GetZoneImageAssetPath(this TerritoryType territoryType, MapSize size, string extension) => GetZoneImageAssetPath(territoryType.RowId, size, extension);
 
-        public static string GetMapImageAssetPath(uint id, MapSize size, string extension) => $"../../../Assets/images/map-{id}-{SizeSuffix[size]}.{extension}";
+        public static string GetMapImageAssetPath(uint id, MapSize size, string extension) => Path.Join(Program.Config.AssetsPath, "images", $"map-{id}-{SizeSuffix[size]}.{extension}");
         public static string GetMapImageAssetPath(this Map map, MapSize size, string extension) => GetMapImageAssetPath(map.RowId, size, extension);
         public static string GetMapImageAssetPath(this TerritoryType territoryType, MapSize size, string extension) => GetMapImageAssetPath(territoryType.Map.Value, size, extension);
 
