@@ -345,7 +345,7 @@ namespace SonarPlugin.GUI
             { HuntRank.B, $"{Loc.Localize("RankBText", "B급")}" },
             { HuntRank.A, $"{Loc.Localize("RankAText", "A급")}" },
             { HuntRank.S, $"{Loc.Localize("RankSText", "S급")}" },
-            { HuntRank.SSMinion, $"{Loc.Localize("RankSSMinionText", "SS급 하수인")}" },
+            { HuntRank.SSMinion, $"{Loc.Localize("RankSSMinionText", "SS급 부하")}" },
             { HuntRank.SS, $"{Loc.Localize("RankSSText", "SS급")}" },
         };
 

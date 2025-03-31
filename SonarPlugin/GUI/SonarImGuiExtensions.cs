@@ -15,9 +15,9 @@ namespace SonarPlugin.GUI
 {
     public static class SonarImGuiExtensions
     {
-        public const string DefaultFoundHunt = "랭크 <rank>: <name> <flagfull>";
+        public const string DefaultFoundHunt = "<rank>급: <name> <flagfull>";
         public const string DefaultFoundFate = "돌발: <name> <flagfull>";
-        public const string DefaultDeadHunt = "랭크 <rank>: <name> <flagfull> 토벌 완료";
+        public const string DefaultDeadHunt = "<rank>급: <name> <flagfull> 토벌 완료";
         public const string DefaultDeadFate = "돌발: <name> <flagfull> 완료";
         private static IDictionary<string, string> GetPlaceholdersBase(this Relay relay, bool cwIcon = false)
         {
