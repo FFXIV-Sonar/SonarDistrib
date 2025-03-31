@@ -62,7 +62,7 @@ namespace SonarPlugin.Game
         {
             var info = relay.GetHunt();
             SeStringBuilder builder = new();
-            builder.AddText($"랭크 {info?.Rank ?? HuntRank.None}: {info?.Name.ToString() ?? "INVALID"} ");
+            builder.AddText($"{info?.Rank ?? HuntRank.None}급: {info?.Name.ToString() ?? "INVALID"} ");
             builder.AddSeString(((GamePosition)relay).GetMapLinkSeString(cwIcon));
             return builder.Build();
         }
