@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using Sonar.Messages;
+using SonarUtils;
 
 namespace Sonar.Models
 {
@@ -95,7 +96,7 @@ namespace Sonar.Models
         {
             try
             {
-                return Convert.ToBase64String(SHA256.HashData(File.ReadAllBytes(assembly.Location)));
+                return Convert.ToBase64String(BouncySha256.HashData(File.ReadAllBytes(assembly.Location)));
             }
             catch (Exception ex)
             {

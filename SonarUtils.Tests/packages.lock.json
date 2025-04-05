@@ -57,6 +57,16 @@
           "AG": "0.0.6-alpha"
         }
       },
+      "BouncyCastle.Cryptography": {
+        "type": "Transitive",
+        "resolved": "2.5.1",
+        "contentHash": "zy8TMeTP+1FH2NrLaNZtdRbBdq7u5MI+NFZQOBSM69u5RFkciinwzV2eveY6Kjf5MzgsYvvl6kTStsj3JrXqkg=="
+      },
+      "DnsClient": {
+        "type": "Transitive",
+        "resolved": "1.8.0",
+        "contentHash": "RRwtaCXkXWsx0mmsReGDqCbRLtItfUbkRJlet1FpdciVhyMGKcPd57T1+8Jki9ojHlq9fntVhXQroOOgRak8DQ=="
+      },
       "Farmhash.Sharp": {
         "type": "Transitive",
         "resolved": "0.9.0",
@@ -143,6 +153,8 @@
         "type": "Project",
         "dependencies": {
           "AG.Collections.Concurrent": "[0.0.6-alpha, )",
+          "BouncyCastle.Cryptography": "[2.5.1, )",
+          "DnsClient": "[1.8.0, )",
           "Farmhash.Sharp": "[0.9.0, )",
           "XoshiroPRNG.Net": "[1.6.0, )"
         }
