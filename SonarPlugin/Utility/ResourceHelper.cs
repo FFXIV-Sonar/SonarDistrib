@@ -31,7 +31,7 @@ namespace SonarPlugin.Utility
             }
 
             var bytes = new byte[(int)stream.Length];
-            stream.Read(bytes);
+            stream.ReadExactly(bytes);
             try
             {
                 return this.Textures.CreateFromImageAsync(bytes).Result;

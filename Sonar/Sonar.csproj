@@ -26,7 +26,6 @@
     <PackageReference Include="DeviceId.Mac" Version="6.9.0" />
     <PackageReference Include="DeviceId.Windows" Version="6.9.0" />
     <PackageReference Include="DeviceId.Windows.Wmi" Version="6.9.0" />
-    <PackageReference Include="DnsClient" Version="1.8.0" PrivateAssets="all" />
     <PackageReference Include="DryIoc.dll" Version="5.4.3" />
     <PackageReference Include="DryIoc.MefAttributedModel.dll" Version="7.0.2" />
     <PackageReference Include="Fody" Version="6.9.2">
@@ -40,8 +39,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="9.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="8.0.14" />
     <PackageReference Include="ZString" Version="2.6.0" />
   </ItemGroup>
 

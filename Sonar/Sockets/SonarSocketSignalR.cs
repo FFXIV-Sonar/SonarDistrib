@@ -64,7 +64,7 @@ namespace Sonar.Sockets
 
         public override void Start()
         {
-            _ = this._connection.StartAsync(this._cts.Token);
+            // No action needed
         }
 
         public override void Send(byte[] bytes)

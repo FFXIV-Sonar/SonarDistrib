@@ -30,7 +30,7 @@ namespace Sonar.Connections
             if (stream is null) throw new FileNotFoundException($"Couldn't read url resources");
 
             var bytes = new byte[stream.Length];
-            stream.Read(bytes, 0, bytes.Length);
+            stream.ReadExactly(bytes, 0, bytes.Length);
             return SonarSerializer.DeserializeData<IEnumerable<SonarUrl>>(bytes);
         }
 

@@ -9,6 +9,7 @@ using System.ComponentModel;
 using SonarUtils.Collections;
 using System.Collections.Frozen;
 using SonarUtils.Text;
+using SonarUtils;
 
 namespace Sonar.Data.Details
 {
@@ -126,9 +127,7 @@ namespace Sonar.Data.Details
             byteList.AddRange(MessagePackSerializer.Serialize(this.Aetherytes.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.WorldTravelData.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
 
-            var hash = new byte[SHA256.HashSizeInBytes];
-            if (!SHA256.TryHashData(byteList.AsSpan(), hash, out var bytesWritten)) return [];
-            return hash[..bytesWritten];
+            return BouncySha256.HashData(byteList.AsSpan());
         }
 
         /// <summary>Warning: Slow</summary>

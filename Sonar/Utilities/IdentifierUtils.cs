@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
+using SonarUtils;
 
 namespace Sonar.Utilities
 {
@@ -87,7 +88,7 @@ namespace Sonar.Utilities
             try
             {
                 // Since I tend to have bad luck. Hopefully this never happens.
-                if (allowFallback) return SHA256.HashData(data);
+                if (allowFallback) return BouncySha256.HashData(data);
             }
             catch (Exception ex)
             {
@@ -102,7 +103,7 @@ namespace Sonar.Utilities
         {
             if (clientId is null || clientSecret is null) return null;
             var bytes = Encoding.UTF8.GetBytes($"{clientId}{clientSecret}");
-            var hash = SHA256.HashData(bytes);
+            var hash = BouncySha256.HashData(bytes);
             return UrlBase64.Encode(hash)[..12];
         }
     }

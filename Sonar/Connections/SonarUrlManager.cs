@@ -50,7 +50,7 @@ namespace Sonar.Connections
                 ?? throw new FileNotFoundException($"Couldn't read url resources");
 
             var bytes = new byte[stream.Length];
-            stream.Read(bytes, 0, bytes.Length);
+            stream.ReadExactly(bytes, 0, bytes.Length);
             this.ProcessBytes(bytes);
         }
 
@@ -139,7 +139,7 @@ namespace Sonar.Connections
 
         public async ValueTask DisposeAsync()
         {
-            this._cts.Cancel();
+            await this._cts.CancelAsync();
             await this._bootstrapTask;
             this._cts.Dispose();
             GC.SuppressFinalize(this);
