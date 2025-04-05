@@ -39,7 +39,7 @@ namespace SonarUtils
 
         public static SocketsHttpHandler CreateRandomlyHappyHandler()
         {
-            return System.Random.Shared.NextDouble() < 0.0 ?
+            return System.Random.Shared.NextDouble() < 0.5 ?
                 new SocketsHttpHandler() : CreateHttpHandler();
         }
 
