@@ -1,5 +1,6 @@
 ﻿using MessagePack;
 using Sonar.Messages;
+using SonarUtils;
 using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Sonar.Models
         /// <summary>Generates a secret hash for a specified secret name</summary>
         public static byte[] HashSecret(string secretName)
         {
-            return SHA256.HashData(Encoding.UTF8.GetBytes($"SECRET {secretName} T3RC3Z"));
+            return BouncySha256.HashData(Encoding.UTF8.GetBytes($"SECRET {secretName} T3RC3Z"));
         }
 
         /// <summary>Read embedded secret from an assembly</summary>

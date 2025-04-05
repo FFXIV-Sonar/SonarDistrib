@@ -1,45 +1,16 @@
 ﻿using Sonar.Extensions;
-using Dalamud.Logging;
 using CheapLoc;
 using SonarPlugin.Config;
-using Dalamud.Data;
-using Dalamud.Game;
-using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.Fates;
-using Dalamud.Game.ClientState.Objects;
-using Dalamud.Game.Command;
-using Dalamud.Game.Gui;
-using Dalamud.Game.Network;
-using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.IoC;
 using Dalamud.Plugin;
-using ImGuiNET;
-using SonarPlugin.Managers;
 using Sonar;
-using Sonar.Data.Extensions;
-using Sonar.Enums;
-using Sonar.Models;
-using Sonar.Services;
-using Sonar.Sockets;
-using Sonar.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Net.WebSockets;
 using System.Threading;
-using SonarPlugin.Trackers;
 using SonarPlugin.Utility;
-using static Sonar.SonarConstants;
-using SonarPlugin.Game;
-using Sonar.Data;
 using Sonar.Logging;
 using Dalamud.Interface.Windowing;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Dalamud.Plugin.Services;
-using System.Runtime.CompilerServices;
 
 namespace SonarPlugin
 {
@@ -75,7 +46,7 @@ namespace SonarPlugin
         public void Initialize()
         {
             this.LoadConfiguration();
-            Loc.SetupWithFallbacks();
+            CheapLoc.Loc.SetupWithFallbacks();
 
             this.PluginInterface.UiBuilder.Draw += this.Windows.Draw;
 

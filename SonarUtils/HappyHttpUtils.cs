@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using DnsClient;
 
 namespace SonarUtils
 {
@@ -38,7 +39,7 @@ namespace SonarUtils
 
         public static SocketsHttpHandler CreateRandomlyHappyHandler()
         {
-            return System.Random.Shared.NextDouble() < 0.5 ?
+            return System.Random.Shared.NextDouble() < 0.0 ?
                 new SocketsHttpHandler() : CreateHttpHandler();
         }
 
@@ -49,8 +50,8 @@ namespace SonarUtils
 
             var entries = new List<IPAddress>();
             var dnsTasks = new Task[] {
-                PerformDnsAsync(entries, AddressFamily.InterNetwork, context, cts.Token),
-                PerformDnsAsync(entries, AddressFamily.InterNetworkV6, context, cts.Token),
+                PerformDnsAsync(entries, QueryType.A, context, cts.Token),
+                PerformDnsAsync(entries, QueryType.AAAA, context, cts.Token),
             };
             _ = ObserveExceptions(dnsTasks);
 
@@ -77,14 +78,14 @@ namespace SonarUtils
                 lock (entries)
                 {
                     var index = System.Random.Shared.Next(entries.Count);
-                    if (attempted.Add(index))
+                    if (entries.Count > 0 && attempted.Add(index))
                     {
                         var entry = entries[index];
                         streamTasks.Add(CreateStreamAsync(entry, semaphore, context, cancellationToken));
                     }
                 }
 
-                await Task.Delay(1, cts.Token).ConfigureAwait(false);
+                await Task.Delay(DelayMsTick, cts.Token).ConfigureAwait(false);
             }
             while (attempted.Count < entries.Count || Array.FindIndex(dnsTasks, task => !task.IsCompleted) != -1 || streamTasks.FindIndex(task => !task.IsCompleted) != -1);
             
@@ -96,12 +97,29 @@ namespace SonarUtils
             throw new HappySocketException($"Unable to happily connect to {context.DnsEndPoint.Host}:{context.DnsEndPoint.Port} (Resolved addresses: {string.Join(", ", entries)})", aex);
         }
 
-        private static async Task PerformDnsAsync(List<IPAddress> entries, AddressFamily family, SocketsHttpConnectionContext context, CancellationToken cancellationToken)
+        private static async Task PerformDnsAsync(List<IPAddress> entries, QueryType queryType, SocketsHttpConnectionContext context, CancellationToken cancellationToken)
         {
-            var results = await Dns.GetHostAddressesAsync(context.DnsEndPoint.Host, family, cancellationToken).ConfigureAwait(false);
+            Debug.Assert(queryType is QueryType.A or QueryType.AAAA);
+
+            // Querying an IP Address for its A or AAAA records won't work.
+            // This shortcuts to returning the IP address itfelf instead of
+            // attempting to query for records.
+            if (IPAddress.TryParse(context.DnsEndPoint.Host, out var ipAddress))
+            {
+                lock (entries)
+                {
+                    if (entries.Count < 256 && !entries.Contains(ipAddress)) entries.Add(ipAddress);
+                    return;
+                }
+            }
+
+            // Query for A or AAAA records as normal.
+            var dns = new LookupClient();
+            var response = await dns.QueryAsync(context.DnsEndPoint.Host, queryType, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var results = response.AllRecords.AddressRecords();
             lock (entries)
             {
-                foreach (var address in results)
+                foreach (var address in results.Select(r => r.Address))
                 {
                     if (entries.Count >= 256) break;
                     if (!entries.Contains(address)) entries.Add(address);
@@ -137,7 +155,7 @@ namespace SonarUtils
                 await Task.WhenAll(tasks).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
                 foreach (var task in tasks)
                 {
-                    if (task.IsFaulted) _ = task.Exception;
+                    if (!task.IsCompletedSuccessfully) _ = task.Exception;
                 }
             }
             catch

@@ -96,6 +96,11 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
       },
+      "BouncyCastle.Cryptography": {
+        "type": "Transitive",
+        "resolved": "2.5.1",
+        "contentHash": "zy8TMeTP+1FH2NrLaNZtdRbBdq7u5MI+NFZQOBSM69u5RFkciinwzV2eveY6Kjf5MzgsYvvl6kTStsj3JrXqkg=="
+      },
       "DeviceId": {
         "type": "Transitive",
         "resolved": "6.9.0",
@@ -136,6 +141,11 @@
           "DeviceId.Windows": "6.9.0",
           "System.Management": "9.0.3"
         }
+      },
+      "DnsClient": {
+        "type": "Transitive",
+        "resolved": "1.8.0",
+        "contentHash": "RRwtaCXkXWsx0mmsReGDqCbRLtItfUbkRJlet1FpdciVhyMGKcPd57T1+8Jki9ojHlq9fntVhXQroOOgRak8DQ=="
       },
       "DryIoc.MefAttributedModel.dll": {
         "type": "Transitive",
@@ -409,6 +419,8 @@
         "dependencies": {
           "AG.Collections.Concurrent": "[0.0.7-alpha, )",
           "AG.EnumLocalization": "[0.0.7-alpha, )",
+          "BouncyCastle.Cryptography": "[2.5.1, )",
+          "DnsClient": "[1.8.0, )",
           "Farmhash.Sharp": "[0.9.0, )",
           "XoshiroPRNG.Net": "[1.6.0, )"
         }

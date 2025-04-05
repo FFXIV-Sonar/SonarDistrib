@@ -18,6 +18,18 @@
         "resolved": "0.0.7-alpha",
         "contentHash": "2gmb3g9egcBy0mqwez9AZcHzsRK56ZfqQ7N/KaSLsOsMFzQ/TfrTrdAbIxdcvl7NOG2ieU7vLdY6sC/UbqQqEw=="
       },
+      "BouncyCastle.Cryptography": {
+        "type": "Direct",
+        "requested": "[2.5.1, )",
+        "resolved": "2.5.1",
+        "contentHash": "zy8TMeTP+1FH2NrLaNZtdRbBdq7u5MI+NFZQOBSM69u5RFkciinwzV2eveY6Kjf5MzgsYvvl6kTStsj3JrXqkg=="
+      },
+      "DnsClient": {
+        "type": "Direct",
+        "requested": "[1.8.0, )",
+        "resolved": "1.8.0",
+        "contentHash": "RRwtaCXkXWsx0mmsReGDqCbRLtItfUbkRJlet1FpdciVhyMGKcPd57T1+8Jki9ojHlq9fntVhXQroOOgRak8DQ=="
+      },
       "Farmhash.Sharp": {
         "type": "Direct",
         "requested": "[0.9.0, )",

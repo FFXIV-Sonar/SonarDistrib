@@ -1,50 +1,36 @@
-﻿namespace Sonar.Enums
+﻿using AG.EnumLocalization.Attributes;
+
+namespace Sonar.Enums
 {
+    [EnumLocStrings]
     public enum SonarJurisdiction : byte
     {
-        /// <summary>
-        /// Default jurisdiction
-        /// </summary>
+        /// <summary>Default jurisdiction</summary>
         Default,
 
-        /// <summary>
-        /// None
-        /// </summary>
+        /// <summary>None</summary>
         None,
 
-        /// <summary>
-        /// Current Instance
-        /// </summary>
+        /// <summary>Current Instance</summary>
         Instance,
 
-        /// <summary>
-        /// Current Zone
-        /// </summary>
+        /// <summary>Current Zone</summary>
         Zone,
 
-        /// <summary>
-        /// Current World
-        /// </summary>
+        /// <summary>Current World</summary>
         World,
 
-        /// <summary>
-        /// Current Datacenter
-        /// </summary>
+        [EnumLoc(Fallback = "Data Center")]
+        /// <summary>Current Datacenter</summary>
         Datacenter,
 
-        /// <summary>
-        /// Current Region
-        /// </summary>
+        /// <summary>Current Region</summary>
         Region, // US, UK, JP, CN, KR
 
-        /// <summary>
-        /// Current Audience
-        /// </summary>
+        /// <summary>Current Audience</summary>
         Audience, // Global, CN, KR
 
-        /// <summary>
-        /// Everything
-        /// </summary>
+        /// <summary>Everything</summary>
         All,
     }
 }

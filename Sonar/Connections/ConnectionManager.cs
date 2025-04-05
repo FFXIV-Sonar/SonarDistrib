@@ -199,6 +199,7 @@ namespace Sonar.Connections
                 var socket = SonarSocketSignalR.CreateClientSocket(connection); // webSocket is now "owned" by this SonarSocket
                 this._sockets.TryAdd(socket, new() { Url = url });
                 this.PrepareSocket(socket);
+                await connection.StartAsync(token);
                 await Task.Delay(ReadyTimeoutMs, token);
                 if (this._sockets.TryGetValue(socket, out var info) && !info.Id.HasValue && this._sockets.TryRemove(socket, out _))
                 {
