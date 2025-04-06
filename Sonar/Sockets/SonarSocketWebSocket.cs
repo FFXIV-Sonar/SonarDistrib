@@ -17,6 +17,7 @@ namespace Sonar.Sockets
         private readonly int _maxMessageBytes;
         private readonly CancellationTokenSource _cts = new();
         private readonly ActionBlock<(WebSocketMessageType, byte[])> _sendBlock;
+        private int _disposed;
 
         public WebSocket WebSocket { get; }
 
@@ -136,6 +137,7 @@ namespace Sonar.Sockets
 
         protected override void Dispose(bool disposing)
         {
+            if (Interlocked.CompareExchange(ref this._disposed, 1, 0) != 0) return;
             try
             {
                 this._cts.Cancel();
@@ -151,6 +153,7 @@ namespace Sonar.Sockets
 
         public override async ValueTask DisposeAsync()
         {
+            if (Interlocked.CompareExchange(ref this._disposed, 1, 0) != 0) return;
             try
             {
                 await this._cts.CancelAsync();

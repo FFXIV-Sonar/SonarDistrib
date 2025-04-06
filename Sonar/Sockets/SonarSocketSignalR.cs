@@ -14,6 +14,7 @@ namespace Sonar.Sockets
         private readonly HubConnection _connection;
         private readonly CancellationTokenSource _cts = new();
         private readonly ActionBlock<(string, byte[])> _sendBlock;
+        private int _disposed;
 
         public override Task Completion { get; protected set; }
 
@@ -89,17 +90,33 @@ namespace Sonar.Sockets
 
         protected override void Dispose(bool disposing)
         {
-            this._cts.Cancel();
-            this._cts.Dispose();
-            this._connection.DisposeAsync().AsTask().GetAwaiter().GetResult();
+            if (Interlocked.CompareExchange(ref this._disposed, 1, 0) != 0) return;
+            try
+            {
+                this._cts.Cancel();
+                this._cts.Dispose();
+                this._connection.DisposeAsync().AsTask().GetAwaiter().GetResult(); // No .Dispose available
+            }
+            catch
+            {
+                /* Swallow */
+            }
             base.Dispose(disposing);
         }
 
         public override async ValueTask DisposeAsync()
         {
-            await this._cts.CancelAsync();
-            this._cts.Dispose();
-            await this._connection.DisposeAsync();
+            if (Interlocked.CompareExchange(ref this._disposed, 1, 0) != 0) return;
+            try
+            {
+                await this._cts.CancelAsync();
+                this._cts.Dispose();
+                await this._connection.DisposeAsync();
+            }
+            catch
+            {
+                /* Swallow */
+            }
             await base.DisposeAsync();
         }
     }
