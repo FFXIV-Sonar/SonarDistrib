@@ -34,17 +34,24 @@ namespace Sonar.Services
 
         private void TimerHandler(object? _)
         {
-            var now = UnixNow;
-            if (now > this.lastMessageTimestamp + EarthSecond * 15)
+            try
             {
-                this.Client.Connection.ReconnectInternal(false); // Cause a normal reconnect
-                this.lastMessageTimestamp = now;
+                var now = UnixNow;
+                if (now > this.lastMessageTimestamp + EarthSecond * 15)
+                {
+                    this.Client.Connection.ReconnectInternal(false); // Cause a normal reconnect
+                    this.lastMessageTimestamp = now;
+                }
+                else
+                {
+                    var sequence = Interlocked.Increment(ref this.pingSequence);
+                    this.pingTimestamp = now;
+                    this.Client.Connection.SendIfConnected(() => new SonarPing { Sequence = sequence });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var sequence = Interlocked.Increment(ref this.pingSequence);
-                this.pingTimestamp = now;
-                this.Client.Connection.SendIfConnected(() => new SonarPing { Sequence = sequence });
+                this.Client.LogError(ex, "Ping handler exception");
             }
         }
 
