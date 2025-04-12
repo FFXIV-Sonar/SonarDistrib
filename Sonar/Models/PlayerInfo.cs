@@ -66,7 +66,7 @@ namespace Sonar.Models
         }
 
         public override string ToString() => this._toString ??= $"{this.Name} <{this.GetHomeWorld()}>";
-        public static bool Equals(PlayerInfo? left, PlayerInfo? right) => ReferenceEquals(left, right) || (left is not null && right is not null && left.Hash1 == right.Hash1 && left.Hash2 == right.Hash2  && left.HomeWorldId == right.HomeWorldId && string.Equals(left.Name, right.Name, StringComparison.Ordinal));
+        public static bool Equals(PlayerInfo? left, PlayerInfo? right) => ReferenceEquals(left, right) || (left is not null && right is not null && left.LoggedIn == right.LoggedIn && left.Hash1 == right.Hash1 && left.Hash2 == right.Hash2 && left.HomeWorldId == right.HomeWorldId && string.Equals(left.Name, right.Name, StringComparison.Ordinal));
         public bool Equals(PlayerInfo? other) => Equals(this, other);
         public override bool Equals(object? obj) => obj is PlayerInfo info && this.Equals(info);
         public override int GetHashCode() => HashCode.Combine(this.Name?.GetHashCode() ?? 0, this.HomeWorldId.GetHashCode(), BitUtils.Fold(this.Hash1), BitUtils.Fold(this.Hash2));
