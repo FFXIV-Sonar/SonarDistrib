@@ -68,7 +68,7 @@
     <PackageReference Include="NAudio.Core" Version="2.2.1" />
     <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
     <PackageReference Include="NAudio.WinMM" Version="2.2.1" />
-    <PackageReference Include="AG" Version="0.0.7-alpha" />
+    <PackageReference Include="AG" Version="0.0.8-alpha" />
   </ItemGroup>
 
   <ItemGroup>

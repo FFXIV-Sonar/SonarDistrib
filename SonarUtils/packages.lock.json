@@ -4,19 +4,19 @@
     "net9.0": {
       "AG.Collections.Concurrent": {
         "type": "Direct",
-        "requested": "[0.0.7-alpha, )",
-        "resolved": "0.0.7-alpha",
-        "contentHash": "USX4MAkP3nESPkA6EaaYRwDcSwCpmiBS/l95EV8HomP8hNUQoA3tYn4EvrYQs2nu4h3pJeRgQvn4IAgP/1OAeg==",
+        "requested": "[0.0.8-alpha, )",
+        "resolved": "0.0.8-alpha",
+        "contentHash": "jww14+p/OnHdfVNcLOMtI0X4Ywra9qA4ooe5vf8I40m+gDMhwV2W+nCjlJxHn0OHfjUN8zLjWvEfU/kA1U8e7w==",
         "dependencies": {
-          "AG": "0.0.7-alpha",
-          "AG.Collections.Generic": "0.0.7-alpha"
+          "AG": "0.0.8-alpha",
+          "AG.Collections.Generic": "0.0.8-alpha"
         }
       },
       "AG.EnumLocalization": {
         "type": "Direct",
-        "requested": "[0.0.7-alpha, )",
-        "resolved": "0.0.7-alpha",
-        "contentHash": "2gmb3g9egcBy0mqwez9AZcHzsRK56ZfqQ7N/KaSLsOsMFzQ/TfrTrdAbIxdcvl7NOG2ieU7vLdY6sC/UbqQqEw=="
+        "requested": "[0.0.8-alpha, )",
+        "resolved": "0.0.8-alpha",
+        "contentHash": "ra5XM6cl5Lv8kDBRgW49w50qRVey+Sewl5ZLMY26QoATGIAjE+5eiZ15lbnQpXYhuahxwVyCof4QbfD8eYoBrw=="
       },
       "BouncyCastle.Cryptography": {
         "type": "Direct",
@@ -44,15 +44,15 @@
       },
       "AG": {
         "type": "Transitive",
-        "resolved": "0.0.7-alpha",
-        "contentHash": "UyavQnSUjxz2QQlNN6fZmqiWYf2eOevnSUossi9rWwSde/qYP/846w/LkjL1C9f5eFi4PgSZBjibGPnQHQVaww=="
+        "resolved": "0.0.8-alpha",
+        "contentHash": "QrN58VoJn4PFb7dXSeUGXnfEwyIgcjvoFMqSibekdeNpXOtfY7Z3gSUCC93iUs5VTb/ClYoyNS8Vxk9uoc+uMw=="
       },
       "AG.Collections.Generic": {
         "type": "Transitive",
-        "resolved": "0.0.7-alpha",
-        "contentHash": "xdLh5ZXRBpv2ggd56lkl9X7BMM7NzBUYaTxTJLqmaEGK3pA9duiV8azH2iBIczpWR6winFerY0MKIvSG/7r5jw==",
+        "resolved": "0.0.8-alpha",
+        "contentHash": "Z5i7qIprX+gmv0eun01w08hFvcDdIA7nzd0zRSKJqJpq/IIoF2pAPltWJsXkpi1VSlQADlpYBylhCV6wIzlvJA==",
         "dependencies": {
-          "AG": "0.0.7-alpha"
+          "AG": "0.0.8-alpha"
         }
       }
     },

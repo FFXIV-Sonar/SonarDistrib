@@ -102,9 +102,15 @@ namespace SonarResources.Readers
 
         private void SetupZones()
         {
+            // The Firmament
             this.Db.Zones[630].IsField = false; // The Diadem
             this.Db.Zones[886].IsField = true; // The Firmament (for Fetes)
+
+            // Shadowbringer Trials
             this.Db.Zones[967].IsField = false; // Castrum Marinum Drydocks
+
+            // Cosmic Exploration
+            this.Db.Zones[1237].IsField = true; // Sinus Ardorum
         }
 
         public static ExpansionPack GetZoneExpansion(string bg)
