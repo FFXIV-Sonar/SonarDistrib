@@ -27,7 +27,7 @@ namespace SonarPlugin.GUI
         private IRelayTracker<HuntRelay> Hunts { get; }
         private IRelayTracker<FateRelay> Fates { get; }
 
-        public SonarTrackerWindow(WindowSystem windows, IRelayTracker<HuntRelay> hunts, IRelayTracker<FateRelay> fates, Container container) : base("Sonar Tracker (UNDER DEVELOPMENT!!!)") // TODO
+        public SonarTrackerWindow(WindowSystem windows, IRelayTracker<HuntRelay> hunts, IRelayTracker<FateRelay> fates, Container container) : base("Sonar 트래커 (개발중!!!)") // TODO
         {
             this._indexWidget = container.Resolve<IndexSelectionWidget>();
             this.Windows = windows;
@@ -40,10 +40,10 @@ namespace SonarPlugin.GUI
         {
             this._indexWidget.DrawBreadcrumb();
             ImGui.Text($"Index key: {this._indexWidget.IndexKey}");
-            ImGui.Text($"Hunts: {this.Hunts.Data.GetIndexStates(this._indexWidget.IndexKey).Count()} | Fates: {this.Fates.Data.GetIndexStates(this._indexWidget.IndexKey).Count()}");
+            ImGui.Text($"마물: {this.Hunts.Data.GetIndexStates(this._indexWidget.IndexKey).Count()} | 돌발: {this.Fates.Data.GetIndexStates(this._indexWidget.IndexKey).Count()}");
             ImGui.Spacing();
-            ImGui.Text("Congratulations finding this!");
-            ImGui.TextWrapped("Right now there's nothing useful in this window but I'll be working on this next release. In the meantime enjoy the filtering selector and hunt/fates counts");
+            ImGui.Text("이 기능을 찾으신걸 축하드립니다!");
+            ImGui.TextWrapped("현재 이 창에서 쓸만한 기능을 찾으실 수는 없겠지만 추후의 버전을 기약해 주세요.\n그동안은 필터링 선택기와 마물/돌발 개수 표시기를 즐겨주시길");
         }
 
         public void Dispose()
