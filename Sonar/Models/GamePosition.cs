@@ -67,8 +67,8 @@ namespace Sonar.Models
         {
             var result = name switch
             {
-                "flag" => this.GetFlagString(MapFlagFormatFlags.IngamePreset),
-                "coords" => MapFlagUtils.FlagToString(this.GetFlag(), MapFlagFormatFlags.IngamePreset),
+                "flag" => this.GetFlagString(MapFlagFormatFlags.SonarPreset),
+                "coords" => MapFlagUtils.FlagToString(this.GetFlag(), MapFlagFormatFlags.SonarPreset),
 
                 "x" => $"{this.GetFlag().X:F2}",
                 "y" => $"{this.GetFlag().Y:F2}",

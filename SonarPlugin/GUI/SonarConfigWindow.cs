@@ -256,6 +256,54 @@ namespace SonarPlugin.GUI
                     this.Plugin.Configuration.RightClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
                 });
 
+                // ==
+
+                SonarImGui.Combo($"{Loc.Localize("ShiftMiddleClick", "Shift Middle Click")}##shiftmiddleClickConfig", (int)this.Plugin.Configuration.ShiftMiddleClick, actions, index =>
+                {
+                    this._save = true;
+                    if (index == 0) index = 1;
+                    this.Plugin.Configuration.ShiftMiddleClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
+                });
+
+                SonarImGui.Combo($"{Loc.Localize("ShiftRightClick", "Shift Right Click")}##shiftrightClickConfig", (int)this.Plugin.Configuration.ShiftRightClick, actions, index =>
+                {
+                    this._save = true;
+                    if (index == 0) index = 1;
+                    this.Plugin.Configuration.ShiftRightClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
+                });
+
+                // ==
+
+                SonarImGui.Combo($"{Loc.Localize("AltMiddleClick", "AltMiddle Click")}##AltmiddleClickConfig", (int)this.Plugin.Configuration.AltMiddleClick, actions, index =>
+                {
+                    this._save = true;
+                    if (index == 0) index = 1;
+                    this.Plugin.Configuration.AltMiddleClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
+                });
+
+                SonarImGui.Combo($"{Loc.Localize("AltRightClick", "AltRight Click")}##AltrightClickConfig", (int)this.Plugin.Configuration.AltRightClick, actions, index =>
+                {
+                    this._save = true;
+                    if (index == 0) index = 1;
+                    this.Plugin.Configuration.AltRightClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
+                });
+
+                // ==
+
+                SonarImGui.Combo($"{Loc.Localize("CtrlMiddleClick", "CtrlMiddle Click")}##CtrlmiddleClickConfig", (int)this.Plugin.Configuration.CtrlMiddleClick, actions, index =>
+                {
+                    this._save = true;
+                    if (index == 0) index = 1;
+                    this.Plugin.Configuration.CtrlMiddleClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
+                });
+
+                SonarImGui.Combo($"{Loc.Localize("CtrlRightClick", "CtrlRight Click")}##CtrlrightClickConfig", (int)this.Plugin.Configuration.CtrlRightClick, actions, index =>
+                {
+                    this._save = true;
+                    if (index == 0) index = 4;
+                    this.Plugin.Configuration.CtrlRightClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
+                });
+
                 ImGui.Spacing();
 
                 var cityStates = Enum.GetValues<CityState>().Select(cityState => (cityState, cityState.GetMeta())).ToArray();
@@ -287,8 +335,8 @@ namespace SonarPlugin.GUI
                 ImGui.Indent();
 
                 this._save |= ImGui.ColorEdit4(Loc.Localize("HuntHealthyColor", "Hunt - Healthy"), ref this.Plugin.Configuration.Colors.HuntHealthy, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntPulledColor", "Hunt - Pulled"), ref this.Plugin.Configuration.Colors.HuntPulled, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntDeadColor", "Hunt - Dead"), ref this.Plugin.Configuration.Colors.HuntDead, ImGuiColorEditFlags.NoInputs);
+                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntPulledColor", "Hunt - PulledStatus"), ref this.Plugin.Configuration.Colors.HuntPulled, ImGuiColorEditFlags.NoInputs);
+                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntDeadColor", "Hunt - DeadStatus"), ref this.Plugin.Configuration.Colors.HuntDead, ImGuiColorEditFlags.NoInputs);
 
                 ImGui.Spacing();
                 ImGui.Separator();

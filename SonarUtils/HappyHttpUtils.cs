@@ -36,7 +36,6 @@ namespace SonarUtils
                 new HttpClient() : CreateHttpClient();
         }
 
-
         public static SocketsHttpHandler CreateRandomlyHappyHandler()
         {
             return System.Random.Shared.NextDouble() < 0.5 ?
@@ -55,8 +54,8 @@ namespace SonarUtils
             };
             _ = ObserveExceptions(dnsTasks);
 
-            await Task.WhenAny(dnsTasks);
-            if (entries.Count == 0) await Task.WhenAll(dnsTasks);
+            await Task.WhenAny(dnsTasks).ConfigureAwait(false);
+            if (entries.Count == 0) await Task.WhenAll(dnsTasks).ConfigureAwait(false);
 
             _ = TickRunnerAsync(semaphore, cts.Token);
 
@@ -114,8 +113,7 @@ namespace SonarUtils
             }
 
             // Query for A or AAAA records as normal.
-            var dns = new LookupClient();
-            var response = await dns.QueryAsync(context.DnsEndPoint.Host, queryType, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var response = await DnsUtils.Client.QueryAsync(context.DnsEndPoint.Host, queryType, cancellationToken: cancellationToken).ConfigureAwait(false);
             var results = response.AllRecords.AddressRecords();
             lock (entries)
             {

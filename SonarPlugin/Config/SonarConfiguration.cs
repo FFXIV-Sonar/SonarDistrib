@@ -43,6 +43,12 @@ namespace SonarPlugin.Config
 
         public ClickAction MiddleClick = ClickAction.Chat;
         public ClickAction RightClick = ClickAction.Map;
+        public ClickAction CtrlMiddleClick = ClickAction.None;
+        public ClickAction CtrlRightClick = ClickAction.Remove;
+        public ClickAction ShiftMiddleClick = ClickAction.None;
+        public ClickAction ShiftRightClick = ClickAction.None;
+        public ClickAction AltMiddleClick = ClickAction.None;
+        public ClickAction AltRightClick = ClickAction.None;
 
         public CityState PreferredCityState = CityState.Limsa;
 

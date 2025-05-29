@@ -4,25 +4,25 @@
     "net9.0": {
       "AG.Collections.Concurrent": {
         "type": "Direct",
-        "requested": "[0.0.8-alpha, )",
-        "resolved": "0.0.8-alpha",
-        "contentHash": "jww14+p/OnHdfVNcLOMtI0X4Ywra9qA4ooe5vf8I40m+gDMhwV2W+nCjlJxHn0OHfjUN8zLjWvEfU/kA1U8e7w==",
+        "requested": "[0.0.9-alpha, )",
+        "resolved": "0.0.9-alpha",
+        "contentHash": "1+z6dTcu0eR5/xrUrXa7TdAgeXoLKZYW8QO4li2wESA5w6lb9g1oqiDjP863uMR6nQS9LVvl2S1p18IE35Mc+w==",
         "dependencies": {
-          "AG": "0.0.8-alpha",
-          "AG.Collections.Generic": "0.0.8-alpha"
+          "AG": "0.0.9-alpha",
+          "AG.Collections.Generic": "0.0.9-alpha"
         }
       },
       "AG.EnumLocalization": {
         "type": "Direct",
-        "requested": "[0.0.8-alpha, )",
-        "resolved": "0.0.8-alpha",
-        "contentHash": "ra5XM6cl5Lv8kDBRgW49w50qRVey+Sewl5ZLMY26QoATGIAjE+5eiZ15lbnQpXYhuahxwVyCof4QbfD8eYoBrw=="
+        "requested": "[0.0.9-alpha, )",
+        "resolved": "0.0.9-alpha",
+        "contentHash": "V2WT4mgIx8mGPMlw9kUKAibi+XhEUbZaPHv4hBcOHbx2mT8llOOKLuvRzmC3UzWRiJZPaDgcyN6WJvhwTKgGKQ=="
       },
       "BouncyCastle.Cryptography": {
         "type": "Direct",
-        "requested": "[2.5.1, )",
-        "resolved": "2.5.1",
-        "contentHash": "zy8TMeTP+1FH2NrLaNZtdRbBdq7u5MI+NFZQOBSM69u5RFkciinwzV2eveY6Kjf5MzgsYvvl6kTStsj3JrXqkg=="
+        "requested": "[2.6.1, )",
+        "resolved": "2.6.1",
+        "contentHash": "vZsG2YILhthgRqO+ZVgRff4ZFKKTl0v7kqaVBLCtRvpREhfBP33pcWrdA3PRYgWuFL1RxiUFvjMUHTdBZlJcoA=="
       },
       "DnsClient": {
         "type": "Direct",
@@ -44,15 +44,15 @@
       },
       "AG": {
         "type": "Transitive",
-        "resolved": "0.0.8-alpha",
-        "contentHash": "QrN58VoJn4PFb7dXSeUGXnfEwyIgcjvoFMqSibekdeNpXOtfY7Z3gSUCC93iUs5VTb/ClYoyNS8Vxk9uoc+uMw=="
+        "resolved": "0.0.9-alpha",
+        "contentHash": "lAFLtNJP0EdUUu042Bst1mwnbYRaZx18xR50Vm8+bgeFVWKvKnnabyxxDAFSKnfxi9A4mTr2v7D7Pua3ufDQRg=="
       },
       "AG.Collections.Generic": {
         "type": "Transitive",
-        "resolved": "0.0.8-alpha",
-        "contentHash": "Z5i7qIprX+gmv0eun01w08hFvcDdIA7nzd0zRSKJqJpq/IIoF2pAPltWJsXkpi1VSlQADlpYBylhCV6wIzlvJA==",
+        "resolved": "0.0.9-alpha",
+        "contentHash": "Ql4u2Iasyz6GCRRNQE9a1e4E0lL+/Ua8Hs6m7jXSk3efkGgRgpvtwANRKwF+6eYaf5awaBFID2KaGZhHDOWHMQ==",
         "dependencies": {
-          "AG": "0.0.8-alpha"
+          "AG": "0.0.9-alpha"
         }
       }
     },

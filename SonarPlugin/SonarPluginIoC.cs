@@ -1,8 +1,4 @@
-﻿using Dalamud.Game.ClientState.Fates;
-using Dalamud.Game.ClientState.Objects;
-using Dalamud.Game.Command;
-using Dalamud.Game.Gui;
-using Dalamud.IoC;
+﻿using Dalamud.IoC;
 using Sonar;
 using System;
 using System.Linq;
@@ -12,15 +8,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
 using Dalamud.Plugin;
-using Dalamud.Logging;
-using Dalamud.Data;
 using Dalamud.Game;
 using SonarPlugin.Utility;
 using Sonar.Data;
 using Sonar.Enums;
-using SonarPlugin.Game;
-using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState;
 using System.IO;
 using Dalamud.Interface.ImGuiFileDialog;
 using System.ComponentModel;
@@ -29,6 +20,7 @@ using Sonar.Trackers;
 using Sonar.Models;
 using Dalamud.Plugin.Services;
 using SonarPlugin.GUI;
+using SonarUtils.Text.Placeholders;
 
 namespace SonarPlugin
 {
@@ -128,6 +120,7 @@ namespace SonarPlugin
 
             // Additional Services
             this._container.RegisterDelegate(this.CreateFileDialogManager, Reuse.Singleton);
+            this._container.RegisterInstance(PlaceholderFormatter.Default);
 
             // Dalamud Services
             this._container.RegisterInstance(this.PluginInterface, setup: Setup.With(preventDisposal: true)); // Dispose is [Obsolete]

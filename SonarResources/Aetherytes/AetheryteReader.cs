@@ -113,6 +113,7 @@ namespace SonarResources.Aetherytes
             {
                 var id = marker.DataKey.RowId;
                 var aetheryte = this.Db.Aetherytes[id];
+                if (aetheryte.ZoneId is 0) continue; // Patch 7.25 introduced one at zone 0?
                 if (aetheryte.Coords is { X: 0, Y: 0, Z: 0 })
                 {
                     var zone = this.Db.Zones[aetheryte.ZoneId];

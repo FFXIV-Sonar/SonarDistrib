@@ -5,6 +5,7 @@ using Dalamud.Logging;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using DryIoc;
+using SonarUtils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -66,6 +67,8 @@ namespace SonarPlugin
             this.Commands.AddHandler("/sonarload", new CommandInfo(this.SonarOnCommand) { HelpMessage = "Turn on / enable Sonar", ShowInHelp = false });
             this.Commands.AddHandler("/sonarunload", new CommandInfo(this.SonarOffCommand) { HelpMessage = "Turn off / disable Sonar", ShowInHelp = false });
             this.Commands.AddHandler("/sonarreload", new CommandInfo(this.SonarReloadCommand) { HelpMessage = "Reload Sonar", ShowInHelp = false });
+
+            DnsUtils.Log += this.DnsLogHandler;
 
             this.InitializeSonar();
         }
@@ -138,7 +141,7 @@ namespace SonarPlugin
 
             // Read the stream into a bytes array
             var bytes = new byte[stream.Length];
-            stream.Read(bytes, 0, bytes.Length);
+            stream.ReadExactly(bytes, 0, bytes.Length);
 
             // Decode the flavor string
             var flavor = Encoding.UTF8.GetString(bytes);
@@ -273,6 +276,34 @@ namespace SonarPlugin
             this.Chat.PrintError(contact);
         }
 
+        [SuppressMessage("Minor Code Smell", "S3458", Justification = "Clarity")]
+        private void DnsLogHandler(string categoryName, DnsClient.Internal.LogLevel logLevel, int eventId, Exception? exception, string message, object[] args)
+        {
+            message = $"{(string.IsNullOrEmpty(categoryName) ? "[DnsClient]" : $"[{categoryName}]")} {message}";
+            switch (logLevel)
+            {
+                case DnsClient.Internal.LogLevel.Trace:
+                    this.Logger.Verbose(exception, message, args);
+                    break;
+                case DnsClient.Internal.LogLevel.Debug:
+                    this.Logger.Debug(exception, message, args);
+                    break;
+                case DnsClient.Internal.LogLevel.Information:
+                    this.Logger.Information(exception, message, args);
+                    break;
+                case DnsClient.Internal.LogLevel.Warning:
+                    this.Logger.Warning(exception, message, args);
+                    break;
+                case DnsClient.Internal.LogLevel.Error:
+                    this.Logger.Error(exception, message, args);
+                    break;
+                case DnsClient.Internal.LogLevel.Critical:
+                default:
+                    this.Logger.Fatal(exception, message, args);
+                    break;
+            }
+        }
+
         public void Dispose()
         {
             this.Commands.RemoveHandler("/sonaron");
@@ -285,6 +316,7 @@ namespace SonarPlugin
 
             lock (this._taskLock) this._sonarTask.Wait();
             this.DestroySonar();
+            DnsUtils.Log -= this.DnsLogHandler;
 
             GC.SuppressFinalize(this);
         }

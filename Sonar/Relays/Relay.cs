@@ -11,6 +11,9 @@ using Sonar.Models;
 using SonarUtils.Text;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Sonar.Localization;
+using AG.EnumLocalization;
+using Sonar.Data;
 
 namespace Sonar.Relays
 {
@@ -179,10 +182,11 @@ namespace Sonar.Relays
                 "id" or "relayid" => StringUtils.GetNumber(this.Id),
 
                 "name" => this.Info.Name.ToString(),
-                "rank" => this.Info.Rank.ToString(),
+                "rank" => this.Info.Rank.GetLocString(),
                 "level" => StringUtils.GetNumber(this.Info.Level),
 
-                "status" => this.IsAliveInternal() ? "Alive" : this.IsDeadInternal() ? "Dead" : "Unknown",
+                "status" => this.IsAliveInternal() ? RelayStatus.Alive.GetLocString() : this.IsDeadInternal() ? RelayStatus.Dead.GetLocString() : "Unknown",
+                "players" => StringUtils.GetNumber(this.GetPlayers()),
 
                 _ => null
             };

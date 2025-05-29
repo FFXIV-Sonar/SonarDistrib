@@ -53,6 +53,29 @@ namespace SonarUtils.Text.Placeholders
 
         /// <summary>Formats <see cref="str"/> using <paramref name="placeholders"/>.</summary>
         /// <param name="str">String to format.</param>
+        /// <param name="keyValuePairs"></param>
+        /// <returns>Formatted string.</returns>
+        public string Format(string str, params ReadOnlySpan<KeyValuePair<string, string>> keyValuePairs)
+        {
+            var dict = new Dictionary<string, string>(keyValuePairs.Length);
+            foreach (var (key, value) in keyValuePairs) dict.Add(key, value);
+            return this.Format(str, dict);
+        }
+
+        /// <summary>Formats <see cref="str"/> using <paramref name="placeholders"/>.</summary>
+        /// <param name="str">String to format.</param>
+        /// <param name="keyValuePairs"></param>
+        /// <returns>Formatted string.</returns>
+        public string Format(string str, params ReadOnlySpan<string> keyValuePairs)
+        {
+            if ((keyValuePairs.Length) % 2 is not 0) AG.ThrowHelper.Throw(new ArgumentException($"{nameof(keyValuePairs)} must be provided in pairs"));
+            var dict = new Dictionary<string, string>(keyValuePairs.Length / 2);
+            for (var index = 0; index < keyValuePairs.Length; index += 2) dict.Add(keyValuePairs[index], keyValuePairs[index + 1]);
+            return this.Format(str, dict);
+        }
+
+        /// <summary>Formats <see cref="str"/> using <paramref name="placeholders"/>.</summary>
+        /// <param name="str">String to format.</param>
         /// <param name="placeholders"></param>
         /// <returns>Formatted string.</returns>
         public string Format<T>(string str, IReadOnlyDictionary<string, T> dictionary) => this.Format(str, new DictionaryPlaceholderReplacementProvider<T>(dictionary));

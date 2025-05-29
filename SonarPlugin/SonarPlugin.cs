@@ -11,6 +11,7 @@ using Sonar.Logging;
 using Dalamud.Interface.Windowing;
 using System.Diagnostics.CodeAnalysis;
 using Dalamud.Plugin.Services;
+using AG.EnumLocalization;
 
 namespace SonarPlugin
 {
@@ -47,6 +48,8 @@ namespace SonarPlugin
         {
             this.LoadConfiguration();
             CheapLoc.Loc.SetupWithFallbacks();
+            EnumLoc.SetupAssembly(typeof(SonarPlugin).Assembly);
+            EnumLoc.SetupAssembly(typeof(SonarClient).Assembly);
 
             this.PluginInterface.UiBuilder.Draw += this.Windows.Draw;
 
@@ -160,6 +163,7 @@ namespace SonarPlugin
 
         private void ClientLogHandler(SonarClient source, SonarLogMessage log) => this.LogHandler(log);
 
+        [SuppressMessage("Minor Code Smell", "S3458", Justification = "Clarity")]
         private void LogHandler(SonarLogMessage log)
         {
             var (level, message) = (log.Level, log.Message);
@@ -181,10 +185,8 @@ namespace SonarPlugin
                     this.Logger.Error(message);
                     break;
                 case SonarLogLevel.Fatal:
-                    this.Logger.Fatal(message);
-                    break;
                 default:
-                    this.Logger.Debug(message);
+                    this.Logger.Fatal(message);
                     break;
             }
         }

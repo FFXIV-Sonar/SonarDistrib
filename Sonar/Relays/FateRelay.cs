@@ -14,6 +14,7 @@ using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
 using SonarUtils;
 using System.Text.Json.Serialization;
+using AG.EnumLocalization;
 
 namespace Sonar.Relays
 {
@@ -285,12 +286,14 @@ namespace Sonar.Relays
         {
             var result = name switch
             {
-                "status" => this.Status.ToString(),
-                "progress" => StringUtils.GetNumber(this.Progress),
+                "status" => this.Status.GetLocString(),
+                "progress" => $"{StringUtils.GetNumber(this.Progress)}%%",
 
                 "players" => StringUtils.GetNumber(this.Players),
 
                 "time" => this.GetRemainingTimeString(),
+
+                "tap" => this.GetRemainingTimeAndProgressString(), // TAP => Time And Progress
 
                 _ => null
             };

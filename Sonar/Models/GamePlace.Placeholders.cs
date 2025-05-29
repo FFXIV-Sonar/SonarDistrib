@@ -1,4 +1,5 @@
-﻿using Sonar.Data;
+﻿using AG.EnumLocalization;
+using Sonar.Data;
 using Sonar.Data.Extensions;
 using SonarUtils;
 using SonarUtils.Text.Placeholders.Providers;
@@ -27,7 +28,7 @@ namespace Sonar.Models
                 "zoneid" => StringUtils.GetNumber(this.ZoneId),
                 "instanceid" => StringUtils.GetNumber(this.InstanceId),
 
-                "expansion" => this.GetExpansion().ToString(),
+                "expansion" => this.GetExpansion().GetLocString(),
 
                 "hasz" => Database.Zones.GetValueOrDefault(this.ZoneId)?.HasOffsetZ.ToString(),
 
@@ -35,7 +36,7 @@ namespace Sonar.Models
             };
 
             value = result;
-            return result is null;
+            return result is not null;
         }
     }
 }

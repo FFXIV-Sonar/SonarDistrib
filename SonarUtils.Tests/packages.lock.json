@@ -10,12 +10,12 @@
       },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
-        "requested": "[17.13.0, )",
-        "resolved": "17.13.0",
-        "contentHash": "W19wCPizaIC9Zh47w8wWI/yxuqR7/dtABwOrc8r2jX/8mUNxM2vw4fXDh+DJTeogxV+KzKwg5jNNGQVwf3LXyA==",
+        "requested": "[17.14.0, )",
+        "resolved": "17.14.0",
+        "contentHash": "rTtdOm6C96q9QgP3mS8nUGPGPh5Xm2HnBYJggNmNrJ3LDmX9lJuUIgnJEfvX6wSQY4swUMiCcIXd3OkjhYCgtw==",
         "dependencies": {
-          "Microsoft.CodeCoverage": "17.13.0",
-          "Microsoft.TestPlatform.TestHost": "17.13.0"
+          "Microsoft.CodeCoverage": "17.14.0",
+          "Microsoft.TestPlatform.TestHost": "17.14.0"
         }
       },
       "xunit": {
@@ -31,41 +31,41 @@
       },
       "xunit.runner.visualstudio": {
         "type": "Direct",
-        "requested": "[3.0.2, )",
-        "resolved": "3.0.2",
-        "contentHash": "oXbusR6iPq0xlqoikjdLvzh+wQDkMv9If58myz9MEzldS4nIcp442Btgs2sWbYWV+caEluMe2pQCZ0hUZgPiow=="
+        "requested": "[3.1.0, )",
+        "resolved": "3.1.0",
+        "contentHash": "K9O9TOzugqOo4LJ87uuq1VG8RAqGp20Ng85Wx932oT5LNBkIgeeGYubVW5UMnOOTanFNbGavmbuYrJr4INzSwg=="
       },
       "AG": {
         "type": "Transitive",
-        "resolved": "0.0.8-alpha",
-        "contentHash": "QrN58VoJn4PFb7dXSeUGXnfEwyIgcjvoFMqSibekdeNpXOtfY7Z3gSUCC93iUs5VTb/ClYoyNS8Vxk9uoc+uMw=="
+        "resolved": "0.0.9-alpha",
+        "contentHash": "lAFLtNJP0EdUUu042Bst1mwnbYRaZx18xR50Vm8+bgeFVWKvKnnabyxxDAFSKnfxi9A4mTr2v7D7Pua3ufDQRg=="
       },
       "AG.Collections.Concurrent": {
         "type": "Transitive",
-        "resolved": "0.0.8-alpha",
-        "contentHash": "jww14+p/OnHdfVNcLOMtI0X4Ywra9qA4ooe5vf8I40m+gDMhwV2W+nCjlJxHn0OHfjUN8zLjWvEfU/kA1U8e7w==",
+        "resolved": "0.0.9-alpha",
+        "contentHash": "1+z6dTcu0eR5/xrUrXa7TdAgeXoLKZYW8QO4li2wESA5w6lb9g1oqiDjP863uMR6nQS9LVvl2S1p18IE35Mc+w==",
         "dependencies": {
-          "AG": "0.0.8-alpha",
-          "AG.Collections.Generic": "0.0.8-alpha"
+          "AG": "0.0.9-alpha",
+          "AG.Collections.Generic": "0.0.9-alpha"
         }
       },
       "AG.Collections.Generic": {
         "type": "Transitive",
-        "resolved": "0.0.8-alpha",
-        "contentHash": "Z5i7qIprX+gmv0eun01w08hFvcDdIA7nzd0zRSKJqJpq/IIoF2pAPltWJsXkpi1VSlQADlpYBylhCV6wIzlvJA==",
+        "resolved": "0.0.9-alpha",
+        "contentHash": "Ql4u2Iasyz6GCRRNQE9a1e4E0lL+/Ua8Hs6m7jXSk3efkGgRgpvtwANRKwF+6eYaf5awaBFID2KaGZhHDOWHMQ==",
         "dependencies": {
-          "AG": "0.0.8-alpha"
+          "AG": "0.0.9-alpha"
         }
       },
       "AG.EnumLocalization": {
         "type": "Transitive",
-        "resolved": "0.0.8-alpha",
-        "contentHash": "ra5XM6cl5Lv8kDBRgW49w50qRVey+Sewl5ZLMY26QoATGIAjE+5eiZ15lbnQpXYhuahxwVyCof4QbfD8eYoBrw=="
+        "resolved": "0.0.9-alpha",
+        "contentHash": "V2WT4mgIx8mGPMlw9kUKAibi+XhEUbZaPHv4hBcOHbx2mT8llOOKLuvRzmC3UzWRiJZPaDgcyN6WJvhwTKgGKQ=="
       },
       "BouncyCastle.Cryptography": {
         "type": "Transitive",
-        "resolved": "2.5.1",
-        "contentHash": "zy8TMeTP+1FH2NrLaNZtdRbBdq7u5MI+NFZQOBSM69u5RFkciinwzV2eveY6Kjf5MzgsYvvl6kTStsj3JrXqkg=="
+        "resolved": "2.6.1",
+        "contentHash": "vZsG2YILhthgRqO+ZVgRff4ZFKKTl0v7kqaVBLCtRvpREhfBP33pcWrdA3PRYgWuFL1RxiUFvjMUHTdBZlJcoA=="
       },
       "DnsClient": {
         "type": "Transitive",
@@ -79,35 +79,43 @@
       },
       "Microsoft.CodeCoverage": {
         "type": "Transitive",
-        "resolved": "17.13.0",
-        "contentHash": "9LIUy0y+DvUmEPtbRDw6Bay3rzwqFV8P4efTrK4CZhQle3M/QwLPjISghfcolmEGAPWxuJi6m98ZEfk4VR4Lfg=="
+        "resolved": "17.14.0",
+        "contentHash": "z2GYXGG6LjGoumT59xSB2dMnqSwQBjkxdDJmSJHwy5nPtZ435GXa6wj5hz/lRrAZ7NyXXxZNXVsiHXzHRru5eA=="
       },
       "Microsoft.TestPlatform.ObjectModel": {
         "type": "Transitive",
-        "resolved": "17.13.0",
-        "contentHash": "bt0E0Dx+iqW97o4A59RCmUmz/5NarJ7LRL+jXbSHod72ibL5XdNm1Ke+UO5tFhBG4VwHLcSjqq9BUSblGNWamw==",
+        "resolved": "17.14.0",
+        "contentHash": "3h7y7f/HuY8jdZa163p/55VmGw/fYJwrI8FOtsp4aEQAJaPgBr5LBS25uOfBwRYI95QDiByfaqSPBcWEvuHEwA==",
         "dependencies": {
-          "System.Reflection.Metadata": "1.6.0"
+          "System.Reflection.Metadata": "8.0.0"
         }
       },
       "Microsoft.TestPlatform.TestHost": {
         "type": "Transitive",
-        "resolved": "17.13.0",
-        "contentHash": "9GGw08Dc3AXspjekdyTdZ/wYWFlxbgcF0s7BKxzVX+hzAwpifDOdxM+ceVaaJSQOwqt3jtuNlHn3XTpKUS9x9Q==",
+        "resolved": "17.14.0",
+        "contentHash": "8htQBKM92s/NXUI/U0/CKKLlvlDfWIo3/mbnY/GS/2XLkBGNIVQufmUpDIzznaZqUpdzspGSsJcLhVN8aRoMaA==",
         "dependencies": {
-          "Microsoft.TestPlatform.ObjectModel": "17.13.0",
-          "Newtonsoft.Json": "13.0.1"
+          "Microsoft.TestPlatform.ObjectModel": "17.14.0",
+          "Newtonsoft.Json": "13.0.3"
         }
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
-        "resolved": "13.0.1",
-        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      },
+      "System.Collections.Immutable": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "AurL6Y5BA1WotzlEvVaIDpqzpIPvYnnldxru8oXJU2yFxFUy3+pNXjXd1ymO+RA0rq0+590Q8gaz2l3Sr7fmqg=="
       },
       "System.Reflection.Metadata": {
         "type": "Transitive",
-        "resolved": "1.6.0",
-        "contentHash": "COC1aiAJjCoA5GBF+QKL2uLqEBew4JsCkQmoHKbN3TlOZKa2fKLz5CpiRQKDz0RsAOEGsVKqOD5bomsXq/4STQ=="
+        "resolved": "8.0.0",
+        "contentHash": "ptvgrFh7PvWI8bcVqG5rsA/weWM09EnthFHR5SCnS6IN+P4mj6rE1lBDC4U8HL9/57htKAqy4KQ3bBj84cfYyQ==",
+        "dependencies": {
+          "System.Collections.Immutable": "8.0.0"
+        }
       },
       "XoshiroPRNG.Net": {
         "type": "Transitive",
@@ -157,9 +165,9 @@
       "sonarutils": {
         "type": "Project",
         "dependencies": {
-          "AG.Collections.Concurrent": "[0.0.8-alpha, )",
-          "AG.EnumLocalization": "[0.0.8-alpha, )",
-          "BouncyCastle.Cryptography": "[2.5.1, )",
+          "AG.Collections.Concurrent": "[0.0.9-alpha, )",
+          "AG.EnumLocalization": "[0.0.9-alpha, )",
+          "BouncyCastle.Cryptography": "[2.6.1, )",
           "DnsClient": "[1.8.0, )",
           "Farmhash.Sharp": "[0.9.0, )",
           "XoshiroPRNG.Net": "[1.6.0, )"

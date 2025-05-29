@@ -76,7 +76,7 @@ namespace Sonar.Data.Extensions
         public static string ToFlagString(this SonarVector3 flag, MapFlagFormatFlags format) => MapFlagUtils.FlagToString(flag, format);
 
         public static string GetFlagString(this FateRow f, MapFlagFormatFlags format = MapFlagFormatFlags.SonarPreset) => f.GetFlag().ToFlagString(format);
-        public static string GetFlagString(this GamePosition p, MapFlagFormatFlags format = MapFlagFormatFlags.SonarPreset) => p.GetFlag().ToFlagString(format);
+        public static string GetFlagString(this GamePosition p, MapFlagFormatFlags format = MapFlagFormatFlags.SonarPreset) => $"{p.GetZone()} {p.GetFlag().ToFlagString(format)}";
         #endregion
 
         #region Hunt extensions

@@ -1,4 +1,5 @@
 ﻿using DryIoc.FastExpressionCompiler.LightExpression;
+using DryIoc.ImTools;
 using DryIocAttributes;
 using Lumina;
 using Lumina.Data;
@@ -6,6 +7,7 @@ using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using Sonar.Enums;
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -26,7 +28,7 @@ namespace SonarResources.Lumina
         private readonly ImmutableList<LuminaEntry>.Builder _entries = ImmutableList.CreateBuilder<LuminaEntry>();
         private readonly CancellationTokenSource _cts = new();
 
-        private static readonly IEnumerable<(string LangCode, Language LuminaLanguage, SonarLanguage SonarLanguage)> s_languagePairs =
+        private static readonly List<(string LangCode, Language LuminaLanguage, SonarLanguage SonarLanguage)> s_languagePairs =
         [
             ("EN", Language.English, SonarLanguage.English),
             ("JP", Language.Japanese, SonarLanguage.Japanese),
@@ -72,7 +74,13 @@ namespace SonarResources.Lumina
                 var added = false;
                 foreach (var language in languages)
                 {
-                    var languagePair = s_languagePairs.First(pair => pair.LuminaLanguage == language);
+                    var index = s_languagePairs.FindIndex(pair => pair.LuminaLanguage == language);
+                    if (index is -1)
+                    {
+                        Console.WriteLine($"Language pair could not be found for {language}");
+                        continue;
+                    }
+                    var languagePair = s_languagePairs[index];
                     lock (this._entries) this._entries.Add(new(lumina, languagePair.LuminaLanguage, languagePair.SonarLanguage));
                     added = true;
                 }

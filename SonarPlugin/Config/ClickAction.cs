@@ -23,5 +23,8 @@ namespace SonarPlugin.Config
 
         [EnumCheapLoc("ClickActionTeleport", "Teleport")]
         Teleport,
+
+        [EnumCheapLoc("ClickActionRemove", "Remove")]
+        Remove,
     }
 }

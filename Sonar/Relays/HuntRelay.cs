@@ -11,6 +11,8 @@ using Cysharp.Text;
 using SonarUtils;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Sonar.Localization;
+using AG.EnumLocalization;
 
 namespace Sonar.Relays
 {
@@ -177,8 +179,8 @@ namespace Sonar.Relays
         {
             var result = name switch
             {
-                "status" => this.CurrentHp == this.MaxHp ? "Alive" : this.CurrentHp > 0 ? "Pulled" : this.CurrentHp == 0 ? "Dead" : null,
-                "hpp" => $"{this.HpPercent:F1}%",
+                "status" => this.CurrentHp == this.MaxHp ? RelayStatus.Healthy.GetLocString() : this.CurrentHp > 0 ? RelayStatus.Pulled.GetLocString() : this.CurrentHp == 0 ? RelayStatus.Dead.GetLocString() : null,
+                "hpp" => $"{this.HpPercent:F2}%%",
 
                 "players" => StringUtils.GetNumber(this.Players),
 

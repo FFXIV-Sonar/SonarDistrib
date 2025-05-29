@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
+using SonarUtils;
 
 namespace Sonar.Connections
 {
@@ -15,7 +16,7 @@ namespace Sonar.Connections
     {
         private readonly Task _bootstrapTask;
         private readonly CancellationTokenSource _cts = new();
-        private readonly NonBlocking.NonBlockingHashSet<SonarUrl> _urls = new();
+        private readonly NonBlocking.NonBlockingHashSet<SonarUrl> _urls = [];
         private SonarUrl[]? _urlArray;
 
         private SonarUrl[] GetSonarUrls() => this._urlArray ??= this._urls.ToArray();
@@ -23,7 +24,7 @@ namespace Sonar.Connections
         public SonarUrlManager()
         {
             this.ReadEmbeddedUrls();
-            this._bootstrapTask = Task.WhenAll(this.BootstrapDnsTask(), this.BootstrapWebTask());
+            this._bootstrapTask = Task.WhenAll(this.BootstrapDnsTask(this._cts.Token), this.BootstrapWebTask(this._cts.Token));
         }
 
         /// <param name="proxy">Allow proxy URLs</param>
@@ -56,15 +57,14 @@ namespace Sonar.Connections
 
         /// <summary>Read URLs from TXT DNS query</summary>
         // [SuppressMessage("Minor Code Smell", "S1075", Justification = "Well known dns entry")]
-        private async Task BootstrapDnsTask()
+        private async Task BootstrapDnsTask(CancellationToken cancellationToken)
         {
             await Task.Yield();
-            var dnsClient = new LookupClient();
-            while (!this._cts.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    var response = await dnsClient.QueryAsync("bootstrap.ffxivsonar.com", QueryType.TXT, cancellationToken: this._cts.Token);
+                    var response = await DnsUtils.Client.QueryAsync("bootstrap.ffxivsonar.com", QueryType.TXT, cancellationToken: cancellationToken);
                     var records = response.AllRecords.TxtRecords();
                     foreach (var record in records)
                     {
@@ -74,7 +74,7 @@ namespace Sonar.Connections
                         }
                         catch { /* Swallow */ }
                     }
-                    await Task.Delay(TimeSpan.FromHours(6 * (SonarStatic.Random.NextDouble() + 0.5)), this._cts.Token);
+                    await Task.Delay(TimeSpan.FromHours(6 * (SonarStatic.Random.NextDouble() + 0.5)), cancellationToken);
                 }
                 catch (OperationCanceledException) { return; }
                 catch (ObjectDisposedException) { return; }
@@ -82,7 +82,7 @@ namespace Sonar.Connections
                 {
                     try
                     {
-                        await Task.Delay(TimeSpan.FromMinutes(6 * (SonarStatic.Random.NextDouble() + 0.5)), this._cts.Token);
+                        await Task.Delay(TimeSpan.FromMinutes(6 * (SonarStatic.Random.NextDouble() + 0.5)), cancellationToken);
                     }
                     catch (OperationCanceledException) { return; }
                     catch (ObjectDisposedException) { return; }
@@ -92,18 +92,18 @@ namespace Sonar.Connections
 
         /// <summary>Read URLs from Sonar assets server</summary>
         [SuppressMessage("Minor Code Smell", "S1075", Justification = "Well known url")]
-        private async Task BootstrapWebTask()
+        private async Task BootstrapWebTask(CancellationToken cancellationToken)
         {
             await Task.Yield();
-            using var httpClient = new HttpClient();
-            while (!this._cts.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
+                using var httpClient = HappyHttpUtils.CreateRandomlyHappyClient();
                 try
                 {
-                    var response = await httpClient.GetAsync("https://assets.ffxivsonar.com/bootstrap/Urls.data", this._cts.Token);
+                    var response = await httpClient.GetAsync("https://assets.ffxivsonar.com/bootstrap/Urls.data", cancellationToken);
                     response.EnsureSuccessStatusCode();
-                    this.ProcessBytes(await response.Content.ReadAsByteArrayAsync(this._cts.Token));
-                    await Task.Delay(TimeSpan.FromHours(6 * (SonarStatic.Random.NextDouble() + 0.5)), this._cts.Token);
+                    this.ProcessBytes(await response.Content.ReadAsByteArrayAsync(cancellationToken));
+                    await Task.Delay(TimeSpan.FromHours(6 * (SonarStatic.Random.NextDouble() + 0.5)), cancellationToken);
                 }
                 catch (OperationCanceledException) { return; }
                 catch (ObjectDisposedException) { return; }
@@ -111,7 +111,7 @@ namespace Sonar.Connections
                 {
                     try
                     {
-                        await Task.Delay(TimeSpan.FromMinutes(6 * (SonarStatic.Random.NextDouble() + 0.5)), this._cts.Token);
+                        await Task.Delay(TimeSpan.FromMinutes(6 * (SonarStatic.Random.NextDouble() + 0.5)), cancellationToken);
                     }
                     catch (OperationCanceledException) { return; }
                     catch (ObjectDisposedException) { return; }
