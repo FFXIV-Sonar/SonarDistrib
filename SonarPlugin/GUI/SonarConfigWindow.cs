@@ -335,8 +335,8 @@ namespace SonarPlugin.GUI
                 ImGui.Indent();
 
                 this._save |= ImGui.ColorEdit4(Loc.Localize("HuntHealthyColor", "Hunt - Healthy"), ref this.Plugin.Configuration.Colors.HuntHealthy, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntPulledColor", "Hunt - PulledStatus"), ref this.Plugin.Configuration.Colors.HuntPulled, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntDeadColor", "Hunt - DeadStatus"), ref this.Plugin.Configuration.Colors.HuntDead, ImGuiColorEditFlags.NoInputs);
+                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntPulledColor", "Hunt - Pulled"), ref this.Plugin.Configuration.Colors.HuntPulled, ImGuiColorEditFlags.NoInputs);
+                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntDeadColor", "Hunt - Dead"), ref this.Plugin.Configuration.Colors.HuntDead, ImGuiColorEditFlags.NoInputs);
 
                 ImGui.Spacing();
                 ImGui.Separator();
