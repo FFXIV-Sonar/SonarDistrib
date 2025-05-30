@@ -67,7 +67,7 @@ namespace SonarPlugin.GUI
         private readonly Dictionary<uint, HashSet<uint>> _combinedFates = new();
         private readonly int fateTableColumnCount = Enum.GetNames(typeof(FateSelectionColumns)).Length;
 
-        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, IDalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs, IndexProvider index, IPluginLog logger) : base("Sonar 구성")
+        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, IDalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs, IndexProvider index, IPluginLog logger) : base("Sonar 설정")
         {
             this.Plugin = plugin;
             this.Stub = stub;
@@ -970,7 +970,7 @@ namespace SonarPlugin.GUI
                 {
                     this._tasker.AddTask(Task.Run(() => { ShellExecute("https://www.patreon.com/ffxivsonar"); }));
                 }
-                if (ImGui.IsItemHovered()) ImGui.SetTooltip($"{Loc.Localize("AboutSonarPatreon", "Patreon에서 Sonar를 지원해주세요.\n지원금은 Sonar 서버와 Discord 봇 운영에 사용됩니다.")}");
+                if (ImGui.IsItemHovered()) ImGui.SetTooltip($"{Loc.Localize("AboutSonarPatreon", "Patreon에서 Sonar를 지원해 주세요.\n지원금은 Sonar 서버와 Discord 봇 운영에 사용됩니다.")}");
                 // Earnings will be used for the Sonar server and discord bots hosting costs.
                 // Earnings will be used for the Sonar Server and Discord Bot hosting costs.
                 // Earnings will be used for the hosting costs of the Sonar Server and Discord Bots.
