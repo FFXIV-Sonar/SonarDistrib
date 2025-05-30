@@ -111,6 +111,10 @@ namespace SonarResources.Readers
 
             // Cosmic Exploration
             this.Db.Zones[1237].IsField = true; // Sinus Ardorum
+
+            // Occult Crescent - South Horn
+            this.Db.Zones[1252].IsField = true;
+            this.Db.Zones[1252].LocalOnly = true;
         }
 
         public static ExpansionPack GetZoneExpansion(string bg)
