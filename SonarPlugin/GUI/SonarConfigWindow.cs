@@ -64,7 +64,6 @@ namespace SonarPlugin.GUI
         private List<FateRow> filteredFateData;
         private readonly Dictionary<uint, string> _fateZonesCache = new();
         private string[] audioFilesForFates = default!;
-        private readonly Dictionary<uint, HashSet<uint>> _combinedFates = new();
         private readonly int fateTableColumnCount = Enum.GetNames(typeof(FateSelectionColumns)).Length;
 
         public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, IDalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs, IndexProvider index, IPluginLog logger) : base("Sonar Configuration")

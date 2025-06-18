@@ -52,12 +52,7 @@ namespace SonarUtils
             }
         }
 
-        public static LogLevel LogLevel { get; set; } =
-#if DEBUG
-            LogLevel.Debug;
-#else
-            LogLevel.Warning;
-#endif
+        public static LogLevel LogLevel { get; set; } = LogLevel.Trace;
         public static ILogger Logger { get; }
 
         // Yes, I'm aware of performance implications of a static constructor.
@@ -139,9 +134,7 @@ namespace SonarUtils
                 CacheFailedResults = true,
                 MinimumCacheTimeout = TimeSpan.FromSeconds(60),
                 MaximumCacheTimeout = TimeSpan.FromSeconds(60),
-#if DEBUG
                 EnableAuditTrail = true,
-#endif
             };
 
             // Create DNS Client

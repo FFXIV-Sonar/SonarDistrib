@@ -18,7 +18,7 @@ namespace Sonar.Trackers
 {
     public sealed partial class RelayTrackerView<T> : RelayTrackerBase<T>, IRelayTrackerView<T> where T : Relay
     {
-        private readonly object _processLock = new();
+        private readonly Lock _processLock = new();
         private readonly ConcurrentQueue<RelayState<T>> _statesQueue = new();
         private IEnumerator<RelayState<T>>? _trackerEnumerator;
         private int _trackerCount;
@@ -129,7 +129,7 @@ namespace Sonar.Trackers
 
         private void ProcessStates()
         {
-            if (!Monitor.TryEnter(this._processLock)) return;
+            if (!this._processLock.TryEnter()) return;
             try
             {
                 var viewSize = this.Data.Count;
@@ -149,8 +149,6 @@ namespace Sonar.Trackers
 
                 trackerSize = Math.Max(trackerSize, realTrackerSize); // For loop purposes
 
-                var entries = trackerData.GetIndexStates(this._indexKey);
-
                 // Part 1: Current states - Slowly remove states that no longer pass the predicate
                 for (var i = 0; i < queueCount && i < queueSize; i++)
                 {
@@ -158,8 +156,7 @@ namespace Sonar.Trackers
 
                     // Check if the state exists in the tracker.
                     // "all" index key is a special case as its a Values enumerable and should be treated as such
-                    var exists = this._indexKey.Equals("all") ? trackerData.States.ContainsKey(state.RelayKey) : entries.Contains(state);
-
+                    var exists = this._indexKey is "all" ? trackerData.States.ContainsKey(state.RelayKey) : trackerData.GetIndexStates(this._indexKey).Contains(state);
                     if (exists && this._predicate(state)) this._statesQueue.Enqueue(state);
                     else if (this.Data.Remove(state)) Interlocked.Increment(ref this._nextMultiplier);
                 }
@@ -185,7 +182,7 @@ namespace Sonar.Trackers
             }
             finally
             {
-                Monitor.Exit(this._processLock);
+                this._processLock.Exit();
             }
         }
 

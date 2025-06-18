@@ -93,9 +93,10 @@ namespace Sonar.Sockets
             if (Interlocked.CompareExchange(ref this._disposed, true, false)) return;
             try
             {
-                this._cts.Cancel();
+                try { this._cts.Cancel(); } catch (ObjectDisposedException) { /*Swallow */ }
                 this._cts.Dispose();
                 this._connection.DisposeAsync().AsTask().GetAwaiter().GetResult(); // No .Dispose available
+                this._sendBlock.Complete();
             }
             catch
             {
@@ -109,9 +110,10 @@ namespace Sonar.Sockets
             if (Interlocked.CompareExchange(ref this._disposed, true, false)) return;
             try
             {
-                await this._cts.CancelAsync();
+                try { await this._cts.CancelAsync(); } catch (ObjectDisposedException) { /* Swallow */ }
                 this._cts.Dispose();
                 await this._connection.DisposeAsync();
+                this._sendBlock.Complete();
             }
             catch
             {

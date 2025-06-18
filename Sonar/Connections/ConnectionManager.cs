@@ -127,7 +127,7 @@ namespace Sonar.Connections
                     }
 
                     // Continue attempting as long as connected socket is below soft limit
-                    if (this._sockets.Count > SocketsCapacity && this.TryGetNextSocket(out var socket, out _)) await socket.DisposeAsync();
+                    if (this._sockets.Count > SocketsCapacity && this.TryGetNextSocket(out var socket, out _)) this.DisposeSocket(socket);
 
                     // Wait until next attempt interval
                     while (!this._cts.IsCancellationRequested && this._failCount == failCount)
@@ -163,25 +163,26 @@ namespace Sonar.Connections
             using var cts = new CancellationTokenSource(ConnectTimeoutMs);
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(this._cts.Token, cts.Token);
             var token = linkedCts.Token;
+
             var webSocket = new ClientWebSocket();
+
+            var socket = SonarSocketWebSocket.CreateClientSocket(webSocket); // webSocket is now "owned" by this SonarSocket
+            this.PrepareSocket(socket, url);
+
             try
             {
                 await webSocket.ConnectAsync(url, HappyHttpUtils.CreateRandomlyHappyClient(), token);
-                var socket = SonarSocketWebSocket.CreateClientSocket(webSocket); // webSocket is now "owned" by this SonarSocket
-                this._sockets.TryAdd(socket, new() { Url = url });
-                this.PrepareSocket(socket);
-
+                socket.Start();
                 await Task.Delay(ReadyTimeoutMs, token);
-                if (this._sockets.TryGetValue(socket, out var info) && !info.Id.HasValue && this._sockets.TryRemove(socket, out _))
-                {
-                    try { this.DisposeSocket(socket); } catch { /* Swallow */ }
-                }
+                if (this._sockets.TryGetValue(socket, out var info) && !info.Id.HasValue) this.DisposeSocket(socket);
             }
             catch (Exception ex)
             {
                 // Only log exception if not connected.
                 if (this._socket is null && ex is not OperationCanceledException) this.Client.LogError(ex, $"Connection exception at {url.Key} ({url.Type})");
-                webSocket.Dispose(); // Dispose faulty socket
+
+                // Dispose of faulty socket
+                this.DisposeSocket(socket);
             }
         }
 
@@ -190,27 +191,29 @@ namespace Sonar.Connections
             using var cts = new CancellationTokenSource(ConnectTimeoutMs);
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(this._cts.Token, cts.Token);
             var token = linkedCts.Token;
+
             var connection = new HubConnectionBuilder()
                 .WithUrl(url.Url, configureHttpConnection: options => options.HttpMessageHandlerFactory = _ => HappyHttpUtils.CreateRandomlyHappyHandler())
                 .AddMessagePackProtocol(configure => configure.SerializerOptions = SonarSerializer.MessagePackOptions)
                 .Build();
+
+            var socket = SonarSocketSignalR.CreateClientSocket(connection); // connection is now "owned" by this SonarSocket
+            this.PrepareSocket(socket, url);
+
             try
             {
-                var socket = SonarSocketSignalR.CreateClientSocket(connection); // webSocket is now "owned" by this SonarSocket
-                this._sockets.TryAdd(socket, new() { Url = url });
-                this.PrepareSocket(socket);
                 await connection.StartAsync(token);
+                socket.Start();
                 await Task.Delay(ReadyTimeoutMs, token);
-                if (this._sockets.TryGetValue(socket, out var info) && !info.Id.HasValue && this._sockets.TryRemove(socket, out _))
-                {
-                    try { this.DisposeSocket(socket); } catch { /* Swallow */ }
-                }
+                if (this._sockets.TryGetValue(socket, out var info) && !info.Id.HasValue) this.DisposeSocket(socket);
             }
             catch (Exception ex)
             {
                 // Only log exception if not connected.
                 if (this._socket is null && ex is not OperationCanceledException) this.Client.LogError(ex, $"Connection exception at {url.Key} ({url.Type})");
-                await connection.DisposeAsync(); // Dispose faulty socket
+
+                // Dispose of faulty socket
+                this.DisposeSocket(socket);
             }
         }
 
@@ -218,7 +221,7 @@ namespace Sonar.Connections
         {
             var socket = this._socket;
 
-            // Make sure current active socket is valid (still connected)
+            // Make sure current active socket is valid (still connected) and disconnect if not
             if (socket is not null && !this._sockets.ContainsKey(socket) && Interlocked.CompareExchange(ref this._socket, null, socket) == socket)
             {
                 this.Client.LogWarning("Sonar Disconnected");
@@ -235,22 +238,28 @@ namespace Sonar.Connections
             }
         }
 
-        private void PrepareSocket(ISonarSocket socket)
+        private void PrepareSocket(ISonarSocket socket, SonarUrl url)
         {
+            this._sockets.TryAdd(socket, new() { Url = url });
             socket.Disconnected += this.SocketDisconnectedHandler;
             socket.RawReceived += this.SocketRawHandler;
             socket.MessageReceived += this.SocketMessageHandler;
             socket.TextReceived += this.SocketTextHandler;
-            socket.Start();
+            // socket.Start() // NOTE: This is now done at the attempt tasks
         }
 
         private void DisposeSocket(ISonarSocket socket)
         {
-            socket.Disconnected -= this.SocketDisconnectedHandler;
-            socket.RawReceived -= this.SocketRawHandler;
-            socket.MessageReceived -= this.SocketMessageHandler;
-            socket.TextReceived -= this.SocketTextHandler;
-            socket.Dispose();
+            try
+            {
+                this._sockets.TryRemove(socket, out _);
+                socket.Disconnected -= this.SocketDisconnectedHandler;
+                socket.RawReceived -= this.SocketRawHandler;
+                socket.MessageReceived -= this.SocketMessageHandler;
+                socket.TextReceived -= this.SocketTextHandler;
+                socket.Dispose();
+            }
+            catch { /* Swallow */ }
         }
 
         private void SocketTextHandler(ISonarSocket socket, string arg2)
@@ -265,14 +274,11 @@ namespace Sonar.Connections
 
         private void SocketDisconnectedHandler(ISonarSocket socket)
         {
-            // Remove socket from available sockets
-            var exist = this._sockets.TryRemove(socket, out _);
+            // Dispose this socket
+            this.DisposeSocket(socket);
 
             // Insta-reconnect if we got another readily available socket
             this.EnsureConnectionIfAvailable();
-
-            // Dispose this socket
-            if (exist) this.DisposeSocket(socket);
         }
 
         private void SocketMessageHandler(ISonarSocket socket, ISonarMessage message)

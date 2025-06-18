@@ -143,6 +143,7 @@ namespace Sonar.Sockets
                 this._cts.Cancel();
                 this._cts.Dispose();
                 this.WebSocket.Dispose();
+                this._sendBlock.Complete();
             }
             catch
             {
@@ -159,6 +160,7 @@ namespace Sonar.Sockets
                 await this._cts.CancelAsync();
                 this._cts.Dispose();
                 this.WebSocket.Dispose();
+                this._sendBlock.Complete();
             }
             catch
             {
