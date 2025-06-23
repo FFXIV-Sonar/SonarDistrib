@@ -314,6 +314,7 @@ namespace Sonar.Connections
             }
             this.Client.LogDebug(() => $"{nameof(SonarConnectionManager)} disposed");
             this._cts.Dispose();
+            this._urls.Dispose();
         }
 
         async ValueTask IAsyncDisposable.DisposeAsync()
@@ -322,6 +323,7 @@ namespace Sonar.Connections
             await Task.WhenAll(this._sockets.Keys.Select(s => s.DisposeAsync().AsTask()));
             this.Client.LogDebug(() => $"{nameof(SonarConnectionManager)} disposed (async)");
             this._cts.Dispose();
+            await this._urls.DisposeAsync();
         }
     }
 }

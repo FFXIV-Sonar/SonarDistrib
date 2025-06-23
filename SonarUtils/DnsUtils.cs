@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using SonarUtils.Internal;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Sockets;
 
 namespace SonarUtils
 {
@@ -103,33 +104,43 @@ namespace SonarUtils
         private static LookupClient CreateLookupClient(Trilean additionalDns)
         {
             // Use a HashSet to filter duplicates
-            var nameServers = new HashSet<NameServer>();
+            var nameServers = new List<NameServer>();
+
+            // Check for IPv4 and IPv6 support
+            try
+            {
+                IpUtils.UpdateSupported();
+                Logger.LogInformation($"Network Support: (IPv4 = {IpUtils.IPv4Supported} | IPv6 = {IpUtils.IPv6Supported})");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to determine IPv4 and IPv6 support, forcing both");
+                IpUtils.SetSupported(true, true);
+            }
 
             // Default DNS Servers
             Logger.LogInformation("Resolving nameservers");
-            RunAndLogExceptionIfThrown(() => nameServers.AddRange(NameServer.ResolveNameServers(true, false)), LogLevel.Warning);
+            RunAndLogExceptionIfThrown(() => nameServers.AddRange(NameServer.ResolveNameServersNet()), LogLevel.Warning);
             RunAndLogExceptionIfThrown(() => nameServers.AddRange(NameServer.ResolveNameServersNative()), LogLevel.Warning);
-            RunAndLogExceptionIfThrown(() => nameServers.AddRange(NameServer.ResolveNameResolutionPolicyServers()), LogLevel.Warning);
+            RunAndLogExceptionIfThrown(() => nameServers.AddRange(NameServer.ResolveNameServersNrpt()), LogLevel.Warning);
 
+            // Remove unsupported DNS servers
+            nameServers.RemoveAll(ns => !IsSupported(ns));
+            
             // Additional DNS Servers
             if (additionalDns.IsTrue || (additionalDns.IsNull && nameServers.Count == 0))
             {
-                Logger.LogInformation("Adding Cloudflare and Google DNS servers");
-                nameServers.AddRange(
-                    // Cloudflare DNS 1.1.1.1
-                    NameServer.Cloudflare, NameServer.Cloudflare2,
-                    NameServer.CloudflareIPv6, NameServer.Cloudflare2IPv6,
-
-                    // Google DNS 8.8.8.8
-                    NameServer.GooglePublicDns, NameServer.GooglePublicDns2,
-                    NameServer.GooglePublicDnsIPv6, NameServer.GooglePublicDns2IPv6
-                );
+                Logger.LogInformation("Adding additional DNS servers");
+                nameServers.AddRange(NameServer.DefaultFallback);
             }
+
+            // Remove unsupported DNS servers
+            nameServers.RemoveAll(ns => !IsSupported(ns));
 
             Logger.LogInformation($"Nameservers: {string.Join(", ", nameServers.Select(ns => ns.ToString()))}");
 
             Logger.LogInformation("Creating DNS Client");
-            var options = new LookupClientOptions(nameServers.ToArray())
+            var options = new LookupClientOptions([.. nameServers])
             {
                 CacheFailedResults = true,
                 MinimumCacheTimeout = TimeSpan.FromSeconds(60),
@@ -139,6 +150,13 @@ namespace SonarUtils
 
             // Create DNS Client
             return new LookupClient(options);
+        }
+
+        public static bool IsSupported(NameServer nameServer)
+        {
+            if (!IpUtils.IPv4Supported && nameServer.AddressFamily is AddressFamily.InterNetwork) return false;
+            if (!IpUtils.IPv6Supported && nameServer.AddressFamily is AddressFamily.InterNetworkV6) return false;
+            return true;
         }
     }
 }

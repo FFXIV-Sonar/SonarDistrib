@@ -50,11 +50,9 @@ namespace SonarUtils.Internal
                     if (this._tasks.Count is 0)
                     {
                         // DNS queries
-                        var dnsTasks = new Task[]
-                        {
-                            Task.Run(() => this.DnsWorkerAsync(QueryType.A, this._cts.Token)), // IPv4
-                            Task.Run(() => this.DnsWorkerAsync(QueryType.AAAA, this._cts.Token)), // IPv6
-                        };
+                        var dnsTasks = new List<Task>();
+                        if (IpUtils.IPv4Supported) dnsTasks.Add(Task.Run(() => this.DnsWorkerAsync(QueryType.A, this._cts.Token))); // IPv4
+                        if (IpUtils.IPv6Supported) dnsTasks.Add(Task.Run(() => this.DnsWorkerAsync(QueryType.AAAA, this._cts.Token))); // IPv6
                         this._tasks.AddRange(dnsTasks);
 
                         // DNS watcher

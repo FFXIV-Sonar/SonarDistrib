@@ -24,12 +24,6 @@
         "resolved": "2.6.1",
         "contentHash": "vZsG2YILhthgRqO+ZVgRff4ZFKKTl0v7kqaVBLCtRvpREhfBP33pcWrdA3PRYgWuFL1RxiUFvjMUHTdBZlJcoA=="
       },
-      "DnsClient": {
-        "type": "Direct",
-        "requested": "[1.8.0, )",
-        "resolved": "1.8.0",
-        "contentHash": "RRwtaCXkXWsx0mmsReGDqCbRLtItfUbkRJlet1FpdciVhyMGKcPd57T1+8Jki9ojHlq9fntVhXQroOOgRak8DQ=="
-      },
       "Farmhash.Sharp": {
         "type": "Direct",
         "requested": "[0.9.0, )",
@@ -54,6 +48,9 @@
         "dependencies": {
           "AG": "0.0.9-alpha"
         }
+      },
+      "dnsclient": {
+        "type": "Project"
       }
     },
     "net9.0/linux-x64": {}
