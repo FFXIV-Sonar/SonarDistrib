@@ -1,0 +1,4 @@
+[submodule "libs/DnsClient.NET"]
+	path = libs/DnsClient.NET
+	url = https://github.com/FFXIV-Sonar/DnsClient.NET
+	branch = master
