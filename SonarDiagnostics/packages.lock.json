@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net9.0-windows7.0": {
+      "DalamudPackager": {
+        "type": "Direct",
+        "requested": "[12.0.0, )",
+        "resolved": "12.0.0",
+        "contentHash": "J5TJLV3f16T/E2H2P17ClWjtfEBPpq3yxvqW46eN36JCm6wR+EaoaYkqG9Rm5sHqs3/nK/vKjWWyvEs/jhKoXw=="
+      },
+      "DotNet.ReproducibleBuilds": {
+        "type": "Direct",
+        "requested": "[1.2.25, )",
+        "resolved": "1.2.25",
+        "contentHash": "xCXiw7BCxHJ8pF6wPepRUddlh2dlQlbr81gXA72hdk4FLHkKXas7EH/n+fk5UCA/YfMqG1Z6XaPiUjDbUNBUzg=="
+      },
+      "DryIoc.dll": {
+        "type": "Direct",
+        "requested": "[5.4.3, )",
+        "resolved": "5.4.3",
+        "contentHash": "yhXOG3SOxeWYxBAWskNRDD8fzw5hriEawv4VN4WKaFHOuubiop4kxe2rkWTEyCnTgRVgxVUSQCDBBkZqwPm1iQ=="
+      },
+      "DryIoc.MefAttributedModel.dll": {
+        "type": "Direct",
+        "requested": "[7.0.2, )",
+        "resolved": "7.0.2",
+        "contentHash": "vshe/0Gf+Aesxi6l73AdWvPkjhgliw10jsS84Z8iq4aiZPtlt+diL16sr4zVDoSmUrmuFn3VPE0Z0hs1sALe9A==",
+        "dependencies": {
+          "DryIoc.dll": "5.4.2",
+          "DryIocAttributes.dll": "7.0.0"
+        }
+      },
+      "AG": {
+        "type": "Transitive",
+        "resolved": "0.0.9-alpha",
+        "contentHash": "lAFLtNJP0EdUUu042Bst1mwnbYRaZx18xR50Vm8+bgeFVWKvKnnabyxxDAFSKnfxi9A4mTr2v7D7Pua3ufDQRg=="
+      },
+      "AG.Collections.Concurrent": {
+        "type": "Transitive",
+        "resolved": "0.0.9-alpha",
+        "contentHash": "1+z6dTcu0eR5/xrUrXa7TdAgeXoLKZYW8QO4li2wESA5w6lb9g1oqiDjP863uMR6nQS9LVvl2S1p18IE35Mc+w==",
+        "dependencies": {
+          "AG": "0.0.9-alpha",
+          "AG.Collections.Generic": "0.0.9-alpha"
+        }
+      },
+      "AG.Collections.Generic": {
+        "type": "Transitive",
+        "resolved": "0.0.9-alpha",
+        "contentHash": "Ql4u2Iasyz6GCRRNQE9a1e4E0lL+/Ua8Hs6m7jXSk3efkGgRgpvtwANRKwF+6eYaf5awaBFID2KaGZhHDOWHMQ==",
+        "dependencies": {
+          "AG": "0.0.9-alpha"
+        }
+      },
+      "AG.EnumLocalization": {
+        "type": "Transitive",
+        "resolved": "0.0.9-alpha",
+        "contentHash": "V2WT4mgIx8mGPMlw9kUKAibi+XhEUbZaPHv4hBcOHbx2mT8llOOKLuvRzmC3UzWRiJZPaDgcyN6WJvhwTKgGKQ=="
+      },
+      "BouncyCastle.Cryptography": {
+        "type": "Transitive",
+        "resolved": "2.6.1",
+        "contentHash": "vZsG2YILhthgRqO+ZVgRff4ZFKKTl0v7kqaVBLCtRvpREhfBP33pcWrdA3PRYgWuFL1RxiUFvjMUHTdBZlJcoA=="
+      },
+      "DryIocAttributes.dll": {
+        "type": "Transitive",
+        "resolved": "7.0.0",
+        "contentHash": "/fCyHfqZxVerHK9lt0CMoZraaoc411WgUTnAKog7NjqiKyiX/WeiyOKZGmPIvfC7kVoEkrOSNhqRmfxx8q5Tbw==",
+        "dependencies": {
+          "System.ComponentModel.Composition": "4.7.0"
+        }
+      },
+      "Farmhash.Sharp": {
+        "type": "Transitive",
+        "resolved": "0.9.0",
+        "contentHash": "6Ij80JrfPyiDRM4QqdlEIjev4Q97eqEakh7wFJZYmbUkWVoCJb1+YdSdoXpzvn+Fs2dXH8THRsn+uUvrhMNKpQ=="
+      },
+      "System.ComponentModel.Composition": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "TKOHGbuqp7++lEna7+p19kTR8rKeAeoo2Faab2n2q7spV2CWPevmUkghMG6POKfSdeQhtAJoNZ33FT+01CNe3g=="
+      },
+      "XoshiroPRNG.Net": {
+        "type": "Transitive",
+        "resolved": "1.6.0",
+        "contentHash": "Agj7DDi1obbcZXzPJDGpx4ncwrlr0Q39xe/coNGJV2DU3AzhWiHF33sM2nkHlgIL1icLacx1hkqNz8No7pdWWg=="
+      },
+      "dnsclient": {
+        "type": "Project"
+      },
+      "sonarutils": {
+        "type": "Project",
+        "dependencies": {
+          "AG.Collections.Concurrent": "[0.0.9-alpha, )",
+          "AG.EnumLocalization": "[0.0.9-alpha, )",
+          "BouncyCastle.Cryptography": "[2.6.1, )",
+          "DnsClient": "[1.8.0, )",
+          "Farmhash.Sharp": "[0.9.0, )",
+          "XoshiroPRNG.Net": "[1.6.0, )"
+        }
+      }
+    }
+  }
+}

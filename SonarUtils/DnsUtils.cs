@@ -11,6 +11,7 @@ using System.Threading;
 using SonarUtils.Internal;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
+using System.Net;
 
 namespace SonarUtils
 {
@@ -101,7 +102,7 @@ namespace SonarUtils
             }
         }
 
-        private static LookupClient CreateLookupClient(Trilean additionalDns)
+        public static IEnumerable<NameServer> DiscoverNameservers(Trilean additionalDns)
         {
             // Use a HashSet to filter duplicates
             var nameServers = new List<NameServer>();
@@ -124,9 +125,9 @@ namespace SonarUtils
             RunAndLogExceptionIfThrown(() => nameServers.AddRange(NameServer.ResolveNameServersNative()), LogLevel.Warning);
             RunAndLogExceptionIfThrown(() => nameServers.AddRange(NameServer.ResolveNameServersNrpt()), LogLevel.Warning);
 
-            // Remove unsupported DNS servers
+            // Remove unsupported DNS servers (NOTE: Done twice intentionally)
             nameServers.RemoveAll(ns => !IsSupported(ns));
-            
+
             // Additional DNS Servers
             if (additionalDns.IsTrue || (additionalDns.IsNull && nameServers.Count == 0))
             {
@@ -134,11 +135,23 @@ namespace SonarUtils
                 nameServers.AddRange(NameServer.DefaultFallback);
             }
 
-            // Remove unsupported DNS servers
+            // Remove unsupported DNS servers (NOTE: Done twice intentionally)
             nameServers.RemoveAll(ns => !IsSupported(ns));
 
-            Logger.LogInformation($"Nameservers: {string.Join(", ", nameServers.Select(ns => ns.ToString()))}");
+            // Log discovered nameservers and return them
+            var result = nameServers.ToHashSet();
+            Logger.LogInformation($"Nameservers: {string.Join(", ", result.Select(ns => ns.ToString()))}");
+            return result;
+        }
 
+        public static LookupClient CreateLookupClient(Trilean additionalDns)
+        {
+            var nameServers = DiscoverNameservers(additionalDns);
+            return CreateLookupClient(nameServers);
+        }
+
+        public static LookupClient CreateLookupClient(IEnumerable<NameServer> nameServers)
+        {
             Logger.LogInformation("Creating DNS Client");
             var options = new LookupClientOptions([.. nameServers])
             {

@@ -52,6 +52,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{02EA681E-C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsClient", "libs\DnsClient.NET\src\DnsClient\DnsClient.csproj", "{F60DFE2C-87CD-8E83-C219-4FBF37AF3EDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonarDiagnostics", "SonarDiagnostics\SonarDiagnostics.csproj", "{CDA5339D-EE0C-0EA9-6640-5A3BB7CE8794}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,10 @@ Global
 		{F60DFE2C-87CD-8E83-C219-4FBF37AF3EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F60DFE2C-87CD-8E83-C219-4FBF37AF3EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F60DFE2C-87CD-8E83-C219-4FBF37AF3EDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDA5339D-EE0C-0EA9-6640-5A3BB7CE8794}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{CDA5339D-EE0C-0EA9-6640-5A3BB7CE8794}.Debug|Any CPU.Build.0 = Debug|x64
+		{CDA5339D-EE0C-0EA9-6640-5A3BB7CE8794}.Release|Any CPU.ActiveCfg = Release|x64
+		{CDA5339D-EE0C-0EA9-6640-5A3BB7CE8794}.Release|Any CPU.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
