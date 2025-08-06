@@ -104,7 +104,8 @@ namespace SonarResources
 
             // Save resources
             Console.WriteLine("Saving resources");
-            this.SaveSonarDb();
+            this.SaveSonarDb(Path.Join(Program.Config.ResourcesPath, "Db.data"));
+            this.SaveSonarDb(Path.Join(Program.Config.AssetsPath, "resources", "Db.data"));
 
             Console.WriteLine("Saving JSON files"); // NOTE: Paths inside these methods are assumed
             SaveToJson(this.Db.Audiences);
@@ -125,9 +126,8 @@ namespace SonarResources
             Console.WriteLine("---------------");
         }
 
-        public void SaveSonarDb()
+        public void SaveSonarDb(string filename)
         {
-            var filename = Path.Join(Program.Config.ResourcesPath, "Db.data");
             Console.Write($"Saving {filename}...");
             var bytes = SonarSerializer.SerializeData(this.Db);
             File.WriteAllBytes(filename, bytes);

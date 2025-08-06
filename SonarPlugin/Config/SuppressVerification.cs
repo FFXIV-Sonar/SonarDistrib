@@ -1,16 +1,19 @@
+using AG.EnumLocalization.Attributes;
 using SonarPlugin.Attributes;
+using System.Text;
 
 namespace SonarPlugin.Config
 {
+    [EnumLocStrings]
     public enum SuppressVerification
     {
-        [EnumCheapLoc("SuppressVerificationNone", "Never")]
+        [EnumLoc(Fallback = "Never")]
         None,
 
-        [EnumCheapLoc("SuppressVerificationNone", "Yes unless its required")]
+        [EnumLoc(Fallback = "Unless required")]
         UnlessRequired,
 
-        [EnumCheapLoc("SuppressVerificationNone", "Always")]
+        [EnumLoc(Fallback = "Always")]
         Always
     }
 }

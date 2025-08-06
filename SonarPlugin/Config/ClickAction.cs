@@ -1,4 +1,5 @@
-﻿using SonarPlugin.Attributes;
+﻿using AG.EnumLocalization.Attributes;
+using SonarPlugin.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,24 +8,25 @@ using System.Threading.Tasks;
 
 namespace SonarPlugin.Config
 {
+    [EnumLocStrings]
     public enum ClickAction
     {
-        [EnumCheapLoc("ClickActionDefault", "Default")]
+        [EnumLoc(Fallback = "Default")]
         Default,
 
-        [EnumCheapLoc("ClickActionNone", "None")]
+        [EnumLoc(Fallback = "None")]
         None,
 
-        [EnumCheapLoc("ClickActionChat", "Send to Chat")]
+        [EnumLoc(Fallback = "Send to Chat")]
         Chat,
 
-        [EnumCheapLoc("ClickActionMap", "Create Flag")]
+        [EnumLoc(Fallback = "Create Flag")]
         Map,
 
-        [EnumCheapLoc("ClickActionTeleport", "Teleport")]
+        [EnumLoc(Fallback = "Teleport")]
         Teleport,
 
-        [EnumCheapLoc("ClickActionRemove", "Remove")]
+        [EnumLoc(Fallback = "Remove")]
         Remove,
     }
 }

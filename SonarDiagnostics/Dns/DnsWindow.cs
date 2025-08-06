@@ -118,7 +118,7 @@ namespace SonarDiagnostics.Dns
         {
             try
             {
-                this._nameservers = [.. DnsUtils.DiscoverNameservers(null)];
+                this._nameservers = [.. DnsUtils.DiscoverNameservers(null, false)];
                 this._nameserverStrings = [.. this._nameservers.Select(ns => ns.ToString()).Prepend("None")];
             }
             catch (Exception ex)

@@ -5,11 +5,13 @@ using Dalamud.Logging;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using DryIoc;
+using SonarPlugin.Utility;
 using SonarUtils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -20,6 +22,9 @@ namespace SonarPlugin
 {
     public sealed class SonarPluginStub : IDalamudPlugin
     {
+        private readonly Lock _pluginLock = new(); // Load and unload lock
+        private bool _disposed; // Interlocked
+
         /// <summary>Sonar name</summary>
         public string Name { get; } = "Sonar";
 
@@ -29,28 +34,28 @@ namespace SonarPlugin
         /// <summary>Sonar flavor</summary>
         public string? Flavor { get; } = null;
 
-
-        private readonly object _pluginLock = new object();
+        /// <summary>SonarPlugin's IoC class.</summary>
         private SonarPluginIoC? Plugin;
+
         private IDalamudPluginInterface PluginInterface { get; }
+        private ICommandManager Commands { get; }
+        private IChatGui Chat { get; }
+        private IPluginLog Logger { get; }
 
-        [PluginService] public ICommandManager Commands { get; private set; } = default!;
-        [PluginService] public IChatGui Chat { get; private set; } = default!;
-        [PluginService] public IPluginLog Logger { get; private set; } = default!;
-
-        private readonly object _taskLock = new();
-        private Task _sonarTask = Task.CompletedTask;
-
-        public SonarPluginStub(IDalamudPluginInterface pluginInterface)
+        public SonarPluginStub(IDalamudPluginInterface pluginInterface, ICommandManager commands, IChatGui chat, IPluginLog logger)
         {
-            pluginInterface.Inject(this);
+            this.PluginInterface = pluginInterface;
+            this.Commands = commands;
+            this.Chat = chat;
+            this.Logger = logger;
+            
             this.Logger.Debug("Initializing Sonar [Stub]");
             this.PluginInterface = pluginInterface;
             this.PluginInterface.Inject(this);
 
             try
             {
-                var flavor = this.DetermineFlavor();
+                var flavor = FlavorUtils.DetermineFlavor(pluginInterface, logger);
                 if (!string.IsNullOrWhiteSpace(flavor))
                 {
                     this.Logger.Information($"Detected Flavor: {flavor}");
@@ -64,8 +69,8 @@ namespace SonarPlugin
                 this.Logger.Error(ex, "Exception occured while getting flavor");
             }
 
-            this.Commands.AddHandler("/sonarload", new CommandInfo(this.SonarOnCommand) { HelpMessage = "Turn on / enable Sonar", ShowInHelp = false });
-            this.Commands.AddHandler("/sonarunload", new CommandInfo(this.SonarOffCommand) { HelpMessage = "Turn off / disable Sonar", ShowInHelp = false });
+            this.Commands.AddHandler("/sonarload", new CommandInfo(this.SonarLoadCommand) { HelpMessage = "Turn on / enable Sonar", ShowInHelp = false });
+            this.Commands.AddHandler("/sonarunload", new CommandInfo(this.SonarUnloadCommand) { HelpMessage = "Turn off / disable Sonar", ShowInHelp = false });
             this.Commands.AddHandler("/sonarreload", new CommandInfo(this.SonarReloadCommand) { HelpMessage = "Reload Sonar", ShowInHelp = false });
 
             DnsUtils.Log += this.DnsLogHandler;
@@ -73,121 +78,30 @@ namespace SonarPlugin
             this.InitializeSonar();
         }
 
-        private string? DetermineFlavor()
+        private void SonarLoadCommand(string? _ = null, string? __ = null)
         {
-            this.Logger.Debug("Determining Flavor");
-
-            // Attempt #1: Flavor resource
-            var flavor = this.GetFlavorResource();
-            if (flavor is not null) return flavor;
-
-            // Attempt #2: Testing
-            if (this.PluginInterface.IsDev) return "dev";
-            else if (this.PluginInterface.IsTesting) return "testing";
-
-            // Attempt #3 and #4: Internal name and Directory name
-            flavor = DetermineFlavorCore(this.PluginInterface.InternalName) ?? DetermineFlavorCore(this.PluginInterface.AssemblyLocation.Directory?.Name);
-            if (flavor is not null) return flavor;
-
-            // Attempt #5: Give up
-            this.Logger.Warning("Unable to determine flavor");
-            return null;
+            this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload are not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
+            Task.Factory.StartNew(this.InitializeSonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
         }
 
-        private static string? DetermineFlavorCore(string? input)
+        private void SonarUnloadCommand(string? _ = null, string? __ = null)
         {
-            if (input is not null)
-            {
-                // Attempt #1: SonarPlugin-something
-                var match = new Regex(@"^SonarPlugin-(?<flavor>.*)$", RegexOptions.CultureInvariant).Match(input);
-                if (match.Success)
-                {
-                    var flavor = match.Groups["flavor"].Value;
-                    if (string.IsNullOrEmpty(flavor)) return "negative";
-                    return flavor;
-                }
-
-                // Attempt #2: SonarPluginsomething
-                match = new Regex(@"^SonarPlugin(?<flavor>.*)$", RegexOptions.CultureInvariant).Match(input);
-                if (match.Success)
-                {
-                    var flavor = match.Groups["flavor"].Value;
-                    if (string.IsNullOrEmpty(flavor)) return null; // "SonarPlugin" means no flavor
-                    return flavor;
-                }
-
-                // Attempt #3: bin (likely to be a dev build)
-                match = new Regex(@"^bin$", RegexOptions.CultureInvariant).Match(input);
-                if (match.Success) return "dev";
-            }
-
-            // Attempt #4: input is the flavor
-            if (!string.IsNullOrWhiteSpace(input)) return input;
-            
-            // Attempt #5: Give up
-            return null;
-        }
-
-        private string? GetFlavorResource()
-        {
-            // Open the Flavor.data embedded resource stream
-            var assembly = typeof(SonarPluginStub).Assembly;
-            var stream = assembly.GetManifestResourceStream("SonarPlugin.Resources.Flavor.data");
-            if (stream is null)
-            {
-                this.Logger.Warning("Flavor resource not found!");
-                return null;
-            }
-
-            // Read the stream into a bytes array
-            var bytes = new byte[stream.Length];
-            stream.ReadExactly(bytes, 0, bytes.Length);
-
-            // Decode the flavor string
-            var flavor = Encoding.UTF8.GetString(bytes);
-            if (string.IsNullOrWhiteSpace(flavor))
-            {
-                this.Logger.Debug("Resource flavor is empty");
-                return null;
-            }
-            return flavor;
-        }
-
-        private void SonarOnCommand(string? _ = null, string? __ = null)
-        {
-            this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload is not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
-            lock (this._taskLock)
-            {
-                if (!this._sonarTask.IsCompleted) return;
-                this._sonarTask = Task.Factory.StartNew(this.InitializeSonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
-            }
-        }
-
-        private void SonarOffCommand(string? _ = null, string? __ = null)
-        {
-            this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload is not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
-            lock (this._taskLock)
-            {
-                if (!this._sonarTask.IsCompleted) return;
-                this._sonarTask = Task.Factory.StartNew(this.DestroySonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
-            }
+            this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload are not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
+            Task.Factory.StartNew(this.DestroySonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
         }
 
         private void SonarReloadCommand(string? _ = null, string? __ = null)
         {
-            this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload is not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
+            this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload are not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
 #if !DEBUG
             return; // TODO: Remove once fixed
 #endif
-            lock (this._taskLock)
-            {
-                if (!this._sonarTask.IsCompleted) return;
-                this._sonarTask = Task.Factory.StartNew(this.ReloadSonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
-            }
+            Task.Factory.StartNew(this.ReloadSonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
         }
 
         private void InitializeSonar()
         {
+            if (Volatile.Read(ref this._disposed)) return;
             lock (this._pluginLock)
             {
                 if (this.Plugin is not null) return;
@@ -306,6 +220,8 @@ namespace SonarPlugin
 
         public void Dispose()
         {
+            if (Interlocked.CompareExchange(ref this._disposed, true, false)) return;
+
             this.Commands.RemoveHandler("/sonaron");
             this.Commands.RemoveHandler("/sonarenable");
 
@@ -314,7 +230,6 @@ namespace SonarPlugin
 
             this.Commands.RemoveHandler("/sonarreload");
 
-            lock (this._taskLock) this._sonarTask.Wait();
             this.DestroySonar();
             DnsUtils.Log -= this.DnsLogHandler;
 

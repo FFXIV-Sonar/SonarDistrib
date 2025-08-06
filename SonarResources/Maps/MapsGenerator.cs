@@ -24,6 +24,14 @@ using static System.Net.Mime.MediaTypeNames;
 using FileSystemLinks;
 using Blurhash.ImageSharp;
 using Sonar.Data;
+using SixLabors.ImageSharp.Formats.Bmp;
+using SixLabors.ImageSharp.Formats.Tiff;
+using SixLabors.ImageSharp.Advanced;
+using System.Security.Cryptography;
+using System.Runtime.InteropServices;
+using System.Buffers;
+using Org.BouncyCastle.Crypto.Digests;
+using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace SonarResources.Maps
 {
@@ -75,8 +83,11 @@ namespace SonarResources.Maps
                 await Parallel.ForEachAsync(maps, options, async (map, ct) =>
                 {
                     var blurHash = await this.GenerateMapAssetsAsync(data, map, ctx, ct);
-                    var mapRow = db.Maps.GetValueOrDefault(map.RowId);
-                    if (mapRow is not null) mapRow.BlurHash = blurHash;
+                    if (blurHash is not null)
+                    {
+                        var mapRow = db.Maps.GetValueOrDefault(map.RowId);
+                        if (mapRow is not null) mapRow.BlurHash = blurHash;
+                    }
                     progress.Increment(1);
                     progress.Description($"[yellow]Total Progress:[/] [white]{(int)progress.Value}/{maps.Count}[/]");
                 });
@@ -112,31 +123,67 @@ namespace SonarResources.Maps
             var placeNames = data.GetExcelSheet<PlaceName>()!;
             var mapName = $"{placeNames?.GetRowOrDefault(map.PlaceName.RowId)?.Name.ExtractText() ?? "UNKNOWN MAP"} ({map.RowId})";
 
-            var progress = progressContext.AddTask($"[green]{mapName.EscapeMarkup()}[/]", true, (64 + 16 + 4 + 1) * 4 + 1 + 1);
+            const int maxProgress = (64 + 16 + 4 + 1) * 4 + 1 + 1;
+            var progress = progressContext.AddTask($"[green]{mapName.EscapeMarkup()}[/]", true, maxProgress);
 
+            // Load map image.
             using var image = map.ToMapImage(data);
             if (image is null)
             {
                 progress.StopTask();
                 return null;
             }
-            progress.Increment(1);
 
+            // Image size from the game files is constant.
+            // If this assert fails code needs to be modified to handle.
             Debug.Assert(image.Width is 2048 && image.Height is 2048);
+
+            // Prepare digester.
+            var digest = new Sha256Digest();
+            var digestSize = digest.GetDigestSize();
+            var newDigestBytes = new byte[digestSize];
+
+            // Compute new digest.
+            var memoryGroup = image.GetPixelMemoryGroup();
+            foreach (var memory in memoryGroup) digest.BlockUpdate(MemoryMarshal.AsBytes(memory.Span));
+            _ = digest.DoFinal(newDigestBytes);
+
+            var checkFile = Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}.rawsum");
+            try
+            {
+                // Read previously computed digest bytes.
+                var oldDigestBytes = await File.ReadAllBytesAsync(checkFile, cancellationToken);
+
+                // Shortcut completion if digests match.
+                if (oldDigestBytes.SequenceEqual(newDigestBytes))
+                {
+                    progress.Increment(maxProgress);
+                    progress.StopTask();
+                    return null;
+                }
+            }
+            catch
+            {
+                /* Swallow */
+            }
+
+            // Increment progress
+            progress.Increment(1);
 
             // Encoders
             var pngEncoder = new PngEncoder() { CompressionLevel = PngCompressionLevel.BestCompression };
             var webpEncoder = new WebpEncoder() { Method = WebpEncodingMethod.BestQuality, EntropyPasses = 10 };
 
-            // 2048x2048
+            // 2048x2048 (l)
             await image.SaveAsJpegAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.jpg"), cancellationToken); progress.Increment(64);
             await image.SaveAsPngAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.png"), pngEncoder, cancellationToken); progress.Increment(64);
             await image.SaveAsGifAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.gif"), cancellationToken); progress.Increment(64);
             await image.SaveAsWebpAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.webp"), webpEncoder, cancellationToken); progress.Increment(64);
 
+            // Blurhash
             string blurHash;
 
-            // 1024x1024
+            // 1024x1024 (m)
             using (var resized = image.Clone(x => x.Resize(1024, 1024)))
             {
                 await resized.SaveAsJpegAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.jpg"), cancellationToken); progress.Increment(16);
@@ -145,7 +192,7 @@ namespace SonarResources.Maps
                 await resized.SaveAsWebpAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.webp"), webpEncoder, cancellationToken); progress.Increment(16);
             }
 
-            // 512x512
+            // 512x512 (s)
             using (var resized = image.Clone(x => x.Resize(512, 512)))
             {
                 await resized.SaveAsJpegAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.jpg"), cancellationToken); progress.Increment(4);
@@ -154,7 +201,7 @@ namespace SonarResources.Maps
                 await resized.SaveAsWebpAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.webp"), webpEncoder, cancellationToken); progress.Increment(4);
             }
 
-            // 256x256
+            // 256x256 (t)
             using (var resized = image.Clone(x => x.Resize(256, 256)))
             {
                 await resized.SaveAsJpegAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.jpg"), cancellationToken); progress.Increment(1);
@@ -168,6 +215,9 @@ namespace SonarResources.Maps
                 blurHash = Blurhasher.Encode(blurImage, 4, 4);
                 progress.Increment(1);
             }
+
+            // Write newly computed digest.
+            await File.WriteAllBytesAsync(checkFile, newDigestBytes, cancellationToken);
 
             progress.StopTask();
             return blurHash;

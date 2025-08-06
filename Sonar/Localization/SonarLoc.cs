@@ -11,6 +11,6 @@ namespace Sonar.Localization
     [EnumLocStrings("Sonar")]
     public enum SonarLoc
     {
-        // This poor enum always ends up empty
+        Sonar
     }
 }

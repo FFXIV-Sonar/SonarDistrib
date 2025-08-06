@@ -70,8 +70,14 @@ namespace SonarUtils
 
         public static event Action<string, LogLevel, int, Exception?, string, object[]>? Log
         {
-            add => ImmutableInterlocked.Update(ref s_logListeners, listeners => listeners.Add(value!));
-            remove => ImmutableInterlocked.Update(ref s_logListeners, listeners => listeners.Remove(value!));
+            add
+            {
+                if (value is not null) ImmutableInterlocked.Update(ref s_logListeners, listeners => listeners.Add(value!));
+            }
+            remove
+            {
+                if (value is not null) ImmutableInterlocked.Update(ref s_logListeners, listeners => listeners.Remove(value!));
+            }
         }
 
         internal static void DispatchLogEvent(string categoryName, LogLevel logLevel, int eventId, Exception? exception, string message, params object[] args)
@@ -102,7 +108,7 @@ namespace SonarUtils
             }
         }
 
-        public static IEnumerable<NameServer> DiscoverNameservers(Trilean additionalDns)
+        public static IEnumerable<NameServer> DiscoverNameservers(Trilean additionalDns, bool skipIPv6SiteLocal = true)
         {
             // Use a HashSet to filter duplicates
             var nameServers = new List<NameServer>();
@@ -126,7 +132,7 @@ namespace SonarUtils
             RunAndLogExceptionIfThrown(() => nameServers.AddRange(NameServer.ResolveNameServersNrpt()), LogLevel.Warning);
 
             // Remove unsupported DNS servers (NOTE: Done twice intentionally)
-            nameServers.RemoveAll(ns => !IsSupported(ns));
+            nameServers.RemoveAll(ns => !IsSupported(ns) || (skipIPv6SiteLocal && IPAddress.Parse(ns.Address).IsIPv6SiteLocal));
 
             // Additional DNS Servers
             if (additionalDns.IsTrue || (additionalDns.IsNull && nameServers.Count == 0))
@@ -136,7 +142,7 @@ namespace SonarUtils
             }
 
             // Remove unsupported DNS servers (NOTE: Done twice intentionally)
-            nameServers.RemoveAll(ns => !IsSupported(ns));
+            nameServers.RemoveAll(ns => !IsSupported(ns) || (skipIPv6SiteLocal && IPAddress.Parse(ns.Address).IsIPv6SiteLocal));
 
             // Log discovered nameservers and return them
             var result = nameServers.ToHashSet();

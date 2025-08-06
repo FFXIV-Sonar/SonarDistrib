@@ -1,4 +1,5 @@
 ﻿using AG.EnumLocalization.Attributes;
+using Sonar.Relays;
 
 namespace Sonar.Enums
 {
@@ -18,7 +19,7 @@ namespace Sonar.Enums
 
         SS = 5,
 
-        [EnumLoc(Fallback = "FATE")]
+        [EnumLocAlias<RelayType>(RelayType.Fate)]
         Fate = 255
     }
 }

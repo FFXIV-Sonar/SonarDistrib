@@ -48,8 +48,18 @@ namespace SonarPlugin
         {
             this.LoadConfiguration();
             CheapLoc.Loc.SetupWithFallbacks();
-            EnumLoc.SetupAssembly(typeof(SonarPlugin).Assembly);
-            EnumLoc.SetupAssembly(typeof(SonarClient).Assembly);
+
+            this.Logger.Info("SonarPlugin Resources:");
+            foreach (var resourceName in typeof(SonarPlugin).Assembly.GetManifestResourceNames())
+            {
+                this.Logger.Info($" - {resourceName}");
+            }
+
+            this.Logger.Info("Sonar Resources:");
+            foreach (var resourceName in typeof(SonarClient).Assembly.GetManifestResourceNames())
+            {
+                this.Logger.Info($" - {resourceName}");
+            }
 
             this.PluginInterface.UiBuilder.Draw += this.Windows.Draw;
 

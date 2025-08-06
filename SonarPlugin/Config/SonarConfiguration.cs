@@ -22,7 +22,6 @@ namespace SonarPlugin.Config
 
         // Sonar.NET configuration reference
         public SonarConfig SonarConfig = new();
-        public SonarConfigurationColors Colors = new();
 
         // General configurations
         public bool OverlayVisibleByDefault = false;
@@ -40,6 +39,8 @@ namespace SonarPlugin.Config
         public float SoundVolume = 0.5f;
         public PluginLanguage Language = PluginLanguage.English;
         public SuppressVerification SuppressVerification = SuppressVerification.None;
+        public LocalizationConfig Localization = new();
+        public SonarConfigurationColors Colors = new();
 
         public ClickAction MiddleClick = ClickAction.Chat;
         public ClickAction RightClick = ClickAction.Map;

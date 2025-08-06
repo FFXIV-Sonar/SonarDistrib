@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\en.plugin.lang.json" />
+  </ItemGroup>
+
+  <ItemGroup>
   <EmbeddedResource Include="Resources\Flavor.data" />
   <EmbeddedResource Include="Resources\Icons\redflag.png">
     <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -68,7 +72,7 @@
     <PackageReference Include="NAudio.Core" Version="2.2.1" />
     <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
     <PackageReference Include="NAudio.WinMM" Version="2.2.1" />
-    <PackageReference Include="AG" Version="0.0.9-alpha" />
+    <PackageReference Include="AG" Version="0.1.2-alpha" />
   </ItemGroup>
 
   <ItemGroup>

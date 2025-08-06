@@ -42,9 +42,8 @@ using DryIoc.Messages;
 
 namespace SonarPlugin.GUI
 {
-    public sealed class SonarMainOverlay : IHostedService, IDisposable
+    public sealed class SonarMainWindow : IHostedService, IDisposable
     {
-        public string WindowTitle => windowTitle;
         private bool _visible; // used as ref
 
         [SuppressMessage("Minor Code Smell", "S2292", Justification = "Backing field is used with ref")]
@@ -69,7 +68,6 @@ namespace SonarPlugin.GUI
         private IDalamudPluginInterface PluginInterface { get; }
         private IPluginLog Logger { get; }
 
-        private static readonly string windowTitle = Loc.Localize("WindowTitle", "Sonar");
         private static Vector2 minimumWindowSize = new(300, 100);
         private static Vector2 maximumWindowSize = new(float.MaxValue, float.MaxValue);
         private static Vector2 mapSize = new(300, 300);
@@ -78,7 +76,7 @@ namespace SonarPlugin.GUI
 
         private readonly IDalamudTextureWrap _redFlag;
 
-        public SonarMainOverlay(SonarPlugin plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, AetheryteManager aetherytes, MapTextureProvider mapTextures, ResourceHelper resources, PlaceholderFormatter formatter, IUiBuilder ui, IGameGui gameGui, IFramework framework, IDalamudPluginInterface pluginInterface, IPluginLog logger)
+        public SonarMainWindow(SonarPlugin plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, AetheryteManager aetherytes, MapTextureProvider mapTextures, ResourceHelper resources, PlaceholderFormatter formatter, IUiBuilder ui, IGameGui gameGui, IFramework framework, IDalamudPluginInterface pluginInterface, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;
@@ -153,7 +151,7 @@ namespace SonarPlugin.GUI
             // Setup flags for window based on config settings
             var windowFlags = ImGuiWindowFlags.HorizontalScrollbar | this.WindowFlags;
 
-            if (ImGui.Begin($"{MainOverlayLoc.WindowTitle.GetLocString()}###SonarMainOverlay", ref this._visible, windowFlags))
+            if (ImGui.Begin($"{MainWindowLoc.WindowTitle.GetLocString()}###SonarMainWindow", ref this._visible, windowFlags))
             {
                 ImGui.BeginChild("###SonarTabBarWindow", (new Vector2(0, 24)) * ImGui.GetIO().FontGlobalScale, false, ImGuiWindowFlags.AlwaysAutoResize | this.TabBarFlags);
                 if (ImGui.BeginTabBar("###SonarTabBar", ImGuiTabBarFlags.None))
@@ -164,7 +162,7 @@ namespace SonarPlugin.GUI
                         if (!this.Plugin.Configuration.AllSRankSettings && (rank == HuntRank.SS || rank == HuntRank.SSMinion)) continue;
 
                         // TODO: Eventually localize these enum strings
-                        var tabText = rank == HuntRank.None ? $" {MainOverlayLoc.AllTab.GetLocString()} ###SonarAllTab" : $" {rank.GetLocString()} ###Sonar{RelayType.Hunt}{rank}Tab";
+                        var tabText = rank == HuntRank.None ? $" {MainWindowLoc.AllTab.GetLocString()} ###SonarAllTab" : $" {rank.GetLocString()} ###Sonar{RelayType.Hunt}{rank}Tab";
                         if (ImGui.BeginTabItem(tabText))
                         {
                             ImGui.EndTabItem();
@@ -576,7 +574,7 @@ namespace SonarPlugin.GUI
         {
             var relay = state.Relay;
 
-            ImGui.Text(MainOverlayLoc.LocationDetail.GetLocString());
+            ImGui.Text(MainWindowLoc.LocationDetail.GetLocString());
             ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
             ImGui.Text($"{relay.GetFlagString()} i{relay.InstanceId}");
 
@@ -631,7 +629,7 @@ namespace SonarPlugin.GUI
             ImGui.PopFont();
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip(MainOverlayLoc.DetailFlagToolTip.GetLocString());
+                ImGui.SetTooltip(MainWindowLoc.DetailFlagToolTip.GetLocString());
             }
 
             ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
@@ -649,7 +647,7 @@ namespace SonarPlugin.GUI
             ImGui.PopFont();
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip(MainOverlayLoc.DetailMapToolTip.GetLocString());
+                ImGui.SetTooltip(MainWindowLoc.DetailMapToolTip.GetLocString());
             }
 
             ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
@@ -667,7 +665,7 @@ namespace SonarPlugin.GUI
             ImGui.PopFont();
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip(MainOverlayLoc.DetailTeleportToolTip.GetLocString());
+                ImGui.SetTooltip(MainWindowLoc.DetailTeleportToolTip.GetLocString());
             }
 
             ImGui.SameLine(0, 10 * ImGui.GetIO().FontGlobalScale);
@@ -685,7 +683,7 @@ namespace SonarPlugin.GUI
             ImGui.PopFont();
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip(MainOverlayLoc.DetailRemoveToolTip.GetLocString());
+                ImGui.SetTooltip(MainWindowLoc.DetailRemoveToolTip.GetLocString());
             }
         }
 

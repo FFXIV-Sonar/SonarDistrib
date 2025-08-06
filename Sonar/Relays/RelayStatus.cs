@@ -27,7 +27,7 @@ namespace Sonar.Relays
         Dead,
 
         [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate)]
-        Successful,
+        Complete,
 
         [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate)]
         Failed,

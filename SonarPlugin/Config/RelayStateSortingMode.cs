@@ -8,42 +8,44 @@ using SonarPlugin.Attributes;
 using Sonar.Utilities;
 using Sonar.Trackers;
 using Sonar.Data.Extensions;
+using AG.EnumLocalization.Attributes;
 
 namespace SonarPlugin.Config
 {
+    [EnumLocStrings("RelaySortingMode")]
     public enum RelayStateSortingMode
     {
-        [EnumCheapLoc("SortingModeDefault", "Default")]
+        [EnumLoc(Fallback = "Default")]
         Default,
 
-        [EnumCheapLoc("SortingModeLastFound", "Last Found")]
+        [EnumLoc(Fallback = "Last Found")]
         LastFound,
 
-        [EnumCheapLoc("SortingModeLastUpdated", "Last Updated")]
+        [EnumLoc(Fallback = "Last Updated")]
         LastUpdated,
 
-        [EnumCheapLoc("SortingModeAlphabetical", "Alphabetical")]
+        [EnumLoc(Fallback = "Alphabetical")]
         Alphabetical,
 
-        [EnumCheapLoc("SortingModeDatacenter", "Data Center ID")]
+        [EnumLoc(Fallback = "Data Center ID")]
         Datacenter,
 
-        [EnumCheapLoc("SortingModeWorld", "World ID")]
+        [EnumLoc(Fallback = "World ID")]
         World,
 
-        [EnumCheapLoc("SortingModeZone", "Zone ID")]
+        [EnumLoc(Fallback = "Zone ID")]
         Zone,
 
-        [EnumCheapLoc("SortingModeWorldZoneInstanceRelay", "World then Zone then Instance then Relay IDs")]
+        [EnumLoc(Fallback = "World then Zone then Instance then Relay IDs")]
         WorldZoneInstanceRelay,
 
-        [EnumCheapLoc("SortingModeZoneInstanceRelay", "Zone then Instance then Relay IDs")]
+        [EnumLoc(Fallback = "Zone then Instance then Relay IDs")]
         ZoneInstanceRelay,
 
-        [EnumCheapLoc("SortingModeJurisdiction", "Jurisdiction")]
+        [EnumLoc(Fallback = "Jurisdiction")]
         Jurisdiction,
 
-        [EnumCheapLoc("SortingModeJurisdictionWorldZoneInstanceRelay", "Jurisdiction then World then Zone then Instance then Relay IDs")]
+        [EnumLoc(Fallback = "Jurisdiction then World then Zone then Instance then Relay IDs")]
         JurisdictionWorldZoneInstanceRelay,
     }
 

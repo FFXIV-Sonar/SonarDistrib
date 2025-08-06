@@ -1,0 +1,7 @@
+{
+  "__Meta.Author": "Sonar Team",
+  "__Meta.Language": "English",
+  "__Meta.Notes": "Default sonar language",
+
+  "__Meta.Notes2": "Intentionally empty to use default english fallbacks"
+}

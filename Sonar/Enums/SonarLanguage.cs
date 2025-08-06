@@ -1,5 +1,8 @@
-﻿namespace Sonar.Enums
+﻿using AG.EnumLocalization.Attributes;
+
+namespace Sonar.Enums
 {
+    [EnumLocStrings("Language")]
     public enum SonarLanguage
     {
         Default,
@@ -11,7 +14,10 @@
         French, // fr
 
         // China languages
+        [EnumLoc("Chinese Simplified")]
         ChineseSimplified, // zh_CN
+
+        [EnumLoc("Chinese Traditional")]
         ChineseTraditional, // zh_TW
 
         // Korea languages

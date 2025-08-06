@@ -345,6 +345,7 @@ Assets/images/*.jpg
 Assets/images/*.png
 Assets/images/*.gif
 Assets/images/*.webp
+Assets/resources/Db.data
 bin/
 .log
 .log.bak

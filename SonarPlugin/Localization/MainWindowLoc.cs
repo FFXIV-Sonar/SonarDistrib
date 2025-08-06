@@ -1,8 +1,8 @@
 ﻿using AG.EnumLocalization.Attributes;
 namespace SonarPlugin.Localization
 {
-    [EnumLocStrings("MainOverlay")]
-    public enum MainOverlayLoc
+    [EnumLocStrings("MainWindow")]
+    public enum MainWindowLoc
     {
         [EnumLoc(Fallback = "Sonar")]
         WindowTitle,

@@ -10,6 +10,7 @@ using Dalamud.Interface.Windowing;
 using Sonar;
 using Dalamud.Plugin.Services;
 using System.Reflection.Metadata;
+using Sonar.Relays;
 
 namespace SonarPlugin
 {
@@ -20,14 +21,14 @@ namespace SonarPlugin
         private SonarPlugin Plugin { get; }
         private SonarClient Client { get; }
         private WindowSystem Windows { get; }
-        private SonarMainOverlay MainWindow { get; }
+        private SonarMainWindow MainWindow { get; }
         private SonarConfigWindow ConfigWindow { get; }
         private SonarTrackerWindow TrackerWindow { get; }
         private ICommandManager Commands { get; }
         private IChatGui Chat { get; }
         private IPluginLog Logger { get; }
 
-        public SonarCommands(SonarPlugin plugin, SonarClient client, WindowSystem windows, SonarMainOverlay mainWindow, IChatGui chat, ICommandManager commands, SonarConfigWindow configWindow, SonarTrackerWindow trackerWindow, IPluginLog logger)
+        public SonarCommands(SonarPlugin plugin, SonarClient client, WindowSystem windows, SonarMainWindow mainWindow, IChatGui chat, ICommandManager commands, SonarConfigWindow configWindow, SonarTrackerWindow trackerWindow, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;
@@ -88,7 +89,10 @@ namespace SonarPlugin
         [ShowInHelp]
         private void SonarOnCommand(string command, string args)
         {
-            this.Client.Configuration.Contribute.Global = true;
+            args = args.Trim().ToLowerInvariant();
+            if (args is "hunt" or "hunts") this.Client.Configuration.Contribute[RelayType.Hunt] = true;
+            else if (args is "fate" or "fates") this.Client.Configuration.Contribute[RelayType.Fate] = true;
+            else this.Client.Configuration.Contribute.Global = true;
             this.Plugin.SaveConfiguration(true);
         }
 
@@ -98,7 +102,10 @@ namespace SonarPlugin
         [ShowInHelp]
         private void SonarOffCommand(string command, string args)
         {
-            this.Client.Configuration.Contribute.Global = false;
+            args = args.Trim().ToLowerInvariant();
+            if (args is "hunt" or "hunts") this.Client.Configuration.Contribute[RelayType.Hunt] = false;
+            else if (args is "fate" or "fates") this.Client.Configuration.Contribute[RelayType.Fate] = false;
+            else this.Client.Configuration.Contribute.Global = false;
             this.Plugin.SaveConfiguration(true);
         }
 
@@ -107,7 +114,10 @@ namespace SonarPlugin
         [ShowInHelp]
         private void SonarToggleCommand(string command, string args)
         {
-            this.Client.Configuration.Contribute.Global = !this.Client.Configuration.Contribute.Global;
+            args = args.Trim().ToLowerInvariant();
+            if (args is "hunt" or "hunts") this.Client.Configuration.Contribute[RelayType.Hunt] = !this.Client.Configuration.Contribute[RelayType.Hunt];
+            else if (args is "fate" or "fates") this.Client.Configuration.Contribute[RelayType.Fate] = !this.Client.Configuration.Contribute[RelayType.Fate];
+            else this.Client.Configuration.Contribute.Global = !this.Client.Configuration.Contribute.Global;
             this.Plugin.SaveConfiguration(true);
         }
 

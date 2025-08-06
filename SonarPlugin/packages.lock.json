@@ -4,9 +4,9 @@
     "net9.0-windows7.0": {
       "AG": {
         "type": "Direct",
-        "requested": "[0.0.9-alpha, )",
-        "resolved": "0.0.9-alpha",
-        "contentHash": "lAFLtNJP0EdUUu042Bst1mwnbYRaZx18xR50Vm8+bgeFVWKvKnnabyxxDAFSKnfxi9A4mTr2v7D7Pua3ufDQRg=="
+        "requested": "[0.1.2-alpha, )",
+        "resolved": "0.1.2-alpha",
+        "contentHash": "gWkXcwS8zyCTNSGmEex8nWlfqnfVFc40gkasdlOWm4MhMAD4mWnxTKH5C4Z47uR/uxh7I2qntg/LNiauakOwnA=="
       },
       "ConfigureAwait.Fody": {
         "type": "Direct",
@@ -68,25 +68,25 @@
       },
       "AG.Collections.Concurrent": {
         "type": "Transitive",
-        "resolved": "0.0.9-alpha",
-        "contentHash": "1+z6dTcu0eR5/xrUrXa7TdAgeXoLKZYW8QO4li2wESA5w6lb9g1oqiDjP863uMR6nQS9LVvl2S1p18IE35Mc+w==",
+        "resolved": "0.1.2-alpha",
+        "contentHash": "gqJoa2iJ53mdFr1PcUykurc+ULRy3BRE7v3bdf1OZ76n976r+xZ2g69NuvDOKP7eM81qRhvUT3ngFa+LT8M9ZQ==",
         "dependencies": {
-          "AG": "0.0.9-alpha",
-          "AG.Collections.Generic": "0.0.9-alpha"
+          "AG": "0.1.2-alpha",
+          "AG.Collections.Generic": "0.1.2-alpha"
         }
       },
       "AG.Collections.Generic": {
         "type": "Transitive",
-        "resolved": "0.0.9-alpha",
-        "contentHash": "Ql4u2Iasyz6GCRRNQE9a1e4E0lL+/Ua8Hs6m7jXSk3efkGgRgpvtwANRKwF+6eYaf5awaBFID2KaGZhHDOWHMQ==",
+        "resolved": "0.1.2-alpha",
+        "contentHash": "6KdevDpXfX1FZNsrFtWYtIWHQq2fUF8AiNpE/A3P4AaZ6Q2WKImj6vdGBxVaotT0+KGwB7xRa0dUNTHJ/ZOoAA==",
         "dependencies": {
-          "AG": "0.0.9-alpha"
+          "AG": "0.1.2-alpha"
         }
       },
       "AG.EnumLocalization": {
         "type": "Transitive",
-        "resolved": "0.0.9-alpha",
-        "contentHash": "V2WT4mgIx8mGPMlw9kUKAibi+XhEUbZaPHv4hBcOHbx2mT8llOOKLuvRzmC3UzWRiJZPaDgcyN6WJvhwTKgGKQ=="
+        "resolved": "0.1.3-alpha",
+        "contentHash": "BNvyTUh46XipY5ka/SPOpFnUrBHiZSC78vjjvBpLPjYO2hK0OhhyuMHty3fdqXkoIPy/TjcmeF4a2j9p8+OmuA=="
       },
       "AG.NonBlocking": {
         "type": "Transitive",
@@ -415,8 +415,8 @@
       "sonarutils": {
         "type": "Project",
         "dependencies": {
-          "AG.Collections.Concurrent": "[0.0.9-alpha, )",
-          "AG.EnumLocalization": "[0.0.9-alpha, )",
+          "AG.Collections.Concurrent": "[0.1.2-alpha, )",
+          "AG.EnumLocalization": "[0.1.3-alpha, )",
           "BouncyCastle.Cryptography": "[2.6.1, )",
           "DnsClient": "[1.8.0, )",
           "Farmhash.Sharp": "[0.9.0, )",

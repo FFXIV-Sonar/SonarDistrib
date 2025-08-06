@@ -1,6 +1,15 @@
-﻿using CheapLoc;
+﻿using AG.EnumLocalization;
+using CheapLoc;
+using Dalamud.Data;
 using Dalamud.Game.Text;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.ImGuiFileDialog;
+using Dalamud.Interface.Style;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
+using Dalamud.Logging;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using ImGuiNET;
 using Sonar;
 using Sonar.Data;
@@ -8,25 +17,24 @@ using Sonar.Data.Extensions;
 using Sonar.Data.Rows;
 using Sonar.Enums;
 using Sonar.Logging;
+using Sonar.Relays;
 using Sonar.Utilities;
 using SonarPlugin.Attributes;
 using SonarPlugin.Config;
+using SonarPlugin.GUI.Internal;
+using SonarPlugin.Localization;
 using SonarPlugin.Utility;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Primitives;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
-using System.Threading.Tasks;
-using Dalamud.Logging;
-using static SonarPlugin.Utility.ShellUtils;
-using Dalamud.Data;
-using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
-using Dalamud.Interface.ImGuiFileDialog;
 using System.Runtime;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using static SonarPlugin.Utility.ShellUtils;
 
 namespace SonarPlugin.GUI
 {
@@ -36,7 +44,6 @@ namespace SonarPlugin.GUI
         private Task _debugHuntTask = Task.CompletedTask;
         private Task _debugFateTask = Task.CompletedTask;
         public bool IsVisible { get; set; }
-
 
         private bool fatesNeedSorting = true;
 
@@ -128,93 +135,95 @@ namespace SonarPlugin.GUI
 
         private bool _save;
         private bool _server;
+        public override void PreDraw()
+        {
+            this.WindowName = $"{ConfigWindowLoc.WindowTitle.GetLocString()}###SonarConfigWindow";
+        }
+
         public override void Draw()
         {
-            if (ImGui.BeginTabBar("##tabBar", ImGuiTabBarFlags.None))
+            using var bar = ImRaii.TabBar("###tabBar");
+            if (!bar.Success) return;
+
+            using (var tab = ImRaii.TabItem($"{ConfigWindowLoc.GeneralTab.GetLocString()}###generalTab"))
             {
-                if (ImGui.BeginTabItem($"{Loc.Localize("GeneralHeader", "General")}##generalTab"))
-                {
-                    this.DrawGeneralTab();
-                    ImGui.EndTabItem();
-                }
-
-                if (ImGui.BeginTabItem($"{Loc.Localize("HuntsHeader", "Hunts")}##huntTab"))
-                {
-                    this.DrawHuntTab();
-                    ImGui.EndTabItem();
-                }
-
-                if (ImGui.BeginTabItem($"{Loc.Localize("FatesHeader", "FATEs")}##fateTab"))
-                {
-                    this.DrawFateTab();
-                    ImGui.EndTabItem();
-                }
-
-                if (ImGui.BeginTabItem($"{Loc.Localize("AboutHeader", "About")}##aboutTab"))
-                {
-                    this.DrawAboutTab();
-                    ImGui.EndTabItem();
-                }
-
-                if (ImGui.BeginTabItem("Debug##debugTab"))
-                {
-                    this.DrawDebugTab();
-                    ImGui.EndTabItem();
-                }
-
-                ImGui.EndTabBar();
+                if (tab.Success) this.DrawGeneralTab();
             }
+
+            using (var tab = ImRaii.TabItem($"{ConfigWindowLoc.HuntsTab.GetLocString()}###huntsTab"))
+            {
+                if (tab.Success) this.DrawHuntTab();
+            }
+
+            using (var tab = ImRaii.TabItem($"{ConfigWindowLoc.FatesTab.GetLocString()}###fatesTab"))
+            {
+                if (tab.Success) this.DrawFateTab();
+            }
+
+            using (var tab = ImRaii.TabItem($"{ConfigWindowLoc.AboutTab.GetLocString()}###aboutTab"))
+            {
+                if (tab.Success) this.DrawAboutTab();
+            }
+
+            using (var tab = ImRaii.TabItem($"{ConfigWindowLoc.DebugTab.GetLocString()}###debugTab"))
+            {
+                if (tab.Success) this.DrawDebugTab();
+            }
+
             if (this._save) this.Plugin.SaveConfiguration(this._server);
             this._save = this._server = false;
         }
 
         private void DrawGeneralTab()
         {
-            ImGui.BeginChild("##generalTabScrollRegion");
+            using var child = ImRaii.Child("###generalTabScrollRegion");
+            if (!child.Success) return;
 
-            SonarImGui.Checkbox($"{Loc.Localize("ContributeGlobal", "Global Contribute")}##contributeHunts", this.Client.Configuration.Contribute.Global, value =>
+            SonarImGui.Checkbox($"{ConfigLoc.GlobalContribute.GetLocString()}###globalContribute", this.Client.Configuration.Contribute.Global, value =>
             {
                 this._save = this._server = true;
                 this.Client.Configuration.Contribute.Global = value;
             });
+
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip($"{Loc.Localize("ContributeGlobalTooltip", "Disable this to disable contributing both hunts and fates.\nAccessible via /sonaron and /sonaroff commands.")}");
+                ImGui.SetTooltip(ConfigLoc.GlobalContributeTooltip.GetLocString());
             }
 
-            this._save |= ImGui.Checkbox($"{Loc.Localize("OverlayVisibleByDefault", "Overlay Visible by default")}##overlayVisibleByDefault", ref this.Plugin.Configuration.OverlayVisibleByDefault);
-            this._save |= ImGui.Checkbox($"{Loc.Localize("LockOverlaysConfig", "Lock overlays")}##lockOverlays", ref this.Plugin.Configuration.EnableLockedOverlays);
-            this._save |= ImGui.Checkbox($"{Loc.Localize("HideTitleBarConfig", "Hide Title Bar")}##hideTitlebar", ref this.Plugin.Configuration.HideTitlebar);
-            this._save |= ImGui.Checkbox($"{Loc.Localize("EnableClickthroughConfig", "Enable window clickthrough")}##enableWindowClickthrough", ref this.Plugin.Configuration.WindowClickThrough);
+            this._save |= ImGui.Checkbox($"{ConfigWindowLoc.OverlaysVisibleByDefault.GetLocString()}###overlayVisibleByDefault", ref this.Plugin.Configuration.OverlayVisibleByDefault);
+            this._save |= ImGui.Checkbox($"{ConfigWindowLoc.LockOverlays.GetLocString()}###lockOverlays", ref this.Plugin.Configuration.EnableLockedOverlays);
+            this._save |= ImGui.Checkbox($"{ConfigWindowLoc.HideTitleBar.GetLocString()}###hideTitlebar", ref this.Plugin.Configuration.HideTitlebar);
+            this._save |= ImGui.Checkbox($"{ConfigWindowLoc.EnableClickthrough.GetLocString()}###enableWindowClickthrough", ref this.Plugin.Configuration.WindowClickThrough);
             if (this.Plugin.Configuration.WindowClickThrough)
             {
-                ImGui.Indent();
-                this._save |= ImGui.Checkbox($"{Loc.Localize("TabBarClickthroughConfig", "Enable tab bar clickthrough")}##enableTabBarClickthrough", ref this.Plugin.Configuration.TabBarClickThrough);
-                this._save |= ImGui.Checkbox($"{Loc.Localize("ListClickthroughConfig", "Enable list clickthrough")}##enableListClickthrough", ref this.Plugin.Configuration.ListClickThrough);
-                ImGui.Unindent();
+                using var indent = ImRaii.PushIndent();
+                this._save |= ImGui.Checkbox($"{ConfigWindowLoc.TabsClickthrough.GetLocString()}###enableTabBarClickthrough", ref this.Plugin.Configuration.TabBarClickThrough);
+                this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ListClickthrough.GetLocString()}###enableListClickthrough", ref this.Plugin.Configuration.ListClickThrough);
             }
 
-            SonarImGui.Combo($"{Loc.Localize("SortingMode", "Sorting Mode")}", (int)this.Plugin.Configuration.SortingMode, EnumCheapLocExtensions.CheapLoc<RelayStateSortingMode>().Values.ToArray(), value =>
+            var sortingMode = this.Plugin.Configuration.SortingMode;
+            if (SonarWidgets.EnumCombo($"{ConfigWindowLoc.SortingMode.GetLocString()}###sortingMode", ref sortingMode, 100))
             {
                 this._save = true;
-                this.Plugin.Configuration.SortingMode = (RelayStateSortingMode)value;
-            });
-
-            var index = this.jurisdictionsCombo.Keys.ToList().IndexOf(this.Client.Configuration.Contribute.ReceiveJurisdiction);
-            if (ImGui.Combo($"{Loc.Localize("ReceiveJurisdiction", "Receive Jurisdiction")}", ref index, this.jurisdictionsCombo.Values.ToArray(), this.jurisdictionsCombo.Count))
-            {
-                this._save = this._server = true;
-                if (index == 0) index = 5;
-                this.Client.Configuration.Contribute.ReceiveJurisdiction = this.jurisdictionsCombo.Keys.ToList()[index];
+                if (sortingMode is RelayStateSortingMode.Default) sortingMode = RelayStateSortingMode.LastFound;
+                this.Plugin.Configuration.SortingMode = sortingMode;
             }
 
-            this._save |= ImGui.SliderFloat($"{Loc.Localize("OpacityConfig", "Opacity")}##opacitySlider", ref this.Plugin.Configuration.Opacity, 0.0f, 1.0f);
+            var jurisdiction = this.Client.Configuration.Contribute.ReceiveJurisdiction;
+            if (SonarWidgets.EnumCombo($"{ConfigLoc.ReceiveJurisdiction.GetLocString()}###receiveJurisdiction", ref jurisdiction, 100))
+            {
+                this._save = this._server = true;
+                if (jurisdiction is SonarJurisdiction.Default) jurisdiction = SonarJurisdiction.Datacenter;
+                this.Client.Configuration.Contribute.ReceiveJurisdiction = jurisdiction;
+            }
+
+            this._save |= ImGui.SliderFloat($"{ConfigWindowLoc.Opacity.GetLocString()}###opacitySlider", ref this.Plugin.Configuration.Opacity, 0.0f, 1.0f);
 
             ImGui.Spacing();
             ImGui.Separator();
             ImGui.Spacing();
 
-            if (ImGui.SliderFloat($"{Loc.Localize("AlertVolumeConfig", "Alert Volume")}##volumeSlider", ref this.Plugin.Configuration.SoundVolume, 0.0f, 1.0f))
+            if (ImGui.SliderFloat($"{ConfigWindowLoc.AlertVolume.GetLocString()}###volumeSlider", ref this.Plugin.Configuration.SoundVolume, 0.0f, 1.0f))
             {
                 this.Audio.Volume = this.Plugin.Configuration.SoundVolume;
                 this._save = true;
@@ -226,159 +235,178 @@ namespace SonarPlugin.GUI
             ImGui.Separator();
             ImGui.Spacing();
 
-            if (ImGui.TreeNodeEx("##generalTabDutySettings", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("DutySettings", "Duty Settings")}"))
+            using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.DutySettingsHeader.GetLocString()}###dutySettingsHeader", ImGuiTreeNodeFlags.CollapsingHeader))
             {
-                ImGui.Indent();
-
-                this._save |= ImGui.Checkbox($"{Loc.Localize("DisableChatAlertsDuties", "Disable Chat Alerts during Duties")}##enableWindowClickthrough", ref this.Plugin.Configuration.DisableChatInDuty);
-                this._save |= ImGui.Checkbox($"{Loc.Localize("DisableSoundAlertsDuties", "Disable Sound Alerts during Duties")}##enableWindowClickthrough", ref this.Plugin.Configuration.DisableSoundInDuty);
-
-                ImGui.Unindent();
-            }
-
-            if (ImGui.TreeNodeEx("##generalTabClicks", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("ClickSettings", "Click Settings")}"))
-            {
-                ImGui.Indent();
-
-                var actions = EnumCheapLocExtensions.CheapLoc<ClickAction>().Values.ToArray();
-                SonarImGui.Combo($"{Loc.Localize("MiddleClick", "Middle Click")}##middleClickConfig", (int)this.Plugin.Configuration.MiddleClick, actions, index =>
+                if (node.Success)
                 {
-                    this._save = true;
-                    if (index == 0) index = 2;
-                    this.Plugin.Configuration.MiddleClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
-                });
-
-                SonarImGui.Combo($"{Loc.Localize("RightClick", "Right Click")}##rightClickConfig", (int)this.Plugin.Configuration.RightClick, actions, index =>
-                {
-                    this._save = true;
-                    if (index == 0) index = 3;
-                    this.Plugin.Configuration.RightClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
-                });
-
-                // ==
-
-                SonarImGui.Combo($"{Loc.Localize("ShiftMiddleClick", "Shift Middle Click")}##shiftmiddleClickConfig", (int)this.Plugin.Configuration.ShiftMiddleClick, actions, index =>
-                {
-                    this._save = true;
-                    if (index == 0) index = 1;
-                    this.Plugin.Configuration.ShiftMiddleClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
-                });
-
-                SonarImGui.Combo($"{Loc.Localize("ShiftRightClick", "Shift Right Click")}##shiftrightClickConfig", (int)this.Plugin.Configuration.ShiftRightClick, actions, index =>
-                {
-                    this._save = true;
-                    if (index == 0) index = 1;
-                    this.Plugin.Configuration.ShiftRightClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
-                });
-
-                // ==
-
-                SonarImGui.Combo($"{Loc.Localize("AltMiddleClick", "AltMiddle Click")}##AltmiddleClickConfig", (int)this.Plugin.Configuration.AltMiddleClick, actions, index =>
-                {
-                    this._save = true;
-                    if (index == 0) index = 1;
-                    this.Plugin.Configuration.AltMiddleClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
-                });
-
-                SonarImGui.Combo($"{Loc.Localize("AltRightClick", "AltRight Click")}##AltrightClickConfig", (int)this.Plugin.Configuration.AltRightClick, actions, index =>
-                {
-                    this._save = true;
-                    if (index == 0) index = 1;
-                    this.Plugin.Configuration.AltRightClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
-                });
-
-                // ==
-
-                SonarImGui.Combo($"{Loc.Localize("CtrlMiddleClick", "CtrlMiddle Click")}##CtrlmiddleClickConfig", (int)this.Plugin.Configuration.CtrlMiddleClick, actions, index =>
-                {
-                    this._save = true;
-                    if (index == 0) index = 1;
-                    this.Plugin.Configuration.CtrlMiddleClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
-                });
-
-                SonarImGui.Combo($"{Loc.Localize("CtrlRightClick", "CtrlRight Click")}##CtrlrightClickConfig", (int)this.Plugin.Configuration.CtrlRightClick, actions, index =>
-                {
-                    this._save = true;
-                    if (index == 0) index = 4;
-                    this.Plugin.Configuration.CtrlRightClick = EnumCheapLocExtensions.CheapLoc<ClickAction>().Keys.ToArray()[index];
-                });
-
-                ImGui.Spacing();
-
-                var cityStates = Enum.GetValues<CityState>().Select(cityState => (cityState, cityState.GetMeta())).ToArray();
-                var cityStateStrings = cityStates.Select(ct => ct.Item2?.GetZone()?.ToString() ?? string.Empty).ToArray();
-                SonarImGui.Combo($"{Loc.Localize("PreferredCityState", "Preferred City State")}##preferredCityState", (int)this.Plugin.Configuration.PreferredCityState, cityStateStrings, index =>
-                {
-                    this._save = true;
-                    this.Plugin.Configuration.PreferredCityState = cityStates[index].cityState;
-                });
-
-                ImGui.Unindent();
-            }
-
-            if (ImGui.TreeNodeEx("##generalTabLodestone", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("LodestoneSettings", "Lodestone Verification Settings")}"))
-            {
-                ImGui.Indent();
-                var suppressions = EnumCheapLocExtensions.CheapLoc<SuppressVerification>().Values.ToArray();
-                SonarImGui.Combo($"{Loc.Localize("SuppressVerification", "Suppress Verification Requests")}##suppressVerification", (int)this.Plugin.Configuration.SuppressVerification, suppressions, index =>
-                {
-                    this._save = true;
-                    this.Plugin.Configuration.SuppressVerification = EnumCheapLocExtensions.CheapLoc<SuppressVerification>().Keys.ToArray()[index];
-                });
-
-                ImGui.Unindent();
-            }
-
-            if (ImGui.TreeNodeEx("##generalTabColorScheme", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("ColorScheme", "Sonar Color Scheme")}"))
-            {
-                ImGui.Indent();
-
-                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntHealthyColor", "Hunt - Healthy"), ref this.Plugin.Configuration.Colors.HuntHealthy, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntPulledColor", "Hunt - Pulled"), ref this.Plugin.Configuration.Colors.HuntPulled, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("HuntDeadColor", "Hunt - Dead"), ref this.Plugin.Configuration.Colors.HuntDead, ImGuiColorEditFlags.NoInputs);
-
-                ImGui.Spacing();
-                ImGui.Separator();
-                ImGui.Spacing();
-
-                this._save |= ImGui.ColorEdit4(Loc.Localize("FateRunningColor", "Fate - Running"), ref this.Plugin.Configuration.Colors.FateRunning, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("FateProgressColor", "Fate - Progress"), ref this.Plugin.Configuration.Colors.FateProgress, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("FateCompleteColor", "Fate - Complete"), ref this.Plugin.Configuration.Colors.FateComplete, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("FateFailedColor", "Fate - Failed"), ref this.Plugin.Configuration.Colors.FateFailed, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("FatePreparationColor", "Fate - Preparation"), ref this.Plugin.Configuration.Colors.FatePreparation, ImGuiColorEditFlags.NoInputs);
-                this._save |= ImGui.ColorEdit4(Loc.Localize("FateUnknownColor", "Fate - Unknown"), ref this.Plugin.Configuration.Colors.FateUnknown, ImGuiColorEditFlags.NoInputs);
-
-                ImGui.Spacing();
-                ImGui.Separator();
-                ImGui.Spacing();
-
-                ImGui.TextUnformatted(Loc.Localize("ColorSchemePresets", "Presets"));
-
-                if (ImGui.Button(Loc.Localize("ColorSchemeDefault", "Defaults")))
-                {
-                    this._save = true;
-                    this.Plugin.Configuration.Colors.SetDefaults();
+                    using var indent = ImRaii.PushIndent();
+                    this._save |= ImGui.Checkbox($"{ConfigWindowLoc.DutyDisableChatAlerts.GetLocString()}###disableChatAlerts", ref this.Plugin.Configuration.DisableChatInDuty);
+                    this._save |= ImGui.Checkbox($"{ConfigWindowLoc.DutyDisableSoundAlerts.GetLocString()}###disableSoundAlerts", ref this.Plugin.Configuration.DisableSoundInDuty);
                 }
-
-                ImGui.SameLine();
-                if (ImGui.Button(Loc.Localize("ColorSchemeDefault", "Original")))
-                {
-                    this._save = true;
-                    this.Plugin.Configuration.Colors.HuntHealthy = ColorPalette.Green;
-                    this.Plugin.Configuration.Colors.HuntPulled = ColorPalette.Yellow;
-                    this.Plugin.Configuration.Colors.HuntDead = ColorPalette.Red;
-
-                    this.Plugin.Configuration.Colors.FateRunning = ColorPalette.Green;
-                    this.Plugin.Configuration.Colors.FateProgress = ColorPalette.Yellow;
-                    this.Plugin.Configuration.Colors.FateComplete = ColorPalette.Red;
-                    this.Plugin.Configuration.Colors.FateFailed = ColorPalette.Red;
-                    this.Plugin.Configuration.Colors.FatePreparation = ColorPalette.White;
-                    this.Plugin.Configuration.Colors.FateUnknown = ColorPalette.Red;
-                }
-
-                ImGui.Unindent();
             }
-            ImGui.EndChild(); // End scroll region
+
+            using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.ClickSettingsHeader.GetLocString()}###clickSettingsHeader", ImGuiTreeNodeFlags.CollapsingHeader))
+            {
+                if (node.Success)
+                {
+                    using var indent = ImRaii.PushIndent();
+                    ClickAction action;
+
+                    action = this.Plugin.Configuration.MiddleClick;
+                    if (SonarWidgets.EnumCombo($"{ConfigWindowLoc.MiddleClick.GetLocString()}###.MiddleClick", ref action, 100))
+                    {
+                        if (action is ClickAction.Default) action = ClickAction.Chat;
+                        this.Plugin.Configuration.MiddleClick = action;
+                        this._save = true;
+                    }
+
+                    action = this.Plugin.Configuration.RightClick;
+                    if (SonarWidgets.EnumCombo($"{ConfigWindowLoc.RightClick.GetLocString()}###.RightClick", ref action, 100))
+                    {
+                        if (action is ClickAction.Default) action = ClickAction.Map;
+                        this.Plugin.Configuration.RightClick = action;
+                        this._save = true;
+                    }
+
+                    // ==
+
+                    action = this.Plugin.Configuration.ShiftMiddleClick;
+                    if (SonarWidgets.EnumCombo($"{ConfigWindowLoc.ShiftMiddleClick.GetLocString()}###.ShiftMiddleClick", ref action, 100))
+                    {
+                        if (action is ClickAction.Default) action = ClickAction.None;
+                        this.Plugin.Configuration.ShiftMiddleClick = action;
+                        this._save = true;
+                    }
+
+                    action = this.Plugin.Configuration.ShiftRightClick;
+                    if (SonarWidgets.EnumCombo($"{ConfigWindowLoc.ShiftRightClick.GetLocString()}###.ShiftRightClick", ref action, 100))
+                    {
+                        if (action is ClickAction.Default) action = ClickAction.None;
+                        this.Plugin.Configuration.ShiftRightClick = action;
+                        this._save = true;
+                    }
+
+                    // ==
+
+                    action = this.Plugin.Configuration.AltMiddleClick;
+                    if (SonarWidgets.EnumCombo($"{ConfigWindowLoc.AltMiddleClick.GetLocString()}###.AltMiddleClick", ref action, 100))
+                    {
+                        if (action is ClickAction.Default) action = ClickAction.None;
+                        this.Plugin.Configuration.AltMiddleClick = action;
+                        this._save = true;
+                    }
+
+                    action = this.Plugin.Configuration.AltRightClick;
+                    if (SonarWidgets.EnumCombo($"{ConfigWindowLoc.AltRightClick.GetLocString()}###.AltRightClick", ref action, 100))
+                    {
+                        if (action is ClickAction.Default) action = ClickAction.None;
+                        this.Plugin.Configuration.AltRightClick = action;
+                        this._save = true;
+                    }
+
+                    // ==
+
+                    action = this.Plugin.Configuration.CtrlMiddleClick;
+                    if (SonarWidgets.EnumCombo($"{ConfigWindowLoc.CtrlMiddleClick.GetLocString()}###.CtrlMiddleClick", ref action, 100))
+                    {
+                        if (action is ClickAction.Default) action = ClickAction.None;
+                        this.Plugin.Configuration.CtrlMiddleClick = action;
+                        this._save = true;
+                    }
+
+                    action = this.Plugin.Configuration.CtrlRightClick;
+                    if (SonarWidgets.EnumCombo($"{ConfigWindowLoc.CtrlRightClick.GetLocString()}###.CtrlRightClick", ref action, 100))
+                    {
+                        if (action is ClickAction.Default) action = ClickAction.Teleport;
+                        this.Plugin.Configuration.CtrlRightClick = action;
+                        this._save = true;
+                    }
+
+                    ImGui.Spacing();
+
+                    var cityStateValues = Enum.GetValues<CityState>().Select(cityState => (cityState, cityState.GetMeta())).ToArray();
+                    var cityStateStrings = cityStateValues.Select(ct => ct.Item2?.GetZone()?.ToString() ?? string.Empty).ToArray();
+                    SonarImGui.Combo($"{ConfigWindowLoc.PreferredCityState.GetLocString()}###preferredCityState", (int)this.Plugin.Configuration.PreferredCityState, cityStateStrings, index =>
+                    {
+                        this.Plugin.Configuration.PreferredCityState = cityStateValues[index].cityState;
+                        this._save = true;
+                    });
+                }
+            }
+
+            using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.LocalizationHeader.GetLocString()}###localizationHeader", ImGuiTreeNodeFlags.CollapsingHeader))
+            {
+                if (node.Success)
+                {
+                    using var indent = ImRaii.PushIndent();
+                    this._save |= SonarWidgets.Localization(this.Plugin.Configuration.Localization, this.FileDialogs);
+                }
+            }
+
+            using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.LodestoneHeader.GetLocString()}###lodestoneHeader", ImGuiTreeNodeFlags.CollapsingHeader))
+            {
+                if (node.Success)
+                {
+                    using var indent = ImRaii.PushIndent();
+                    var suppressMode = this.Plugin.Configuration.SuppressVerification;
+                    if (SonarWidgets.EnumCombo($"{ConfigWindowLoc.SuppressLodestoneVerifications.GetLocString()}###suppressVerification", ref suppressMode, 100))
+                    {
+                        this.Plugin.Configuration.SuppressVerification = suppressMode;
+                        this._save = true;
+                    }
+                }
+            }
+
+            using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.ColorSettingsHeader.GetLocString()}###colorHeader", ImGuiTreeNodeFlags.CollapsingHeader))
+            {
+                if (node.Success)
+                {
+                    using var indent = ImRaii.PushIndent();
+                    this._save |= ImGui.ColorEdit4($"{ConfigWindowLoc.HealthyHuntColor.GetLocString()}###healthyHuntColor", ref this.Plugin.Configuration.Colors.HuntHealthy, ImGuiColorEditFlags.NoInputs);
+                    this._save |= ImGui.ColorEdit4($"{ConfigWindowLoc.PulledHuntColor.GetLocString()}###pulledHuntColor", ref this.Plugin.Configuration.Colors.HuntPulled, ImGuiColorEditFlags.NoInputs);
+                    this._save |= ImGui.ColorEdit4($"{ConfigWindowLoc.DeadHuntColor.GetLocString()}###deadHuntColor", ref this.Plugin.Configuration.Colors.HuntDead, ImGuiColorEditFlags.NoInputs);
+
+                    ImGui.Spacing();
+                    ImGui.Separator();
+                    ImGui.Spacing();
+
+                    this._save |= ImGui.ColorEdit4($"{ConfigWindowLoc.RunningFateColor.GetLocString()}###runningFateColor", ref this.Plugin.Configuration.Colors.FateRunning, ImGuiColorEditFlags.NoInputs);
+                    this._save |= ImGui.ColorEdit4($"{ConfigWindowLoc.ProgressFateColor.GetLocString()}###progressFateColor", ref this.Plugin.Configuration.Colors.FateProgress, ImGuiColorEditFlags.NoInputs);
+                    this._save |= ImGui.ColorEdit4($"{ConfigWindowLoc.CompleteFateColor.GetLocString()}###completeFateColor", ref this.Plugin.Configuration.Colors.FateComplete, ImGuiColorEditFlags.NoInputs);
+                    this._save |= ImGui.ColorEdit4($"{ConfigWindowLoc.FailedFateColor.GetLocString()}###failedFateColor", ref this.Plugin.Configuration.Colors.FateFailed, ImGuiColorEditFlags.NoInputs);
+                    this._save |= ImGui.ColorEdit4($"{ConfigWindowLoc.PreparingFateColor.GetLocString()}###preparingFateColor", ref this.Plugin.Configuration.Colors.FatePreparation, ImGuiColorEditFlags.NoInputs);
+                    this._save |= ImGui.ColorEdit4($"{ConfigWindowLoc.UnknownFateColor.GetLocString()}###unknownFateColor", ref this.Plugin.Configuration.Colors.FateUnknown, ImGuiColorEditFlags.NoInputs);
+
+                    ImGui.Spacing();
+                    ImGui.Separator();
+                    ImGui.Spacing();
+
+                    ImGui.TextUnformatted(ConfigWindowLoc.ColorPresets.GetLocString());
+
+                    if (ImGui.Button(ConfigWindowLoc.DefaultColorPreset.GetLocString()))
+                    {
+                        this.Plugin.Configuration.Colors.SetDefaults();
+                        this._save = true;
+                    }
+
+                    ImGui.SameLine();
+
+                    if (ImGui.Button(ConfigWindowLoc.OriginalColorPreset.GetLocString()))
+                    {
+                        this.Plugin.Configuration.Colors.HuntHealthy = ColorPalette.Green;
+                        this.Plugin.Configuration.Colors.HuntPulled = ColorPalette.Yellow;
+                        this.Plugin.Configuration.Colors.HuntDead = ColorPalette.Red;
+
+                        this.Plugin.Configuration.Colors.FateRunning = ColorPalette.Green;
+                        this.Plugin.Configuration.Colors.FateProgress = ColorPalette.Yellow;
+                        this.Plugin.Configuration.Colors.FateComplete = ColorPalette.Red;
+                        this.Plugin.Configuration.Colors.FateFailed = ColorPalette.Red;
+                        this.Plugin.Configuration.Colors.FatePreparation = ColorPalette.White;
+                        this.Plugin.Configuration.Colors.FateUnknown = ColorPalette.Red;
+                        this._save = true;
+                    }
+                }
+            }
         }
 
         public override void OnClose()
@@ -398,18 +426,27 @@ namespace SonarPlugin.GUI
 
         private void DrawHuntTab()
         {
-            ImGui.BeginChild("##huntTab2ScrollRegion");
+            using var child = ImRaii.Child("##huntTabScrollRegion");
 
-            SonarImGui.Checkbox($"{Loc.Localize("ContributeHunts", "Contribute Hunt Reports")}{(this.Client.Configuration.Contribute.Global ? "" : " (Disabled)")}##contributeHunts", this.Client.Configuration.Contribute[Sonar.Relays.RelayType.Hunt], value =>
+            SonarImGui.Checkbox($"{ConfigLoc.ContributeHunts.GetLocString()}###contributeHunts", this.Client.Configuration.Contribute[RelayType.Hunt], value =>
             {
                 this._save = this._server = true;
-                this.Client.Configuration.Contribute[Sonar.Relays.RelayType.Hunt] = value;
+                this.Client.Configuration.Contribute[RelayType.Hunt] = value;
             });
+
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip($"{Loc.Localize("ContributeHuntsTooltip", "Contributing hunt reports is required in order to receive hunt reports from other Sonar users.\nIf disabled Sonar will continue to work in local mode, where you'll see what's detected within your game but you'll not receive from others.")}");
+                ImGui.SetTooltip(ConfigLoc.ContributeTooltip.GetLocString());
             }
-            SonarImGui.Checkbox($"{Loc.Localize("TrackAllHunts", "Track All Hunts")}##trackAllHunts", this.Client.Configuration.HuntConfig.TrackAll, value =>
+
+            if (!this.Client.Configuration.Contribute.Global)
+            {
+                ImGui.SameLine();
+                using var color = ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudRed);
+                ImGui.TextUnformatted(ConfigLoc.ContributeGlobalDisabled.GetLocString());
+            }
+
+            SonarImGui.Checkbox($"{ConfigLoc.TrackAllHunts.GetLocString()}###trackAllHunts", this.Client.Configuration.HuntConfig.TrackAll, value =>
             {
                 this._save = this._server = true;
                 this.Client.Configuration.HuntConfig.TrackAll = value;
@@ -417,38 +454,33 @@ namespace SonarPlugin.GUI
 
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip($"{Loc.Localize("TrackAllHuntsTooltip", "Checked: Track all hunts regardless of jurisdiction settings.\nUnchecked: Track hunts within jurisdiction settings only.")}");
+                ImGui.SetTooltip(ConfigLoc.TrackAllTooltip.GetLocString());
             }
 
-            if (ImGui.TreeNodeEx("##huntTabChatConfig", ImGuiTreeNodeFlags.CollapsingHeader | ImGuiTreeNodeFlags.DefaultOpen, $"{Loc.Localize("ConfigureHuntChat", "Hunt Chat Configuration")}"))
+            using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.ChatReportsConfig.GetLocString()}###huntChatConfig", ImGuiTreeNodeFlags.CollapsingHeader))
             {
-                ImGui.Indent();
-
-                this._save |= ImGui.Checkbox($"{Loc.Localize("HuntChatEnabledConfig", "Show hunt reports in game chat")}##huntChatEnabled", ref this.Plugin.Configuration.EnableGameChatReports);
+                using var indent = ImRaii.PushIndent();
+                this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatReportsEnabled.GetLocString()}###huntChatEnabled", ref this.Plugin.Configuration.EnableGameChatReports);
                 if (this.Plugin.Configuration.EnableGameChatReports)
                 {
-                    ImGui.Indent();
+                    using var indent2 = ImRaii.PushIndent();
                     // TODO: might need to do extra checks here and default to Echo channel on failure.
                     var currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.HuntOutputChannel)?.FancyName ?? this.Plugin.Configuration.HuntOutputChannel.ToString();
                     var selectedChat = Array.IndexOf(this._chatTypes, currentChat);
 
-                    if (ImGui.Combo("##chatTypes", ref selectedChat, this._chatTypes, this._chatTypes.Length))
+                    if (ImGui.Combo("###chatTypes", ref selectedChat, this._chatTypes, this._chatTypes.Length))
                     {
                         this._save = true;
-                        var value = XivChatTypeUtils.GetValueFromInfoAttribute(_chatTypes[selectedChat]);
+                        var value = XivChatTypeUtils.GetValueFromInfoAttribute(this._chatTypes[selectedChat]);
                         this.Plugin.Configuration.HuntOutputChannel = value;
                     }
 
-                    this._save |= ImGui.Checkbox($"{Loc.Localize("HuntChatEnableItalic", "Enable italic font for game chat")}##huntChatEnableItalic", ref this.Plugin.Configuration.EnableGameChatItalicFont);
-                    this._save |= ImGui.Checkbox($"{Loc.Localize("HuntChatEnableCrosswordIcon", "Enable cross world icon when relay is not from current world")}##huntChatEnableCrossworldIcon", ref this.Plugin.Configuration.EnableGameChatCrossworldIcon);
-                    this._save |= ImGui.Checkbox($"{Loc.Localize("HuntChatEnableDeathChat", "Show hunt deaths in game chat")}##huntChatEnableDeaths", ref this.Plugin.Configuration.EnableGameChatReportsDeaths);
+                    this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableItalics.GetLocString()}###huntChatEnableItalic", ref this.Plugin.Configuration.EnableGameChatItalicFont);
+                    this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableCwIcon.GetLocString()}###huntChatEnableCrossworldIcon", ref this.Plugin.Configuration.EnableGameChatCrossworldIcon);
+                    this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableDeaths.GetLocString()}###huntChatEnableDeaths", ref this.Plugin.Configuration.EnableGameChatReportsDeaths);
                     ImGui.Unindent();
                 }
-
-                ImGui.Unindent();
             }
-
-            ImGui.Spacing();
 
             if (ImGui.TreeNodeEx("##huntTabSoundAlertConfig", ImGuiTreeNodeFlags.CollapsingHeader | ImGuiTreeNodeFlags.DefaultOpen, $"{Loc.Localize("ConfigureHuntSounds", "Hunt Sound Alerts Configuration")}"))
             {
@@ -540,7 +572,7 @@ namespace SonarPlugin.GUI
                     this.Plugin.Configuration.AdvancedHuntReportSettings = value;
                     if (!value)
                     {
-                        foreach (HuntRank rank in Enum.GetValues(typeof(HuntRank)))
+                        foreach (HuntRank rank in Enum.GetValues<HuntRank>())
                         {
                             SonarJurisdiction jurisdiction = this.Client.Configuration.HuntConfig.GetJurisdiction(ExpansionPack.ARealmReborn, rank);
                             foreach (ExpansionPack expansion in Enum.GetValues(typeof(ExpansionPack)))
@@ -615,8 +647,6 @@ namespace SonarPlugin.GUI
 
                 ImGui.Unindent();
             }
-
-            ImGui.EndChild(); // ##huntTabScrollRegion
         }
 
         private readonly Dictionary<ExpansionPack, string> expansionStrings = new Dictionary<ExpansionPack, string>()
@@ -1051,7 +1081,7 @@ namespace SonarPlugin.GUI
             ImGui.EndChild(); // End scroll region
         }
 
-        private bool _showIdentifier;
+        private bool _showClientHash;
         private void DrawDebugTab()
         {
             ImGui.BeginChild("##debugTabScrollRegion");
@@ -1065,13 +1095,13 @@ namespace SonarPlugin.GUI
 
                     ImGui.Text($"Client Hash: ");
                     ImGui.SameLine();
-                    if (this._showIdentifier)
+                    if (this._showClientHash)
                     {
                         ImGui.Text($"{this.Client.ClientHash ?? "Unknown"}");
                         ImGui.SameLine();
                     }
 
-                    if (ImGui.Button($"{(this._showIdentifier ? "Hide" : "Show")}")) this._showIdentifier = !this._showIdentifier;
+                    if (ImGui.Button($"{(this._showClientHash ? "Hide" : "Show")}")) this._showClientHash = !this._showClientHash;
                     ImGui.SameLine();
                     if (ImGui.Button($"Copy")) ImGui.SetClipboardText(this.Client.ClientHash);
                 }
