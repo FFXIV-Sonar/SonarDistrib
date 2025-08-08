@@ -2,7 +2,7 @@
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin.Services;
 using DryIocAttributes;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using SonarDiagnostics.Dns;
 using System;
 using System.Collections.Generic;

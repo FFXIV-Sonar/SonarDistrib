@@ -1,7 +1,7 @@
 ﻿using AG.EnumLocalization;
 using Dalamud.Interface.ImGuiFileDialog;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Sonar;
 using Sonar.Localization;
 using SonarPlugin.Config;

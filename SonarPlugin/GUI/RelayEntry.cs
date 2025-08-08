@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Sonar;
 using Sonar.Relays;
 using Sonar.Trackers;

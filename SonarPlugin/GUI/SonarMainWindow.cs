@@ -2,7 +2,7 @@
 using CheapLoc;
 using SonarPlugin.Config;
 using Dalamud.Interface;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using ImGuiScene;
 using Sonar.Data;
 using Sonar.Data.Extensions;
@@ -424,11 +424,11 @@ namespace SonarPlugin.GUI
                 var tex = this.MapTextures.GetMapTexture(zone?.MapResourcePath ?? string.Empty);
 
                 var position = ImGui.GetCursorScreenPos();
-                if (tex != null) ImGui.Image(tex.ImGuiHandle, mapSize * ImGui.GetIO().FontGlobalScale);
+                if (tex != null) ImGui.Image(tex.Handle, mapSize * ImGui.GetIO().FontGlobalScale);
                 else ImGui.Dummy(mapSize * ImGui.GetIO().FontGlobalScale);
 
                 var offset = MapFlagUtils.FlagToPixel(zone?.Scale ?? 1.0f, relay.GetFlag()) * (mapSize.X / 2048 * ImGui.GetIO().FontGlobalScale);
-                ImGui.GetWindowDrawList().AddImage(_redFlag.ImGuiHandle, position + (Vector2)offset - iconSize * ImGui.GetIO().FontGlobalScale, position + (Vector2)offset + iconSize * ImGui.GetIO().FontGlobalScale);
+                ImGui.GetWindowDrawList().AddImage(_redFlag.Handle, position + (Vector2)offset - iconSize * ImGui.GetIO().FontGlobalScale, position + (Vector2)offset + iconSize * ImGui.GetIO().FontGlobalScale);
 
                 ImGui.EndGroup(); // End Map Group
 
@@ -515,11 +515,11 @@ namespace SonarPlugin.GUI
                 var tex = this.MapTextures.GetMapTexture(zone?.MapResourcePath ?? string.Empty);
 
                 var position = ImGui.GetCursorScreenPos();
-                if (tex != null) ImGui.Image(tex.ImGuiHandle, mapSize * ImGui.GetIO().FontGlobalScale);
+                if (tex != null) ImGui.Image(tex.Handle, mapSize * ImGui.GetIO().FontGlobalScale);
                 else ImGui.Dummy(mapSize * ImGui.GetIO().FontGlobalScale);
 
                 var offset = MapFlagUtils.FlagToPixel(zone?.Scale ?? 1.0f, relay.GetFlag()) * (mapSize.X / 2048 * ImGui.GetIO().FontGlobalScale);
-                ImGui.GetWindowDrawList().AddImage(_redFlag.ImGuiHandle, position + (Vector2)offset - iconSize * ImGui.GetIO().FontGlobalScale, position + (Vector2)offset + iconSize * ImGui.GetIO().FontGlobalScale);
+                ImGui.GetWindowDrawList().AddImage(_redFlag.Handle, position + (Vector2)offset - iconSize * ImGui.GetIO().FontGlobalScale, position + (Vector2)offset + iconSize * ImGui.GetIO().FontGlobalScale);
 
                 ImGui.EndGroup(); // End Map Group
                 ImGui.SameLine(0, 25 * ImGui.GetIO().FontGlobalScale);

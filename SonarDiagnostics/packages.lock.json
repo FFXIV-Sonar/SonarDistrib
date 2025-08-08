@@ -4,9 +4,9 @@
     "net9.0-windows7.0": {
       "DalamudPackager": {
         "type": "Direct",
-        "requested": "[12.0.0, )",
-        "resolved": "12.0.0",
-        "contentHash": "J5TJLV3f16T/E2H2P17ClWjtfEBPpq3yxvqW46eN36JCm6wR+EaoaYkqG9Rm5sHqs3/nK/vKjWWyvEs/jhKoXw=="
+        "requested": "[13.0.0, )",
+        "resolved": "13.0.0",
+        "contentHash": "Mb3cUDSK/vDPQ8gQIeuCw03EMYrej1B4J44a1AvIJ9C759p9XeqdU9Hg4WgOmlnlPe0G7ILTD32PKSUpkQNa8w=="
       },
       "DotNet.ReproducibleBuilds": {
         "type": "Direct",
@@ -59,8 +59,8 @@
       },
       "BouncyCastle.Cryptography": {
         "type": "Transitive",
-        "resolved": "2.6.1",
-        "contentHash": "vZsG2YILhthgRqO+ZVgRff4ZFKKTl0v7kqaVBLCtRvpREhfBP33pcWrdA3PRYgWuFL1RxiUFvjMUHTdBZlJcoA=="
+        "resolved": "2.6.2",
+        "contentHash": "7oWOcvnntmMKNzDLsdxAYqApt+AjpRpP2CShjMfIa3umZ42UQMvH0tl1qAliYPNYO6vTdcGMqnRrCPmsfzTI1w=="
       },
       "DryIocAttributes.dll": {
         "type": "Transitive",
@@ -93,7 +93,7 @@
         "dependencies": {
           "AG.Collections.Concurrent": "[0.1.2-alpha, )",
           "AG.EnumLocalization": "[0.1.3-alpha, )",
-          "BouncyCastle.Cryptography": "[2.6.1, )",
+          "BouncyCastle.Cryptography": "[2.6.2, )",
           "DnsClient": "[1.8.0, )",
           "Farmhash.Sharp": "[0.9.0, )",
           "XoshiroPRNG.Net": "[1.6.0, )"

@@ -11,7 +11,6 @@ using Sonar.Logging;
 using Dalamud.Interface.Windowing;
 using System.Diagnostics.CodeAnalysis;
 using Dalamud.Plugin.Services;
-using AG.EnumLocalization;
 
 namespace SonarPlugin
 {

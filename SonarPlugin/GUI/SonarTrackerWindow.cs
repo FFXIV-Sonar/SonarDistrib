@@ -2,7 +2,7 @@
 using Dalamud.Logging;
 using DryIoc;
 using DryIoc.FastExpressionCompiler.LightExpression;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Lumina.Data.Parsing.Layer;
 using Lumina.Excel.Sheets;
 using Sonar.Data;

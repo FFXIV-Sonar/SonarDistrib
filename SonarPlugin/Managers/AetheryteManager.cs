@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Sonar.Data.Rows;
 using SonarPlugin.Config;
 

@@ -1,6 +1,6 @@
 ﻿using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Sonar.Data;
 using Sonar.Data.Rows;
 using Sonar.Enums;

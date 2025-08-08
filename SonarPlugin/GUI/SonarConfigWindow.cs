@@ -10,7 +10,7 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Sonar;
 using Sonar.Data;
 using Sonar.Data.Extensions;
@@ -35,6 +35,7 @@ using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using static SonarPlugin.Utility.ShellUtils;
+using Dalamud.Interface;
 
 namespace SonarPlugin.GUI
 {
@@ -334,14 +335,21 @@ namespace SonarPlugin.GUI
                 }
             }
 
+#if DEBUG
             using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.LocalizationHeader.GetLocString()}###localizationHeader", ImGuiTreeNodeFlags.CollapsingHeader))
             {
                 if (node.Success)
                 {
                     using var indent = ImRaii.PushIndent();
+                    using (var color = ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudYellow))
+                    {
+                        ImGui.TextUnformatted("Localization is still in development!");
+                        ImGui.TextUnformatted("Lots of text are still not covered");
+                    }
                     this._save |= SonarWidgets.Localization(this.Plugin.Configuration.Localization, this.FileDialogs);
                 }
             }
+#endif
 
             using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.LodestoneHeader.GetLocString()}###lodestoneHeader", ImGuiTreeNodeFlags.CollapsingHeader))
             {

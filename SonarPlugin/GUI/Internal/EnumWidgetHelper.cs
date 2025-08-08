@@ -1,5 +1,5 @@
 ﻿using AG.EnumLocalization;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace SonarPlugin.GUI.Internal
         {
             if (updateStrings) UpdateStrings(langCode);
             if (!s_indexes.TryGetValue(value, out var index)) index = -1;
-            var result = ImGui.Combo(label, ref index, s_strings, s_strings.Length, max_height);
+            var result = ImGui.Combo(label, ref index, s_strings!, max_height);
             if (result) value = s_values[index];
             return result;
         }
