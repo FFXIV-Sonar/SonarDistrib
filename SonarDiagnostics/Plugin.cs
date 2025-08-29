@@ -38,8 +38,6 @@ namespace SonarDiagnostics
             this.Commands.AddHandler("/sonardiagnostics", commandInfo);
             this.Commands.AddHandler("/sonardiag", commandInfo);
 
-            DnsUtils.Log += this.DnsUtils_Log;
-
             this._container = this.CreateContainer();
 
             if (pluginInterface.Reason is PluginLoadReason.Installer or PluginLoadReason.Reload) this.UiBuilder_OpenMainUi();
@@ -67,9 +65,6 @@ namespace SonarDiagnostics
                     break;
             }
         }
-
-        private void DnsUtils_Log(string categoryName, DnsClient.Internal.LogLevel logLevel, int eventId, Exception? exception, string message, object[] args)
-            => this.Logger.Write((Serilog.Events.LogEventLevel)logLevel, exception, $"[DnsClient] {message}", args);
 
         private Container CreateContainer()
         {
@@ -106,7 +101,6 @@ namespace SonarDiagnostics
         {
             this.PluginInterface.UiBuilder.Draw -= this._windows.Draw;
             this.PluginInterface.UiBuilder.OpenMainUi -= this.UiBuilder_OpenMainUi;
-            DnsUtils.Log -= this.DnsUtils_Log;
             this.Commands.RemoveHandler("/sonardiagnostics");
             this.Commands.RemoveHandler("/sonardiag");
             this._container.Dispose();

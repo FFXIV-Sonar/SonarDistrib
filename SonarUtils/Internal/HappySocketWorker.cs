@@ -1,11 +1,9 @@
-﻿using DnsClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -51,8 +49,7 @@ namespace SonarUtils.Internal
                     {
                         // DNS queries
                         var dnsTasks = new List<Task>();
-                        if (IpUtils.IPv4Supported) dnsTasks.Add(Task.Run(() => this.DnsWorkerAsync(QueryType.A, this._cts.Token))); // IPv4
-                        if (IpUtils.IPv6Supported) dnsTasks.Add(Task.Run(() => this.DnsWorkerAsync(QueryType.AAAA, this._cts.Token))); // IPv6
+                        dnsTasks.Add(Task.Run(() => this.DnsWorkerAsync(this._cts.Token))); // .NET built-in resolver
                         this._tasks.AddRange(dnsTasks);
 
                         // DNS watcher
@@ -119,29 +116,17 @@ namespace SonarUtils.Internal
             }
         }
 
-        /// <summary>Resolve host's IP Address through DNS queries.</summary>
-        /// <param name="queryType">Query type to perform. <see cref="QueryType.A"/> for IPv4 or <see cref="QueryType.AAAA"/> for IPv6.</param>
-        private async Task DnsWorkerAsync(QueryType queryType, CancellationToken cancellationToken)
+        private async Task DnsWorkerAsync(CancellationToken cancellationToken)
         {
-            Debug.Assert(queryType is QueryType.A or QueryType.AAAA);
             var writer = this._ipAddresses.Writer;
-
-            // Querying an IP Address for its A or AAAA records won't work.
-            // This shortcuts to returning the IP address itself instead of
-            // attempting to query for records.
             if (IPAddress.TryParse(this._host, out var ipAddress))
             {
                 await writer.WriteAsync(ipAddress, cancellationToken).ConfigureAwait(false);
                 return;
             }
-
-            // Query for A or AAAA records as normal.
-            var response = await DnsUtils.QueryAsync(this._host, queryType, cancellationToken: cancellationToken).ConfigureAwait(false);
-            var results = response.AllRecords.AddressRecords();
-            foreach (var address in results.Select(r => r.Address))
-            {
-                await writer.WriteAsync(address, cancellationToken).ConfigureAwait(false);
-            }
+            
+            var addresses = await Dns.GetHostAddressesAsync(this._host, cancellationToken);
+            foreach (var address in addresses) await writer.WriteAsync(address, cancellationToken);
         }
 
         /// <summary>Attempts a connection to an IP <paramref name="address"/>.</summary>

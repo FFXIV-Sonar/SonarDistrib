@@ -48,9 +48,6 @@
         "dependencies": {
           "AG": "0.1.2-alpha"
         }
-      },
-      "dnsclient": {
-        "type": "Project"
       }
     },
     "net9.0/linux-x64": {}

@@ -1,11 +1,8 @@
-﻿using DnsClient;
-using SonarUtils;
+﻿using SonarUtils;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +22,7 @@ namespace Sonar.Connections
         public SonarUrlManager()
         {
             this.ReadEmbeddedUrls();
-            this._bootstrapTask = Task.WhenAll(this.BootstrapDnsTask(this._cts.Token), this.BootstrapWebTask(this._cts.Token));
+            this._bootstrapTask = Task.WhenAll(this.BootstrapWebTask(this._cts.Token));
         }
 
         /// <param name="proxy">Allow proxy URLs</param>
@@ -54,41 +51,6 @@ namespace Sonar.Connections
             var bytes = new byte[stream.Length];
             stream.ReadExactly(bytes, 0, bytes.Length);
             this.ProcessBytes(bytes);
-        }
-
-        /// <summary>Read URLs from TXT DNS query</summary>
-        // [SuppressMessage("Minor Code Smell", "S1075", Justification = "Well known dns entry")]
-        private async Task BootstrapDnsTask(CancellationToken cancellationToken)
-        {
-            await Task.Yield();
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                try
-                {
-                    var response = await DnsUtils.QueryAsync("bootstrap.ffxivsonar.com", QueryType.TXT, cancellationToken: cancellationToken);
-                    var records = response.AllRecords.TxtRecords();
-                    foreach (var record in records)
-                    {
-                        try
-                        {
-                            this.ProcessBytes(Convert.FromBase64String(string.Join(string.Empty, record.Text)));
-                        }
-                        catch { /* Swallow */ }
-                    }
-                    await Task.Delay(TimeSpan.FromHours(6 * (SonarStatic.Random.NextDouble() + 0.5)), cancellationToken);
-                }
-                catch (OperationCanceledException) { return; }
-                catch (ObjectDisposedException) { return; }
-                catch
-                {
-                    try
-                    {
-                        await Task.Delay(TimeSpan.FromMinutes(6 * (SonarStatic.Random.NextDouble() + 0.5)), cancellationToken);
-                    }
-                    catch (OperationCanceledException) { return; }
-                    catch (ObjectDisposedException) { return; }
-                }
-            }
         }
 
         /// <summary>Read URLs from Sonar assets server</summary>

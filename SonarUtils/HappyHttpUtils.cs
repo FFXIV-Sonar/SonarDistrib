@@ -1,16 +1,9 @@
 ﻿using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
-using DnsClient;
-using System.Collections.Concurrent;
-using System.Threading.Channels;
 using SonarUtils.Internal;
 
 namespace SonarUtils

@@ -389,9 +389,6 @@
         "resolved": "2.6.0",
         "contentHash": "XE8a+11nZg0LRaf+RGABEWaHIf8yGd5w8v/Ra1iWxMBmAVzwuKbW7G21mS0U7w7sh1lYcgckInWGgnz4qyET8A=="
       },
-      "dnsclient": {
-        "type": "Project"
-      },
       "sonar": {
         "type": "Project",
         "dependencies": {
@@ -418,7 +415,6 @@
           "AG.Collections.Concurrent": "[0.1.2-alpha, )",
           "AG.EnumLocalization": "[0.1.3-alpha, )",
           "BouncyCastle.Cryptography": "[2.6.2, )",
-          "DnsClient": "[1.8.0, )",
           "Farmhash.Sharp": "[0.9.0, )",
           "XoshiroPRNG.Net": "[1.6.0, )"
         }
