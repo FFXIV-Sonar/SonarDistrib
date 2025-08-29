@@ -92,10 +92,11 @@
       },
       "Lumina": {
         "type": "Direct",
-        "requested": "[6.3.0, )",
-        "resolved": "6.3.0",
-        "contentHash": "FQlZ16KhXtPGCEq1KeRTDZ14uq6qrvW2vYnNNlCpW7Xs1iLhF8AJsbYG8S0y1NnP7BRholPY8KGToVTsvmb8jw==",
+        "requested": "[6.5.1, )",
+        "resolved": "6.5.1",
+        "contentHash": "NuwDFo2Ba7Eo7vT8q3cB+K/tSrPDe4U/u3sKVR1zLRPZpRGUxY0NkTQ3aY8DisQ7AL7hm39vOnNSg7q+RtU8eg==",
         "dependencies": {
+          "BCnEncoder.Net": "2.2.1",
           "Microsoft.Extensions.ObjectPool": "8.0.7"
         }
       },
@@ -169,6 +170,14 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
       },
+      "BCnEncoder.Net": {
+        "type": "Transitive",
+        "resolved": "2.2.1",
+        "contentHash": "tI5+/OQo0kciLqWrViRjpOH+IL3FjexYnoWZajiGV41g/EM9CGbWsxsPzBDmpoxNkrV9uox/EtIhCIi9chBSFw==",
+        "dependencies": {
+          "CommunityToolkit.HighPerformance": "8.4.0"
+        }
+      },
       "Blurhash.Core": {
         "type": "Transitive",
         "resolved": "4.0.0",
@@ -181,6 +190,11 @@
         "type": "Transitive",
         "resolved": "2.6.2",
         "contentHash": "7oWOcvnntmMKNzDLsdxAYqApt+AjpRpP2CShjMfIa3umZ42UQMvH0tl1qAliYPNYO6vTdcGMqnRrCPmsfzTI1w=="
+      },
+      "CommunityToolkit.HighPerformance": {
+        "type": "Transitive",
+        "resolved": "8.4.0",
+        "contentHash": "flxspiBs0G/0GMp7IK2J2ijV9bTG6hEwFc/z6ekHqB6nwRJ4Ry2yLdx+TkbCUYFCl4XhABkAwomeKbT6zM2Zlg=="
       },
       "DeviceId": {
         "type": "Transitive",

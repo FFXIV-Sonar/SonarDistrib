@@ -30,7 +30,7 @@
     <PackageReference Include="DeviceId.Windows.Wmi" Version="6.9.0" />
     <PackageReference Include="DryIoc.dll" Version="5.4.3" />
     <PackageReference Include="DryIoc.MefAttributedModel.dll" Version="7.0.2" />
-    <PackageReference Include="Fody" Version="6.9.2">
+    <PackageReference Include="Fody" Version="6.9.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

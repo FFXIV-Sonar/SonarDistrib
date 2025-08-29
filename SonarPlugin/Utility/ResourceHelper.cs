@@ -1,5 +1,4 @@
-﻿using ImGuiScene;
-using System;
+﻿using System;
 using Dalamud.Logging;
 using System.Reflection;
 using Dalamud.Interface;

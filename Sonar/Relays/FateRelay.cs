@@ -186,7 +186,7 @@ namespace Sonar.Relays
         /// Get remaining time and progress or completed / failed
         /// </summary>
         /// <returns></returns>
-        public string GetRemainingTimeAndProgressString() => this.Status == FateStatus.Running ? $"{this.GetRemainingTimeString()} {this.Progress}%%" : string.Empty;
+        public string GetRemainingTimeAndProgressString() => this.Status == FateStatus.Running ? $"{this.GetRemainingTimeString()} {this.Progress}%" : string.Empty;
 
         /// <summary>
         /// Get remaining time in MM:SS
@@ -287,7 +287,7 @@ namespace Sonar.Relays
             var result = name switch
             {
                 "status" => this.Status.GetLocString(),
-                "progress" => $"{StringUtils.GetNumber(this.Progress)}%%",
+                "progress" => $"{StringUtils.GetNumber(this.Progress)}%",
 
                 "players" => StringUtils.GetNumber(this.Players),
 

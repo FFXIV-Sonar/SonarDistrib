@@ -180,7 +180,7 @@ namespace Sonar.Relays
             var result = name switch
             {
                 "status" => this.CurrentHp == this.MaxHp ? RelayStatus.Healthy.GetLocString() : this.CurrentHp > 0 ? RelayStatus.Pulled.GetLocString() : this.CurrentHp == 0 ? RelayStatus.Dead.GetLocString() : null,
-                "hpp" => $"{this.HpPercent:F2}%%",
+                "hpp" => $"{this.HpPercent:F2}%",
 
                 "players" => StringUtils.GetNumber(this.Players),
 
@@ -207,7 +207,7 @@ namespace Sonar.Relays
                 hunt.ZoneIds.Contains(this.ZoneId);
         }
 
-        public override string ToString() => $"Rank {this.GetRank()}: {this.GetHunt()} {this.HpPercent:F2}%% {base.ToString()}{(this.IsDead() ? " DEAD" : "")}";
+        public override string ToString() => $"Rank {this.GetRank()}: {this.GetHunt()} {this.HpPercent:F2}% {base.ToString()}{(this.IsDead() ? " DEAD" : "")}";
 
         public new HuntRelay Clone() => Unsafe.As<HuntRelay>(this.MemberwiseClone());
     }

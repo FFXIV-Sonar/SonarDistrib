@@ -3,7 +3,6 @@ using CheapLoc;
 using SonarPlugin.Config;
 using Dalamud.Interface;
 using Dalamud.Bindings.ImGui;
-using ImGuiScene;
 using Sonar.Data;
 using Sonar.Data.Extensions;
 using Sonar.Enums;
@@ -388,7 +387,7 @@ namespace SonarPlugin.GUI
 
             Vector4 statusColor;
             string statusText;
-            string healthText = $"{100f * relay.CurrentHp / relay.MaxHp:F2}%%";
+            string healthText = $"{100f * relay.CurrentHp / relay.MaxHp:F2}%";
 
             if (relay.IsMaxHp)
             {

@@ -12,6 +12,7 @@ using SonarUtils.Internal;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SonarUtils
 {
@@ -176,6 +177,14 @@ namespace SonarUtils
             if (!IpUtils.IPv4Supported && nameServer.AddressFamily is AddressFamily.InterNetwork) return false;
             if (!IpUtils.IPv6Supported && nameServer.AddressFamily is AddressFamily.InterNetworkV6) return false;
             return true;
+        }
+
+        /// <summary>Runs a query in a dedicated thread asynchronously using <see cref="LookupClient.Query(string, QueryType, QueryClass)"/> as the backend.</summary>
+        /// <param name="cancellationToken">Cancellation task to cancel the await. The thread itself continues running.</param>
+        /// <returns>A <see cref="Task"/> that can be awaited for a <see cref="IDnsQueryResponse"/>.</returns>
+        public static Task<IDnsQueryResponse> QueryAsync(string query, QueryType queryType, QueryClass queryClass = QueryClass.IN, CancellationToken cancellationToken = default)
+        {
+            return Task.Factory.StartNew(() => Client.Query(query, queryType, queryClass), cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
     }
 }

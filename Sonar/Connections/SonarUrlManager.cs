@@ -1,13 +1,14 @@
 ﻿using DnsClient;
+using SonarUtils;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics.CodeAnalysis;
-using SonarUtils;
 
 namespace Sonar.Connections
 {
@@ -64,7 +65,7 @@ namespace Sonar.Connections
             {
                 try
                 {
-                    var response = await DnsUtils.Client.QueryAsync("bootstrap.ffxivsonar.com", QueryType.TXT, cancellationToken: cancellationToken);
+                    var response = await DnsUtils.QueryAsync("bootstrap.ffxivsonar.com", QueryType.TXT, cancellationToken: cancellationToken);
                     var records = response.AllRecords.TxtRecords();
                     foreach (var record in records)
                     {

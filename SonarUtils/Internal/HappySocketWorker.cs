@@ -136,7 +136,7 @@ namespace SonarUtils.Internal
             }
 
             // Query for A or AAAA records as normal.
-            var response = await DnsUtils.Client.QueryAsync(this._host, queryType, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var response = await DnsUtils.QueryAsync(this._host, queryType, cancellationToken: cancellationToken).ConfigureAwait(false);
             var results = response.AllRecords.AddressRecords();
             foreach (var address in results.Select(r => r.Address))
             {

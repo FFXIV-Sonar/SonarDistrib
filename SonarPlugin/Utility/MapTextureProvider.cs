@@ -1,5 +1,4 @@
-﻿using ImGuiScene;
-using Lumina;
+﻿using Lumina;
 using Sonar.Utilities;
 using System;
 using System.Collections.Generic;
