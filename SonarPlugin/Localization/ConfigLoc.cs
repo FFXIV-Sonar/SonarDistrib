@@ -31,7 +31,7 @@ namespace SonarPlugin.Localization
         [EnumLoc("TrackAll.Hunts", Fallback = "Track All Hunts")]
         TrackAllHunts,
 
-        [EnumLoc("TrackAll.Hunts", Fallback = "Track All Fates")]
+        [EnumLoc("TrackAll.Fates", Fallback = "Track All Fates")]
         TrackAllFates,
 
         [EnumLoc("TrackAll.Tooltip", Fallback = "Checked: Track all reports regardless of jurisdiction settings.\nUnchecked: Track reports within jurisdiction settings only.")]
