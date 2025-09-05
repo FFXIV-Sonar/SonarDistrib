@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SonarDiagnostics.Cosmic;
 
 namespace SonarDiagnostics.GUI
 {
@@ -21,13 +22,15 @@ namespace SonarDiagnostics.GUI
     {
         private Plugin Plugin { get; }
         private Lazy<DnsWindow> DnsWindow { get; }
+        private Lazy<CosmicWindow> CosmicWindow { get; }
         private WindowSystem Windows { get; }
         private IPluginLog Logger { get; }
 
-        public MainWindow(Plugin plugin, Lazy<DnsWindow> dnsWindow, WindowSystem windows, IPluginLog logger) : base("Sonar Disgnostics")
+        public MainWindow(Plugin plugin, Lazy<DnsWindow> dnsWindow, Lazy<CosmicWindow> cosmicWindow, WindowSystem windows, IPluginLog logger) : base("Sonar Disgnostics")
         {
             this.Plugin = plugin;
             this.DnsWindow = dnsWindow;
+            this.CosmicWindow = cosmicWindow;
             this.Windows = windows;
             this.Logger = logger;
 
@@ -40,6 +43,7 @@ namespace SonarDiagnostics.GUI
         public override void Draw()
         {
             if (ImGui.Button("DNS Tests")) this.DnsWindow.Value.Toggle();
+            if (ImGui.Button("Cosmic Exploration")) this.CosmicWindow.Value.Toggle();
             ImGui.Separator();
 
             using (ImRaii.Disabled(this.Plugin.LogPath is null || !File.Exists(this.Plugin.LogPath)))
