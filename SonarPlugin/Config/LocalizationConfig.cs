@@ -2,10 +2,10 @@
 using Sonar;
 using Sonar.Data;
 using Sonar.Enums;
+using SonarPlugin.Utility;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace SonarPlugin.Config
 {
@@ -42,7 +42,7 @@ namespace SonarPlugin.Config
         public string? Plugin
         {
             get => EnumLoc.GetDefaultLanguage(typeof(SonarPlugin).Assembly);
-            set => SetLanguage(typeof(SonarPlugin).Assembly, value);
+            set => EnumLocUtils.SetLanguage(typeof(SonarPlugin).Assembly, value);
         }
 
         /// <summary>Sonar language.</summary>
@@ -51,7 +51,7 @@ namespace SonarPlugin.Config
         public string? Sonar
         {
             get => EnumLoc.GetDefaultLanguage(typeof(SonarClient).Assembly);
-            set => SetLanguage(typeof(SonarClient).Assembly, value);
+            set => EnumLocUtils.SetLanguage(typeof(SonarClient).Assembly, value);
         }
 
         /// <summary>Use debug fallbacks during <see cref="Setup"/>.</summary>
@@ -62,7 +62,7 @@ namespace SonarPlugin.Config
             set
             {
                 this._debugFallbacks = value;
-                this.Setup();
+                EnumLocUtils.Setup(value);
             }
         }
 
@@ -73,23 +73,13 @@ namespace SonarPlugin.Config
         /// <returns>Plugin languages.</returns>
         [SuppressMessage("Minor Code Smell", "S2325", Justification = "Intended.")]
         [SuppressMessage("Performance", "CA1822", Justification = "Intended.")]
-        public ImmutableArray<string> GetAvailablePluginLanguages() => GetLanguageResources(typeof(SonarPlugin).Assembly);
+        public ImmutableArray<string> GetAvailablePluginLanguages() => EnumLocUtils.GetLanguageResources(typeof(SonarPlugin).Assembly);
 
         /// <summary>Get available sonar Languages.</summary>
         /// <returns>Sonar languages.</returns>
         [SuppressMessage("Minor Code Smell", "S2325", Justification = "Intended.")]
         [SuppressMessage("Performance", "CA1822", Justification = "Intended.")]
-        public ImmutableArray<string> GetAvailableSonarLanguages() => GetLanguageResources(typeof(SonarClient).Assembly);
-
-        /// <summary>Setup localization.</summary>
-        /// <param name="threaded">Launch a background task to perform the setup.</param>
-        /// <param name="debug">Use debug fallbacks.</param>
-        [SuppressMessage("Minor Code Smell", "S2325", Justification = "Intended.")]
-        [SuppressMessage("Performance", "CA1822", Justification = "Intended.")]
-        public void Setup()
-        {
-            SetupCore(this.DebugFallbacks);
-        }
+        public ImmutableArray<string> GetAvailableSonarLanguages() => EnumLocUtils.GetLanguageResources(typeof(SonarClient).Assembly);
 
         private LocalizationPreset GetPresetCore()
         {

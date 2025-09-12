@@ -46,6 +46,9 @@ namespace SonarPlugin
         public void Initialize()
         {
             this.LoadConfiguration();
+
+            this.Logger.Info("Setting up localization");
+            EnumLocUtils.Setup(this.Configuration.Localization.DebugFallbacks);
             CheapLoc.Loc.SetupWithFallbacks();
 
             this.Logger.Info("SonarPlugin Resources:");
@@ -126,23 +129,19 @@ namespace SonarPlugin
                     return;
                 }
 
-                if (this.Configuration.Version < SonarConfiguration.SonarConfigurationVersion)
+                if (this.Configuration.PerformVersionUpdate(this.Logger))
                 {
-                    this.Configuration.PerformVersionUpdate();
                     this.SaveConfiguration(true);
                 }
-                else if (this.Configuration.Version > SonarConfiguration.SonarConfigurationVersion)
-                {
-                    this.Logger.Warning($"Your Sonar configuration v{this.Configuration.Version} is from the future! Please turn off your time machine and go back to v{SonarConfiguration.SonarConfigurationVersion}.");
-                }
+
                 this.Configuration.Sanitize();
                 this.Client.Configuration.ReadFrom(this.Configuration.SonarConfig);
                 this.Configuration.SonarConfig = this.Client.Configuration;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                this.Logger.Error($"Failed to load configuration: {e}");
-                this.ResetConfiguration(); // TODO: Potential infinite recursion
+                this.Logger.Error($"Failed to load configuration: {ex}");
+                if (!isReset) this.ResetConfiguration();
             }
         }
 
@@ -163,7 +162,7 @@ namespace SonarPlugin
         public void ResetConfiguration()
         {
             this.Configuration = new SonarConfiguration();
-            this.Client.Configuration.ReadFrom(new());
+            this.Client.Configuration.ReadFrom(this.Configuration.SonarConfig);
             this.Configuration.SonarConfig = this.Client.Configuration;
             this.Client.Configuration.Contribute.Reset();
             this.SaveConfiguration(true);

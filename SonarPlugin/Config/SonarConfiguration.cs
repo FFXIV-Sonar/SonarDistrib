@@ -1,13 +1,16 @@
 ﻿using Dalamud.Configuration;
 using Dalamud.Game.Text;
 using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using Newtonsoft.Json;
 using Sonar.Config;
+using Sonar.Config.Experimental;
 using Sonar.Data;
 using Sonar.Enums;
 using SonarPlugin.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SonarPlugin.Config
@@ -17,7 +20,7 @@ namespace SonarPlugin.Config
     public class SonarConfiguration : IPluginConfiguration
     {
         // Sonar configuration version
-        public const int SonarConfigurationVersion = 2;
+        public const int SonarConfigurationVersion = 3;
         public int Version { get; set; } = SonarConfigurationVersion;
 
         // Sonar.NET configuration reference
@@ -103,7 +106,6 @@ namespace SonarPlugin.Config
         public bool EnableFateChatCrossworldIcon = true;
         public XivChatType FateOutputChannel = XivChatType.Echo;
 
-
         public void Sanitize()
         {
             this.SonarConfig ??= new();
@@ -119,62 +121,103 @@ namespace SonarPlugin.Config
             this.HuntsDisplayLimit = MathFunctions.Clamp(this.HuntsDisplayLimit, 1, 10000);
         }
 
-        public void PerformVersionUpdate()
+        public bool PerformVersionUpdate(IPluginLog? logger = null)
+        {
+            if (this.Version == SonarConfigurationVersion) return false;
+
+            // Make sure version is within a valid range.
+            var clampedVersion = Math.Clamp(this.Version, 0, SonarConfigurationVersion);
+            if (clampedVersion != this.Version)
+            {
+                logger?.Warning($"Clamping Sonar Configuration version from v{this.Version} to {clampedVersion}, unintended side effects may happen!");
+                this.Version = clampedVersion;
+            }
+
+            // Perform version updates incrementally.
+            if (this.Version is 0) this.PerformVersionUpdateCore0to1(logger);
+            if (this.Version is 1) this.PerformVersionUpdateCore1to2(logger);
+            if (this.Version is 2) this.PerformVersionUpdateCore2to3(logger);
+
+            // Debug output
+            if (this.Version is not SonarConfigurationVersion)
+            {
+                logger?.Warning($"Sonar configuration v{this.Version} is not v{SonarConfigurationVersion}");
+                if (Debugger.IsAttached) Debugger.Break();
+            }
+
+            return true;
+        }
+
+        /// <summary>There are no version 0 configuration.</summary>
+        private void PerformVersionUpdateCore0to1(IPluginLog? logger)
+        {
+            logger?.Info("Updating Sonar Configuration from v0 => v1: Should never happen");
+            this.Version = 1;
+        }
+
+        /// <summary>Instance Jurisdiction was introduced, however this means that all jurisdiction values from there on is increased by 1...</summary>
+        private void PerformVersionUpdateCore1to2(IPluginLog? logger)
         {
             var huntConfig = this.SonarConfig.HuntConfig;
             var fateConfig = this.SonarConfig.FateConfig;
             SonarJurisdiction jurisdiction;
 
-            // Instance Jurisdiction was introduced, however this means that all jurisdiction values from there on is increased by 1...
-            if (this.Version == 1)
+            logger?.Info("Updating Sonar Configuration from v1 => v2: New Instance Jurisdiction added");
+            foreach (var expansion in Enum.GetValues<ExpansionPack>())
             {
-                //PluginLog.LogInformation("Updating Sonar Configuration from v1 => v2: New Instance Jurisdiction added");
-                foreach (var expansion in Enum.GetValues<ExpansionPack>())
+                // Hunt expansions and ranks jurisdictions
+                foreach (var rank in Enum.GetValues<HuntRank>())
                 {
-                    // Hunt expansions and ranks jurisdictions
-                    foreach (var rank in Enum.GetValues<HuntRank>())
-                    {
-                        jurisdiction = huntConfig.GetJurisdiction(expansion, rank);
-                        if (jurisdiction >= SonarJurisdiction.Instance)
-                        {
-                            //PluginLog.LogDebug($" - Hunts from {expansion} Rank {rank}: {jurisdiction} => {jurisdiction + 1}");
-                            huntConfig.SetJurisdiction(expansion, rank, jurisdiction + 1);
-                        }
-                    }
-
-                    // Hunt overrides (in case anyone went creative)
-                    foreach (var or in huntConfig.GetJurisdictionOverrides())
-                    {
-                        jurisdiction = or.Value;
-                        if (jurisdiction >= SonarJurisdiction.Instance)
-                        {
-                            var name = Database.Hunts.GetValueOrDefault(or.Key)?.Name.ToString() ?? $"Unknown (id: {or.Key})";
-                            //PluginLog.LogDebug($" - Hunt {name}: {jurisdiction} => {jurisdiction + 1}");
-                            huntConfig.SetJurisdictionOverride(or.Key, jurisdiction + 1);
-                        }
-                    }
-                }
-
-                jurisdiction = fateConfig.GetDefaultJurisdiction();
-                if (jurisdiction >= SonarJurisdiction.Instance)
-                {
-                    //PluginLog.LogDebug($" - Fate Default Jurisdiction: {jurisdiction} => {jurisdiction + 1}");
-                    fateConfig.SetDefaultJurisdiction(jurisdiction + 1);
-                }
-
-                foreach (var fate in fateConfig.GetJurisdictions())
-                {
-                    jurisdiction = fate.Value;
+                    jurisdiction = huntConfig.GetJurisdiction(expansion, rank);
                     if (jurisdiction >= SonarJurisdiction.Instance)
                     {
-                        var name = Database.Fates.GetValueOrDefault(fate.Key)?.Name.ToString() ?? $"Unknown (id: {fate.Key})";
-                        //PluginLog.LogDebug($" - Fate {name}: {jurisdiction} => {jurisdiction + 1}");
-                        fateConfig.SetJurisdiction(fate.Key, jurisdiction + 1);
+                        logger?.Debug($" - Hunts from {expansion} Rank {rank}: {jurisdiction} => {jurisdiction + 1}");
+                        huntConfig.SetJurisdiction(expansion, rank, jurisdiction + 1);
                     }
                 }
 
-                this.Version = 2;
+                // Hunt overrides (in case anyone went creative)
+                foreach (var or in huntConfig.GetJurisdictionOverrides())
+                {
+                    jurisdiction = or.Value;
+                    if (jurisdiction >= SonarJurisdiction.Instance)
+                    {
+                        var name = Database.Hunts.GetValueOrDefault(or.Key)?.Name.ToString() ?? $"Unknown (id: {or.Key})";
+                        logger?.Debug($" - Hunt {name}: {jurisdiction} => {jurisdiction + 1}");
+                        huntConfig.SetJurisdictionOverride(or.Key, jurisdiction + 1);
+                    }
+                }
             }
+
+            jurisdiction = fateConfig.GetDefaultJurisdiction();
+            if (jurisdiction >= SonarJurisdiction.Instance)
+            {
+                logger?.Debug($" - Fate Default Jurisdiction: {jurisdiction} => {jurisdiction + 1}");
+                fateConfig.SetDefaultJurisdiction(jurisdiction + 1);
+            }
+
+            foreach (var fate in fateConfig.GetJurisdictions())
+            {
+                jurisdiction = fate.Value;
+                if (jurisdiction >= SonarJurisdiction.Instance)
+                {
+                    var name = Database.Fates.GetValueOrDefault(fate.Key)?.Name.ToString() ?? $"Unknown (id: {fate.Key})";
+                    logger?.Debug($" - Fate {name}: {jurisdiction} => {jurisdiction + 1}");
+                    fateConfig.SetJurisdiction(fate.Key, jurisdiction + 1);
+                }
+            }
+
+            this.Version = 2;
+        }
+
+        /// <summary>Turn off localization's debug fallbacks.</summary>
+        private void PerformVersionUpdateCore2to3(IPluginLog? logger)
+        {
+            logger?.Info("Updating Sonar Configuration from v2 => v3: Turn off localization's debug fallbacks");
+
+            this.Localization.DebugFallbacks = false;
+
+            this.Version = 3;
         }
     }
 }

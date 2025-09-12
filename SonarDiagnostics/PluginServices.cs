@@ -11,6 +11,6 @@ namespace SonarDiagnostics
 {
     public sealed class PluginServices
     {
-        [PluginService] public IGameGui GameGui { get; } = default!;
+        [PluginService] public IGameGui GameGui { get; private set; } = default!;
     }
 }

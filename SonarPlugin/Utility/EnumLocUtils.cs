@@ -1,36 +1,53 @@
 ﻿using AG;
 using AG.EnumLocalization;
 using Sonar;
-using Sonar.Enums;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace SonarPlugin.Config
+namespace SonarPlugin.Utility
 {
-    public sealed partial class LocalizationConfig
+    public static class EnumLocUtils
     {
-        public static readonly FrozenDictionary<LocalizationPreset, PresetConfig> s_presets = new Dictionary<LocalizationPreset, PresetConfig>()
-        {
-            { LocalizationPreset.Default, new(SonarLanguage.Default, null, null) },
-            { LocalizationPreset.Japanese, new(SonarLanguage.Japanese, null, null) },
-            { LocalizationPreset.English, new(SonarLanguage.English, null, null) },
-            { LocalizationPreset.German, new(SonarLanguage.German, null, null) },
-            { LocalizationPreset.French, new(SonarLanguage.French, null, null) },
-            { LocalizationPreset.Chinese, new(SonarLanguage.ChineseSimplified, null, null) },
-            { LocalizationPreset.Korean, new(SonarLanguage.Korean, null, null) },
-
-        }.ToFrozenDictionary();
-
         private static readonly Regex s_resourceNameRegex = new(@"^.*\.lang\.json$", RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.CultureInvariant);
         private static readonly ConcurrentDictionary<Assembly, ImmutableArray<string>> s_languages = new();
+
+        /// <summary>Setup localization.</summary>
+        /// <param name="threaded">Launch a background task to perform the setup.</param>
+        /// <param name="debugFallbacks">Use debugFallbacks fallbacks.</param>
+        public static void Setup(bool debugFallbacks)
+        {
+            SetupCore(debugFallbacks);
+        }
+
+        public static ImmutableArray<string> GetLanguageResources(Assembly assembly) => s_languages.GetOrAdd(assembly, GetLanguageResourcesCore);
+
+        public static void SetLanguage(Assembly assembly, string? langCode)
+        {
+            EnumLoc.SetDefaultLanguage(langCode, assembly);
+            if (langCode?.StartsWith("file:") is true)
+            {
+                try
+                {
+                    SetLanguageCore(assembly, langCode);
+                }
+                catch (Exception ex)
+                {
+                    Debugger.Break();
+                    GC.KeepAlive(ex);
+                }
+            }
+        }
 
         private static void SetupCore(bool debug)
         {
@@ -62,8 +79,6 @@ namespace SonarPlugin.Config
             }
         }
 
-        private static ImmutableArray<string> GetLanguageResources(Assembly assembly) => s_languages.GetOrAdd(assembly, GetLanguageResourcesCore);
-
         private static ImmutableArray<string> GetLanguageResourcesCore(Assembly assembly)
         {
             var result = new List<string>();
@@ -74,23 +89,6 @@ namespace SonarPlugin.Config
                 result.Add(name);
             }
             return [.. result];
-        }
-
-        private static void SetLanguage(Assembly assembly, string? langCode)
-        {
-            EnumLoc.SetDefaultLanguage(langCode, assembly);
-            if (langCode?.StartsWith("file:") is true)
-            {
-                try
-                {
-                    SetLanguageCore(assembly, langCode);
-                }
-                catch (Exception ex)
-                {
-                    Debugger.Break();
-                    GC.KeepAlive(ex);
-                }   
-            }
         }
 
         /// <summary>Precondition: <paramref name="name"/> starts with <c>file:</c></summary>

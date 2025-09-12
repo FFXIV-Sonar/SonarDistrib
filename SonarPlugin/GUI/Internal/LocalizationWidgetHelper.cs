@@ -14,6 +14,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading;
+using SonarPlugin.Utility;
 
 namespace SonarPlugin.GUI.Internal
 {
@@ -85,7 +86,7 @@ namespace SonarPlugin.GUI.Internal
 
                             if (ImGui.Button($"{PluginLoc.Setup.GetLocString()}###setup") || setup)
                             {
-                                config.Setup();
+                                EnumLocUtils.Setup(config.DebugFallbacks);
                             }
                         }
                     }

@@ -218,7 +218,11 @@ namespace SonarPlugin.GUI
                 this.Client.Configuration.Contribute.ReceiveJurisdiction = jurisdiction;
             }
 
-            this._save |= ImGui.SliderFloat($"{ConfigWindowLoc.Opacity.GetLocString()}###opacitySlider", ref this.Plugin.Configuration.Opacity, 0.0f, 1.0f);
+            if (ImGui.SliderFloat($"{ConfigWindowLoc.Opacity.GetLocString()}###opacitySlider", ref this.Plugin.Configuration.Opacity, 0.0f, 1.0f))
+            {
+                this._save = true;
+                this.BgAlpha = this.Plugin.Configuration.Opacity;
+            }
 
             ImGui.Spacing();
             ImGui.Separator();
@@ -335,7 +339,6 @@ namespace SonarPlugin.GUI
                 }
             }
 
-#if DEBUG
             using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.LocalizationHeader.GetLocString()}###localizationHeader", ImGuiTreeNodeFlags.CollapsingHeader))
             {
                 if (node.Success)
@@ -344,12 +347,13 @@ namespace SonarPlugin.GUI
                     using (var color = ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudYellow))
                     {
                         ImGui.TextUnformatted("Localization is still in development!");
-                        ImGui.TextUnformatted("Lots of text are still not covered");
+                        ImGui.TextUnformatted("- Lots of strings are still not covered");
+                        ImGui.TextUnformatted("- Strings may change between releases");
+                        ImGui.TextUnformatted("Use localization at your own risk!");
                     }
                     this._save |= SonarWidgets.Localization(this.Plugin.Configuration.Localization, this.FileDialogs);
                 }
             }
-#endif
 
             using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.LodestoneHeader.GetLocString()}###lodestoneHeader", ImGuiTreeNodeFlags.CollapsingHeader))
             {

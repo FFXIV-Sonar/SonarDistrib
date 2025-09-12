@@ -82,6 +82,11 @@ namespace SonarDiagnostics
             container.RegisterInstance(this.Commands, setup: Setup.With(preventDisposal: true));
             container.RegisterInstanceMany(this.Logger, setup: Setup.With(preventDisposal: true));
 
+            // Additional Dalamud Services
+            var services = new PluginServices();
+            this.PluginInterface.Inject(services);
+            container.RegisterInstance(services.GameGui);
+
             this.Logger.Information("Registered services:");
             foreach (var service in container.GetServiceRegistrations())
             {
