@@ -4,6 +4,7 @@ using Dalamud.Bindings.ImGui;
 using Dalamud.Plugin.Services;
 using System.ComponentModel.Composition;
 using DryIocAttributes;
+using System.Threading;
 
 namespace SonarDiagnostics.Dns
 {
@@ -11,6 +12,7 @@ namespace SonarDiagnostics.Dns
     [SingletonReuse]
     public sealed class DnsWindow : Window, IDisposable
     {
+        private DnsWorker? _worker;
         private WindowSystem Windows { get; }
         private IPluginLog Logger { get; }
 
@@ -27,12 +29,29 @@ namespace SonarDiagnostics.Dns
 
         public override void Draw()
         {
-            ImGui.Text("Temporarily removed");
+            var worker = this._worker;
+            if (ImGui.Button("Perform DNS Tests"))
+            {
+                worker = new DnsWorker(this.Logger);
+                this.ReplaceWorker(worker);
+                _ = worker.CreateOrGetTask();
+            }
+            if (worker is not null)
+            {
+                ImGui.TextUnformatted(worker.Output);
+            }
+        }
+
+        private void ReplaceWorker(DnsWorker? worker)
+        {
+            var oldWorker = Interlocked.Exchange(ref this._worker, worker);
+            oldWorker?.Dispose();
         }
 
         public void Dispose()
         {
             this.Windows.RemoveWindow(this);
+            this.ReplaceWorker(null);
         }
     }
 }

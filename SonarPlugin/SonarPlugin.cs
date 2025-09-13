@@ -122,6 +122,10 @@ namespace SonarPlugin
             try
             {
                 this.Configuration = (SonarConfiguration)this.PluginInterface.GetPluginConfig()!;
+                this.Configuration.Sanitize();
+                this.Client.Configuration.ReadFrom(this.Configuration.SonarConfig);
+                this.Configuration.SonarConfig = this.Client.Configuration;
+
                 if (this.Configuration is null)
                 {
                     if (isReset) throw new Exception($"Failed resetting configuration");
@@ -133,10 +137,6 @@ namespace SonarPlugin
                 {
                     this.SaveConfiguration(true);
                 }
-
-                this.Configuration.Sanitize();
-                this.Client.Configuration.ReadFrom(this.Configuration.SonarConfig);
-                this.Configuration.SonarConfig = this.Client.Configuration;
             }
             catch (Exception ex)
             {
