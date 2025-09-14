@@ -471,26 +471,28 @@ namespace SonarPlugin.GUI
 
             using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.ChatReportsConfig.GetLocString()}###huntChatConfig", ImGuiTreeNodeFlags.CollapsingHeader))
             {
-                using var indent = ImRaii.PushIndent();
-                this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatReportsEnabled.GetLocString()}###huntChatEnabled", ref this.Plugin.Configuration.EnableGameChatReports);
-                if (this.Plugin.Configuration.EnableGameChatReports)
+                if (node.Success)
                 {
-                    using var indent2 = ImRaii.PushIndent();
-                    // TODO: might need to do extra checks here and default to Echo channel on failure.
-                    var currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.HuntOutputChannel)?.FancyName ?? this.Plugin.Configuration.HuntOutputChannel.ToString();
-                    var selectedChat = Array.IndexOf(this._chatTypes, currentChat);
-
-                    if (ImGui.Combo("###chatTypes", ref selectedChat, this._chatTypes, this._chatTypes.Length))
+                    using var indent = ImRaii.PushIndent();
+                    this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatReportsEnabled.GetLocString()}###huntChatEnabled", ref this.Plugin.Configuration.EnableGameChatReports);
+                    if (this.Plugin.Configuration.EnableGameChatReports)
                     {
-                        this._save = true;
-                        var value = XivChatTypeUtils.GetValueFromInfoAttribute(this._chatTypes[selectedChat]);
-                        this.Plugin.Configuration.HuntOutputChannel = value;
-                    }
+                        using var indent2 = ImRaii.PushIndent();
+                        // TODO: might need to do extra checks here and default to Echo channel on failure.
+                        var currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.HuntOutputChannel)?.FancyName ?? this.Plugin.Configuration.HuntOutputChannel.ToString();
+                        var selectedChat = Array.IndexOf(this._chatTypes, currentChat);
 
-                    this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableItalics.GetLocString()}###huntChatEnableItalic", ref this.Plugin.Configuration.EnableGameChatItalicFont);
-                    this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableCwIcon.GetLocString()}###huntChatEnableCrossworldIcon", ref this.Plugin.Configuration.EnableGameChatCrossworldIcon);
-                    this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableDeaths.GetLocString()}###huntChatEnableDeaths", ref this.Plugin.Configuration.EnableGameChatReportsDeaths);
-                    ImGui.Unindent();
+                        if (ImGui.Combo("###chatTypes", ref selectedChat, this._chatTypes, this._chatTypes.Length))
+                        {
+                            this._save = true;
+                            var value = XivChatTypeUtils.GetValueFromInfoAttribute(this._chatTypes[selectedChat]);
+                            this.Plugin.Configuration.HuntOutputChannel = value;
+                        }
+
+                        this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableItalics.GetLocString()}###huntChatEnableItalic", ref this.Plugin.Configuration.EnableGameChatItalicFont);
+                        this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableCwIcon.GetLocString()}###huntChatEnableCrossworldIcon", ref this.Plugin.Configuration.EnableGameChatCrossworldIcon);
+                        this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableDeaths.GetLocString()}###huntChatEnableDeaths", ref this.Plugin.Configuration.EnableGameChatReportsDeaths);
+                    }
                 }
             }
 

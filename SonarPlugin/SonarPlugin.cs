@@ -121,13 +121,14 @@ namespace SonarPlugin
         {
             try
             {
-                this.Configuration = (SonarConfiguration)this.PluginInterface.GetPluginConfig()!;
-                if (this.Configuration is null)
+                var configuration = (SonarConfiguration?)this.PluginInterface.GetPluginConfig();
+                if (configuration is null)
                 {
                     if (isReset) throw new Exception($"Failed resetting configuration");
                     this.ResetConfiguration();
                     return;
                 }
+                this.Configuration = configuration;
 
                 this.Configuration.Sanitize();
                 this.Client.Configuration.ReadFrom(this.Configuration.SonarConfig);
