@@ -72,7 +72,7 @@ namespace SonarPlugin.Localization
         [EnumLoc("Duty.DisableChatAlerts", Fallback = "Disable Chat Alerts during Duties")]
         DutyDisableChatAlerts,
 
-        [EnumLoc("Duty.DisableSoundAlerts", Fallback = "Disable Sound Alerts during Duties")]
+        [EnumLoc("Duty.DisableSoundAlerts", Fallback = "Disable Sounds Alerts during Duties")]
         DutyDisableSoundAlerts,
 
         // Click Settings
@@ -137,7 +137,7 @@ namespace SonarPlugin.Localization
         [EnumLoc("Color.Fate.Unknown", Fallback = "Fate - Unknown")]
         UnknownFateColor,
 
-        [EnumLoc("Color.s_presets", Fallback = "s_presets")]
+        [EnumLoc("Color.s_presets", Fallback = "Color Presets")]
         ColorPresets,
 
         [EnumLoc("Color.Preset.Default", Fallback = "Default")]
@@ -147,8 +147,6 @@ namespace SonarPlugin.Localization
         OriginalColorPreset,
 
         #endregion
-
-        #region Hunts Tab
 
         [EnumLoc(Fallback = "Chat Reports Configuration")]
         ChatReportsConfig,
@@ -165,14 +163,19 @@ namespace SonarPlugin.Localization
         [EnumLoc(Fallback = "Show death reports")]
         ChatEnableDeaths,
 
-        [EnumLoc(Fallback = "")]
-        f,
+        [EnumLoc(Fallback = "Sound Alerts Configuration")]
+        SoundAlertsConfig,
 
-        [EnumLoc(Fallback = "")]
-        g,
+        #region Hunts Tab
 
-        [EnumLoc(Fallback = "")]
-        h,
+        [EnumLoc("Hunts.SRankSounds", Fallback = "S Rank Sounds")]
+        HuntSRankSounds,
+
+        [EnumLoc("Hunts.ARankSounds", Fallback = "A Rank Sounds")]
+        HuntARankSounds,
+
+        [EnumLoc("Hunts.BRankSounds", Fallback = "B Rank Sounds")]
+        HuntBRankSounds,
 
         [EnumLoc(Fallback = "")]
         i,
@@ -231,6 +234,10 @@ namespace SonarPlugin.Localization
         #endregion
 
         #region Fates Tab
+        [EnumLoc("Fates.FateSounds", Fallback = "Fate Sounds")]
+        FateSounds,
+
+
         #endregion
 
         #region About Tab

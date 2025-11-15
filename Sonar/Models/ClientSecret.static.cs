@@ -19,7 +19,7 @@ namespace Sonar.Models
         /// <summary>Generates a secret hash for a specified secret name</summary>
         public static byte[] HashSecret(string secretName)
         {
-            return BouncySha256.HashData(Encoding.UTF8.GetBytes($"SECRET {secretName} T3RC3Z"));
+            return SonarHashing.Sha256(Encoding.UTF8.GetBytes($"SECRET {secretName} T3RC3Z"));
         }
 
         /// <summary>Read embedded secret from an assembly</summary>
@@ -32,7 +32,7 @@ namespace Sonar.Models
 
             try
             {
-                bytes = UrlBase64.Decode(Encoding.UTF8.GetString(bytes, 0, bytes.Length).Replace("\n", string.Empty));
+                bytes = Base64Url.DecodeFromChars(Encoding.UTF8.GetString(bytes, 0, bytes.Length).Replace("\n", string.Empty));
                 SonarObfuscator.Deobfuscate(bytes);
                 return SonarSerializer.DeserializeData<ClientSecret>(bytes);
             }

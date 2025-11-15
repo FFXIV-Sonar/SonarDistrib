@@ -10,6 +10,7 @@ using SonarUtils.Collections;
 using System.Collections.Frozen;
 using SonarUtils.Text;
 using SonarUtils;
+using System.Buffers.Text;
 
 namespace Sonar.Data.Details
 {
@@ -29,7 +30,7 @@ namespace Sonar.Data.Details
         public byte[] Hash { get; set; } = [];
 
         [IgnoreMember]
-        public string HashString => UrlBase64.Encode(this.Hash);
+        public string HashString => Base64Url.EncodeToString(this.Hash);
 
         [IgnoreMember]
         public SonarDbIndexesFacade Indexes { get; private set; }
@@ -127,7 +128,7 @@ namespace Sonar.Data.Details
             byteList.AddRange(MessagePackSerializer.Serialize(this.Aetherytes.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.WorldTravelData.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
 
-            return BouncySha256.HashData(byteList.AsSpan());
+            return SonarHashing.Sha256(byteList.AsSpan());
         }
 
         /// <summary>Warning: Slow</summary>

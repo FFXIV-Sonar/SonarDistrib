@@ -3,6 +3,7 @@ using Sonar.Messages;
 using Sonar.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -37,10 +38,15 @@ namespace Sonar.Models
         public string? HardwareIdentifier { get; set; }
 
         [Key(3)]
+        [Obsolete]
         public ClientSecret? SonarSecret { get; set; }
 
         [Key(4)]
+        [Obsolete]
         public ClientSecret? PluginSecret { get; set; }
         #endregion
+
+        [Key(6)]
+        public IReadOnlyDictionary<string, ImmutableArray<byte>?>? SecretMetaBytes { get; set; }
     }
 }

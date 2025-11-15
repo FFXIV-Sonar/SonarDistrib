@@ -33,7 +33,8 @@ namespace SonarPlugin.Localization
 
         Save,
 
-        Setup,
+        [EnumLoc(Fallback = "Run Setup")]
+        RunSetup,
         
         Debug,
     }

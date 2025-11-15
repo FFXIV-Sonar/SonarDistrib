@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project>
+﻿<Project>
+  <Import Project="SecretMeta.targets" />
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <AssemblyVersion>0.7.3.9</AssemblyVersion>
+    <AssemblyVersion>0.7.4.0</AssemblyVersion>
 
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>

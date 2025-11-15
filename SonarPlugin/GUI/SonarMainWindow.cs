@@ -147,7 +147,7 @@ namespace SonarPlugin.GUI
 
             ImGui.SetNextWindowBgAlpha(this.Plugin.Configuration.Opacity);
 
-            // Setup flags for window based on config settings
+            // RunSetup flags for window based on config settings
             var windowFlags = ImGuiWindowFlags.HorizontalScrollbar | this.WindowFlags;
 
             if (ImGui.Begin($"{MainWindowLoc.WindowTitle.GetLocString()}###SonarMainWindow", ref this._visible, windowFlags))

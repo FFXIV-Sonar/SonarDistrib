@@ -2,7 +2,7 @@
   <Import Project="..\SonarCommon.props" />
 
   <PropertyGroup>
-    <!-- Empty -->
+    <SecretMeta>$(PLOGON_SECRET_UTILS)</SecretMeta>
   </PropertyGroup>
 
   <ItemGroup>

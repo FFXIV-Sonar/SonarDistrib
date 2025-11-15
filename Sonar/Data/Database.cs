@@ -6,11 +6,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
-using Sonar.Threading;
 using System.Linq;
-using System.Diagnostics.CodeAnalysis;
 using Sonar.Extensions;
 
 namespace Sonar.Data
@@ -20,7 +17,7 @@ namespace Sonar.Data
     /// </summary>
     public static class Database
     {
-        private static readonly SonarLanguage[] s_languages = Enum.GetValues<SonarLanguage>().Where(language => language is not SonarLanguage.Default).ToArray();
+        private static readonly SonarLanguage[] s_languages = [..Enum.GetValues<SonarLanguage>().Where(language => language is not SonarLanguage.Default)];
         private static Lazy<SonarDb> s_db = new(LoadEmbeddedDb);
         private static SonarLanguage s_defaultLanguage = SonarLanguage.English;
 

@@ -22,7 +22,7 @@ namespace SonarPlugin.Utility
         private static readonly Regex s_resourceNameRegex = new(@"^.*\.lang\.json$", RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.CultureInvariant);
         private static readonly ConcurrentDictionary<Assembly, ImmutableArray<string>> s_languages = new();
 
-        /// <summary>Setup localization.</summary>
+        /// <summary>RunSetup localization.</summary>
         /// <param name="threaded">Launch a background task to perform the setup.</param>
         /// <param name="debugFallbacks">Use debugFallbacks fallbacks.</param>
         public static void Setup(bool debugFallbacks)

@@ -96,7 +96,8 @@ namespace Sonar.Models
         {
             try
             {
-                return Convert.ToBase64String(BouncySha256.HashData(File.ReadAllBytes(assembly.Location)));
+                using var stream = File.OpenRead(assembly.Location);
+                return Convert.ToBase64String(SonarHashing.Sha256(stream));
             }
             catch (Exception ex)
             {

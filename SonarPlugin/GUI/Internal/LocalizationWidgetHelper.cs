@@ -25,7 +25,6 @@ namespace SonarPlugin.GUI.Internal
         public const string MetaAuthorKey = "__Meta.Author";
         public const string MetaNotesKey = "__Meta.Notes";
 
-        public sealed record FileDialogResult(string Id, string Path, /* export only */ bool Fallbacks = false);
         private static FileDialogResult? s_importDialogResult;
         private static FileDialogResult? s_exportDialogResult;
 
@@ -84,7 +83,7 @@ namespace SonarPlugin.GUI.Internal
                                 setup = true;
                             }
 
-                            if (ImGui.Button($"{PluginLoc.Setup.GetLocString()}###setup") || setup)
+                            if (ImGui.Button($"{PluginLoc.RunSetup.GetLocString()}###setup") || setup)
                             {
                                 EnumLocUtils.Setup(config.DebugFallbacks);
                             }

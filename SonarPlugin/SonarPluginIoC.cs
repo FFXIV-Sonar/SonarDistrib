@@ -21,6 +21,8 @@ using Sonar.Models;
 using Dalamud.Plugin.Services;
 using SonarPlugin.GUI;
 using SonarUtils.Text.Placeholders;
+using SonarUtils.Secrets;
+using SonarPlugin.Sounds;
 
 namespace SonarPlugin
 {
@@ -55,6 +57,7 @@ namespace SonarPlugin
             pluginInterface.Inject(this);
             this.ConfigureServices();
             this.Container.Resolve<LodestoneVerifyWindow>();
+            this.Container.Resolve<SoundEngine>();
         }
 
         private SonarClient GetSonarClient()
@@ -63,7 +66,7 @@ namespace SonarPlugin
             var startInfo = new SonarStartInfo()
             {
                 WorkingDirectory = Path.Join(this.PluginInterface.GetPluginConfigDirectory(), "Sonar"),
-                PluginSecret = ClientSecret.ReadEmbeddedSecret(typeof(SonarPluginIoC).Assembly, "SonarPlugin.Resources.Secret.data"),
+                PluginSecretMeta = SecretUtils.GetSecretMetaBytes(typeof(SonarPlugin).Assembly)
             };
 
             SonarLanguage DetermineLanguage(int num)

@@ -2,7 +2,7 @@
   <Import Project="..\SonarCommon.props" />
 
   <PropertyGroup>
-    <!-- Empty -->
+    <SecretMeta>$(PLOGON_SECRET_SONAR)</SecretMeta>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,8 +41,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="9.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="9.0.10" />
     <PackageReference Include="ZString" Version="2.6.0" />
   </ItemGroup>
 
@@ -77,24 +77,5 @@
       <DependentUpon>SonarMath.tt</DependentUpon>
     </Compile>
   </ItemGroup>
-
-  <Target Name="Secrets" BeforeTargets="PrepareForBuild" Condition="'$(PLOGON_SECRET_SONAR)' != ''">
-    <Warning Text="Adding Secret: PLOGON_SECRET_SONAR" />
-    <WriteLinesToFile File="Resources\Secret.data" Lines="$(PLOGON_SECRET_SONAR)" Overwrite="true" />
-  </Target>
-
-  <Target Name="EmbedSecrets" BeforeTargets="PrepareForBuild" AfterTargets="Secrets">
-    <Warning Text="Embedding Secret: PLOGON_SECRET_SONAR" />
-    <ItemGroup>
-      <EmbeddedResource Include="Resources\Secret.data" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="Hash" AfterTargets="Build" Condition="Exists('$(Outdir)\Sonar.dll')">
-    <GetFileHash Algorithm="SHA256" Files="$(Outdir)\Sonar.dll" HashEncoding="base64">
-      <Output TaskParameter="Hash" ItemName="SonarHash" />
-    </GetFileHash>
-    <Warning Text="Sonar Hash: @(SonarHash)" />
-  </Target>
 
 </Project>

@@ -5,6 +5,7 @@
     <OutputPath>bin/</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
     <TargetFramework>net9.0-windows</TargetFramework>
+    <SecretMeta>$(PLOGON_SECRET_PLUGIN)</SecretMeta>
   </PropertyGroup>
 
   <ItemGroup>
@@ -84,23 +85,8 @@
     <Reference Include="CheapLoc" Private="false" />
   </ItemGroup>
 
-  <Target Name="Secrets" BeforeTargets="PrepareForBuild" Condition="'$(PLOGON_SECRET_PLUGIN)' != ''">
-    <Warning Text="Adding Secret: PLOGON_SECRET_PLUGIN" />
-    <WriteLinesToFile File="Resources\Secret.data" Lines="$(PLOGON_SECRET_PLUGIN)" Overwrite="true" />
-  </Target>
-
-  <Target Name="EmbedSecrets" BeforeTargets="PrepareForBuild" AfterTargets="Secrets">
-    <Warning Text="Embedding Secret: PLOGON_SECRET_PLUGIN" />
-    <ItemGroup>
-      <EmbeddedResource Include="Resources\Secret.data" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="Hash" AfterTargets="Build" Condition="Exists('$(Outdir)\Sonar.dll')">
-    <GetFileHash Algorithm="SHA256" Files="$(OutputPath)\SonarPlugin.dll" HashEncoding="base64">
-      <Output TaskParameter="Hash" ItemName="PluginHash" />
-    </GetFileHash>
-    <Warning Text="SonarPlugin Hash: @(PluginHash)" />
-  </Target>
+  <ItemGroup>
+    <PackageReference Update="DotNet.ReproducibleBuilds" Version="1.2.39" />
+  </ItemGroup>
 
 </Project>

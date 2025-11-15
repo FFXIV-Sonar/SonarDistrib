@@ -34,6 +34,7 @@ using System.Linq;
 using DryIoc.MefAttributedModel;
 using Sonar.Tokens;
 using Sonar.Extensions;
+using SonarUtils.Secrets;
 
 namespace Sonar
 {
@@ -160,8 +161,12 @@ namespace Sonar
 
                         HardwareIdentifier = this.HardwareIdentifier.Identifier,
                         Version = this.VersionInfo,
-                        SonarSecret = ClientSecret.ReadEmbeddedSecret(typeof(SonarClient).Assembly, "Sonar.Resources.Secret.data"),
-                        PluginSecret = this.StartInfo.PluginSecret,
+                        SecretMetaBytes = new Dictionary<string, ImmutableArray<byte>?>()
+                        {
+                            { "plugin", this.StartInfo.PluginSecretMeta },
+                            { "sonar", SecretUtils.GetSecretMetaBytes(typeof(SonarClient).Assembly) },
+                            { "utils", SecretUtils.GetSecretMetaBytes(typeof(SecretUtils).Assembly) },
+                        }
                     },
 
                     this.Configuration.Contribute,

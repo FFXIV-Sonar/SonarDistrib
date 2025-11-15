@@ -18,6 +18,7 @@ using Dalamud.Logging;
 using Sonar.Relays;
 using Dalamud.Plugin.Services;
 using Sonar;
+using SonarPlugin.Sounds;
 
 namespace SonarPlugin.Notifiers
 {
@@ -29,10 +30,10 @@ namespace SonarPlugin.Notifiers
         private IRelayTracker<FateRelay> Tracker { get; }
         private PlayerProvider Player { get; }
         private IChatGui Chat { get; }
-        private AudioPlaybackEngine Audio { get; }
+        private SoundEngine Sounds { get; }
         private IPluginLog Logger { get; }
         
-        public FateNotifier(SonarPlugin plugin, IClientState clientState, SonarClient client, IRelayTracker<FateRelay> tracker, PlayerProvider player, IChatGui chat, AudioPlaybackEngine audio, IPluginLog logger)
+        public FateNotifier(SonarPlugin plugin, IClientState clientState, SonarClient client, IRelayTracker<FateRelay> tracker, PlayerProvider player, IChatGui chat, SoundEngine sounds, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.ClientState = clientState;
@@ -40,7 +41,7 @@ namespace SonarPlugin.Notifiers
             this.Tracker = tracker;
             this.Player = player;
             this.Chat = chat;
-            this.Audio = audio;
+            this.Sounds = sounds;
             this.Logger = logger;
 
             this.Logger.Information("Fate Notifier Initialized");
@@ -52,15 +53,8 @@ namespace SonarPlugin.Notifiers
             var allowChat = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
             var allowSound = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableSoundInDuty);
 
-            if (allowChat && this.Plugin.Configuration.EnableFateChatReports && this.Plugin.Configuration.SendFateToChat.Contains(state.Relay.Id))
-            {
-                this.SendToChat(state);
-            }
-
-            if (allowSound && this.Plugin.Configuration.PlaySoundFates && this.Plugin.Configuration.SendFateToSound.Contains(state.Relay.Id))
-            {
-                try { this.Audio.PlaySound(this.Plugin.Configuration.SoundFileFates ?? string.Empty); } catch (Exception ex) { this.Logger.Error(ex, "Exception playing sound"); }
-            }
+            if (allowChat && this.Plugin.Configuration.EnableFateChatReports && this.Plugin.Configuration.SendFateToChat.Contains(state.Relay.Id)) this.SendToChat(state);
+            if (allowSound && this.Plugin.Configuration.SendFateToSound.Contains(state.Relay.Id)) this.Sounds.PlaySound(this.Plugin.Configuration.SoundFileFatesConfig);
         }
 
         public void SendToChat(RelayState<FateRelay> state, XivChatType type = XivChatType.None) => this.SendToChat(state.Relay, type);

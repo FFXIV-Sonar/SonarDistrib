@@ -2,7 +2,6 @@
 using Sonar.Data.Extensions;
 using Sonar.Data.Rows;
 using Sonar.Enums;
-using Sonar.Threading;
 using SonarUtils.Text;
 using System;
 using System.Collections.Generic;

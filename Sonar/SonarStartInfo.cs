@@ -1,5 +1,6 @@
 ﻿using Sonar.Models;
 using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.CompilerServices;
 
@@ -9,7 +10,7 @@ namespace Sonar
     {
         private bool _locked;
         private string? _workingDirectory;
-        private ClientSecret? _pluginSecret;
+        private ImmutableArray<byte>? _pluginSecretMeta;
 
         /// <summary>Whether this <see cref="SonarStartInfo"/> is locked. This happens once its used by <see cref="SonarClient"/></summary>
         public bool Locked
@@ -30,13 +31,13 @@ namespace Sonar
             }
         }
 
-        public ClientSecret? PluginSecret
+        public ImmutableArray<byte>? PluginSecretMeta
         {
-            get => this._pluginSecret;
+            get => this._pluginSecretMeta;
             set
             {
                 this.ThrowIfLocked();
-                this._pluginSecret = value;
+                this._pluginSecretMeta = value;
             }
         }
 

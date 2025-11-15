@@ -7,6 +7,7 @@ using Sonar.Config;
 using Sonar.Config.Experimental;
 using Sonar.Data;
 using Sonar.Enums;
+using SonarPlugin.Sounds;
 using SonarPlugin.Utility;
 using System;
 using System.Collections.Generic;
@@ -91,16 +92,24 @@ namespace SonarPlugin.Config
         // S Rank configurations
         public bool PlaySoundSRanks = false;
         public string? SoundFileSRanks = string.Empty;
+        public SoundConfig SoundSRanksConfig = new();
 
         // A Rank configurations
         public bool PlaySoundARanks = false;
         public string? SoundFileARanks = string.Empty;
+        public SoundConfig SoundFileARanksConfig = new();
+
+        // B Rank configurations
+        public bool PlaySoundBRanks = false;
+        public string? SoundFileBRanks = string.Empty;
+        public SoundConfig SoundFileBRanksConfig = new();
 
         // FATE configurations
         public HashSet<uint> SendFateToChat = new();
         public HashSet<uint> SendFateToSound = new();
         public bool PlaySoundFates = false;
         public string? SoundFileFates = string.Empty;
+        public SoundConfig SoundFileFatesConfig = new();
         public bool EnableFateChatReports = true;
         public bool EnableFateChatItalicFont = false;
         public bool EnableFateChatCrossworldIcon = true;
@@ -111,14 +120,31 @@ namespace SonarPlugin.Config
             this.SonarConfig ??= new();
             this.Colors ??= new();
             this.SoundVolume = Math.Clamp(this.SoundVolume, 0f, 1f);
-            this.SoundFileARanks ??= string.Empty;
             this.SoundFileSRanks ??= string.Empty;
+            this.SoundFileARanks ??= string.Empty;
+            this.SoundFileBRanks ??= string.Empty;
             this.SoundFileFates ??= string.Empty;
 
             this.DisplayHuntDeadTimer = MathFunctions.Clamp(this.DisplayHuntDeadTimer, 0, 604800);
             this.DisplayHuntUpdateTimer = MathFunctions.Clamp(this.DisplayHuntUpdateTimer, 60, 604800);
             this.DisplayHuntUpdateTimerOther = MathFunctions.Clamp(this.DisplayHuntUpdateTimerOther, 60, 604800);
             this.HuntsDisplayLimit = MathFunctions.Clamp(this.HuntsDisplayLimit, 1, 10000);
+
+            // Sound migration
+            Sanitize_SoundMigration(ref this.PlaySoundSRanks, ref this.SoundFileSRanks, this.SoundSRanksConfig);
+            Sanitize_SoundMigration(ref this.PlaySoundARanks, ref this.SoundFileARanks, this.SoundFileARanksConfig);
+            Sanitize_SoundMigration(ref this.PlaySoundBRanks, ref this.SoundFileBRanks, this.SoundFileBRanksConfig);
+            Sanitize_SoundMigration(ref this.PlaySoundFates, ref this.SoundFileFates, this.SoundFileFatesConfig);
+        }
+
+        private static void Sanitize_SoundMigration(ref bool enabled, ref string? file, SoundConfig config)
+        {
+            if (!string.IsNullOrWhiteSpace(file))
+            {
+                config.Enabled = enabled;
+                config.Sound = SoundEngine.OldToNewConfig(file);
+                file = string.Empty;
+            }
         }
 
         public bool PerformVersionUpdate(IPluginLog? logger = null)

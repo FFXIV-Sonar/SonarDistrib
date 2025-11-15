@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json;
+using SonarPlugin.Sounds;
 
 namespace SonarPlugin.GUI
 {
@@ -27,6 +28,11 @@ namespace SonarPlugin.GUI
         public static bool Localization(LocalizationConfig config, FileDialogManager fileDialogs)
         {
             return LocalizationWidgetHelper.Draw(config, fileDialogs);
+        }
+
+        public static bool SoundAlertsConfig(string id, SoundConfig config, SoundEngine engine, FileDialogManager fileDialogs)
+        {
+            return SoundsWidgetHelper.SoundSelector(id, config, engine, fileDialogs);
         }
     }
 }

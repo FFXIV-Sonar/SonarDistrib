@@ -1,5 +1,6 @@
 ﻿using MessagePack;
 using System;
+using System.Buffers.Text;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -20,6 +21,6 @@ namespace Sonar.Messages
 
         /// <summary>Gets a <see cref="string"/> representation of this <see cref="SonarToken"/>.</summary>
         /// <remarks>This is a Base64Url representation of <see cref="Bytes"/>.</remarks>
-        public override string ToString() => UrlBase64.Encode(this.Bytes.AsSpan());
+        public override string ToString() => Base64Url.EncodeToString(this.Bytes.AsSpan());
     }
 }

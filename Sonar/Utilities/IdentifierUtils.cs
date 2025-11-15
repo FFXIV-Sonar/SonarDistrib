@@ -9,6 +9,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 using SonarUtils;
+using System.Buffers.Text;
 
 namespace Sonar.Utilities
 {
@@ -49,18 +50,12 @@ namespace Sonar.Utilities
                     .OnMac(mac => mac
                         .AddPlatformSerialNumber())
                     .UseFormatter(new StringDeviceIdFormatter(new PlainTextDeviceIdComponentEncoder(), ","))
-                    //.UseFormatter(new HashDeviceIdFormatter(SHA256.Create, new Base64UrlByteArrayEncoder()))
                     .ToString(); // [..16].ToLowerInvariant(); // This is a big oops :/, can't remove ToLowerInvariant() now // TODO
-                //identifier = string.IsNullOrEmpty(identifier) ? "unknown" : UrlBase64.Encode(SHA256.HashData(Encoding.UTF8.GetBytes(identifier)));
-                identifier = string.IsNullOrEmpty(identifier) ? "unknown" : UrlBase64.Encode(GetSecureHash(Encoding.UTF8.GetBytes(identifier)));
+                identifier = string.IsNullOrEmpty(identifier) ? "unknown" : Base64Url.EncodeToString(GetSecureHash(Encoding.UTF8.GetBytes(identifier)));
             }
             catch (Exception ex)
             {
                 identifier = $"unknown_{ex}"; // Inform the server of the exception for later debugging
-                //throw;
-
-                // DeviceId happen to swallow exceptions so this is unlikely to happen
-                // Decision has been made to keep this handler anyway just in case it throws an exception in the future.
             }
 
             hwId.Identifier = $"h3_{identifier}";
@@ -88,7 +83,7 @@ namespace Sonar.Utilities
             try
             {
                 // Since I tend to have bad luck. Hopefully this never happens.
-                if (allowFallback) return BouncySha256.HashData(data);
+                if (allowFallback) return SonarHashing.Sha256(data);
             }
             catch (Exception ex)
             {
@@ -103,8 +98,8 @@ namespace Sonar.Utilities
         {
             if (clientId is null || clientSecret is null) return null;
             var bytes = Encoding.UTF8.GetBytes($"{clientId}{clientSecret}");
-            var hash = BouncySha256.HashData(bytes);
-            return UrlBase64.Encode(hash)[..12];
+            var hash = SonarHashing.Sha256(bytes);
+            return Base64Url.EncodeToString(hash)[..12];
         }
     }
 }

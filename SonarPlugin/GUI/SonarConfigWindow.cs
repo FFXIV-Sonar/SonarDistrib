@@ -36,6 +36,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using static SonarPlugin.Utility.ShellUtils;
 using Dalamud.Interface;
+using SonarPlugin.Sounds;
 
 namespace SonarPlugin.GUI
 {
@@ -53,6 +54,7 @@ namespace SonarPlugin.GUI
         private IDalamudPluginInterface PluginInterface { get; }
         private SonarClient Client { get; }
         private IDataManager Data { get; }
+        private SoundEngine Sounds { get; }
         private FileDialogManager FileDialogs { get; }
         private IndexProvider Index { get; }
         private IPluginLog Logger { get; }
@@ -64,23 +66,20 @@ namespace SonarPlugin.GUI
         private readonly Tasker _tasker = new();
 
         private readonly string[] _chatTypes;
-        private string[] audioFilesForSRanks = default!;
-        private string[] audioFilesForARanks = default!;
-        private readonly List<string> _defaultAudioResourceList;
         private string fateSearchText = string.Empty;
 
         private List<FateRow> filteredFateData;
         private readonly Dictionary<uint, string> _fateZonesCache = new();
-        private string[] audioFilesForFates = default!;
         private readonly int fateTableColumnCount = Enum.GetNames(typeof(FateSelectionColumns)).Length;
 
-        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, IDalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, AudioPlaybackEngine audio, FileDialogManager fileDialogs, IndexProvider index, IPluginLog logger) : base("Sonar Configuration")
+        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, IDalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, AudioPlaybackEngine audio, SoundEngine sounds, FileDialogManager fileDialogs, IndexProvider index, IPluginLog logger) : base("Sonar Configuration")
         {
             this.Plugin = plugin;
             this.Stub = stub;
             this.PluginInterface = pluginInterface;
             this.Client = client;
             this.Data = data;
+            this.Sounds = sounds;
             this.Audio = audio;
             this.FileDialogs = fileDialogs;
             this.Index = index;
@@ -102,24 +101,6 @@ namespace SonarPlugin.GUI
                 .Select(t => t.GetDetails()?.FancyName ?? t.ToString())
                 .Where(n => !string.IsNullOrWhiteSpace(n))
                 .ToArray()!;
-
-            // Audio setup for choosing either existing sounds or custom sound
-            this._defaultAudioResourceList = new List<string>();
-
-            // TODO: For now assuming any file that doesn't have an extension is an .mp3 file since I'm logically changing the name in the project file
-            //       This is probably not the BEST way of handling this but makes the logic of display and getting at the sound file easier for now.
-            var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-            foreach (var resource in resources)
-            {
-                if (Path.GetExtension(resource) != string.Empty) continue;
-                _defaultAudioResourceList.Add(resource);
-            }
-
-            this._defaultAudioResourceList.Add(Loc.Localize("CustomSoundOption", "Custom..."));
-
-            this.SetupSRankAudioSelection();
-            this.SetupARankAudioSelection();
-            this.SetupFateAudioSelection();
 
             // Set initial fate information
             this.filteredFateData = Database.Fates.Values
@@ -479,6 +460,7 @@ namespace SonarPlugin.GUI
                     {
                         using var indent2 = ImRaii.PushIndent();
                         // TODO: might need to do extra checks here and default to Echo channel on failure.
+                        // TODO: Chat types localization
                         var currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.HuntOutputChannel)?.FancyName ?? this.Plugin.Configuration.HuntOutputChannel.ToString();
                         var selectedChat = Array.IndexOf(this._chatTypes, currentChat);
 
@@ -496,68 +478,41 @@ namespace SonarPlugin.GUI
                 }
             }
 
-            if (ImGui.TreeNodeEx("##huntTabSoundAlertConfig", ImGuiTreeNodeFlags.CollapsingHeader | ImGuiTreeNodeFlags.DefaultOpen, $"{Loc.Localize("ConfigureHuntSounds", "Hunt Sound Alerts Configuration")}"))
+            using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.SoundAlertsConfig.GetLocString()}###huntAlertsConfig", ImGuiTreeNodeFlags.CollapsingHeader))
             {
-                ImGui.Indent();
-
-                this._save |= ImGui.Checkbox($"{Loc.Localize("PlaySoundSConfig", "Play sound on Rank S")}##sRankSoundEnabled", ref this.Plugin.Configuration.PlaySoundSRanks);
-                if (this.Plugin.Configuration.PlaySoundSRanks)
+                if (node.Success)
                 {
-                    ImGui.Indent();
-                    var selectedSound = Array.IndexOf(this.audioFilesForSRanks, this.Plugin.Configuration.SoundFileSRanks);
-                    if (ImGui.Combo("##sRankSounds", ref selectedSound, this.audioFilesForSRanks, this.audioFilesForSRanks.Length))
+                    using var indent = ImRaii.PushIndent();
+
+                    using (var node2 = ImRaii.TreeNode($"{ConfigWindowLoc.HuntSRankSounds.GetLocString()}###huntSRankSounds"))
                     {
-                        if (selectedSound == this.audioFilesForSRanks.Length - 1)
+                        if (node2.Success)
                         {
-                            this.FileDialogs.OpenFileDialog(Loc.Localize("SelectSRankSoundTitle", "Select S Rank sound file"), "Sound Files{.3g2,.3gp,.3gp2,.3gpp,.asf,.wma,.wmv,.aac,.adts,.avi,.mp3,.m4a,.m4v,.mov,.mp4,.sami,.smi,.wav}", (success, filename) =>
-                            {
-                                if (!success) return;
-                                this._save = true;
-                                this.Plugin.Configuration.SoundFileSRanks = filename;
-                                this.SetupSRankAudioSelection();
-                                this.Audio.PlaySound(filename);
-                            });
-                        }
-                        else
-                        {
-                            this._save = true;
-                            this.Plugin.Configuration.SoundFileSRanks = audioFilesForSRanks[selectedSound];
-                            this.Audio.PlaySound(this.Plugin.Configuration.SoundFileSRanks);
+                            using var indent2 = ImRaii.PushIndent();
+                            this._save |= SonarWidgets.SoundAlertsConfig("huntSRankSoundsConfig", this.Plugin.Configuration.SoundSRanksConfig, this.Sounds, this.FileDialogs);
                         }
                     }
-                    ImGui.Unindent();
-                }
 
-                this._save |= ImGui.Checkbox($"{Loc.Localize("PlaySoundAConfig", "Play sound on Rank A")}##aRankSoundEnabled", ref this.Plugin.Configuration.PlaySoundARanks);
-                if (this.Plugin.Configuration.PlaySoundARanks)
-                {
-                    ImGui.Indent();
-                    var selectedSound = Array.IndexOf(this.audioFilesForARanks, this.Plugin.Configuration.SoundFileARanks);
-                    if (ImGui.Combo("##aRankSounds", ref selectedSound, this.audioFilesForARanks, this.audioFilesForARanks.Length))
+                    using (var node2 = ImRaii.TreeNode($"{ConfigWindowLoc.HuntARankSounds.GetLocString()}###huntARankSounds"))
                     {
-                        if (selectedSound == this.audioFilesForARanks.Length - 1)
+                        if (node2.Success)
                         {
-                            this.FileDialogs.OpenFileDialog(Loc.Localize("SelectARankSoundTitle", "Select A Rank sound file"), "Sound Files{.3g2,.3gp,.3gp2,.3gpp,.asf,.wma,.wmv,.aac,.adts,.avi,.mp3,.m4a,.m4v,.mov,.mp4,.sami,.smi,.wav}", (success, filename) =>
-                            {
-                                if (!success) return;
-                                this._save = true;
-                                this.Plugin.Configuration.SoundFileARanks = filename;
-                                this.SetupARankAudioSelection();
-                                this.Audio.PlaySound(filename);
-                            });
-                        }
-                        else
-                        {
-                            this._save = true;
-                            this.Plugin.Configuration.SoundFileARanks = audioFilesForARanks[selectedSound];
-                            this.Audio.PlaySound(this.Plugin.Configuration.SoundFileARanks);
+                            using var indent2 = ImRaii.PushIndent();
+                            this._save |= SonarWidgets.SoundAlertsConfig("huntARankSoundsConfig", this.Plugin.Configuration.SoundFileARanksConfig, this.Sounds, this.FileDialogs);
                         }
                     }
-                    ImGui.Unindent();
+
+                    using (var node2 = ImRaii.TreeNode($"{ConfigWindowLoc.HuntBRankSounds.GetLocString()}###huntBRankSounds"))
+                    {
+                        if (node2.Success)
+                        {
+                            using var indent2 = ImRaii.PushIndent();
+                            this._save |= SonarWidgets.SoundAlertsConfig("huntBRankSoundsConfig", this.Plugin.Configuration.SoundFileBRanksConfig, this.Sounds, this.FileDialogs);
+                        }
+                    }
                 }
-                ImGui.Unindent();
             }
-
+            
             ImGui.Spacing();
 
             if (ImGui.TreeNodeEx("##huntTabReportNotifications", ImGuiTreeNodeFlags.CollapsingHeader | ImGuiTreeNodeFlags.DefaultOpen, $"{Loc.Localize("HuntNotifications", "Hunt Report Notifications")}"))
@@ -600,7 +555,7 @@ namespace SonarPlugin.GUI
                 ImGui.Spacing();
 
                 var ranks = Enum.GetValues<HuntRank>();
-                foreach (var rank in ranks.Reverse())
+                foreach (var rank in ranks.AsEnumerable().Reverse())
                 {
                     if (rank == HuntRank.None || ((int)rank & 0x80) == 0x80) continue;
                     if (!this.Plugin.Configuration.AllSRankSettings && (rank == HuntRank.SS || rank == HuntRank.SSMinion)) continue;
@@ -747,94 +702,79 @@ namespace SonarPlugin.GUI
 
         private void DrawFateTab()
         {
-            ImGui.BeginChild("##fateTabScrollRegion");
+            using var child = ImRaii.Child("##huntTabScrollRegion");
 
-            SonarImGui.Checkbox($"{Loc.Localize("ContributeFates", "Contribute Fate Reports")}{(this.Client.Configuration.Contribute.Global ? "" : " (Disabled)")}##contributeFates", this.Client.Configuration.Contribute[Sonar.Relays.RelayType.Fate], value =>
+            SonarImGui.Checkbox($"{ConfigLoc.ContributeFates.GetLocString()}###contributeFates", this.Client.Configuration.Contribute[RelayType.Fate], value =>
             {
                 this._save = this._server = true;
-                this.Client.Configuration.Contribute[Sonar.Relays.RelayType.Fate] = value;
+                this.Client.Configuration.Contribute[RelayType.Fate] = value;
             });
+
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip($"{Loc.Localize("ContributeHuntsTooltip", "Contributing fate reports is required in order to receive fate reports from other Sonar users.\nIf disabled Sonar will continue to work in local mode, where you'll see what's detected within your game but you'll not receive from others.")}");
+                ImGui.SetTooltip(ConfigLoc.ContributeTooltip.GetLocString());
             }
 
-            SonarImGui.Checkbox($"{Loc.Localize("TrackAllFates", "Track All Fates")}##trackAllFates", this.Client.Configuration.FateConfig.TrackAll, value =>
+            if (!this.Client.Configuration.Contribute.Global)
             {
-                this.Plugin.SaveConfiguration(true);
+                ImGui.SameLine();
+                using var color = ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudRed);
+                ImGui.TextUnformatted(ConfigLoc.ContributeGlobalDisabled.GetLocString());
+            }
+
+            SonarImGui.Checkbox($"{ConfigLoc.TrackAllFates.GetLocString()}###trackAllFates", this.Client.Configuration.FateConfig.TrackAll, value =>
+            {
+                this._save = this._server = true;
                 this.Client.Configuration.FateConfig.TrackAll = value;
             });
 
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip($"{Loc.Localize("TrackAllFatesTooltip", "Checked: Track all fates regardless of jurisdiction settings.\nUnchecked: Track fates within jurisdiction settings only.")}");
+                ImGui.SetTooltip(ConfigLoc.TrackAllTooltip.GetLocString());
             }
 
-            if (ImGui.TreeNodeEx("##fateTabChatConfig", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("ConfigureFateChat", "Fate Chat Configuration")}"))
+            using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.ChatReportsConfig.GetLocString()}###fateChatConfig", ImGuiTreeNodeFlags.CollapsingHeader))
             {
-                ImGui.Indent();
-                if (ImGui.Checkbox($"{Loc.Localize("FateChatEnabledConfig", "Show fate reports in game chat")}##fateChatEnabled", ref this.Plugin.Configuration.EnableFateChatReports))
+                if (node.Success)
                 {
-                    this._save = true;
-                }
-                if (this.Plugin.Configuration.EnableFateChatReports)
-                {
-                    ImGui.Indent();
-                    // TODO: might need to do extra checks here and default to Echo channel on failure.
-                    string currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.FateOutputChannel)?.FancyName ?? this.Plugin.Configuration.FateOutputChannel.ToString();
-                    int selectedChat = Array.IndexOf(this._chatTypes, currentChat);
-
-                    if (ImGui.Combo("##chatTypes", ref selectedChat, this._chatTypes, this._chatTypes.Length))
+                    using var indent = ImRaii.PushIndent();
+                    this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatReportsEnabled.GetLocString()}###fateChatEnabled", ref this.Plugin.Configuration.EnableFateChatReports);
+                    if (this.Plugin.Configuration.EnableFateChatReports)
                     {
-                        this._save = true;
-                        var value = XivChatTypeUtils.GetValueFromInfoAttribute(_chatTypes[selectedChat]);
-                        this.Plugin.Configuration.FateOutputChannel = value;
-                    }
+                        using var indent2 = ImRaii.PushIndent();
+                        // TODO: might need to do extra checks here and default to Echo channel on failure.
+                        // TODO: Chat types localization
 
-                    ImGui.Checkbox($"{Loc.Localize("FateChatEnableItalic", "Enable italic font for game chat")}##fateChatEnableItalic", ref this.Plugin.Configuration.EnableFateChatItalicFont);
-                    ImGui.Checkbox($"{Loc.Localize("FateChatEnableCrosswordIcon", "Enable cross world icon when relay is not from current world")}##fateChatEnableCrossworldIcon", ref this.Plugin.Configuration.EnableFateChatCrossworldIcon);
-
-                    ImGui.Unindent();
-                }
-
-                ImGui.Unindent();
-            }
-
-            ImGui.Spacing();
-
-            if (ImGui.TreeNodeEx("##fateTabSoundAlertConfig", ImGuiTreeNodeFlags.CollapsingHeader, $"{Loc.Localize("ConfigureFateSounds", "Fate Sound Alerts Configuration")}"))
-            {
-                ImGui.Indent();
-
-                ImGui.Checkbox($"{Loc.Localize("PlaySoundFateConfig", "Play sound on Fates")}##fateSoundEnabled", ref this.Plugin.Configuration.PlaySoundFates);
-                if (this.Plugin.Configuration.PlaySoundFates)
-                {
-                    ImGui.Indent();
-                    int selectedSound = Array.IndexOf(this.audioFilesForFates, this.Plugin.Configuration.SoundFileFates);
-                    if (ImGui.Combo("##fateSounds", ref selectedSound, this.audioFilesForFates, this.audioFilesForFates.Length))
-                    {
-                        if (selectedSound == this.audioFilesForFates.Length - 1)
-                        {
-                            this.FileDialogs.OpenFileDialog(Loc.Localize("SelectFateSoundTitle", "Select fate sound file"), "Sound Files{.3g2,.3gp,.3gp2,.3gpp,.asf,.wma,.wmv,.aac,.adts,.avi,.mp3,.m4a,.m4v,.mov,.mp4,.sami,.smi,.wav}", (success, filename) =>
-                            {
-                                if (!success) return;
-                                this._save = true;
-                                this.Plugin.Configuration.SoundFileFates = filename;
-                                this.SetupFateAudioSelection();
-                                this.Audio.PlaySound(filename);
-                            });
-                        }
-                        else
+                        var currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.FateOutputChannel)?.FancyName ?? this.Plugin.Configuration.FateOutputChannel.ToString();
+                        var selectedChat = Array.IndexOf(this._chatTypes, currentChat);
+                        if (ImGui.Combo("###chatTypes", ref selectedChat, this._chatTypes, this._chatTypes.Length))
                         {
                             this._save = true;
-                            this.Plugin.Configuration.SoundFileFates = audioFilesForFates[selectedSound];
-                            this.Audio.PlaySound(this.Plugin.Configuration.SoundFileFates);
+                            var value = XivChatTypeUtils.GetValueFromInfoAttribute(this._chatTypes[selectedChat]);
+                            this.Plugin.Configuration.FateOutputChannel = value;
+                        }
+
+                        this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableItalics.GetLocString()}###fateChatEnableItalic", ref this.Plugin.Configuration.EnableFateChatItalicFont);
+                        this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableCwIcon.GetLocString()}###fateChatEnableCrossworldIcon", ref this.Plugin.Configuration.EnableFateChatCrossworldIcon);
+                    }
+                }
+            }
+
+            using (var node = ImRaii.TreeNode($"{ConfigWindowLoc.SoundAlertsConfig.GetLocString()}###fateAlertsConfig", ImGuiTreeNodeFlags.CollapsingHeader))
+            {
+                if (node.Success)
+                {
+                    using var indent = ImRaii.PushIndent();
+
+                    using (var node2 = ImRaii.TreeNode($"{ConfigWindowLoc.FateSounds.GetLocString()}###fateSounds"))
+                    {
+                        if (node2.Success)
+                        {
+                            using var indent2 = ImRaii.PushIndent();
+                            this._save |= SonarWidgets.SoundAlertsConfig("fateSoundsConfig", this.Plugin.Configuration.SoundFileFatesConfig, this.Sounds, this.FileDialogs);
                         }
                     }
-                    ImGui.Unindent();
                 }
-
-                ImGui.Unindent();
             }
 
             ImGui.Spacing();
@@ -933,7 +873,7 @@ namespace SonarPlugin.GUI
                 {
                     // TODO : Jurisdiction is currently set as no sort, will fix later once I find a good way to handle it
                     ImGui.TableSetupColumn(Loc.Localize("FateTableChatColumn", "Chat"), ImGuiTableColumnFlags.PreferSortDescending, 0.0f, (int)FateSelectionColumns.Chat);
-                    ImGui.TableSetupColumn(Loc.Localize("FateTableSoundColumn", "Sound"), ImGuiTableColumnFlags.PreferSortDescending, 0.0f, (int)FateSelectionColumns.Sound);
+                    ImGui.TableSetupColumn(Loc.Localize("FateTableSoundColumn", "Sounds"), ImGuiTableColumnFlags.PreferSortDescending, 0.0f, (int)FateSelectionColumns.Sound);
                     ImGui.TableSetupColumn(Loc.Localize("FateTableJurisdictionColumn", "Jurisdiction"), ImGuiTableColumnFlags.NoHide, 50.0f, (int)FateSelectionColumns.Jurisdiction);
                     ImGui.TableSetupColumn(Loc.Localize("FateTableLevelColumn", "Level"), ImGuiTableColumnFlags.DefaultSort | ImGuiTableColumnFlags.WidthFixed, 0.0f, (int)FateSelectionColumns.Level);
                     ImGui.TableSetupColumn(Loc.Localize("FateTableNameColumn", "Name"), ImGuiTableColumnFlags.WidthStretch | ImGuiTableColumnFlags.NoHide, 0.0f, (int)FateSelectionColumns.Name);
@@ -999,7 +939,7 @@ namespace SonarPlugin.GUI
 
                         if (ImGui.IsItemHovered())
                         {
-                            ImGui.SetTooltip($"{Loc.Localize("SendToSound", "Play Sound")}");
+                            ImGui.SetTooltip($"{Loc.Localize("SendToSound", "Play Sounds")}");
                         }
 
                         ImGui.TableNextColumn();
@@ -1038,8 +978,6 @@ namespace SonarPlugin.GUI
 
                 ImGui.Unindent();
             }
-
-            ImGui.EndChild(); // End scroll region
         }
 
         private void DrawAboutTab()
@@ -1283,57 +1221,6 @@ namespace SonarPlugin.GUI
             #endif
 
             ImGui.EndChild(); // debugTabScrollRegion
-        }
-
-        private void SetupSRankAudioSelection()
-        {
-            if (!string.IsNullOrWhiteSpace(this.Plugin.Configuration.SoundFileSRanks))
-            {
-                List<string> tempList = new()
-                {
-                    this.Plugin.Configuration.SoundFileSRanks
-                };
-                tempList.AddRange(_defaultAudioResourceList);
-                this.audioFilesForSRanks = tempList.Distinct().ToArray();
-            }
-            else
-            {
-                this.audioFilesForSRanks = _defaultAudioResourceList.ToArray();
-            }
-        }
-
-        private void SetupARankAudioSelection()
-        {
-            if (!string.IsNullOrWhiteSpace(this.Plugin.Configuration.SoundFileARanks))
-            {
-                List<string> tempList = new()
-                {
-                    this.Plugin.Configuration.SoundFileARanks
-                };
-                tempList.AddRange(_defaultAudioResourceList);
-                this.audioFilesForARanks = tempList.Distinct().ToArray();
-            }
-            else
-            {
-                this.audioFilesForARanks = _defaultAudioResourceList.ToArray();
-            }
-        }
-
-        private void SetupFateAudioSelection()
-        {
-            if (!string.IsNullOrWhiteSpace(this.Plugin.Configuration.SoundFileFates))
-            {
-                List<string> tempList = new()
-                {
-                    this.Plugin.Configuration.SoundFileFates
-                };
-                tempList.AddRange(_defaultAudioResourceList);
-                audioFilesForFates = tempList.Distinct().ToArray();
-            }
-            else
-            {
-                audioFilesForFates = _defaultAudioResourceList.ToArray();
-            }
         }
 
         #region Fate Selection Table
