@@ -26,6 +26,7 @@ namespace SonarResources.Providers
             this.AddRegion(5, "CN", "China");
             this.AddRegion(6, "KR", "Korea");
             this.AddRegion(7, "Cloud", "Global");
+            this.AddRegion(8, "TC", "Taiwan");
             Program.WriteProgressLine($" ({this.Db.Regions.Count})");
         }
 

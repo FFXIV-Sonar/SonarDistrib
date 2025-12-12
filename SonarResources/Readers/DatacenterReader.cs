@@ -84,6 +84,9 @@ namespace SonarResources.Readers
 
             // Attempt to support Korean worlds
             //this.SetCustomDatacenter(2000, "Korea", "KR");
+
+            // Attemot to support TC worlds
+            this.SetCustomDatacenter(151, "陸行鳥", "TC");
         }
 
         private void SetCustomDatacenter(uint id, string dcName, string regionName)

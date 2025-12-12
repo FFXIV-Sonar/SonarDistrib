@@ -38,6 +38,7 @@ namespace SonarResources.Providers
             this.AddRegionTravel("OC");
             this.AddRegionTravel("CN");
             this.AddRegionTravel("KR");
+            this.AddRegionTravel("TC");
 
             // JP, NA and EU data centers can travel to OC data centers but not back
             this.AddRegionTravel("JP", "OC", false);

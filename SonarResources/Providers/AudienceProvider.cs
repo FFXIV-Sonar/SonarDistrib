@@ -22,6 +22,7 @@ namespace SonarResources.Providers
             this.AddAudience(1, "Global");
             this.AddAudience(1000, "China");
             this.AddAudience(2000, "Korea");
+            this.AddAudience(4000, "Taiwan");
             Program.WriteProgressLine($" ({this.Db.Audiences.Count})");
         }
 

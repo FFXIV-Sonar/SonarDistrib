@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using SonarUtils;
+using Spectre.Console;
 
 namespace SonarResources.Readers
 {
@@ -85,6 +86,38 @@ namespace SonarResources.Readers
             this.SetAllWorldsPublic(103);
             this.SetAllWorldsPublic(104);
             this.SetAllWorldsPublic(201);
+
+            // Temporary: Add TC Worlds
+            // https://github.com/harukaxxxx/ffxiv-datamining-tw/blob/main/World.csv
+            // https://discord.com/channels/205430339907223552/693223864741920788/1449038383253950647
+            // https://discord.com/channels/205430339907223552/1448275645103734795
+            this.CustomWorld(4028, "伊弗利特", "陸行鳥");
+            this.CustomWorld(4029, "迦樓羅", "陸行鳥");
+            this.CustomWorld(4030, "利維坦", "陸行鳥");
+            this.CustomWorld(4031, "鳳凰", "陸行鳥");
+            this.CustomWorld(4032, "奧汀", "陸行鳥");
+            this.CustomWorld(4033, "巴哈姆特", "陸行鳥");
+            this.CustomWorld(4034, "拉姆", "陸行鳥");
+            this.CustomWorld(4035, "泰坦", "陸行鳥");
+            this.SetAllWorldsPublic("陸行鳥"); // 151
+        }
+
+        private void CustomWorld(uint worldId, string worldName, string dcName, bool isPublic = true)
+        {
+            var dc =
+                this.Db.Datacenters.Values.FirstOrDefault(dc => dc.Name.Equals(dcName, StringComparison.InvariantCulture)) ??
+                this.Db.Datacenters.Values.FirstOrDefault(dc => dc.Name.Equals(dcName, StringComparison.InvariantCultureIgnoreCase)) ??
+                throw new ArgumentException($"Datacenter {dcName} does not exist", nameof(dcName));
+
+            this.Db.Worlds[worldId] = new()
+            {
+                Id = worldId,
+                Name = worldName,
+                DatacenterId = dc.Id,
+                RegionId = dc.RegionId,
+                AudienceId = dc.AudienceId,
+                IsPublic = isPublic
+            };
         }
 
         private void SetWorldDc(string worldName, string dcName, bool? isPublic = null)
