@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using SonarUtils;
 using System.Buffers.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Sonar.Utilities
 {
@@ -64,6 +65,7 @@ namespace Sonar.Utilities
 
         private static byte[] GetSecureHash(byte[] data, bool allowFallback = true) => GetSecureHash(data, data, allowFallback);
 
+        [SuppressMessage("", "S5344", Justification = "Not applicable.")]
         private static byte[] GetSecureHash(byte[] data, byte[] salt, bool allowFallback = true)
         {
             var exceptions = new List<Exception>();
@@ -72,8 +74,7 @@ namespace Sonar.Utilities
             {
                 // 65536 iterations only takes 100ms on my machine
                 // Originally wanted 16 million cycles but that takes 25 seconds
-                var pbkdf2 = new Rfc2898DeriveBytes(data, salt, 65536, HashAlgorithmName.SHA256);
-                return pbkdf2.GetBytes(32);
+                return Rfc2898DeriveBytes.Pbkdf2(data, salt, 65536, HashAlgorithmName.SHA256, 32);
             }
             catch (Exception ex)
             {

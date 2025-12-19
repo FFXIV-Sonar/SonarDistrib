@@ -10,13 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blurhash.ImageSharp" Version="4.0.0" />
+    <PackageReference Include="Blurhash.ImageSharp" Version="4.0.1" />
     <PackageReference Include="DryIoc.dll" Version="5.4.3" />
     <PackageReference Include="DryIoc.MefAttributedModel.dll" Version="7.0.2" />
     <PackageReference Include="FileSystemLinks" Version="1.0.3" />
     <PackageReference Include="Humanizer" Version="3.0.1" />
-    <PackageReference Include="Lumina" Version="6.7.0" />
-    <PackageReference Include="Lumina.Excel" Version="7.3.1" />
+    <PackageReference Include="Lumina" Version="7.1.0" />
+    <PackageReference Include="Lumina.Excel" Version="7.4.1" />
     <PackageReference Include="MessagePack" Version="3.1.4" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
     <PackageReference Include="Spectre.Console" Version="0.54.0" />

@@ -56,7 +56,7 @@ namespace SonarPlugin.Trackers
             var hunts = this.Table
                 .OfType<IBattleNpc>()
                 .Where(a => Database.Hunts.ContainsKey(a.NameId))
-                .Select(h => h.ToSonarHuntRelay(playerPosition, this.Player.GetNearbyPlayerCount(h.Position.SwapYZ())));
+                .Select(h => h.ToSonarHuntRelay(playerPosition, this.Player.GetNearbyPlayerCount(h.Position)));
 
             this.Tracker.FeedRelays(hunts);
         }

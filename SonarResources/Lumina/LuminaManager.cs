@@ -35,8 +35,9 @@ namespace SonarResources.Lumina
             ("DE", Language.German, SonarLanguage.German),
             ("FR", Language.French, SonarLanguage.French),
             ("CN", Language.ChineseSimplified, SonarLanguage.ChineseSimplified),
-            ("CN+", Language.ChineseTraditional, SonarLanguage.ChineseTraditional),
+            //("CN+", Language.ChineseTraditional, SonarLanguage.ChineseTraditional), // Not used
             ("KR", Language.Korean, SonarLanguage.Korean),
+            ("TW", Language.TraditionalChinese, SonarLanguage.ChineseTraditional),
         ];
 
         public LuminaManager()
@@ -81,6 +82,7 @@ namespace SonarResources.Lumina
                         continue;
                     }
                     var languagePair = s_languagePairs[index];
+                    Console.WriteLine($"Found {languagePair.LangCode} language: {languagePair.LuminaLanguage} => {languagePair.SonarLanguage}");
                     lock (this._entries) this._entries.Add(new(lumina, languagePair.LuminaLanguage, languagePair.SonarLanguage));
                     added = true;
                 }

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using Sonar.Numerics;
 using AG.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace SonarPlugin.Trackers
 {
@@ -29,24 +30,23 @@ namespace SonarPlugin.Trackers
         private SonarClient Client { get; }
         private IClientState ClientState { get; }
         private IObjectTable ObjectTable { get; }
+        private IPlayerState PlayerState { get; }
         private IPluginLog Logger { get; }
-        public UnorderedRefList<SonarVector3> PlayerPositions { get; } = new();
+        public UnorderedRefList<Vector3> PlayerPositions { get; } = [];
 
-        public PlayerProvider(SonarPlugin plugin, SonarClient client, IClientState clientState, IObjectTable objectTable, IPluginLog logger)
+        public PlayerProvider(SonarPlugin plugin, SonarClient client, IClientState clientState, IObjectTable objectTable, IPlayerState playerState, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;
             this.ClientState = clientState;
             this.ObjectTable = objectTable;
+            this.PlayerState = playerState;
             this.Logger = logger;
             this.Logger.Information("PlayerTracker initialized");
         }
 
-        private unsafe uint GetCurrentInstance()
-        {
-            // https://github.com/goatcorp/Dalamud/pull/1078#issuecomment-1382729843
-            return (uint)UIState.Instance()->PublicInstance.InstanceId;
-        }
+        // https://github.com/goatcorp/Dalamud/pull/1078#issuecomment-1382729843
+        private static unsafe uint GetCurrentInstance() => UIState.Instance()->PublicInstance.InstanceId;
 
         private void FrameworkTick(IFramework framework)
         {
@@ -54,10 +54,10 @@ namespace SonarPlugin.Trackers
             if (!this.Plugin.SafeToReadTables) return;
 
             // Player Information
-            var player = this.ClientState.LocalPlayer;
+            var player = this.ObjectTable.LocalPlayer;
             var loggedIn = this.ClientState.IsLoggedIn;
-            if ((player is null && loggedIn) || (player is not null && !loggedIn)) this.Logger.Warning("Inconsistent logged in status detected");
             var info = new PlayerInfo() { LoggedIn = loggedIn, Name = player?.Name.TextValue ?? null, HomeWorldId = player?.HomeWorld.RowId ?? 0, Hash1 = this.GetContentHash(), Hash2 = this.GetAccountHash() };
+
             if (this.Client.Meta.UpdatePlayerInfo(info))
             {
                 if (loggedIn) this.Logger.Verbose("Logged in as {player:X16}", AG.SplitHash64.Compute(info.ToString()));
@@ -67,14 +67,14 @@ namespace SonarPlugin.Trackers
             // Player Place
             if (loggedIn && player is not null)
             {
-                var place = new PlayerPosition() { WorldId = player.CurrentWorld.RowId, ZoneId = this.ClientState.TerritoryType, InstanceId = this.GetCurrentInstance(), Coords = player.Position.SwapYZ() };
+                var place = new PlayerPosition() { WorldId = player.CurrentWorld.RowId, ZoneId = this.ClientState.TerritoryType, InstanceId = GetCurrentInstance(), Coords = player.Position.SwapYZ() };
                 if (this.Client.Meta.UpdatePlayerPosition(place).PlaceUpdated) this.Logger.Verbose("Moved to {place}", place);
             }
 
             // Player Positions data
             var positions = this.ObjectTable
                 .OfType<IPlayerCharacter>()
-                .Select(player => (SonarVector3)player.Position.SwapYZ());
+                .Select(player => player.Position);
 
             // Nearby player counts logic
             var count = 0;
@@ -90,7 +90,7 @@ namespace SonarPlugin.Trackers
         private long GetContentHash()
         {
             if (!this.ClientState.IsLoggedIn) return 0;
-            return AG.SplitHash64.Compute(this.ClientState.LocalContentId);
+            return AG.SplitHash64.Compute(this.PlayerState.ContentId);
         }
 
         private unsafe long GetAccountHash()
@@ -104,7 +104,7 @@ namespace SonarPlugin.Trackers
         }
 
         public int GetNearbyPlayerCount() => this.PlayerPositions.Count;
-        public int GetNearbyPlayerCount(SonarVector3 from, float distanceSquared = 50 * 50) => this.PlayerPositions.Count(position => position.Delta(from).LengthSquared() <= distanceSquared);
+        public int GetNearbyPlayerCount(Vector3 from, float distanceSquared = 50 * 50) => this.PlayerPositions.Count(position => Vector3.DistanceSquared(from, position) <= distanceSquared);
 
         public Task StartAsync(CancellationToken cancellationToken)
         {

@@ -41,8 +41,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="9.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="10.0.1" />
     <PackageReference Include="ZString" Version="2.6.0" />
   </ItemGroup>
 

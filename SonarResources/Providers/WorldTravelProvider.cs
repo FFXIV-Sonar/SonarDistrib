@@ -38,7 +38,7 @@ namespace SonarResources.Providers
             this.AddRegionTravel("OC");
             this.AddRegionTravel("CN");
             this.AddRegionTravel("KR");
-            this.AddRegionTravel("TC");
+            this.AddRegionTravel("TW");
 
             // JP, NA and EU data centers can travel to OC data centers but not back
             this.AddRegionTravel("JP", "OC", false);
@@ -144,8 +144,8 @@ namespace SonarResources.Providers
 
         public void AddRegionTravel(string startRegion, string endRegion, bool bidirectional = true)
         {
-            var startId = this.Db.Regions.Values.First(dc => dc.IsPublic && dc.Name.Equals(startRegion, StringComparison.InvariantCultureIgnoreCase)).Id;
-            var endId = this.Db.Regions.Values.First(dc => dc.IsPublic && dc.Name.Equals(endRegion, StringComparison.InvariantCultureIgnoreCase)).Id;
+            var startId = this.Db.Regions.Values.First(region => region.IsPublic && region.Name.Equals(startRegion, StringComparison.InvariantCultureIgnoreCase)).Id;
+            var endId = this.Db.Regions.Values.First(region => region.IsPublic && region.Name.Equals(endRegion, StringComparison.InvariantCultureIgnoreCase)).Id;
             this.AddRegionTravel(startId, endId, bidirectional);
         }
 

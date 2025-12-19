@@ -11,6 +11,8 @@ using Dalamud.Plugin.Services;
 using Dalamud.Interface;
 using Dalamud.Utility;
 using System.Runtime.CompilerServices;
+using SonarUtils;
+using Dalamud.Plugin.VersionInfo;
 
 namespace SonarPlugin.Utility
 {
@@ -20,17 +22,7 @@ namespace SonarPlugin.Utility
         /// Get Sonar Plugin Version
         /// </summary>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static string GetSonarPluginVersion() => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
-
-        /// <summary>
-        /// Get Dalamud Version
-        /// </summary>
-        public static string GetDalamudVersion() => Util.AssemblyVersion;
-
-        /// <summary>
-        /// Get Dalamud Build Git Hash
-        /// </summary>
-        public static string GetDalamudBuild() => Util.GetGitHash();
+        public static string GetSonarPluginVersion() => typeof(SonarPlugin).Assembly.GetName().Version?.ToString() ?? "Unknown";
 
         /// <summary>
         /// Get Dalamud Hash
@@ -45,14 +37,14 @@ namespace SonarPlugin.Utility
         /// <summary>
         /// Get SonarVersion for Sonar.NET
         /// </summary>
-        public static SonarVersion GetSonarVersionModel(IDataManager data)
+        public static SonarVersion GetSonarVersionModel(IDataManager data, IDalamudVersionInfo dalamudVersion)
         {
             return new SonarVersion
             {
                 Game = GetGameVersion(data),
                 Plugin = $"{Assembly.GetExecutingAssembly().GetName().Name} {GetSonarPluginVersion()}",
                 PluginHash = SonarVersion.GetAssemblyHash(Assembly.GetExecutingAssembly()),
-                Dalamud = $"{GetDalamudVersion()} ({GetDalamudBuild()})",
+                Dalamud = $"{dalamudVersion.Version} ({dalamudVersion.GitHash})",
                 DalamudHash = GetDalamudHash()
             };
         }

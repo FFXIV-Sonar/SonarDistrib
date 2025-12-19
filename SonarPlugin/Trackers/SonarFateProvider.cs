@@ -62,9 +62,9 @@ namespace SonarPlugin.Trackers
             // Iterate throughout all fates in the fates table
             var fates = this.Fates
                 .Where(f => f.State != 0)
-                .Where(f => f.State == (FateState)3 /*Preparation*/ || (f.StartTimeEpoch != 0 && f.Duration != 0 && f.TimeRemaining != 0))
-                .Where(f => f.Position.X != 0 || f.Position.Y != 0 || f.Position.Z != 0)
-                .Select(f => f.ToSonarFateRelay(playerPosition, this.Player.GetNearbyPlayerCount(f.Position.SwapYZ())))
+                .Where(f => f.State == FateState.Preparation || (f.StartTimeEpoch is not 0 && f.Duration is not 0 && f.TimeRemaining is not 0))
+                .Where(f => f.Position.X is not 0 || f.Position.Y is not 0 || f.Position.Z is not 0)
+                .Select(f => f.ToSonarFateRelay(playerPosition, this.Player.GetNearbyPlayerCount(f.Position)))
                 .ToList();
 
             this.Tracker.FeedRelays(fates);

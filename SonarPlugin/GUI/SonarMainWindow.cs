@@ -440,7 +440,7 @@ namespace SonarPlugin.GUI
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
                 ImGui.Text($"{relay.ActorId:X8}");
 
-                this.DrawDetailsGroup1(state);
+                DrawDetailsGroup1(state);
 
                 ImGui.Text(RelayDetailsLoc.Rank.GetLocString());
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
@@ -454,7 +454,7 @@ namespace SonarPlugin.GUI
                 ImGui.Spacing();
                 ImGui.Spacing();
 
-                this.DrawDetailsGroup2(state);
+                DrawDetailsGroup2(state);
 
                 ImGui.Spacing();
                 ImGui.Spacing();
@@ -498,9 +498,8 @@ namespace SonarPlugin.GUI
             if (fateStatus == FateStatus.Running && state.Relay.Progress > 0) statusColor = this.Plugin.Configuration.Colors.FateProgress;
 
             ImGui.PushStyleColor(ImGuiCol.Text, statusColor);
-            var relayText = this.Formatter.Format("<name>: <flag> <<world>> <instance> <tap> [<players>]", relay);
+            var relayText = relay.Bonus ? this.Formatter.Format("[B] <name>: <flag> <<world>> <instance> <tap> [<players>]", relay) : this.Formatter.Format("<name>: <flag> <<world>> <instance> <tap> [<players>]", relay); // TODO: Better way to expose Bonus status
             var isHeaderOpen = ImGui.TreeNodeEx($"###{RelayType.Fate}{relay.RelayKey}", ImGuiTreeNodeFlags.CollapsingHeader, relayText);
-            //var isHeaderOpen = ImGui.TreeNodeEx($"##fate_{relay.RelayKey}", ImGuiTreeNodeFlags.CollapsingHeader, $"{relay} [{relay.Players}]");
             ImGui.PopStyleColor();
 
             this.PerformClickAction(state);
@@ -524,7 +523,7 @@ namespace SonarPlugin.GUI
                 ImGui.SameLine(0, 25 * ImGui.GetIO().FontGlobalScale);
                 ImGui.BeginGroup(); // Detail Group
 
-                this.DrawDetailsGroup1(state);
+                DrawDetailsGroup1(state);
 
                 ImGui.Text(RelayDetailsLoc.Status.GetLocString());
                 ImGui.SameLine(detailLabelOffset * ImGui.GetIO().FontGlobalScale);
@@ -544,7 +543,7 @@ namespace SonarPlugin.GUI
                 ImGui.Spacing();
                 ImGui.Spacing();
 
-                this.DrawDetailsGroup2(state);
+                DrawDetailsGroup2(state);
 
                 ImGui.Spacing();
                 ImGui.Spacing();
@@ -556,7 +555,7 @@ namespace SonarPlugin.GUI
             }
         }
 
-        private void DrawDetailsGroup1(RelayState state)
+        private static void DrawDetailsGroup1(RelayState state)
         {
             var relay = state.Relay;
 
@@ -569,7 +568,7 @@ namespace SonarPlugin.GUI
             ImGui.Text($"{relay.Info.Level}");
         }
 
-        private void DrawDetailsGroup2(RelayState state)
+        private static void DrawDetailsGroup2(RelayState state)
         {
             var relay = state.Relay;
 

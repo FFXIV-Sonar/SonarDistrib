@@ -90,7 +90,7 @@ namespace SonarResources.Readers
             // Temporary: Add TC Worlds
             // https://github.com/harukaxxxx/ffxiv-datamining-tw/blob/main/World.csv
             // https://discord.com/channels/205430339907223552/693223864741920788/1449038383253950647
-            // https://discord.com/channels/205430339907223552/1448275645103734795
+            // Sonar ticket 0124
             this.CustomWorld(4028, "伊弗利特", "陸行鳥");
             this.CustomWorld(4029, "迦樓羅", "陸行鳥");
             this.CustomWorld(4030, "利維坦", "陸行鳥");
@@ -174,7 +174,7 @@ namespace SonarResources.Readers
 
         private void SetAllWorldsPublic(string datacenterName)
         {
-            SetAllWorldsPublic(this.Db.Datacenters.Values.First(dc => dc.Name.Equals(datacenterName, StringComparison.InvariantCultureIgnoreCase)).Id);
+            this.SetAllWorldsPublic(this.Db.Datacenters.Values.First(dc => dc.Name.Equals(datacenterName, StringComparison.InvariantCultureIgnoreCase)).Id);
         }
 
         private void SetAllWorldsPublic(uint datacenterId)

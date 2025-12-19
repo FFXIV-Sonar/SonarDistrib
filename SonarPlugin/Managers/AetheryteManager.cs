@@ -20,13 +20,15 @@ namespace SonarPlugin.Managers
     public sealed class AetheryteManager
     {
         private IClientState ClientState { get; }
+        private IObjectTable ObjectTable { get; }
         private SonarPlugin Plugin { get; }
         private SonarConfiguration Configuration => this.Plugin.Configuration;
         private IPluginLog Logger { get; }
 
-        public AetheryteManager(IClientState clientState, SonarPlugin plugin, IPluginLog logger)
+        public AetheryteManager(IClientState clientState, IObjectTable objectTable, SonarPlugin plugin, IPluginLog logger)
         {
             this.ClientState = clientState;
+            this.ObjectTable = objectTable;
             this.Plugin = plugin;
             this.Logger = logger;
 
@@ -36,7 +38,7 @@ namespace SonarPlugin.Managers
         public unsafe bool IsAttuned(uint aetheryteId)
         {
             if (aetheryteId is 0) return false;
-            if (!this.ClientState.IsLoggedIn || this.ClientState.LocalPlayer is null) return false; // I rather not return true
+            if (!this.ClientState.IsLoggedIn || this.ObjectTable.LocalPlayer is null) return false; // I rather not return true
 
             var telepo = Telepo.Instance();
             if (telepo is null) return false;
@@ -103,7 +105,7 @@ namespace SonarPlugin.Managers
 
         public bool TeleportToClosest(GamePosition position, bool checkWorld)
         {
-            if (checkWorld && this.ClientState.LocalPlayer?.CurrentWorld.RowId != position.WorldId)
+            if (checkWorld && this.ObjectTable.LocalPlayer?.CurrentWorld.RowId != position.WorldId)
             {
                 var cityStateMeta = this.Configuration.PreferredCityState.GetMeta();
                 return this.Teleport(this.FindFirstAttuned(cityStateMeta?.AetheryteId ?? 0, 8, 2, 9)); // Limsa, Gridania, Uldah

@@ -1,10 +1,10 @@
-﻿<Project Sdk="Dalamud.NET.Sdk/13.1.0">
+﻿<Project Sdk="Dalamud.NET.Sdk/14.0.1">
   <Import Project="..\SonarCommon.props" />
 
   <PropertyGroup>
     <OutputPath>bin/</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <SecretMeta>$(PLOGON_SECRET_PLUGIN)</SecretMeta>
   </PropertyGroup>
 

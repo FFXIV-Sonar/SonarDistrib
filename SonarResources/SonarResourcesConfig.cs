@@ -8,7 +8,7 @@ namespace SonarResources
 {
     public sealed class SonarResourcesConfig
     {
-        public string[] GameSqpacks { get; set; } = [@"G:\FFXIV\global\game\sqpack", @"G:\FFXIV\cn\game\sqpack", @"G:\FFXIV\kr\game\sqpack"];
+        public string[] GameSqpacks { get; set; } = [@"G:\FFXIV\global\game\sqpack", @"G:\FFXIV\cn\game\sqpack", @"G:\FFXIV\kr\game\sqpack", @"G:\FFXIV\tw\game\sqpack"];
         public string AssetsPath { get; set; } = @"G:\FFXIV\assets";
         public string ResourcesPath { get; set; } = "../../../Sonar/Resources";
 

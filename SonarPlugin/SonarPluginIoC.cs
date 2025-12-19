@@ -23,6 +23,11 @@ using SonarPlugin.GUI;
 using SonarUtils.Text.Placeholders;
 using SonarUtils.Secrets;
 using SonarPlugin.Sounds;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog.Core;
+using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
+using Dalamud.Plugin.VersionInfo;
 
 namespace SonarPlugin
 {
@@ -31,33 +36,23 @@ namespace SonarPlugin
         private readonly Container _container = new();
         private FileDialogManager? _fileDialogs;
 
-        public IDalamudPluginInterface PluginInterface { get; set; }
         [EditorBrowsable(EditorBrowsableState.Never)]
         public Container Container => this._container; // Only stub should access this
-        private SonarPluginStub Stub { get; set; }
-        
-        // NOTE: All setters for Plugin Services need to stay, Injector won't work otherwise.
-        [PluginService] private IFramework Framework { get; set; } = default!;
-        [PluginService] private ICondition Condition { get; set; } = default!;
-        [PluginService] private IClientState ClientState { get; set; } = default!;
-        [PluginService] private IObjectTable ObjectTable { get; set; } = default!;
-        [PluginService] private IFateTable FateTable { get; set; } = default!;
-        [PluginService] private IGameGui GameGui { get; set; } = default!;
-        [PluginService] private IChatGui ChatGui { get; set; } = default!;
-        [PluginService] private ICommandManager CommandManager { get; set; } = default!;
-        [PluginService] private ISigScanner SigScanner { get; set; } = default!;
-        [PluginService] private IDataManager Data { get; set; } = default!;
-        [PluginService] private IPluginLog Logger { get; set; } = default!;
-        [PluginService] private ITextureProvider Textures { get; set; } = default!;
+
+        private SonarPluginStub Stub { get; }
+        public IDalamudPluginInterface PluginInterface { get; }
+        public IDalamudVersionInfo DalamudVersion { get; }
+        private IDataManager Data { get; }
+        private IPluginLog Logger { get; }
 
         public SonarPluginIoC(SonarPluginStub stub, IDalamudPluginInterface pluginInterface)
         {
             this.Stub = stub;
             this.PluginInterface = pluginInterface;
-            pluginInterface.Inject(this);
+            this.Data = pluginInterface.GetRequiredService<IDataManager>();
+            this.DalamudVersion = pluginInterface.GetDalamudVersion();
+            this.Logger = pluginInterface.GetRequiredService<IPluginLog>();
             this.ConfigureServices();
-            this.Container.Resolve<LodestoneVerifyWindow>();
-            this.Container.Resolve<SoundEngine>();
         }
 
         private SonarClient GetSonarClient()
@@ -74,12 +69,16 @@ namespace SonarPlugin
                 var name = Enum.GetName((ClientLanguage)num);
                 if (name is "Korean") return SonarLanguage.Korean;
                 if (name is "ChineseSimplified") return SonarLanguage.ChineseSimplified;
-                
+                if (name is "ChineseTraditional") return SonarLanguage.ChineseSimplified; // TODO: Change to .ChineseTraditional once done
+
                 this.Logger.Warning($"Unable to determine ClientLanguage {num}");
-                return SonarLanguage.ChineseSimplified;
+                return
+                    num is 4 ? SonarLanguage.ChineseSimplified :
+                    num is 5 ? SonarLanguage.ChineseSimplified : // TODO: Change to .ChineseTraditional once done
+                    SonarLanguage.English;
             }
 
-            var versionInfo = VersionUtils.GetSonarVersionModel(this.Data);
+            var versionInfo = VersionUtils.GetSonarVersionModel(this.Data, this.DalamudVersion);
             var client = new SonarClient(startInfo) { VersionInfo = versionInfo };
             Database.DefaultLanguage = this.Data.Language switch
             {
@@ -87,8 +86,7 @@ namespace SonarPlugin
                 ClientLanguage.English => SonarLanguage.English,
                 ClientLanguage.German => SonarLanguage.German,
                 ClientLanguage.French => SonarLanguage.French,
-                (ClientLanguage/*.ChineseSimplified*/)4 => DetermineLanguage(4), // https://github.com/ottercorp/Dalamud/blob/cn/Dalamud/ClientLanguage.cs#L31
-                _ => SonarLanguage.English
+                _ => DetermineLanguage((int)this.Data.Language), // https://github.com/ottercorp/Dalamud/blob/cn/Dalamud/ClientLanguage.cs#L31 https://github.com/yanmucorp/Dalamud/blob/master/Dalamud/Game/ClientLanguage.cs#L36
             };
             return client;
         }
@@ -110,7 +108,7 @@ namespace SonarPlugin
             // Background Services
             foreach (var type in assembly.GetTypes().Where(t => t.GetInterface(nameof(IHostedService)) is not null))
             {
-                this._container.RegisterMany(new[] { type, typeof(IHostedService) }, type, Reuse.Singleton);
+                this._container.RegisterMany([type, typeof(IHostedService)], type, Reuse.Singleton);
             }
 
             // Sonar Services
@@ -122,23 +120,25 @@ namespace SonarPlugin
             this._container.Register(Made.Of(r => ServiceInfo.Of<SonarPlugin>(), p => p.Windows), Reuse.Singleton, Setup.With(preventDisposal: true));
 
             // Additional Services
-            this._container.RegisterDelegate(this.CreateFileDialogManager, Reuse.Singleton);
+            this._container.RegisterDelegate(this.GetOrCreateFileDialogManager, Reuse.Singleton);
             this._container.RegisterInstance(PlaceholderFormatter.Default);
 
             // Dalamud Services
             this._container.RegisterInstance(this.PluginInterface, setup: Setup.With(preventDisposal: true)); // Dispose is [Obsolete]
-            this._container.RegisterInstance(this.Framework, setup: Setup.With(preventDisposal: true));
-            this._container.RegisterInstance(this.Condition, setup: Setup.With(preventDisposal: true));
-            this._container.RegisterInstance(this.ClientState, setup: Setup.With(preventDisposal: true));
-            this._container.RegisterInstance(this.GameGui, setup: Setup.With(preventDisposal: true));
-            this._container.RegisterInstance(this.ChatGui, setup: Setup.With(preventDisposal: true));
-            this._container.RegisterInstance(this.CommandManager, setup: Setup.With(preventDisposal: true));
-            this._container.RegisterInstance(this.FateTable, setup: Setup.With(preventDisposal: true));
-            this._container.RegisterInstance(this.ObjectTable, setup: Setup.With(preventDisposal: true));
-            this._container.RegisterInstance(this.SigScanner, setup: Setup.With(preventDisposal: true));
-            this._container.RegisterInstance(this.Data, setup: Setup.With(preventDisposal: true));
             this._container.RegisterInstance(this.Logger, setup: Setup.With(preventDisposal: true));
-            this._container.RegisterInstance(this.Textures, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<IFramework>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<ICondition>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<IClientState>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<IPlayerState>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<IGameGui>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<IChatGui>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<ICommandManager>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<IFateTable>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<IObjectTable>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<ISigScanner>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<IDataManager>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetRequiredService<ITextureProvider>, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
+            this._container.RegisterDelegate(this.PluginInterface.GetDalamudVersion, Reuse.Singleton, setup: Setup.With(preventDisposal: true));
 
             // Additional Dalamud Services
             this._container.Register(Made.Of(r => ServiceInfo.Of<IDalamudPluginInterface>(), pi => pi.UiBuilder), Reuse.Singleton, Setup.With(preventDisposal: true));
@@ -161,7 +161,7 @@ namespace SonarPlugin
 #endif
         }
 
-        private FileDialogManager CreateFileDialogManager()
+        private FileDialogManager GetOrCreateFileDialogManager()
         {
             if (this._fileDialogs is null && Interlocked.CompareExchange(ref this._fileDialogs, new(), null) == null)
             {
@@ -181,30 +181,48 @@ namespace SonarPlugin
 
         public void StartServices()
         {
-            var tasks = new List<Task>();
-            foreach (var service in this._container.ResolveMany<IHostedService>())
+            var services = this._container.ResolveMany<IHostedService>();
+            var tasks = new ConcurrentQueue<Task>();
+            Parallel.ForEach(services, service =>
             {
                 this.Logger.Debug($"Starting {service.GetType().Name}");
-                tasks.Add(service.StartAsync(CancellationToken.None));
-            }
-            Task.WaitAll(tasks.ToArray());
+                try
+                {
+                    var task = service.StartAsync(CancellationToken.None);
+                    tasks.Enqueue(task);
+                }
+                catch (Exception ex)
+                {
+                    this.Logger.Error(ex, $"Exception starting {service.GetType().Name}");
+                }
+            });
+            while (tasks.TryDequeue(out var task)) task.Wait();
         }
 
         public void StopServices()
         {
-            var tasks = new List<Task>();
-            foreach (var service in this._container.ResolveMany<IHostedService>())
+            var services = this._container.ResolveMany<IHostedService>();
+            var tasks = new ConcurrentQueue<Task>();
+            Parallel.ForEach(services, service =>
             {
                 this.Logger.Debug($"Stopping {service.GetType().Name}");
-                tasks.Add(service.StopAsync(CancellationToken.None));
-            }
-            Task.WaitAll(tasks.ToArray());
+                try
+                {
+                    var task = service.StopAsync(CancellationToken.None);
+                    tasks.Enqueue(task);
+                }
+                catch (Exception ex)
+                {
+                    this.Logger.Error(ex, $"Exception stopping {service.GetType().Name}");
+                }
+            });
+            while (tasks.TryDequeue(out var task)) task.Wait();
         }
 
         public void Dispose()
         {
-            this._container.Dispose(); // All singleton disposables are disposed here
             if (this._fileDialogs is not null) this.PluginInterface.UiBuilder.Draw -= this._fileDialogs.Draw;
+            this._container.Dispose(); // All singleton disposables are disposed here
         }
     }
 }
