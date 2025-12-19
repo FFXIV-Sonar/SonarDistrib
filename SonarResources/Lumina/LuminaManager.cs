@@ -23,7 +23,7 @@ namespace SonarResources.Lumina
     [SingletonReuse]
     public sealed class LuminaManager : IDisposable
     {
-        private readonly object _lock = new();
+        private readonly Lock _lock = new();
         private readonly ImmutableList<GameData>.Builder _luminas = ImmutableList.CreateBuilder<GameData>();
         private readonly ImmutableList<LuminaEntry>.Builder _entries = ImmutableList.CreateBuilder<LuminaEntry>();
         private readonly CancellationTokenSource _cts = new();
@@ -87,13 +87,6 @@ namespace SonarResources.Lumina
                     added = true;
                 }
                 if (added) lock (this._luminas) this._luminas.Add(lumina);
-
-                //foreach (var languagePair in s_languagePairs)
-                //{
-                //    if (lumina.GetExcelSheet<PlaceName>(languagePair.LuminaLanguage)?.GetRow(2958) is null) continue; // TODO: Better test
-                //    lock (this._entries) this._entries.Add(new(lumina, languagePair.LuminaLanguage, languagePair.SonarLanguage));
-                //    added = true;
-                //}
             }
         }
 

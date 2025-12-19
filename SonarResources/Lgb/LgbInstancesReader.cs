@@ -148,8 +148,6 @@ namespace SonarResources.Lgb
                         this._zoneInstances[zoneId] = zoneInstances = new();
                     }
                     result |= zoneInstances.TryAdd(id, item);
-
-                    //if (instance.AssetType == global::Lumina.Data.Parsing.Layer.LayerEntryType.Aetheryte) Debugger.Break();
                 }
             }
             return result ? LgbResult.Added : LgbResult.Missed;
