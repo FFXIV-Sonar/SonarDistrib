@@ -1,12 +1,5 @@
 ﻿using Lumina.Data.Files;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SonarResources
 {
@@ -19,6 +12,6 @@ namespace SonarResources
             //return SonarResourceGenerator.Lumina.GetFile<TexFile>(GetIconGameDataPath(iconId, hd));
             throw new NotImplementedException();
         }
-        public static Image<Bgra32>? GetIconImage(uint iconId, bool hd) => GetIconTexture(iconId, hd)?.ToImage();
+        //public static Image<Bgra32>? GetIconImage(uint iconId, bool hd) => GetIconTexture(iconId, hd)?.ToImage();
     }
 }

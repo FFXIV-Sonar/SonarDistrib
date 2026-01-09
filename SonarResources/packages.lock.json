@@ -2,15 +2,11 @@
   "version": 1,
   "dependencies": {
     "net10.0": {
-      "Blurhash.ImageSharp": {
+      "Blurhash.Core": {
         "type": "Direct",
-        "requested": "[4.0.1, )",
-        "resolved": "4.0.1",
-        "contentHash": "ZzLo/JgkxX6Ys7da9InpBlzE/EYdAAY1k5DUKQcxayWL/FIb7BxKrtnY4HEOgp7mAcR0YmfB08RxLURapPAiAQ==",
-        "dependencies": {
-          "Blurhash.Core": "4.0.0",
-          "SixLabors.ImageSharp": "3.1.11"
-        }
+        "requested": "[4.0.0, )",
+        "resolved": "4.0.0",
+        "contentHash": "0F9bPDxJ+tfCKKcNzA9x1XzibCZlEYpCSOu2A4e0H1aPLfhRhPRy3W0JhotUh3wtwQayR3vBOR7Q+XBcbzdJqA=="
       },
       "DryIoc.dll": {
         "type": "Direct",
@@ -112,6 +108,15 @@
           "Lumina": "7.1.0"
         }
       },
+      "Magick.NET-Q8-x64": {
+        "type": "Direct",
+        "requested": "[14.10.1, )",
+        "resolved": "14.10.1",
+        "contentHash": "mWsMb8dp/A5WiO/Jj2HSClfwhf5tt3cjx5b15TSlxippySh0GJO8JuseWRYnK4MApsfG3n4e+nTO4Nnl/T/nnw==",
+        "dependencies": {
+          "Magick.NET.Core": "14.10.1"
+        }
+      },
       "MessagePack": {
         "type": "Direct",
         "requested": "[3.1.4, )",
@@ -122,12 +127,6 @@
           "MessagePackAnalyzer": "3.1.4",
           "Microsoft.NET.StringTools": "17.11.4"
         }
-      },
-      "SixLabors.ImageSharp": {
-        "type": "Direct",
-        "requested": "[3.1.12, )",
-        "resolved": "3.1.12",
-        "contentHash": "iAg6zifihXEFS/t7fiHhZBGAdCp3FavsF4i2ZIDp0JfeYeDVzvmlbY1CNhhIKimaIzrzSi5M/NBFcWvZT2rB/A=="
       },
       "Spectre.Console": {
         "type": "Direct",
@@ -174,11 +173,6 @@
         "dependencies": {
           "CommunityToolkit.HighPerformance": "8.4.0"
         }
-      },
-      "Blurhash.Core": {
-        "type": "Transitive",
-        "resolved": "4.0.0",
-        "contentHash": "0F9bPDxJ+tfCKKcNzA9x1XzibCZlEYpCSOu2A4e0H1aPLfhRhPRy3W0JhotUh3wtwQayR3vBOR7Q+XBcbzdJqA=="
       },
       "BouncyCastle.Cryptography": {
         "type": "Transitive",
@@ -659,6 +653,11 @@
         "type": "Transitive",
         "resolved": "1.0.1",
         "contentHash": "GW+lP8C2ioZOWyq3RwNN/cDbict8L/IpUn1h2QlITIABj+HrMCn1SBHcRBKM/FmvcFVceO/GNoauXsX+f+KDsw=="
+      },
+      "Magick.NET.Core": {
+        "type": "Transitive",
+        "resolved": "14.10.1",
+        "contentHash": "siXvvltWNTPKMNoywZzyrUO3LP9YksZlIQxEIFbMgVAQjmwP99dxXbycj+JTnU0ePH7PZeWhgTo/10+LQE3Fcg=="
       },
       "MessagePack.Annotations": {
         "type": "Transitive",

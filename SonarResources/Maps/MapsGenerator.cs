@@ -1,60 +1,28 @@
-﻿using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp;
+﻿using FileSystemLinks;
+using ImageMagick;
+using ImageMagick.Formats;
+using Lumina;
+using Lumina.Data.Files;
+using Lumina.Excel.Sheets;
+using Org.BouncyCastle.Crypto.Digests;
+using Sonar.Data.Details;
+using SonarUtils;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lumina.Excel.Sheets;
-using SixLabors.ImageSharp.Processing;
 using System.Diagnostics;
 using System.IO;
-using SonarUtils;
-using Sonar.Data.Details;
-using SonarResources.Lumina;
-using Lumina;
-using Lumina.Data;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Threading;
-using Lumina.Data.Files;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Formats.Webp;
-using Spectre.Console;
-using static System.Net.Mime.MediaTypeNames;
-using FileSystemLinks;
-using Blurhash.ImageSharp;
-using Sonar.Data;
-using SixLabors.ImageSharp.Formats.Bmp;
-using SixLabors.ImageSharp.Formats.Tiff;
-using SixLabors.ImageSharp.Advanced;
-using System.Security.Cryptography;
-using System.Runtime.InteropServices;
-using System.Buffers;
-using Org.BouncyCastle.Crypto.Digests;
-using SixLabors.ImageSharp.Formats.Jpeg;
+using System.Threading.Tasks;
 
 namespace SonarResources.Maps
 {
-    public struct MapPaths
-    {
-        public string Image { get; set; }
-        public string Mask { get; set; }
-
-    }
-
     public struct MapTextures
     {
         public TexFile? Image { get; set; }
         public TexFile? Mask { get; set; }
 
-    }
-
-    public enum MapSize
-    {
-        Tiny, // 256
-        Small, // 512
-        Medium, // 1024
-        Large, // 2048
     }
 
     public sealed class MapsGenerator
@@ -126,8 +94,8 @@ namespace SonarResources.Maps
             const int maxProgress = (64 + 16 + 4 + 1) * 4 + 1 + 1;
             var progress = progressContext.AddTask($"[green]{mapName.EscapeMarkup()}[/]", true, maxProgress);
 
-            // Load map image.
-            using var image = map.ToMapImage(data);
+            // Load map image
+            using var image = map.GetMagickMap(data);
             if (image is null)
             {
                 progress.StopTask();
@@ -144,10 +112,9 @@ namespace SonarResources.Maps
             var newDigestBytes = new byte[digestSize];
 
             // Compute new digest.
-            var memoryGroup = image.GetPixelMemoryGroup();
-            foreach (var memory in memoryGroup) digest.BlockUpdate(MemoryMarshal.AsBytes(memory.Span));
+            var bytes = image.ToByteArray();
+            digest.BlockUpdate(bytes);
             _ = digest.DoFinal(newDigestBytes);
-
             var checkFile = Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}.rawsum");
             try
             {
@@ -170,49 +137,87 @@ namespace SonarResources.Maps
             // Increment progress
             progress.Increment(1);
 
-            // Encoders
-            var pngEncoder = new PngEncoder() { CompressionLevel = PngCompressionLevel.BestCompression };
-            var webpEncoder = new WebpEncoder() { Method = WebpEncodingMethod.BestQuality, EntropyPasses = 10 };
+            // Magick Defines
+            var jpegDefines = new JpegWriteDefines()
+            {
+                DctMethod = JpegDctMethod.Float,
+                SamplingFactor = JpegSamplingFactor.Ratio420,
+                OptimizeCoding = true,
+            };
+
+            var pngDefines = new PngWriteDefines()
+            {
+                CompressionLevel = 9,
+            };
+
+            var webpDefines = new WebPWriteDefines()
+            {
+                AlphaCompression = WebPAlphaCompression.Compressed,
+                AlphaFiltering = WebPAlphaFiltering.Best,
+                AlphaQuality = 100,
+
+                AutoFilter = true,
+                FilterType = WebPFilterType.Strong,
+                Method = 6,
+                Preprocessing = WebPPreprocessing.PseudoRandom,
+
+                Pass = 10,
+                ThreadLevel = false,
+                UseSharpYuv = true,
+            };
 
             // 2048x2048 (l)
-            await image.SaveAsJpegAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.jpg"), cancellationToken); progress.Increment(64);
-            await image.SaveAsPngAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.png"), pngEncoder, cancellationToken); progress.Increment(64);
-            await image.SaveAsGifAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.gif"), cancellationToken); progress.Increment(64);
-            await image.SaveAsWebpAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.webp"), webpEncoder, cancellationToken); progress.Increment(64);
+            image.Quality = 75;
+            await image.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.jpg"), jpegDefines, cancellationToken); progress.Increment(64);
+            await image.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.png"), pngDefines, cancellationToken); progress.Increment(64);
+            await image.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(64);
+            await image.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.webp"), webpDefines, cancellationToken); progress.Increment(64);
 
             // Blurhash
             string blurHash;
 
             // 1024x1024 (m)
-            using (var resized = image.Clone(x => x.Resize(1024, 1024)))
+            using (var resized = image.CloneAndMutate(source => source.Resize(1024, 1024)))
             {
-                await resized.SaveAsJpegAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.jpg"), cancellationToken); progress.Increment(16);
-                await resized.SaveAsPngAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.png"), pngEncoder, cancellationToken); progress.Increment(16);
-                await resized.SaveAsGifAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.gif"), cancellationToken); progress.Increment(16);
-                await resized.SaveAsWebpAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.webp"), webpEncoder, cancellationToken); progress.Increment(16);
+                resized.Quality = 75;
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.jpg"), jpegDefines, cancellationToken); progress.Increment(16);
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.png"), pngDefines, cancellationToken); progress.Increment(16);
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(16);
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.webp"), webpDefines, cancellationToken); progress.Increment(16);
             }
 
             // 512x512 (s)
-            using (var resized = image.Clone(x => x.Resize(512, 512)))
+            using (var resized = image.CloneAndMutate(source => source.Resize(512, 512)))
             {
-                await resized.SaveAsJpegAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.jpg"), cancellationToken); progress.Increment(4);
-                await resized.SaveAsPngAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.png"), pngEncoder, cancellationToken); progress.Increment(4);
-                await resized.SaveAsGifAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.gif"), cancellationToken); progress.Increment(4);
-                await resized.SaveAsWebpAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.webp"), webpEncoder, cancellationToken); progress.Increment(4);
+                resized.Quality = 75;
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.jpg"), jpegDefines, cancellationToken); progress.Increment(4);
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.png"), pngDefines, cancellationToken); progress.Increment(4);
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(4);
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.webp"), webpDefines, cancellationToken); progress.Increment(4);
             }
 
             // 256x256 (t)
-            using (var resized = image.Clone(x => x.Resize(256, 256)))
+            using (var resized = image.CloneAndMutate(source => source.Resize(256, 256)))
             {
-                await resized.SaveAsJpegAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.jpg"), cancellationToken); progress.Increment(1);
-                await resized.SaveAsPngAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.png"), pngEncoder, cancellationToken); progress.Increment(1);
-                await resized.SaveAsGifAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.gif"), cancellationToken); progress.Increment(1);
-                await resized.SaveAsWebpAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.webp"), webpEncoder, cancellationToken); progress.Increment(1);
+                resized.Quality = 75;
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.jpg"), jpegDefines, cancellationToken); progress.Increment(1);
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.png"), pngDefines, cancellationToken); progress.Increment(1);
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(1);
+                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.webp"), webpDefines, cancellationToken); progress.Increment(1);
 
-                // Swap from BGR to RGB.
-                // BlurHash doesn't use Alpha. There's an Rgba32 overload but alpha is ignored.
-                using var blurImage = resized.CloneAs<Rgb24>();
-                blurHash = Blurhasher.Encode(blurImage, 4, 4);
+                var imagePixels = resized.GetPixels();
+                var blurPixels = new Blurhash.Pixel[256, 256];
+                var pos = 0;
+                foreach (var imagePixel in imagePixels)
+                {
+                    var (y, x) = Math.DivRem(pos, 256);
+                    ref var blurPixel = ref blurPixels[x, y];
+                    blurPixel.Red = Blurhash.MathUtils.SRgbToLinear(imagePixel.GetChannel(0));
+                    blurPixel.Green = Blurhash.MathUtils.SRgbToLinear(imagePixel.GetChannel(1));
+                    blurPixel.Blue = Blurhash.MathUtils.SRgbToLinear(imagePixel.GetChannel(2));
+                    pos++;
+                }
+                blurHash = Blurhash.Core.Encode(blurPixels, 4, 4);
                 progress.Increment(1);
             }
 
