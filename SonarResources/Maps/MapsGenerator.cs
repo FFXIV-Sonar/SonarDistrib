@@ -1,4 +1,5 @@
-﻿using FileSystemLinks;
+﻿using DryIoc.FastExpressionCompiler.LightExpression;
+using FileSystemLinks;
 using ImageMagick;
 using ImageMagick.Formats;
 using Lumina;
@@ -95,16 +96,15 @@ namespace SonarResources.Maps
             var progress = progressContext.AddTask($"[green]{mapName.EscapeMarkup()}[/]", true, maxProgress);
 
             // Load map image
-            using var image = map.GetMagickMap(data);
-            if (image is null)
-            {
-                progress.StopTask();
-                return null;
-            }
+            var texImage = map.GetImageTex(data);
+            if (texImage is null) return null;
+            var texMask = map.GetMaskTex(data);
 
-            // Image size from the game files is constant.
-            // If this assert fails code needs to be modified to handle.
-            Debug.Assert(image.Width is 2048 && image.Height is 2048);
+            // Image dimensions from the game files are assumed to be constant.
+            Debug.Assert(texImage.Header.Width is 2048 && texImage.Header.Height is 2048, "Expected 2048x2048 texture");
+
+            // Mask files are assumed to be the same dimensions as the image files.
+            Debug.Assert(texMask is null || (texImage.Header.Width == texMask.Header.Width && texImage.Header.Height == texMask.Header.Height), "Expected texImage dimensions to be equal texMask dimensions");
 
             // Prepare digester.
             var digest = new Sha256Digest();
@@ -112,9 +112,11 @@ namespace SonarResources.Maps
             var newDigestBytes = new byte[digestSize];
 
             // Compute new digest.
-            var bytes = image.ToByteArray();
-            digest.BlockUpdate(bytes);
+            digest.BlockUpdate(texImage.Data);
+            if (texMask is not null) digest.BlockUpdate(texMask.Data);
             _ = digest.DoFinal(newDigestBytes);
+
+            // Compare previous digest.
             var checkFile = Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}.rawsum");
             try
             {
@@ -133,6 +135,11 @@ namespace SonarResources.Maps
             {
                 /* Swallow */
             }
+
+            // Generate MagickMap
+            using var image = texImage.ToMagickImageWithMask(texMask);
+            Debug.Assert(image is not null);
+            image.Quality = 75;
 
             // Increment progress
             progress.Increment(1);
@@ -166,44 +173,43 @@ namespace SonarResources.Maps
                 UseSharpYuv = true,
             };
 
-            // 2048x2048 (l)
-            image.Quality = 75;
-            await image.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.jpg"), jpegDefines, cancellationToken); progress.Increment(64);
-            await image.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.png"), pngDefines, cancellationToken); progress.Increment(64);
-            await image.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(64);
-            await image.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.webp"), webpDefines, cancellationToken); progress.Increment(64);
-
             // Blurhash
             string blurHash;
+
+            // 2048x2048 (l)
+            using (var resized = image.CloneAndMutate(source => source.Resize(2048, 2048)))
+            {
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.jpg"), jpegDefines, cancellationToken); progress.Increment(64);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.png"), pngDefines, cancellationToken); progress.Increment(64);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(64);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-l.webp"), webpDefines, cancellationToken); progress.Increment(64);
+            }
 
             // 1024x1024 (m)
             using (var resized = image.CloneAndMutate(source => source.Resize(1024, 1024)))
             {
-                resized.Quality = 75;
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.jpg"), jpegDefines, cancellationToken); progress.Increment(16);
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.png"), pngDefines, cancellationToken); progress.Increment(16);
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(16);
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.webp"), webpDefines, cancellationToken); progress.Increment(16);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.jpg"), jpegDefines, cancellationToken); progress.Increment(16);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.png"), pngDefines, cancellationToken); progress.Increment(16);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(16);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-m.webp"), webpDefines, cancellationToken); progress.Increment(16);
             }
 
             // 512x512 (s)
             using (var resized = image.CloneAndMutate(source => source.Resize(512, 512)))
             {
-                resized.Quality = 75;
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.jpg"), jpegDefines, cancellationToken); progress.Increment(4);
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.png"), pngDefines, cancellationToken); progress.Increment(4);
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(4);
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.webp"), webpDefines, cancellationToken); progress.Increment(4);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.jpg"), jpegDefines, cancellationToken); progress.Increment(4);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.png"), pngDefines, cancellationToken); progress.Increment(4);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(4);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-s.webp"), webpDefines, cancellationToken); progress.Increment(4);
             }
 
             // 256x256 (t)
             using (var resized = image.CloneAndMutate(source => source.Resize(256, 256)))
             {
-                resized.Quality = 75;
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.jpg"), jpegDefines, cancellationToken); progress.Increment(1);
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.png"), pngDefines, cancellationToken); progress.Increment(1);
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(1);
-                await resized.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.webp"), webpDefines, cancellationToken); progress.Increment(1);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.jpg"), jpegDefines, cancellationToken); progress.Increment(1);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.png"), pngDefines, cancellationToken); progress.Increment(1);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.gif"), MagickFormat.Gif, cancellationToken); progress.Increment(1);
+                using (var clone = resized.Clone()) await clone.WriteAsync(Path.Join(Program.Config.AssetsPath, "images", $"map-{map.RowId}-t.webp"), webpDefines, cancellationToken); progress.Increment(1);
 
                 var imagePixels = resized.GetPixels();
                 var blurPixels = new Blurhash.Pixel[256, 256];

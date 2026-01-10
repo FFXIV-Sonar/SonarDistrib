@@ -40,13 +40,10 @@ namespace SonarResources.Lgb
         private readonly List<(LgbInstanceFile File, Exception Exception)> _exceptions = new();
 
         private LuminaManager Luminas { get; }
-        private SonarDb Db { get; }
 
-        public LgbInstancesReader(LuminaManager luminas, SonarDb db)
+        public LgbInstancesReader(LuminaManager luminas)
         {
             this.Luminas = luminas;
-            this.Db = db;
-
             Console.WriteLine("Determining LGB filenames");
             foreach (var data in this.Luminas.GetAllDatas())
             {

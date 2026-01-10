@@ -59,7 +59,7 @@ namespace SonarResources.Lumina
         {
             this.AddLumina(new GameData(sqPath, new()
             {
-                CacheFileResources = false,
+                CacheFileResources = true,
                 PanicOnSheetChecksumMismatch = false,
                 LoadMultithreaded = true,
             }));
