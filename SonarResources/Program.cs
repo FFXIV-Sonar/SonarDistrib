@@ -14,6 +14,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using Lumina.Data;
+using Sonar.Data;
 
 namespace SonarResources
 {
@@ -31,6 +32,9 @@ namespace SonarResources
 
             using var container = new Container();
             Container = container;
+
+            var currentDb = Database.Instance;
+            GC.KeepAlive(currentDb);
 
             Container.RegisterExports(typeof(Program).Assembly);
             Container.RegisterInstance(new SonarDb());

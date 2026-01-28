@@ -112,6 +112,7 @@ namespace SonarResources.Readers
             // Cosmic Exploration
             this.Db.Zones[1237].IsField = true; // Sinus Ardorum
             this.Db.Zones[1291].IsField = true; // Phaenna
+            this.Db.Zones[1310].IsField = true; // Oizys
 
             // Occult Crescent - South Horn
             this.Db.Zones[1252].IsField = true;

@@ -75,6 +75,8 @@ namespace SonarUtils
             if (stringA.CompareTo(stringB) >= 0) (stringA, stringB) = (stringB, stringA);
         }
 
+
+
         /// <summary>Resets interned strings</summary>
         public static void Reset()
         {

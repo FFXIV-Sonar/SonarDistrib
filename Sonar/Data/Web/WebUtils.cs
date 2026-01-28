@@ -11,7 +11,7 @@ namespace Sonar.Data.Web
         /// <param name="size">Image size.</param>
         /// <returns>Side pixels length.</returns>
         /// <exception cref="ArgumentException">Invalid map image size</exception>
-        public static int GetMapImageSidePixelsLength(MapImageSize size)
+        public static uint GetMapImageSidePixelsLength(MapImageSize size)
         {
             return size switch
             {
@@ -27,16 +27,15 @@ namespace Sonar.Data.Web
         /// <param name="sidePixelsLength">Pixel length of one of the sides.</param>
         /// <returns>Best <see cref="MapImageSize"/> for the specified <paramref name="sidePixelsLength"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="sidePixelsLength"/> must be greater than zero.</exception>
-        public static MapImageSize GetBestMapImageSize(int sidePixelsLength)
+        public static MapImageSize GetBestMapImageSize(uint sidePixelsLength)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(sidePixelsLength);
             return sidePixelsLength switch
             {
                 > 1024 => MapImageSize.Large,
-                > 512 and <= 1024 => MapImageSize.Medium,
-                > 256 and <= 512 => MapImageSize.Small,
-                > 0 and <= 256 => MapImageSize.Tiny,
-                _ => (MapImageSize)(-1) // Assert: Should never happen
+                > 512 => MapImageSize.Medium,
+                > 256 => MapImageSize.Small,
+                _ => MapImageSize.Tiny,
             };
         }
 

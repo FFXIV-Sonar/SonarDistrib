@@ -20,6 +20,9 @@ namespace Sonar.Enums
         SS = 5,
 
         [EnumLocAlias<RelayType>(RelayType.Fate)]
-        Fate = 255
+        Fate = 128,
+
+        [EnumLocAlias<RelayType>(RelayType.Event)]
+        Event = 129,
     }
 }

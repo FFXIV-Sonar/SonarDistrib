@@ -1,10 +1,5 @@
 ﻿using Lumina.Data.Parsing.Layer;
 using Sonar.Numerics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Lumina.Data.Parsing.Layer.LayerCommon;
 
 namespace SonarResources.Lgb
@@ -18,5 +13,6 @@ namespace SonarResources.Lgb
         public required SonarVector3 Coords { get; init; }
         public required SonarVector3 Scale { get; init; }
         public required SonarVector3 Rotation { get; init; }
+        public required SonarVector3 Translation { get; init; }
     }
 }

@@ -8,6 +8,7 @@ using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using FFXIVClientStructs.STD.Helper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -48,42 +49,36 @@ namespace SonarDiagnostics.Cosmic
                 }
             }
 
-            var addon = rapture is not null ? rapture->GetAddonByName("WKSAnnounce") : null;
-            using (var node = ImRaii.TreeNode("WKSAnnounce Addon"))
+            var addon = rapture is not null ? (AgentWKSAnnounce*)rapture->GetAddonByName("WKSAnnounce") : null;
+            var agent = (AgentWKSAnnounce*)(addon is not null ? this.GameGui.FindAgentInterface(addon).Address : 0);
+            using (var node = ImRaii.TreeNode("WKS Announce Agent"))
             {
                 if (node.Success)
                 {
-                    if (addon is not null)
+                    if (agent is not null && agent->IsAddonReady() && agent->Data is not null)
                     {
-                        var values = addon->AtkValuesSpan;
-                        for (var index = 0; index < values.Length; index++)
+                        var data = agent->Data;
+                        var stateId = data->State;
+                        var stateType = stateId switch
                         {
-                            var value = values[index];
-                            ImGui.TextUnformatted($"Value {index}: {value}");
-                        }
-                    }
-                    else
-                    {
-                        ImGui.TextUnformatted("WKSAnnounce is null");
-                    }
-                }
-            }
-
-            var agent = (AgentWKSMission*)(addon is not null ? this.GameGui.FindAgentInterface(addon).Address : 0); // TODO: Fix once available
-            using (var node = ImRaii.TreeNode("AgentWKSAnnounce"))
-            {
-                if (node.Success)
-                {
-                    if (agent is not null)
-                    {
-                        if (agent->IsAgentActive())
-                        {
-                            ImGui.TextUnformatted("WKS Announce Agent is active but uh... wait for Dalamud update T_T");
-                        }
-                        else
-                        {
-                            ImGui.TextUnformatted("WKS Announce Agent is not active");
-                        }
+                            0 => "Mech Ops Commenced", // Seems to be the default state?
+                                // While Mech Ops is in progress EndTime points to the start time
+                                // Flag: HasCurrentEvent | Event Flag? 1923?
+                            1 => "Red Alert Incoming",
+                            2 => "Red Alert Progressing",
+                            3 => "???",
+                            4 => "???",
+                            5 => "Mech Ops Issued",
+                            6 => "Mech Ops Deploying",
+                            7 => "???",
+                            8 => "Waiting for dev stage progress",
+                            _ => "Unknown",
+                        };
+                        ImGui.TextUnformatted($"State: {stateId} ({stateType})");
+                        ImGui.TextUnformatted($"State Progress: {data->StateProgress}");
+                        ImGui.TextUnformatted($"Emergency ID: {data->EmergencyInfoRowId}.{(&data->EmergencyInfoRowId)[1]}"); // TODO: Change this weird pointer operation into data->EmergencyInfoSubRowId once https://github.com/aers/FFXIVClientStructs/pull/1707 makes it into Dalamud.
+                        ImGui.TextUnformatted($"End Time: {data->EndTime}");
+                        ImGui.TextUnformatted($"Dev Grade: {data->DevGrade}");
                     }
                     else
                     {
@@ -128,6 +123,8 @@ namespace SonarDiagnostics.Cosmic
             }
         }
 
+        //private static void DrawAgent()
+
         private static void DrawManagerMissions(WKSMissionModule* missions)
         {
             if (missions is null)
@@ -156,7 +153,22 @@ namespace SonarDiagnostics.Cosmic
                     var currentEvent = mecha->CurrentEvent;
                     if (currentEvent is not null)
                     {
-                        ImGui.TextUnformatted($"Flags: {currentEvent->Flags:F}");
+                        ImGui.TextUnformatted($"Flags: {currentEvent->Flags:F} (0x{currentEvent->Flags:X})");
+                        ImGui.TextUnformatted($"Mecha Event ID: {currentEvent->WKSMechaEventDataRowId}");
+                        
+                        using (var node3 = ImRaii.TreeNode("Map Markers", ImGuiTreeNodeFlags.DefaultOpen))
+                        {
+                            if (node3.Success)
+                            {
+                                foreach (var marker in currentEvent->MapMarkers)
+                                {
+                                    var position = marker.MapMarkerData.Position;
+                                    var data = marker.MapMarkerData;
+                                    ImGui.TextUnformatted($"{marker.Name} (Flags: {marker.Flags} | Data Flags: {marker.MapMarkerDataFlags} | EndTimestamp: {data.EndTimestamp}) (Coords: {position.X}, {position.Z}, {position.Y})");
+                                }
+                            }
+                        }
+                        
                     }
                     else
                     {

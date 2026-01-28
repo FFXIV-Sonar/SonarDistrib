@@ -26,6 +26,6 @@ namespace Sonar.Data.Web
         /// <param name="size">Image size.</param>
         /// <returns>Side pixels length.</returns>
         /// <exception cref="ArgumentException">Invalid map image size</exception>
-        public static int ToLength(this MapImageSize size) => WebUtils.GetMapImageSidePixelsLength(size);
+        public static uint ToLength(this MapImageSize size) => WebUtils.GetMapImageSidePixelsLength(size);
     }
 }

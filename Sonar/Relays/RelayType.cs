@@ -12,6 +12,8 @@ namespace Sonar.Relays
         [EnumLoc(Fallback = "FATE")]
         Fate,
 
-        Manual
+        Manual,
+
+        Event,
     }
 }

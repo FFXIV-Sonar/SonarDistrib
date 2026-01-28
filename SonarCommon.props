@@ -2,13 +2,15 @@
   <Import Project="SecretMeta.targets" />
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <AssemblyVersion>0.7.5.3</AssemblyVersion>
+    <AssemblyVersion>14.741.0.0</AssemblyVersion>
 
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Deterministic>true</Deterministic>
     <ImplicitUsings>disable</ImplicitUsings>
+    <Platforms>x64</Platforms>
+    <Platform>x64</Platform>
 
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

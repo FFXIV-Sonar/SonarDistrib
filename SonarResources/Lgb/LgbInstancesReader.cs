@@ -116,17 +116,19 @@ namespace SonarResources.Lgb
                     var id = instance.InstanceId;
                     if (this._instances.ContainsKey(id)) continue;
 
-                    var positionX = instance.Transform.Translation.X;
-                    var positionY = instance.Transform.Translation.Z; // y and z being swapped is intentional
-                    var positionZ = instance.Transform.Translation.Y;
-
-                    var scaleX = instance.Transform.Scale.X;
-                    var scaleY = instance.Transform.Scale.Z; // y and z being swapped is intentional
-                    var scaleZ = instance.Transform.Scale.Y;
-
-                    var rotationX = instance.Transform.Rotation.X;
-                    var rotationY = instance.Transform.Rotation.Z; // y and z being swapped is intentional
-                    var rotationZ = instance.Transform.Rotation.Y;
+                    var transform = instance.Transform;
+                    var positionX = transform.Translation.X;
+                    var positionY = transform.Translation.Z; // y and z being swapped is intentional
+                    var positionZ = transform.Translation.Y;
+                    var scaleX = transform.Scale.X;
+                    var scaleY = transform.Scale.Z; // y and z being swapped is intentional
+                    var scaleZ = transform.Scale.Y;
+                    var rotationX = transform.Rotation.X;
+                    var rotationY = transform.Rotation.Z; // y and z being swapped is intentional
+                    var rotationZ = transform.Rotation.Y;
+                    var translationX = transform.Translation.X;
+                    var translationY = transform.Translation.Z; // y and z being swapped is intentional
+                    var translationZ = transform.Translation.Y;
 
                     var item = new LgbInstance()
                     {
@@ -137,6 +139,7 @@ namespace SonarResources.Lgb
                         Coords = new(positionX, positionY, positionZ),
                         Scale = new(scaleX, scaleY, scaleZ),
                         Rotation = new(rotationX, rotationY, rotationZ), // NOTE: Currently unused
+                        Translation = new(translationX, translationY, translationZ),
                     };
 
                     result |= this._instances.TryAdd(id, item);
