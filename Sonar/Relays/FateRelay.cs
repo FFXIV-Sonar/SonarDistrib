@@ -280,6 +280,7 @@ namespace Sonar.Relays
             this.Progress = relay.Progress;
             this.Duration = relay.Duration;
             this.StatusDirect = relay.StatusDirect;
+            this.Bonus = relay.Bonus;
         }
 
         public override bool TryGetValue(ReadOnlySpan<char> name, [MaybeNullWhen(false)] out ReadOnlySpan<char> value)

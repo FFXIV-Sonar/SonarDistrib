@@ -2,7 +2,7 @@
   <Import Project="SecretMeta.targets" />
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <AssemblyVersion>14.741.0.0</AssemblyVersion>
+    <AssemblyVersion>14.741.0.1</AssemblyVersion>
 
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>

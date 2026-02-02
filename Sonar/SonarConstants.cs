@@ -46,7 +46,7 @@ namespace Sonar
         /// <summary>
         /// Represent a Sonar Tick in milliseconds
         /// </summary>
-        public const double SonarTick = 400;
+        public const int SonarTick = 400;
 
         /// <summary>
         /// Minimum valid coordinate

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -42,9 +42,8 @@ namespace Sonar
     public sealed partial class SonarClient : IDisposable, IAsyncDisposable
     {
         private readonly Container _container;
-
-        private readonly TickerService ticker;
-        private readonly PingService pinger;
+        private readonly PingService _pinger;
+        internal readonly SonarTickService _ticker;
         internal ClientModifiers Modifiers = ClientModifiers.Defaults;
 
         private ClientIdentifier ClientIdentifier { get; set; }
@@ -77,7 +76,7 @@ namespace Sonar
         public SonarConnectionManager Connection { get; }
 
         /// <summary>Current ping in milliseconds</summary>
-        public double Ping => this.pinger.Ping;
+        public double Ping => this._pinger.Ping;
 
         /// <summary>Sonar Start Info</summary>
         public SonarStartInfo StartInfo { get; }
@@ -107,15 +106,15 @@ namespace Sonar
             this.Logger = new SonarLoggerContext(this.baseLogger, "Sonar");
             this.serverLogger = new SonarLoggerContext(this.baseLogger, "Server");
 
-            this.ticker = new(this);
-            this.pinger = new(this);
+            this._ticker = new(this);
+            this._pinger = new(this);
             this.Configuration = new();
             this.Configuration.BindClient(this);
             this.Meta = this._container.Resolve<SonarMeta>();
             this.Trackers = this._container.Resolve<RelayTrackers>();
 
-            this.ticker.Tick += this.Ticker_Tick;
-            this.pinger.Pong += this.Pinger_Pong;
+            this._ticker.Tick += this.Ticker_Tick;
+            this._pinger.Pong += this.Pinger_Pong;
 
             this.baseLogger.Level = this.Configuration.LogLevel;
         }
@@ -147,7 +146,7 @@ namespace Sonar
 
         private void ReadyHandler(SonarConnectionManager arg1, ISonarSocket arg2, uint arg3)
         {
-            this.pinger.Poke();
+            this._pinger.Poke();
             var taken = false;
             this.Meta._lock.Enter(ref taken);
             try
@@ -272,7 +271,7 @@ namespace Sonar
             if (this.LogInformationEnabled) this.LogInformation($"[Server text] {text}");
         }
 
-        private void Ticker_Tick(TickerService ticker)
+        private void Ticker_Tick(SonarTickService ticker)
         {
             try
             {
@@ -308,11 +307,11 @@ namespace Sonar
         {
             if (Interlocked.Exchange(ref this.disposed, 1) == 1) return;
 
-            this.ticker.Tick -= this.Ticker_Tick;
-            this.pinger.Pong -= this.Pinger_Pong;
+            this._ticker.Tick -= this.Ticker_Tick;
+            this._pinger.Pong -= this.Pinger_Pong;
 
-            await this.ticker.DisposeAsync();
-            await this.pinger.DisposeAsync();
+            await this._ticker.DisposeAsync();
+            await this._pinger.DisposeAsync();
 
             this.baseLogger.LogMessage -= this.LogHandler;
             this._container.Dispose();

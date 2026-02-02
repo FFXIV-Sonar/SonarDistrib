@@ -75,6 +75,19 @@
         "resolved": "0.9.0",
         "contentHash": "6Ij80JrfPyiDRM4QqdlEIjev4Q97eqEakh7wFJZYmbUkWVoCJb1+YdSdoXpzvn+Fs2dXH8THRsn+uUvrhMNKpQ=="
       },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.2",
+        "contentHash": "zOIurr59+kUf9vNcsUkCvKWZv+fPosUZXURZesYkJCvl0EzTc9F7maAO4Cd2WEV7ZJJ0AZrFQvuH6Npph9wdBw=="
+      },
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.2",
+        "contentHash": "RZkez/JjpnO+MZ6efKkSynN6ZztLpw3WbxNzjLCPBd97wWj1S9ZYPWi0nmT4kWBRa6atHsdM1ydGkUr8GudyDQ==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.2"
+        }
+      },
       "System.ComponentModel.Composition": {
         "type": "Transitive",
         "resolved": "4.7.0",
@@ -92,6 +105,7 @@
           "AG.EnumLocalization": "[0.1.3-alpha, )",
           "BouncyCastle.Cryptography": "[2.6.2, )",
           "Farmhash.Sharp": "[0.9.0, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.0.2, )",
           "XoshiroPRNG.Net": "[1.6.0, )"
         }
       }
