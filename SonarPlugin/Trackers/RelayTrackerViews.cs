@@ -86,7 +86,7 @@ namespace SonarPlugin.Trackers
             }
             else
             {
-                if ((now - state.LastUpdated) > (EarthSecond * this.Plugin.Configuration.DisplayFateDeadTimer) + (state.Relay.Status == FateStatus.Unknown ? state.Relay.Duration : 0))
+                if ((now - state.LastUpdated) > (EarthSecond * this.Plugin.Configuration.DisplayFateDeadTimer) + (state.Relay.Status == FateStatus.알수없음 ? state.Relay.Duration : 0))
                     return false;
             }
 

@@ -57,13 +57,13 @@ namespace Sonar.Utilities
 
         public static string GetExpansionPackLongString(ExpansionPack expac) => expac switch
         {
-            ExpansionPack.ARealmReborn => "A Realm Reborn",
-            ExpansionPack.Heavensward => "Heavensward",
-            ExpansionPack.Stormblood => "Stormblood",
-            ExpansionPack.Shadowbringers => "Shadowbringers",
-            ExpansionPack.Endwalker => "Endwalker",
-            ExpansionPack.Dawntrail => "Dawntrail",
-            ExpansionPack.Unknown => "Unknown",
+            ExpansionPack.ARealmReborn => "신생 에오르제아",
+            ExpansionPack.Heavensward => "창천의 이슈가르드",
+            ExpansionPack.Stormblood => "홍련의 해방자",
+            ExpansionPack.Shadowbringers => "칠흑의 반역자",
+            ExpansionPack.Endwalker => "효월의 종언",
+            ExpansionPack.Dawntrail => "황금의 유산",
+            ExpansionPack.Unknown => "알 수 없음",
             _ => "INVALID"
         };
         public static string GetExpansionPackLongString(string expac) => GetExpansionPackLongString(GetExpansionPack(expac));

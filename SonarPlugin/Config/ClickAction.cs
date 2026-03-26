@@ -11,22 +11,22 @@ namespace SonarPlugin.Config
     [EnumLocStrings]
     public enum ClickAction
     {
-        [EnumLoc(Fallback = "Default")]
+        [EnumLoc(Fallback = "기본값")]
         Default,
 
-        [EnumLoc(Fallback = "None")]
+        [EnumLoc(Fallback = "사용 안 함")]
         None,
 
-        [EnumLoc(Fallback = "Send to Chat")]
+        [EnumLoc(Fallback = "대화 창에 전송")]
         Chat,
 
-        [EnumLoc(Fallback = "Create Flag")]
+        [EnumLoc(Fallback = "지도에 표시")]
         Map,
 
-        [EnumLoc(Fallback = "Teleport")]
+        [EnumLoc(Fallback = "텔레포")]
         Teleport,
 
-        [EnumLoc(Fallback = "Remove")]
+        [EnumLoc(Fallback = "삭제")]
         Remove,
     }
 }

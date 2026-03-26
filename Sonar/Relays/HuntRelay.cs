@@ -207,7 +207,7 @@ namespace Sonar.Relays
                 hunt.ZoneIds.Contains(this.ZoneId);
         }
 
-        public override string ToString() => $"Rank {this.GetRank()}: {this.GetHunt()} {this.HpPercent:F2}% {base.ToString()}{(this.IsDead() ? " DEAD" : "")}";
+        public override string ToString() => $"{this.GetRank()}급: {this.GetHunt()} {this.HpPercent:F2}% {base.ToString()}{(this.IsDead() ? " 토벌 완료" : "")}";
 
         public new HuntRelay Clone() => Unsafe.As<HuntRelay>(this.MemberwiseClone());
     }

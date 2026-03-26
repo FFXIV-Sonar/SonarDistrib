@@ -476,26 +476,26 @@ namespace SonarPlugin.GUI
 
             switch (fateStatus)
             {
-                case FateStatus.Running:
+                case FateStatus.진행중:
                     statusColor = this.Plugin.Configuration.Colors.FateRunning;
                     break;
-                case FateStatus.Complete:
+                case FateStatus.완료:
                     statusColor = this.Plugin.Configuration.Colors.FateComplete;
                     break;
-                case FateStatus.Failed:
+                case FateStatus.실패:
                     statusColor = this.Plugin.Configuration.Colors.FateFailed;
                     break;
-                case FateStatus.Preparation:
+                case FateStatus.준비중:
                     statusColor = this.Plugin.Configuration.Colors.FatePreparation;
                     break;
-                case FateStatus.Unknown:
+                case FateStatus.알수없음:
                     statusColor = this.Plugin.Configuration.Colors.FateUnknown;
                     break;
                 default:
                     statusColor = ColorPalette.Grey; // Hardcoded, should never happen
                     break;
             }
-            if (fateStatus == FateStatus.Running && state.Relay.Progress > 0) statusColor = this.Plugin.Configuration.Colors.FateProgress;
+            if (fateStatus == FateStatus.진행중 && state.Relay.Progress > 0) statusColor = this.Plugin.Configuration.Colors.FateProgress;
 
             ImGui.PushStyleColor(ImGuiCol.Text, statusColor);
             var relayText = relay.Bonus ? this.Formatter.Format("[B] <name>: <flag> <<world>> <instance> <tap> [<players>]", relay) : this.Formatter.Format("<name>: <flag> <<world>> <instance> <tap> [<players>]", relay); // TODO: Better way to expose Bonus status

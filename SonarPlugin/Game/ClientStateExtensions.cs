@@ -32,17 +32,17 @@ namespace SonarPlugin.Game
             // Based on: https://github.com/aers/FFXIVClientStructs/blob/main/FFXIVClientStructs/FFXIV/Client/Game/Fate/FateContext.cs
             return state switch
             {
-                (FateState)3 => FateStatus.Preparation,
-                (FateState)4 => FateStatus.Running,
-                (FateState)5 => FateStatus.Running,
-                (FateState)7 => FateStatus.Complete,
-                (FateState)8 => FateStatus.Failed,
+                (FateState)3 => FateStatus.준비중,
+                (FateState)4 => FateStatus.진행중,
+                (FateState)5 => FateStatus.진행중,
+                (FateState)7 => FateStatus.완료,
+                (FateState)8 => FateStatus.실패,
 
-                (FateState)0 => FateStatus.Preparation,     /* Just spawned / Uninitialized */
-                (FateState)9 => FateStatus.Failed,          /* Expired? */
-                (FateState)6 => FateStatus.Failed,          /* Expired? */
+                (FateState)0 => FateStatus.준비중,     /* Just spawned / Uninitialized */
+                (FateState)9 => FateStatus.실패,          /* Expired? */
+                (FateState)6 => FateStatus.실패,          /* Expired? */
 
-                _ => FateStatus.Unknown,
+                _ => FateStatus.알수없음,
             };
 
             // https://github.com/SapphireServer/Sapphire/blob/d9777084c55ac686f8027eaa09c7ad93f8c94f88/src/common/Common.h#L769
