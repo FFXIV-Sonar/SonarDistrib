@@ -61,7 +61,7 @@ namespace Sonar.Trackers
             this.Contribute = trackers.Config.Contribute;
             this.Client = trackers.Client;
 
-            this.Client.Meta.PlayerPlaceChanged += this.Meta_PlayerPlaceChanged;
+            this.Client.Meta.PlaceChanged += this.Meta_PlayerPlaceChanged;
             this.Client.Tick += this.Client_Tick;
             this.Client.Connection.MessageReceived += this.Client_MessageReceived;
             this.Client.Connection.DisconnectedInternal += this.Client_Disconnected;
@@ -149,7 +149,7 @@ namespace Sonar.Trackers
             if (localOnly || !this.Client.Connection.IsConnected || !this.Contribute.Compute(s_type) || !this.Client.Modifiers.AllowContribute!.GetValueOrDefault(this.RelayType, true))
             {
                 if (this.IsTrackable(relay) && !((IRelayTracker<T>)this).FeedRelayInternal(relay)) return false;
-                if (this._lockOn.Count > 0 && this._lockOn.Contains(relay.RelayKey)) this._relayUpdateQueue.Enqueue(relay);
+                if (this._lockOn.Count is not 0 && this._lockOn.Contains(relay.RelayKey)) this._relayUpdateQueue.Enqueue(relay);
             }
             else
             {
@@ -203,6 +203,7 @@ namespace Sonar.Trackers
 
             if (newState is not null)
             {
+                Debug.Assert(newRelay is null);
                 newRelay = newState.Relay;
                 if (this._lastSeen.TryGetValue(newRelay.RelayKey, out var lastSeen) && newState.LastSeen <= lastSeen) return false;
                 this._lastSeen[newState.RelayKey] = newState.LastSeen;

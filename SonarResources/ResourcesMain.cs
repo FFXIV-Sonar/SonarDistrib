@@ -17,6 +17,7 @@ using SonarResources.Lumina;
 using Sonar;
 using System.Threading;
 using SonarUtils;
+using SonarResources.Cosmic;
 
 namespace SonarResources
 {
@@ -39,6 +40,8 @@ namespace SonarResources
             WeatherReader _6,
             WorldReader _7,
             ZoneReader _8,
+
+            EmergencyReader _8a,
 
             // Providers
             AudienceProvider _9,

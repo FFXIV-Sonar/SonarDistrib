@@ -1,120 +1,90 @@
-﻿using System;
-using Sonar.Models;
-using System.Linq;
+﻿using AG.Collections.Generic;
 using Dalamud.Game;
-using Dalamud.Game.ClientState.Objects.SubKinds;
-using Dalamud.Memory;
-using System.Threading;
-using System.Threading.Tasks;
 using Dalamud.Game.ClientState;
-using SonarPlugin.Game;
-using Dalamud.Logging;
 using Dalamud.Game.ClientState.Objects;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using Sonar;
+using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Logging;
+using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 using DryIoc.FastExpressionCompiler.LightExpression;
+using DryIocAttributes;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
-using System.Text;
-using System.Collections.Generic;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using Microsoft.Extensions.Hosting;
+using Sonar;
+using Sonar.Models;
 using Sonar.Numerics;
-using AG.Collections.Generic;
+using SonarPlugin.Game;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using CSVector3 = FFXIVClientStructs.FFXIV.Common.Math.Vector3;
 
 namespace SonarPlugin.Trackers
 {
+    [ExportMany]
+    [SingletonReuse]
     public sealed class PlayerProvider : IHostedService
     {
         private SonarPlugin Plugin { get; }
         private SonarClient Client { get; }
         private IClientState ClientState { get; }
-        private IObjectTable ObjectTable { get; }
-        private IPlayerState PlayerState { get; }
         private IPluginLog Logger { get; }
-        public UnorderedRefList<Vector3> PlayerPositions { get; } = [];
 
-        public PlayerProvider(SonarPlugin plugin, SonarClient client, IClientState clientState, IObjectTable objectTable, IPlayerState playerState, IPluginLog logger)
+        public PlayerProvider(SonarPlugin plugin, SonarClient client, IClientState clientState, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;
             this.ClientState = clientState;
-            this.ObjectTable = objectTable;
-            this.PlayerState = playerState;
             this.Logger = logger;
             this.Logger.Information("PlayerTracker initialized");
         }
 
-        // https://github.com/goatcorp/Dalamud/pull/1078#issuecomment-1382729843
-        private static unsafe uint GetCurrentInstance() => UIState.Instance()->PublicInstance.InstanceId;
-
-        private void FrameworkTick(IFramework framework)
+        private unsafe void FrameworkTick(IFramework framework)
         {
             // Don't proceed if the structures aren't ready
             if (!this.Plugin.SafeToReadTables) return;
 
             // Player Information
-            var player = this.ObjectTable.LocalPlayer;
-            var loggedIn = this.ClientState.IsLoggedIn;
-            var info = new PlayerInfo() { LoggedIn = loggedIn, Name = player?.Name.TextValue ?? null, HomeWorldId = player?.HomeWorld.RowId ?? 0, Hash1 = this.GetContentHash(), Hash2 = this.GetAccountHash() };
-
+            var player = GetPlayerCharacter();
+            var info = player is not null ? new PlayerInfo() { LoggedIn = true, Name = SeString.Parse(player->Name).TextValue, HomeWorldId = player->HomeWorld, Hash1 = AG.SplitHash64.Compute(player->ContentId), Hash2 = AG.SplitHash64.Compute(player->AccountId) } : new PlayerInfo() { LoggedIn = false, Name = null, HomeWorldId = 0, Hash1 = 0, Hash2 = 0 };
             if (this.Client.Meta.UpdatePlayerInfo(info))
             {
-                if (loggedIn) this.Logger.Verbose("Logged in as {player:X16}", AG.SplitHash64.Compute(info.ToString()));
+                if (info.LoggedIn is true) this.Logger.Verbose("Logged in as {player:X16}", AG.SplitHash64.Compute(info.ToString()));
                 else this.Logger.Verbose("Logged out");
             }
 
             // Player Place
-            if (loggedIn && player is not null)
+            if (player is not null)
             {
-                var place = new PlayerPosition() { WorldId = player.CurrentWorld.RowId, ZoneId = this.ClientState.TerritoryType, InstanceId = GetCurrentInstance(), Coords = player.Position.SwapYZ() };
+                var place = new PlayerPosition() { WorldId = player->CurrentWorld, ZoneId = this.ClientState.TerritoryType, InstanceId = this.ClientState.Instance, Coords = Unsafe.As<CSVector3, Vector3>(ref player->Position).SwapYZ() };
                 if (this.Client.Meta.UpdatePlayerPosition(place).PlaceUpdated) this.Logger.Verbose("Moved to {place}", place);
             }
-
-            // Player Positions data
-            var positions = this.ObjectTable
-                .OfType<IPlayerCharacter>()
-                .Select(player => player.Position);
-
-            // Nearby player counts logic
-            var count = 0;
-            foreach (var position in positions)
-            {
-                if (this.PlayerPositions.Count <= count) this.PlayerPositions.Add(position);
-                else this.PlayerPositions[count] = position;
-                count++;
-            }
-            this.PlayerPositions.Count = count;
         }
 
-        private long GetContentHash()
+        private static unsafe BattleChara* GetPlayerCharacter()
         {
-            if (!this.ClientState.IsLoggedIn) return 0;
-            return AG.SplitHash64.Compute(this.PlayerState.ContentId);
+            var manager = CharacterManager.Instance();
+            if (manager is null) return null;
+            return manager->BattleCharas[0].Value;
         }
-
-        private unsafe long GetAccountHash()
-        {
-            if (!this.ClientState.IsLoggedIn) return 0;
-            var characterManager = CharacterManager.Instance();
-            if (characterManager is null) return 0;
-            var character = characterManager->BattleCharas[0].Value;
-            if (&character is null) return 0;
-            return AG.SplitHash64.Compute(character->AccountId);
-        }
-
-        public int GetNearbyPlayerCount() => this.PlayerPositions.Count;
-        public int GetNearbyPlayerCount(Vector3 from, float distanceSquared = 50 * 50) => this.PlayerPositions.Count(position => Vector3.DistanceSquared(from, position) <= distanceSquared);
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.OnFrameworkEvent += this.FrameworkTick;
+            this.Plugin.FrameworkUpdate += this.FrameworkTick;
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.OnFrameworkEvent -= this.FrameworkTick;
+            this.Plugin.FrameworkUpdate -= this.FrameworkTick;
             return Task.CompletedTask;
         }
     }

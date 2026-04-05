@@ -1,46 +1,50 @@
-﻿using System.Diagnostics;
+﻿using AG.EnumLocalization;
 using CheapLoc;
-using SonarPlugin.Config;
-using Dalamud.Interface;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Game.Gui;
+using Dalamud.Interface;
+using Dalamud.Interface.Internal;
+using Dalamud.Interface.Textures.TextureWraps;
+using Dalamud.Logging;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
+using DryIoc.Messages;
+using DryIocAttributes;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using Microsoft.Extensions.Hosting;
+using Sonar;
 using Sonar.Data;
 using Sonar.Data.Extensions;
 using Sonar.Enums;
+using Sonar.Indexes;
+using Sonar.Localization;
 using Sonar.Models;
+using Sonar.Relays;
+using Sonar.Trackers;
+using Sonar.Utilities;
+using SonarPlugin.Config;
+using SonarPlugin.Game;
+using SonarPlugin.Localization;
+using SonarPlugin.Managers;
+using SonarPlugin.Notifiers;
+using SonarPlugin.Trackers;
+using SonarPlugin.Utility;
+using SonarUtils.Text.Placeholders;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
-using SonarPlugin.Utility;
-using static Sonar.Utilities.UnixTimeHelper;
-using static Sonar.SonarConstants;
-using Sonar;
 using System.Threading;
-using SonarPlugin.Game;
-using SonarPlugin.Trackers;
-using Sonar.Trackers;
-using SonarPlugin.Notifiers;
 using System.Threading.Tasks;
-using Dalamud.Logging;
-using Dalamud.Game.Gui;
-using Sonar.Relays;
-using Sonar.Indexes;
-using Sonar.Utilities;
-using Dalamud.Plugin.Services;
-using System.Diagnostics.CodeAnalysis;
-using Dalamud.Interface.Internal;
-using SonarPlugin.Managers;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using Dalamud.Interface.Textures.TextureWraps;
-using Dalamud.Plugin;
-using SonarPlugin.Localization;
-using AG.EnumLocalization;
-using Sonar.Localization;
-using SonarUtils.Text.Placeholders;
-using DryIoc.Messages;
+using static Sonar.SonarConstants;
+using static Sonar.Utilities.UnixTimeHelper;
 
 namespace SonarPlugin.GUI
 {
+    [ExportMany]
+    [SingletonReuse]
     public sealed class SonarMainWindow : IHostedService, IDisposable
     {
         private bool _visible; // used as ref

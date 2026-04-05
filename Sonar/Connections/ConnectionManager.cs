@@ -243,7 +243,7 @@ namespace Sonar.Connections
             this._sockets.TryAdd(socket, new() { Url = url });
             socket.Disconnected += this.SocketDisconnectedHandler;
             socket.RawReceived += this.SocketRawHandler;
-            socket.MessageReceived += this.SocketMessageHandler;
+            socket.MessageReceivedAsync += this.SocketMessageHandler;
             socket.TextReceived += this.SocketTextHandler;
             // socket.Start() // NOTE: This is now done at the attempt tasks
         }
@@ -255,7 +255,7 @@ namespace Sonar.Connections
                 this._sockets.TryRemove(socket, out _);
                 socket.Disconnected -= this.SocketDisconnectedHandler;
                 socket.RawReceived -= this.SocketRawHandler;
-                socket.MessageReceived -= this.SocketMessageHandler;
+                socket.MessageReceivedAsync -= this.SocketMessageHandler;
                 socket.TextReceived -= this.SocketTextHandler;
                 socket.Dispose();
             }
@@ -281,14 +281,22 @@ namespace Sonar.Connections
             this.EnsureConnectionIfAvailable();
         }
 
-        private void SocketMessageHandler(ISonarSocket socket, ISonarMessage message)
+        private async Task SocketMessageHandler(ISonarSocket socket, ISonarMessage message)
         {
             if (this._socket == socket) this.MessageReceived?.Invoke(this, message);
             else if (message is ServerReady ready && this._sockets.TryGetValue(socket, out var info))
             {
                 info.Id = ready.ConnectionId;
                 info.Type = ready.ConnectionType;
-                socket.Send(ready);
+                await socket.SendAsync(ready);
+
+                var key = ready.Challenge;
+                var challengeHandler = this.Client.StartInfo.ChallengeHandler;
+                if (!key.IsDefault && challengeHandler is not null)
+                {
+                    var results = await challengeHandler(key, CancellationToken.None).ConfigureAwait(false);
+                    if (results is not null) await socket.SendAsync(new ChallengeResults() { Key = key, Answers = results });
+                }
                 this.EnsureConnectionIfAvailable();
             }
         }

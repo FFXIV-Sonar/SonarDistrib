@@ -13,6 +13,7 @@ using Dalamud.Utility;
 using System.Runtime.CompilerServices;
 using SonarUtils;
 using Dalamud.Plugin.VersionInfo;
+using Dalamud.Plugin;
 
 namespace SonarPlugin.Utility
 {
@@ -37,7 +38,7 @@ namespace SonarPlugin.Utility
         /// <summary>
         /// Get SonarVersion for Sonar.NET
         /// </summary>
-        public static SonarVersion GetSonarVersionModel(IDataManager data, IDalamudVersionInfo dalamudVersion)
+        public static SonarVersion GetSonarVersionModel(IDataManager data, IDalamudPluginInterface plugin, IDalamudVersionInfo dalamudVersion)
         {
             return new SonarVersion
             {
@@ -45,7 +46,10 @@ namespace SonarPlugin.Utility
                 Plugin = $"{Assembly.GetExecutingAssembly().GetName().Name} {GetSonarPluginVersion()}",
                 PluginHash = SonarVersion.GetAssemblyHash(Assembly.GetExecutingAssembly()),
                 Dalamud = $"{dalamudVersion.Version} ({dalamudVersion.GitHash})",
-                DalamudHash = GetDalamudHash()
+                DalamudHash = GetDalamudHash(),
+
+                InternalName = plugin.InternalName,
+                AssemblyVersion = typeof(VersionUtils).Assembly.GetName().Version!.ToString(4)
             };
         }
     }

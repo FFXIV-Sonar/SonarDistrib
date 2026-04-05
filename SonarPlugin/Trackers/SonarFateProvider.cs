@@ -1,28 +1,31 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Sonar.Models;
+﻿using Dalamud.Plugin.Services;
+using DryIocAttributes;
+using FFXIVClientStructs.FFXIV.Client.Game.Fate;
+using Microsoft.Extensions.Hosting;
+using Sonar;
+using Sonar.Data;
 using Sonar.Enums;
-using Dalamud.Game;
-using Dalamud.Game.ClientState.Fates;
+using Sonar.Indexes;
+using Sonar.Relays;
+using Sonar.Trackers;
+using Sonar.Utilities;
 using SonarPlugin.Game;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Sonar.Trackers;
-using Dalamud.Logging;
-using Dalamud.Plugin.Services;
-using Sonar.Relays;
-using Sonar;
+using static Sonar.SonarConstants;
 
 namespace SonarPlugin.Trackers
 {
+    [ExportMany]
+    [SingletonReuse]
     public sealed class SonarFateProvider : IHostedService
     {
-        private PlayerProvider Player { get; }
+        private PlayerCounterService Players { get; }
         private SonarPlugin Plugin { get; }
-        private SonarClient Client { get; }
+        private SonarMeta Meta { get; }
         private IRelayTracker<FateRelay> Tracker { get; }
-        private IFateTable Fates { get; }
-        private IClientState ClientState { get; }
         private IPluginLog Logger { get; }
 
         /// <summary>
@@ -30,53 +33,90 @@ namespace SonarPlugin.Trackers
         /// </summary>
         /// <param name="plugin">Sonar Plugin object</param>
         /// <param name="debug">(Optional) Output debug logging</param>
-        public SonarFateProvider(PlayerProvider player, SonarPlugin plugin, SonarClient client, IRelayTracker<FateRelay> tracker, IFateTable fates, IClientState clientState, IPluginLog logger)
+        public SonarFateProvider(PlayerCounterService players, SonarPlugin plugin, SonarMeta meta, IRelayTracker<FateRelay> tracker, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
-            this.Player = player;
+            this.Players = players;
             this.Plugin = plugin;
-            this.Client = client;
+            this.Meta = meta;
             this.Tracker = tracker;
-            this.Fates = fates;
-            this.ClientState = clientState;
             this.Logger = logger;
 
             // Initialization feedback
             this.Logger.Information("FateTracker Initialized");
         }
 
-        private List<string> _lastFateKeys = new();
-        private void Framework(IFramework framework)
+        private List<uint> _nextFateIds = [];
+        private List<uint> _lastFateIds = [];
+        private unsafe void Framework(IFramework framework)
         {
             // Don't proceed if the structures aren't ready
-            if (!this.Plugin.SafeToReadTables || !this.ClientState.IsLoggedIn)
-            {
-                this._lastFateKeys.Clear();
-                return;
-            }
+            if (!this.Plugin.SafeToReadTables) goto Fail;
+
+            // Fate Manager
+            var manager = FateManager.Instance();
+            if (manager is null) goto Fail;
 
             // Get player position information
-            var playerPosition = this.Client.Meta.PlayerPosition;
-            if (playerPosition is null) return;
+            var playerPosition = this.Meta.PlayerPosition;
+            if (playerPosition is null) goto Fail;
 
-            // Iterate throughout all fates in the fates table
-            var fates = this.Fates
-                .Where(f => f.State != 0)
-                .Where(f => f.State == FateState.Preparation || (f.StartTimeEpoch is not 0 && f.Duration is not 0 && f.TimeRemaining is not 0))
-                .Where(f => f.Position.X is not 0 || f.Position.Y is not 0 || f.Position.Z is not 0)
-                .Select(f => f.ToSonarFateRelay(playerPosition, this.Player.GetNearbyPlayerCount(f.Position)))
-                .ToList();
+            // Place and check timestamp
+            var worldId = playerPosition.WorldId;
+            var zoneId = playerPosition.ZoneId;
+            var instanceId = playerPosition.InstanceId;
+            double? timestamp = null;
 
-            this.Tracker.FeedRelays(fates);
+            var fates = manager->Fates.AsSpan();
+            var currentFateIds = this._nextFateIds;
+            foreach (var fatePtr in fates)
+            {
+                var fate = fatePtr.Value;
+                if (fate is null) continue; // && fate->State is not 0 && (fate->State is FateState.Preparing || (fate->StartTimeEpoch is not 0 && fate->Duration is not 0)))
+
+                var state = fate->State;
+                if (state is 0) continue;
+
+                var id = fate->FateId;
+                if (!Database.Fates.ContainsKey(id)) continue;
+
+                var startTimeEpoch = fate->StartTimeEpoch;
+                if (startTimeEpoch is 0) continue;
+
+                var duration = fate->Duration;
+                if (duration is 0) continue;
+
+                var position = fate->Location;
+                if (position.X is 0 || position.Y is 0 || position.Z is 0) continue;
+
+                currentFateIds.Add(id);
+                this.Tracker.FeedRelay(new FateRelay()
+                {
+                    Id = id,
+                    WorldId = worldId,
+                    ZoneId = zoneId,
+                    InstanceId = instanceId,
+                    Coords = position.SwapYZ(),
+                    StartTime = startTimeEpoch * EarthSecond,
+                    Duration = duration * EarthSecond,
+                    Progress = fate->Progress,
+                    Status = state.ToSonarFateStatus(),
+                    Players = this.Players.GetCount(position),
+                    CheckTimestamp = timestamp ??= UnixTimeHelper.SyncedUnixNow,
+                    Bonus = fate->IsBonus,
+                });
+            }
+
 
             // Determine and mark disappeared fates as failed
-            var currentFateKeys = fates.Select(f => f.RelayKey).ToList();
-            var missingFates = this._lastFateKeys.Except(currentFateKeys);
+            var lastFateIds = this._lastFateIds;
+            var missingFates = lastFateIds.Except(currentFateIds);
             if (missingFates.Any())
             {
                 var fateStates = this.Tracker.Data.States;
-                foreach (var fateKey in missingFates)
+                foreach (var fateId in missingFates)
                 {
+                    var fateKey = IndexUtils.GetWorldZoneInstanceIndexKey(worldId, fateId, instanceId); // NOTE: Key formats are the same
                     var fateState = fateStates.GetValueOrDefault(fateKey);
                     if (fateState is null) continue;
                     var fate = fateState.Relay.Clone();
@@ -84,18 +124,26 @@ namespace SonarPlugin.Trackers
                     this.Tracker.FeedRelay(fate);
                 }
             }
-            this._lastFateKeys = currentFateKeys;
+            this._lastFateIds = currentFateIds;
+
+            // Clear last fate keys and place the list into pooled list for next iteration
+            lastFateIds.Clear();
+            this._nextFateIds = lastFateIds;
+            return;
+
+        Fail:
+            this._lastFateIds.Clear();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.OnFrameworkEvent += this.Framework;
+            this.Plugin.FrameworkUpdate += this.Framework;
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.OnFrameworkEvent -= this.Framework;
+            this.Plugin.FrameworkUpdate -= this.Framework;
             return Task.CompletedTask;
         }
     }

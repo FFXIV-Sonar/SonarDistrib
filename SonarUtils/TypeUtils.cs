@@ -23,11 +23,11 @@ namespace SonarUtils
                 types.UnionWith(baseType.GetDerivedTypes());
             }
             types.UnionWith(type.GetInterfaces());
-            return types.ToImmutableArray();
+            return [.. types];
         }
         public static ImmutableArray<Type> GetAllTypes(this Type type) => s_allTypes.GetOrAdd(type, GetAllTypesCore);
         public static ImmutableArray<Type> GetAllTypes(this object obj) => obj.GetType().GetAllTypes();
-        private static ImmutableArray<Type> GetAllTypesCore(Type type) => type.GetDerivedTypes().Prepend(type).ToImmutableArray();
+        private static ImmutableArray<Type> GetAllTypesCore(Type type) => [.. type.GetDerivedTypes().Prepend(type).ToImmutableArray()];
 
         public static void ResetCache()
         {

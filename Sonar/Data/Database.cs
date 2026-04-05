@@ -115,6 +115,7 @@ namespace Sonar.Data
         public static IReadOnlyDictionary<uint, WeatherRow> Weathers => Instance.Weathers.ToIReadOnlyDictionaryUnsafe();
         public static IReadOnlyDictionary<uint, AetheryteRow> Aetherytes => Instance.Aetherytes.ToIReadOnlyDictionaryUnsafe();
         public static IReadOnlyDictionary<uint, WorldTravelRow> WorldTravelData => Instance.WorldTravelData.ToIReadOnlyDictionaryUnsafe();
+        public static IReadOnlyDictionary<uint, EventRow> Events => Instance.Events.ToIReadOnlyDictionaryUnsafe();
         #endregion
 
         #region Utility Helpers
@@ -123,6 +124,5 @@ namespace Sonar.Data
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IReadOnlyDictionary<TKey, TValue> ToIReadOnlyDictionaryUnsafe<TKey, TValue>(this IDictionary<TKey, TValue> dict) => Unsafe.As<IReadOnlyDictionary<TKey, TValue>>(dict);
-
     }
 }

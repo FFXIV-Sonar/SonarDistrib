@@ -49,7 +49,7 @@ namespace SonarDiagnostics.Cosmic
                 }
             }
 
-            var addon = rapture is not null ? (AgentWKSAnnounce*)rapture->GetAddonByName("WKSAnnounce") : null;
+            var addon = rapture is not null ? rapture->GetAddonByName("WKSAnnounce") : null;
             var agent = (AgentWKSAnnounce*)(addon is not null ? this.GameGui.FindAgentInterface(addon).Address : 0);
             using (var node = ImRaii.TreeNode("WKS Announce Agent"))
             {

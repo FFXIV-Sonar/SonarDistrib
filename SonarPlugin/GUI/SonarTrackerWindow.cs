@@ -1,8 +1,9 @@
-﻿using Dalamud.Interface.Windowing;
+﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using DryIoc;
 using DryIoc.FastExpressionCompiler.LightExpression;
-using Dalamud.Bindings.ImGui;
+using DryIocAttributes;
 using Lumina.Data.Parsing.Layer;
 using Lumina.Excel.Sheets;
 using Sonar.Data;
@@ -18,7 +19,8 @@ using System.Threading.Tasks;
 
 namespace SonarPlugin.GUI
 {
-    [SingletonService]
+    [ExportMany]
+    [SingletonReuse]
     public sealed class SonarTrackerWindow : Window, IDisposable
     {
         private readonly IndexSelectionWidget _indexWidget;

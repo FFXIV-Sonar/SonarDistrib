@@ -1,6 +1,8 @@
 ﻿using Sonar.Messages;
 using MessagePack;
 using Sonar.Connections;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Sonar.Models
 {
@@ -18,5 +20,8 @@ namespace Sonar.Models
 
         [Key(1)]
         public ConnectionType ConnectionType { get; set; }
+
+        [Key(2)]
+        public ImmutableArray<byte> Challenge { get; set; } = default!;
     }
 }

@@ -1,9 +1,18 @@
 ﻿using Dalamud.Game.Gui;
 using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Logging;
+using Dalamud.Plugin.Services;
+using DryIocAttributes;
+using Microsoft.Extensions.Hosting;
+using Sonar;
+using Sonar.Data.Extensions;
+using Sonar.Relays;
 using Sonar.Trackers;
 using SonarPlugin.Config;
+using SonarPlugin.Game;
+using SonarPlugin.Sounds;
 using SonarPlugin.Trackers;
 using SonarPlugin.Utility;
 using System;
@@ -12,16 +21,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using SonarPlugin.Game;
-using Sonar.Data.Extensions;
-using Dalamud.Logging;
-using Sonar.Relays;
-using Dalamud.Plugin.Services;
-using Sonar;
-using SonarPlugin.Sounds;
 
 namespace SonarPlugin.Notifiers
 {
+    [ExportMany]
+    [SingletonReuse]
     public sealed class FateNotifier : IHostedService
     {
         private SonarPlugin Plugin { get; }

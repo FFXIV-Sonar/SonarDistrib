@@ -97,10 +97,10 @@ namespace SonarUtils.Tests
             {
                 var bytes = "What are you expecting to happen?"u8;
                 var output = new byte[7]; // Digest size is 32 bytes... please fit into 7 bytes!
-                Assert.InRange(output.Length, 0, SonarHashing.Sha256DigestSize - 1);
+                Assert.InRange(output.Length, 0, SonarHashing.Sha256Size - 1);
                 SonarHashing.Sha256(bytes, output);
             });
-            Assert.Equal(GetLengthArgumentExceptionMessage(SonarHashing.Sha256DigestSize), exception.Message);
+            Assert.Equal(GetLengthArgumentExceptionMessage(SonarHashing.Sha256Size), exception.Message);
         }
 
         [Fact]
@@ -110,10 +110,10 @@ namespace SonarUtils.Tests
             {
                 var stream = new MemoryStream("What are you expecting to happen?"u8.ToArray());
                 var output = new byte[7]; // Digest size is 32 bytes... please fit into 7 bytes!
-                Assert.InRange(output.Length, 0, SonarHashing.Sha256DigestSize - 1);
+                Assert.InRange(output.Length, 0, SonarHashing.Sha256Size - 1);
                 SonarHashing.Sha256(stream, output);
             });
-            Assert.Equal(GetLengthArgumentExceptionMessage(SonarHashing.Sha256DigestSize), exception.Message);
+            Assert.Equal(GetLengthArgumentExceptionMessage(SonarHashing.Sha256Size), exception.Message);
         }
 
         [Fact]
@@ -123,10 +123,10 @@ namespace SonarUtils.Tests
             {
                 var stream = new MemoryStream("What are you expecting to happen?"u8.ToArray());
                 var output = new byte[7]; // Digest size is 32 bytes... please fit into 7 bytes!
-                Assert.InRange(output.Length, 0, SonarHashing.Sha256DigestSize - 1);
+                Assert.InRange(output.Length, 0, SonarHashing.Sha256Size - 1);
                 await SonarHashing.Sha256Async(stream, output);
             });
-            Assert.Equal(GetLengthArgumentExceptionMessage(SonarHashing.Sha256DigestSize), exception.Message);
+            Assert.Equal(GetLengthArgumentExceptionMessage(SonarHashing.Sha256Size), exception.Message);
         }
 
         public static TheoryData<int, int> LengthsAndSeedsSource()

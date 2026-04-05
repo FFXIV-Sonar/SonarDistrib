@@ -1,14 +1,16 @@
-﻿using System;
-using Dalamud.Logging;
-using System.Reflection;
-using Dalamud.Interface;
-using Dalamud.Plugin.Services;
+﻿using Dalamud.Interface;
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Textures.TextureWraps;
+using Dalamud.Logging;
+using Dalamud.Plugin.Services;
+using DryIocAttributes;
+using System;
+using System.Reflection;
 
 namespace SonarPlugin.Utility
 {
-    [SingletonService]
+    [ExportMany]
+    [SingletonReuse]
     public sealed class ResourceHelper
     {
         private ITextureProvider Textures { get; }

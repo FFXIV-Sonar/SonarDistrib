@@ -44,6 +44,9 @@ namespace Sonar.Data.Rows
         [Key(10)]
         public bool LocalOnly { get; set; }
 
+        [Key(14)]
+        public uint IntendedUse { get; set; }
+
         [Key(11)]
         public HashSet<uint> HuntIds { get; set; } = new();
 

@@ -46,6 +46,12 @@ namespace Sonar.Models
         [Key("os")]
         public string? OperatingSystem { get; set; }
 
+        [Key("internalName")]
+        public string? InternalName { get; set; }
+
+        [Key("assemblyVersion")]
+        public string? AssemblyVersion { get; set; }
+
         public void ResetSonarVersion()
         {
             var assembly = typeof(SonarVersion).Assembly;

@@ -73,6 +73,7 @@ namespace SonarResources.Readers
                         Expansion = GetZoneExpansion(territory.Bg.ExtractText()),
                         IsField = territory.TerritoryIntendedUse.Value.RowId == 1 || territory.TerritoryIntendedUse.Value.RowId == 41 || territory.TerritoryIntendedUse.Value.RowId == 48, // && t.Stealth && t.Mount && t.Aetheryte.Row != 0 && !t.IsPvpZone,
                         LocalOnly = territory.TerritoryIntendedUse.Value.RowId == 41 || territory.TerritoryIntendedUse.Value.RowId == 48,
+                        IntendedUse = territory.TerritoryIntendedUse.RowId,
                         BlurHash = Database.Zones.GetValueOrDefault(id)?.BlurHash, // NOTE: MapGenerator generates this.
                     };
                 }

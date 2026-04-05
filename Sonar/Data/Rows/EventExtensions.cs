@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sonar.Data.Rows
+﻿namespace Sonar.Data.Rows
 {
     public static class EventExtensions
     {
         extension (EventRow ev)
         {
+            public EventType Type => EventUtils.TypeFromId(ev.Id);
+            public uint RowId => EventUtils.FromId(ev.Id).RowId;
+            public uint SubRowId => EventUtils.FromId(ev.Id).SubRowId;
         }
     }
 }

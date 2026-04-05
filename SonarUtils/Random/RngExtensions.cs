@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xoshiro.PRNG64;
 
 namespace SonarUtils.Random
@@ -12,39 +7,35 @@ namespace SonarUtils.Random
     /// <summary>Extend <see cref="RandomNumberGenerator"/> functionality</summary>
     public static class RngExtensions
     {
-        private static readonly ThreadLocal<byte[]> s_buffer = new(() => new byte[sizeof(long)]);
-
-        public static int Next(this RandomNumberGenerator random)
+        public static unsafe int Next(this RandomNumberGenerator random)
         {
-            var buffer = s_buffer.Value!;
-            int result;
+            var result = 0;
+            var buffer = new Span<byte>(&result, sizeof(int));
             do
             {
-                random.GetBytes(buffer, 0, sizeof(int));
-                result = BitConverter.ToInt32(buffer, 0) & 0x7FFFFFFF;
+                random.GetBytes(buffer);
             }
             while (result == int.MaxValue);
-            return result;
+            return result & 0x7FFFFFFF;
         }
 
-        public static int Next(this RandomNumberGenerator random, int maxValue)
+        public static unsafe int Next(this RandomNumberGenerator random, int maxValue)
         {
-            var buffer = s_buffer.Value!;
-
             // Adapted from: https://sourceforge.net/p/xoshiroprng-net/code/ci/default/tree/XoshiroPRNG.Net/XoshiroBase.cs#l171
             if (maxValue < 0) throw new ArgumentOutOfRangeException(nameof(maxValue), maxValue, "'maxValue' must be greater than zero.");
             if (maxValue <= 1) return 0;
 
             // Debiasing
-            var r = int.MaxValue / maxValue;
-            var tooLarge = r * maxValue;
+            var result = int.MaxValue / maxValue;
+            var tooLarge = result * maxValue;
+            var buffer = new Span<byte>(&result, sizeof(int));
             do
             {
-                random.GetBytes(buffer, 0, sizeof(int));
-                r = BitConverter.ToInt32(buffer, 0) & 0x7FFFFFFF;
+                random.GetBytes(buffer);
+                result &= 0x7FFFFFFF;
             }
-            while (r >= tooLarge);
-            return r % maxValue;
+            while (result >= tooLarge);
+            return result % maxValue;
         }
 
         public static int Next(this RandomNumberGenerator random, int minValue, int maxValue)
@@ -54,31 +45,31 @@ namespace SonarUtils.Random
             return (int)(random.NextU((uint)(maxValue - minValue)) + minValue);
         }
 
-        public static long Next64(this RandomNumberGenerator random)
+        public static unsafe long Next64(this RandomNumberGenerator random)
         {
-            var buffer = s_buffer.Value!;
-            random.GetBytes(buffer, 0, sizeof(long));
-            return BitConverter.ToInt64(buffer, 0) & 0x7FFFFFFFFFFFFFFFL;
+            var result = 0L;
+            var buffer = new Span<byte>(&result, sizeof(long));
+            random.GetBytes(buffer);
+            return result & 0x7FFFFFFFFFFFFFFFL;
         }
 
-        public static long Next64(this RandomNumberGenerator random, long maxValue)
+        public static unsafe long Next64(this RandomNumberGenerator random, long maxValue)
         {
-            var buffer = s_buffer.Value!;
-
             // Adapted from: https://sourceforge.net/p/xoshiroprng-net/code/ci/default/tree/XoshiroPRNG.Net/XoshiroBase.cs#l171
             if (maxValue < 0) throw new ArgumentOutOfRangeException(nameof(maxValue), maxValue, "'maxValue' must be greater than zero.");
             if (maxValue <= 1) return 0;
 
             // Debiasing
-            var r = long.MaxValue / maxValue;
-            var tooLarge = r * maxValue;
+            var result = long.MaxValue / maxValue;
+            var tooLarge = result * maxValue;
+            var buffer = new Span<byte>(&result, sizeof(long));
             do
             {
-                random.GetBytes(buffer, 0, sizeof(long));
-                r = BitConverter.ToInt64(buffer, 0) & 0x7FFFFFFFFFFFFFFFL;
+                random.GetBytes(buffer);
+                result &= 0x7FFFFFFFFFFFFFFF;
             }
-            while (r >= tooLarge);
-            return r % maxValue;
+            while (result >= tooLarge);
+            return result % maxValue;
         }
 
         public static long Next64(this RandomNumberGenerator random, long minValue, long maxValue)
@@ -88,28 +79,28 @@ namespace SonarUtils.Random
             return (long)(random.Next64U((ulong)(maxValue - minValue)) + (ulong)minValue);
         }
 
-        public static uint NextU(this RandomNumberGenerator random)
+        public static unsafe uint NextU(this RandomNumberGenerator random)
         {
-            var buffer = s_buffer.Value!;
-            random.GetBytes(buffer, 0, sizeof(uint));
-            return BitConverter.ToUInt32(buffer, 0);
+            var result = 0u;
+            var buffer = new Span<byte>(&result, sizeof(uint));
+            random.GetBytes(buffer);
+            return result;
         }
 
-        public static uint NextU(this RandomNumberGenerator random, uint maxValue)
+        public static unsafe uint NextU(this RandomNumberGenerator random, uint maxValue)
         {
-            var buffer = s_buffer.Value!;
             // Adapted from: https://sourceforge.net/p/xoshiroprng-net/code/ci/default/tree/XoshiroPRNG.Net/XoshiroBase.cs#l115
             if (maxValue <= 1) return 0;
 
             // Debiasing
-            var r = uint.MaxValue / maxValue;
-            var tooLarge = r * maxValue;
+            var result = uint.MaxValue / maxValue;
+            var tooLarge = result * maxValue;
+            var buffer = new Span<byte>(&result, sizeof(uint));
             do
             {
-                random.GetBytes(buffer, 0, sizeof(uint));
-                r = BitConverter.ToUInt32(buffer, 0);
-            } while (r >= tooLarge);
-            return r % maxValue;
+                random.GetBytes(buffer);
+            } while (result >= tooLarge);
+            return result % maxValue;
         }
 
         public static uint NextU(this RandomNumberGenerator random, uint minValue, uint maxValue)
@@ -119,28 +110,28 @@ namespace SonarUtils.Random
             return random.NextU(maxValue - minValue) + minValue;
         }
 
-        public static ulong Next64U(this RandomNumberGenerator random)
+        public static unsafe ulong Next64U(this RandomNumberGenerator random)
         {
-            var buffer = s_buffer.Value!;
-            random.GetBytes(buffer, 0, sizeof(ulong));
-            return BitConverter.ToUInt64(buffer, 0);
+            var result = 0UL;
+            var buffer = new Span<byte>(&result, sizeof(ulong));
+            random.GetBytes(buffer);
+            return result;
         }
 
-        public static ulong Next64U(this RandomNumberGenerator random, ulong maxValue)
+        public static unsafe ulong Next64U(this RandomNumberGenerator random, ulong maxValue)
         {
-            var buffer = s_buffer.Value!;
             // Adapted from: https://sourceforge.net/p/xoshiroprng-net/code/ci/default/tree/XoshiroPRNG.Net/XoshiroBase.cs#l115
             if (maxValue <= 1) return 0;
 
             // Debiasing
-            var r = ulong.MaxValue / maxValue;
-            var tooLarge = r * maxValue;
+            var result = ulong.MaxValue / maxValue;
+            var tooLarge = result * maxValue;
+            var buffer = new Span<byte>(&result, sizeof(ulong));
             do
             {
-                random.GetBytes(buffer, 0, sizeof(ulong));
-                r = BitConverter.ToUInt64(buffer, 0);
-            } while (r >= tooLarge);
-            return r % maxValue;
+                random.GetBytes(buffer);
+            } while (result >= tooLarge);
+            return result % maxValue;
         }
 
         public static ulong Next64U(this RandomNumberGenerator random, ulong minValue, ulong maxValue)
@@ -182,32 +173,30 @@ namespace SonarUtils.Random
             return bytes;
         }
 
-        public static double NextDouble(this RandomNumberGenerator random)
+        public static unsafe double NextDouble(this RandomNumberGenerator random)
         {
-            var buffer = s_buffer.Value!;
-
             // Adapted from: https://sourceforge.net/p/xoshiroprng-net/code/ci/default/tree/XoshiroPRNG.Net/Xoshiro64Base.cs#l130
-            double r;
+            var result = 0.0;
+            var buffer = new Span<byte>(&result, sizeof(double));
             do
             {
-                random.GetBytes(buffer, 0, sizeof(double));
-                r = (BitConverter.ToUInt64(buffer, 0) >> 11) * (1.0 / ((ulong)1 << 53));
-            } while ((r >= 1.0) || (r < 0.0));
-            return r;
+                random.GetBytes(buffer);
+                result = (BitConverter.ToUInt64(buffer) >> 11) * (1.0 / ((ulong)1 << 53));
+            } while ((result >= 1.0) || (result < 0.0));
+            return result;
         }
 
-        public static double NextFloat(this RandomNumberGenerator random)
+        public static unsafe double NextFloat(this RandomNumberGenerator random)
         {
-            var buffer = s_buffer.Value!;
-
             // Adapted from: https://sourceforge.net/p/xoshiroprng-net/code/ci/default/tree/XoshiroPRNG.Net/Xoshiro64Base.cs#l163
-            float r;
+            var result = 0.0f;
+            var buffer = new Span<byte>(&result, sizeof(float));
             do
             {
-                random.GetBytes(buffer, 0, sizeof(float));
-                r = (BitConverter.ToUInt32(buffer, 0) >> 40) * ((float)1.0 / ((uint)1 << 24));
-            } while ((r >= 1.0f) || (r < 0.0f));
-            return r;
+                random.GetBytes(buffer);
+                result = (BitConverter.ToUInt32(buffer) >> 8) * ((float)1.0 / ((uint)1 << 24));
+            } while ((result >= 1.0f) || (result < 0.0f));
+            return result;
         }
     }
 }

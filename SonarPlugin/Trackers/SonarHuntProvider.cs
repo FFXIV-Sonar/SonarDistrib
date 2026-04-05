@@ -1,41 +1,49 @@
-﻿using System.Linq;
-using SonarPlugin.Game;
-using Sonar.Models;
-using Sonar.Data;
-using Dalamud.Game;
-using Dalamud.Game.ClientState.Objects.Types;
-using System.Threading;
-using System.Threading.Tasks;
-using Sonar.Trackers;
+﻿using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Logging;
 using Dalamud.Plugin.Services;
-using Sonar.Relays;
+using DryIocAttributes;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using Microsoft.Extensions.Hosting;
 using Sonar;
+using Sonar.Data;
+using Sonar.Models;
+using Sonar.Relays;
+using Sonar.Trackers;
+using Sonar.Utilities;
+using SonarPlugin.Game;
+using System.Linq;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using CSVector3 = FFXIVClientStructs.FFXIV.Common.Math.Vector3;
 
 namespace SonarPlugin.Trackers
 {
+    [ExportMany]
+    [SingletonReuse]
     public sealed class SonarHuntProvider : IHostedService
     {
-        private PlayerProvider Player { get; }
+        private PlayerCounterService Players { get; }
         private IRelayTracker<HuntRelay> Tracker { get; }
-        private IObjectTable Table { get; }
         private SonarPlugin Plugin { get; }
-        private SonarClient Client { get; }
+        private SonarMeta Meta { get; }
         private IClientState ClientState { get; }
         private IPluginLog Logger { get; }
 
         /// <summary>
         /// Initialize monster tracker
         /// </summary>
-        public SonarHuntProvider(PlayerProvider player, IRelayTracker<HuntRelay> tracker, IObjectTable table, SonarPlugin plugin, SonarClient client, IClientState clientState, IPluginLog logger)
+        public SonarHuntProvider(PlayerCounterService players, IRelayTracker<HuntRelay> tracker, SonarPlugin plugin, SonarMeta meta, IClientState clientState, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
-            this.Player = player;
+            this.Players = players;
             this.Tracker = tracker;
-            this.Table = table;
             this.Plugin = plugin;
-            this.Client = client;
+            this.Meta = meta;
             this.ClientState = clientState;
             this.Logger = logger;
 
@@ -43,33 +51,62 @@ namespace SonarPlugin.Trackers
             this.Logger.Information("MobTracker Initialized");
         }
 
-        private void FrameworkTick(IFramework framework)
+        private unsafe void FrameworkTick(IFramework framework)
         {
             // Don't proceed if the structures aren't ready
-            if (!this.Plugin.SafeToReadTables || !this.ClientState.IsLoggedIn) return;
+            if (!this.Plugin.SafeToReadTables) return;
+
+            // Character Manager
+            var manager = CharacterManager.Instance();
+            if (manager is null) return;
 
             // Get player position information
-            var playerPosition = this.Client.Meta.PlayerPosition;
+            var playerPosition = this.Meta.PlayerPosition;
             if (playerPosition is null) return;
 
-            // Iterate throughout all hunts in the actor table
-            var hunts = this.Table
-                .OfType<IBattleNpc>()
-                .Where(a => Database.Hunts.ContainsKey(a.NameId))
-                .Select(h => h.ToSonarHuntRelay(playerPosition, this.Player.GetNearbyPlayerCount(h.Position)));
+            // Place and check timestamp
+            var worldId = playerPosition.WorldId;
+            var zoneId = playerPosition.ZoneId;
+            var instanceId = playerPosition.InstanceId;
+            double? timestamp = null;
 
-            this.Tracker.FeedRelays(hunts);
+            var characters = manager->BattleCharas;
+            foreach (var characterPtr in characters)
+            {
+                var character = characterPtr.Value;
+                if (character is null || character->ObjectKind is not ObjectKind.BattleNpc) continue;
+
+                var id = character->NameId;
+                if (!Database.Hunts.ContainsKey(id)) continue;
+
+                var position = Unsafe.As<CSVector3, Vector3>(ref character->Position);
+                if (position.X is 0 || position.Y is 0 || position.Z is 0) continue;
+
+                this.Tracker.FeedRelay(new HuntRelay()
+                {
+                    Id = id,
+                    ActorId = character->EntityId,
+                    WorldId = worldId,
+                    ZoneId = zoneId,
+                    InstanceId = instanceId,
+                    Coords = position.SwapYZ(),
+                    CurrentHp = character->Health,
+                    MaxHp = character->MaxHealth,
+                    Players = this.Players.GetCount(position),
+                    CheckTimestamp = timestamp ??= UnixTimeHelper.SyncedUnixNow,
+                });
+            }
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.OnFrameworkEvent += this.FrameworkTick;
+            this.Plugin.FrameworkUpdate += this.FrameworkTick;
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.OnFrameworkEvent -= this.FrameworkTick;
+            this.Plugin.FrameworkUpdate -= this.FrameworkTick;
             return Task.CompletedTask;
         }
     }

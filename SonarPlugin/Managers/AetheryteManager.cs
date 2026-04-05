@@ -16,7 +16,8 @@ namespace SonarPlugin.Managers
 {
     // Attunement check and teleport code based on: https://github.com/Ottermandias/GatherBuddy/blob/main/GatherBuddy/SeFunctions/Teleporter.cs
     // NOTE: Under no circumstances world IDs are checked. It is the task of the player to ensure they're on the correct world first.
-    [SingletonService]
+    [ExportMany]
+    [SingletonReuse]
     public sealed class AetheryteManager
     {
         private IClientState ClientState { get; }

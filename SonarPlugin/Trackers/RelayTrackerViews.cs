@@ -1,22 +1,24 @@
-﻿using Sonar.Enums;
+﻿using DryIocAttributes;
+using Lumina.Excel.Sheets;
+using Sonar;
+using Sonar.Data;
+using Sonar.Data.Extensions;
+using Sonar.Enums;
 using Sonar.Relays;
 using Sonar.Trackers;
+using Sonar.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Sonar.Utilities.UnixTimeHelper;
 using static Sonar.SonarConstants;
-using Sonar.Utilities;
-using Sonar.Data;
-using Sonar.Data.Extensions;
-using Sonar;
-using Lumina.Excel.Sheets;
+using static Sonar.Utilities.UnixTimeHelper;
 
 namespace SonarPlugin.Trackers
 {
-    [SingletonService]
+    [ExportMany]
+    [SingletonReuse]
     public sealed class RelayTrackerViews : IDisposable
     {
         private readonly Dictionary<HuntRank, IRelayTrackerView<HuntRelay>> _huntViews = new();

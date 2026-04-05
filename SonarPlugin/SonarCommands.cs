@@ -1,19 +1,23 @@
-﻿using SonarPlugin.Attributes;
+﻿using Dalamud.Game.Command;
+using Dalamud.Interface.Windowing;
+using Dalamud.Logging;
+using Dalamud.Plugin.Services;
+using DryIocAttributes;
+using Microsoft.Extensions.Hosting;
+using Sonar;
+using Sonar.Relays;
+using SonarPlugin.Attributes;
+using SonarPlugin.GUI;
 using SonarPlugin.Managers;
 using System;
-using SonarPlugin.GUI;
-using Dalamud.Game.Command;
-using Dalamud.Logging;
-using System.Threading.Tasks;
-using System.Threading;
-using Dalamud.Interface.Windowing;
-using Sonar;
-using Dalamud.Plugin.Services;
 using System.Reflection.Metadata;
-using Sonar.Relays;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SonarPlugin
 {
+    [ExportMany]
+    [SingletonReuse]
     public sealed class SonarCommands : IHostedService
     {
         private PluginCommandManager<SonarCommands>? _commandManager;

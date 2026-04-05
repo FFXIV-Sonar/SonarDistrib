@@ -1,50 +1,59 @@
 ﻿using Sonar.Models;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sonar
 {
     public sealed partial class SonarStartInfo : ICloneable
     {
-        private bool _locked;
-        private string? _workingDirectory;
-        private ImmutableArray<byte>? _pluginSecretMeta;
-
         /// <summary>Whether this <see cref="SonarStartInfo"/> is locked. This happens once its used by <see cref="SonarClient"/></summary>
         public bool Locked
         {
-            get => this._locked;
-            internal set => this._locked = value;
+            get => field;
+            internal set => field = value;
         }
 
         /// <summary>Sonar's working directory.</summary>
         /// <remarks>Cannot be changed once <see cref="Locked"/>.</remarks>
         public string WorkingDirectory
         {
-            get => this._workingDirectory ??= GetDefaultWorkingDirectory();
+            get => field ??= GetDefaultWorkingDirectory();
             set
             {
                 this.ThrowIfLocked();
-                this._workingDirectory = value;
+                field = value;
             }
         }
 
         public ImmutableArray<byte>? PluginSecretMeta
         {
-            get => this._pluginSecretMeta;
+            get => field;
             set
             {
                 this.ThrowIfLocked();
-                this._pluginSecretMeta = value;
+                field = value;
+            }
+        }
+
+        public Func<ImmutableArray<byte>, CancellationToken, Task<IReadOnlyDictionary<string, ImmutableArray<byte>>?>>? ChallengeHandler
+        {
+            get => field;
+            set
+            {
+                this.ThrowIfLocked();
+                field = value;
             }
         }
 
         public SonarStartInfo Clone()
         {
             var ret = Unsafe.As<SonarStartInfo>(this.MemberwiseClone());
-            ret._locked = false;
+            ret.Locked = false;
             return ret;
         }
 

@@ -38,10 +38,12 @@ using static SonarPlugin.Utility.ShellUtils;
 using Dalamud.Interface;
 using SonarPlugin.Sounds;
 using Dalamud.Plugin.VersionInfo;
+using DryIocAttributes;
 
 namespace SonarPlugin.GUI
 {
-    [SingletonService]
+    [ExportMany]
+    [SingletonReuse]
     public sealed class SonarConfigWindow : Window, IDisposable
     {
         private Task _debugHuntTask = Task.CompletedTask;
