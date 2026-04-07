@@ -128,7 +128,7 @@ namespace Sonar
 
 		private void ThrowIfLocked()
 		{
-			if (this._locked) throw new InvalidOperationException($"This {nameof(SonarStartInfo)} is locked.");
+			if (this.Locked) throw new InvalidOperationException($"This {nameof(SonarStartInfo)} is locked.");
 		}
 	}
 }

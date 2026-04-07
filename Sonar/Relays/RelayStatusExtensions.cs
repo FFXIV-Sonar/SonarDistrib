@@ -40,6 +40,9 @@ namespace Sonar.Relays
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsStale(this RelayStatus status) => status.GetMeta().IsStale;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValidStatus(this RelayStatus status) => s_metas.ContainsKey(status);
+
         /* TODO: Uncomment once IRelay.Status is implemented
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAlive(this IRelay relay) => relay.Status.IsAlive();

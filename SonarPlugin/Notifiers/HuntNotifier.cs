@@ -1,30 +1,34 @@
-﻿using Sonar.Trackers;
+﻿using CheapLoc;
+using Dalamud.Game.Gui;
+using Dalamud.Game.Text;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Logging;
+using Dalamud.Plugin.Services;
+using DryIocAttributes;
+using Microsoft.Extensions.Hosting;
+using Sonar;
+using Sonar.Data.Extensions;
+using Sonar.Enums;
+using Sonar.Relays;
+using Sonar.Trackers;
+using SonarPlugin.Config;
+using SonarPlugin.Game;
+using SonarPlugin.GUI;
+using SonarPlugin.Sounds;
+using SonarPlugin.Trackers;
+using SonarPlugin.Utility;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Dalamud.Game.Text;
-using SonarPlugin.Config;
-using SonarPlugin.Trackers;
-using Dalamud.Game.Gui;
-using Sonar.Data.Extensions;
-using Dalamud.Logging;
-using Sonar.Enums;
-using CheapLoc;
-using SonarPlugin.Utility;
-using System.Collections.Generic;
-using Dalamud.Game.Text.SeStringHandling;
-using SonarPlugin.Game;
-using Dalamud.Game.Text.SeStringHandling.Payloads;
-using System.Diagnostics;
 using static Sonar.SonarConstants;
-using Sonar.Relays;
-using SonarPlugin.GUI;
-using Dalamud.Plugin.Services;
-using Sonar;
-using SonarPlugin.Sounds;
 
 namespace SonarPlugin.Notifiers
 {
+    [ExportMany]
+    [SingletonReuse]
     public sealed class HuntNotifier : IHostedService
     {
         private const double SSMinionNotificationThreshold = EarthHour;

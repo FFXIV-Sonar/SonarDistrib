@@ -1,4 +1,5 @@
-﻿using Sonar.Data;
+﻿using DryIocAttributes;
+using Sonar.Data;
 using Sonar.Data.Extensions;
 using Sonar.Data.Rows;
 using Sonar.Enums;
@@ -12,7 +13,8 @@ using System.Threading.Tasks;
 
 namespace SonarPlugin.Utility
 {
-    [SingletonService]
+    [ExportMany]
+    [SingletonReuse]
     public sealed class IndexProvider
     {
         private object? _checkObj;

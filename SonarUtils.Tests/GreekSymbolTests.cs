@@ -33,6 +33,7 @@ namespace SonarUtils.Tests
         [InlineData(GreekSymbol.Omega, "Ωω")]
         public static void CorrectRepresentation(GreekSymbol symbol, string chars)
         {
+            Assert.True(symbol.IsValid);
             Assert.Equal(chars, symbol.Chars);
 
             var upperChar = chars[0];
@@ -58,6 +59,7 @@ namespace SonarUtils.Tests
         public static void InvalidMustBeZeroAndEmpty()
         {
             var symbol = GreekSymbol.Invalid;
+            Assert.False(symbol.IsValid);
             Assert.Equal(string.Empty, symbol.Chars);
             Assert.Equal('\0', symbol.UpperChar);
             Assert.Equal('\0', symbol.LowerChar);
@@ -72,7 +74,6 @@ namespace SonarUtils.Tests
         {
             Assert.Equal(symbol, GreekSymbolUtils.ToGreekSymbol(ch));
         }
-
 
         public static TheoryData<char, GreekSymbol> CharsToGreekSymbolSource()
         {

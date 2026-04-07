@@ -68,6 +68,9 @@ namespace Sonar.Data.Details
 
         [Key(12)]
         public IDictionary<uint, WorldTravelRow> WorldTravelData { get; set; } = new Dictionary<uint, WorldTravelRow>();
+
+        [Key(13)]
+        public IDictionary<uint, EventRow> Events { get; set; } = new Dictionary<uint, EventRow>();
         #endregion
 
         #region Helper Utilities
@@ -92,6 +95,7 @@ namespace Sonar.Data.Details
             this.Weathers = this.Weathers.ToFrozenDictionary();
             this.Aetherytes = this.Aetherytes.ToFrozenDictionary();
             this.WorldTravelData = this.WorldTravelData.ToFrozenDictionary();
+            this.Events = this.Events.ToFrozenDictionary();
         }
 
         /// <summary>Thaw all dictionaries</summary>
@@ -110,6 +114,7 @@ namespace Sonar.Data.Details
             this.Weathers = this.Weathers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             this.Aetherytes = this.Aetherytes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             this.WorldTravelData = this.WorldTravelData.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            this.Events = this.Events.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         /// <summary>Warning: Slow</summary>
@@ -127,6 +132,7 @@ namespace Sonar.Data.Details
             byteList.AddRange(MessagePackSerializer.Serialize(this.Weathers.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.Aetherytes.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
             byteList.AddRange(MessagePackSerializer.Serialize(this.WorldTravelData.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
+            byteList.AddRange(MessagePackSerializer.Serialize(this.Events.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));
 
             return SonarHashing.Sha256(byteList.AsSpan());
         }
@@ -153,6 +159,7 @@ namespace Sonar.Data.Details
                 $"Weathers: {this.Weathers.Count}",
                 $"Aetherytes: {this.Aetherytes.Count} (Teleportable: {this.Aetherytes.Values.Count(aetheryte => aetheryte.Teleportable)})",
                 $"World Travel: {this.WorldTravelData.Count}",
+                $"Events: {this.Events.Count}",
             };
             return string.Join('\n', lines);
         }

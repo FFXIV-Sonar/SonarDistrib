@@ -10,7 +10,7 @@ namespace Sonar.Relays
         Unknown,
 
         [EnumLoc(Fallback = "준비중")]
-        [RelayStatusMeta(1, 1, 0, 0, 0, RelayType.Fate)]
+        [RelayStatusMeta(1, 1, 0, 0, 0, RelayType.Fate, RelayType.Event))]
         Preparing,
 
         [EnumLoc(Fallback = "생존")]
@@ -22,11 +22,11 @@ namespace Sonar.Relays
         Healthy,
 
         [EnumLoc(Fallback = "진행중")]
-        [RelayStatusMeta(1, 1, 1, 0, 0, RelayType.Fate)]
+        [RelayStatusMeta(1, 1, 1, 0, 0, RelayType.Fate, RelayType.Event)]
         Running,
 
         [EnumLoc(Fallback = "토벌 중")]
-        [RelayStatusMeta(1, 0, 1, 0, 0, RelayType.Hunt, RelayType.Fate)] // NOTE: Pulled may not make sense for all fates.
+        [RelayStatusMeta(1, 0, 1, 0, 0, RelayType.Hunt, RelayType.Fate, RelayType.Event)] // NOTE: Pulled may not make sense for all fates.
         Pulled,
 
         [EnumLoc(Fallback = "토벌 완료")]
@@ -34,21 +34,21 @@ namespace Sonar.Relays
         Dead,
 
         [EnumLoc(Fallback = "완료")]
-        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate)]
+        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate, RelayType.Event))]
         Complete,
 
         [EnumLoc(Fallback = "실패")]
-        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate)]
+        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate, RelayType.Event))]
         Failed,
 
         [EnumLoc(Fallback = "실패")]
-        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate)]
+        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate, RelayType.Event))]
         Expired,
 
         [RelayStatusMeta(1, 1, 0, 0, 0, RelayType.Manual)]
         Manual,
 
-        [RelayStatusMeta(0, 0, 0, 0, 1, RelayType.Hunt, RelayType.Fate, RelayType.Manual)]
+        [RelayStatusMeta(0, 0, 0, 0, 1, RelayType.Hunt, RelayType.Fate, RelayType.Event, RelayType.Manual)]
         Stale,
 
         [EnumLoc(Fallback = "Not Applicable")]

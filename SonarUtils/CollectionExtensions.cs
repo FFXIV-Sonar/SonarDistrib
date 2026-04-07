@@ -1,6 +1,7 @@
 ﻿using SonarUtils.Collections;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace SonarUtils
 {
@@ -16,10 +17,7 @@ namespace SonarUtils
             foreach (var item in items) action(item);
         }
 
-        public static void ForEach<T>(this T[] items, Action<T> action)
-        {
-            foreach (var item in items) action(item);
-        }
+        public static void ForEach<T>(ImmutableArray<T> items, Action<T> action) => items.AsSpan().ForEach(action);
 
         public static void ForEach<T, TState>(this IEnumerable<T> items, TState state, Action<T, TState> action)
         {
@@ -31,10 +29,7 @@ namespace SonarUtils
             foreach (var item in items) action(item, state);
         }
 
-        public static void ForEach<T, TState>(this T[] items, TState state, Action<T, TState> action)
-        {
-            foreach (var item in items) action(item, state);
-        }
+        public static void ForEach<T, TState>(this ImmutableArray<T> items, TState state, Action<T, TState> action) => items.AsSpan().ForEach(state, action);
 
         public static int IndexOf<T>(this T[] array, T item) => Array.IndexOf(array, item);
 

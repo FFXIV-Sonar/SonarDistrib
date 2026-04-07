@@ -1,24 +1,26 @@
-﻿using Lumina;
+﻿using Dalamud.Data;
+using Dalamud.Interface;
+using Dalamud.Interface.Internal;
+using Dalamud.Interface.Textures.TextureWraps;
+using Dalamud.Logging;
+using Dalamud.Plugin.Services;
+using Dalamud.Utility;
+using DryIoc.FastExpressionCompiler.LightExpression;
+using DryIocAttributes;
+using Lumina;
+using Lumina.Data.Files;
+using MessagePack.Resolvers;
 using Sonar.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Dalamud.Logging;
-using Lumina.Data.Files;
-using Dalamud.Utility;
-using Dalamud.Data;
-using Dalamud.Interface;
-using Dalamud.Plugin.Services;
-using Dalamud.Interface.Internal;
-using Dalamud.Interface.Textures.TextureWraps;
-using System.Linq.Expressions;
-using MessagePack.Resolvers;
-using DryIoc.FastExpressionCompiler.LightExpression;
 
 namespace SonarPlugin.Utility
 {
-    [SingletonService]
+    [ExportMany]
+    [SingletonReuse]
     public sealed class MapTextureProvider : IDisposable
     {
         private readonly Tasker _tasker = new();

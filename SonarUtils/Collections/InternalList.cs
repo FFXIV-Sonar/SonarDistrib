@@ -12,7 +12,7 @@ namespace SonarUtils.Collections
     {
         /// <summary>Internal <see cref="Array"/> used by this <see cref="InternalList{T}"/></summary>
         /// <remarks>Setting an array smaller than <see cref="Count"/> will result in undefined behavior</remarks>
-        public T[] InternalArray { get; set; } = Array.Empty<T>();
+        public T[] InternalArray { get; set; } = [];
         private int _count;
 
         /// <summary>Item count</summary>
@@ -34,7 +34,7 @@ namespace SonarUtils.Collections
             {
                 if (value < this._count) throw new ArgumentOutOfRangeException(nameof(this.Capacity), $"{nameof(this.Capacity)} < {nameof(this.Count)}");
                 if (value == this.InternalArray.Length) return;
-                var newArray = value > 0 ? new T[value] : Array.Empty<T>();
+                var newArray = value > 0 ? new T[value] : [];
                 this.InternalArray.AsSpan(0, this._count).CopyTo(newArray);
                 this.InternalArray = newArray;
             }
@@ -252,6 +252,7 @@ namespace SonarUtils.Collections
         {
             var count = this.Count;
             if (count != other.Count) return false;
+            if (ReferenceEquals(this.InternalArray, other.InternalArray)) return true;
             var comparer = EqualityComparer<T>.Default;
             for (var index = 0; index < count; index++)
             {

@@ -1,16 +1,18 @@
-﻿using System;
+﻿using Dalamud.Plugin.Services;
+using DryIocAttributes;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
+using SonarPlugin.NAudio.Wave;
+using SonarUtils.Threading;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using NAudio.Wave;
-using SonarPlugin.NAudio.Wave;
-using NAudio.Wave.SampleProviders;
-using Dalamud.Plugin.Services;
-using SonarUtils.Threading;
 
 namespace SonarPlugin.Utility
 {
-    [SingletonService]
+    [ExportMany]
+    [SingletonReuse]
     public sealed class AudioPlaybackEngine : IDisposable
     {
         private readonly Dictionary<string, byte[]?> _cache = new();

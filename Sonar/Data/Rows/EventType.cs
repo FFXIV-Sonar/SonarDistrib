@@ -1,7 +1,4 @@
-﻿using Org.BouncyCastle.Ocsp;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Sonar.Data.Rows.Internal;
 
 namespace Sonar.Data.Rows
 {
@@ -10,6 +7,7 @@ namespace Sonar.Data.Rows
     {
         Unknown = 0,
 
-        Cosmic = 1,
+        [SubRowBits(8)]
+        CosmicEmergency = 1,
     }
 }

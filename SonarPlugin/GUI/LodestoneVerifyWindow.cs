@@ -17,9 +17,13 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using DryIocAttributes;
 
 namespace SonarPlugin.GUI
 {
+    [ExportMany]
+    [SingletonReuse]
     public sealed class LodestoneVerifyWindow : Window, IHostedService
     {
         private LodestoneVerificationNeeded? _need;

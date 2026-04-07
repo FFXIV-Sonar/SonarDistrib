@@ -1,14 +1,7 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Frozen;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading;
 using Xoshiro.PRNG64;
-using Xunit;
-using Xunit.Sdk;
 
 namespace SonarUtils.Tests
 {
@@ -50,7 +43,7 @@ namespace SonarUtils.Tests
             var strings = GenerateStringPairs(s_fruitsAndColors, 100000).Select(StringUtils.Intern).ToArray();
             foreach (var str in strings.Concat(strings).Concat(strings).Concat(strings).OrderBy(str => random.Next()))
             {
-                Assert.Same(StringUtils.Intern(str), str);
+                Assert.Same(StringUtils.Intern(new string(str)), str);
             }
         }
 

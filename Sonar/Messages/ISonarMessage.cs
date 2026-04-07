@@ -33,6 +33,7 @@ namespace Sonar.Messages
     [Union(0x29, typeof(ClientSecret))]
     [Union(0x2A, typeof(ClientIdentifier))]
     [Union(0x2B, typeof(HardwareIdentifier))]
+    [Union(0x2C, typeof(ChallengeResults))]
 
     //[Union(0x2C, typeof(object))] // RESERVED: XivAuth?
     //[Union(0x2D, typeof(object))] // RESERVED: XivAuth?

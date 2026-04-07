@@ -3,13 +3,23 @@
 
   <PropertyGroup>
     <SecretMeta>$(PLOGON_SECRET_UTILS)</SecretMeta>
+    <CsWin32RunAsBuildTask>true</CsWin32RunAsBuildTask>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AG.Collections.Concurrent" Version="0.1.2-alpha" />
     <PackageReference Include="AG.EnumLocalization" Version="0.1.3-alpha" />
     <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
+    <PackageReference Include="DryIoc.dll" Version="5.4.3" />
+    <PackageReference Include="DryIoc.MefAttributedModel.dll" Version="7.0.2" />
+    <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
     <PackageReference Include="Farmhash.Sharp" Version="0.9.0" />
+    <PackageReference Include="IPAddressRange" Version="6.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.269">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="XoshiroPRNG.Net" Version="1.6.0" />
   </ItemGroup>
 

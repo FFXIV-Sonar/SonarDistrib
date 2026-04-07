@@ -1,6 +1,7 @@
 ﻿using AG.EnumLocalization;
 using AG.EnumLocalization.Attributes;
 using Dalamud.Plugin.Services;
+using DryIocAttributes;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using Lumina;
 using Lumina.Data.Files;
@@ -25,7 +26,8 @@ using System.Xml.Linq;
 
 namespace SonarPlugin.Sounds
 {
-    [SingletonService]
+    [ExportMany]
+    [SingletonReuse]
     public sealed class SoundEngine
     {
         private static readonly Regex s_soundRegex = new(@"^sound:(?<id>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);

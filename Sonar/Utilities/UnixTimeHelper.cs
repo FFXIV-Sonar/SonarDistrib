@@ -5,60 +5,46 @@ namespace Sonar.Utilities
 {
     public static class UnixTimeHelper
     {
-        private static int _lastTickCount;
-        private static double _lastUnixNow;
+        private static int s_lastTickCount;
+        private static double s_lastUnixNow;
 
-        /// <summary>
-        /// Current time using Unix Epoch (in Milliseconds)
-        /// </summary>
+        /// <summary>Current time using Unix Epoch (in Milliseconds)</summary>
         public static double UnixNow
         {
             get
             {
                 var currentTicks = Environment.TickCount;
-                if (currentTicks != _lastTickCount)
+                if (currentTicks != s_lastTickCount)
                 {
-                    _lastTickCount = currentTicks;
-                    _lastUnixNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    s_lastTickCount = currentTicks;
+                    s_lastUnixNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 }
-                return _lastUnixNow;
+                return s_lastUnixNow;
             }
         }
 
-        /// <summary>
-        /// Time synchronization offset relative to server (+ = behind, - = ahead)
-        /// </summary>
+        /// <summary>Time synchronization offset relative to server (+ = behind, - = ahead)</summary>
         public static double UnixTimeOffset { get; internal set; } = 0;
 
-        /// <summary>
-        /// Synchronized time using Unix Epoch (in Milliseconds)
-        /// </summary>
+        /// <summary>Synchronized time using Unix Epoch (in Milliseconds)</summary>
         public static double SyncedUnixNow => UnixNow + UnixTimeOffset;
 
-        /// <summary>
-        /// Get a Unix Timestamp from a DateTimeOffset object
-        /// </summary>
+        /// <summary>Get a Unix Timestamp from a DateTimeOffset object</summary>
         /// <param name="dto">DateTimeOffset object</param>
         /// <returns>Unix timestamp</returns>
         public static double GetUnixTime(DateTimeOffset dto) => dto.ToUnixTimeMilliseconds();
 
-        /// <summary>
-        /// Get a Unix Timestamp from a DateTime object
-        /// </summary>
+        /// <summary>Get a Unix Timestamp from a DateTime object</summary>
         /// <param name="dt">DateTime object</param>
         /// <returns>Unix timestamp</returns>
         public static double GetUnixTime(DateTime dt) => GetUnixTime(new DateTimeOffset(dt));
 
-        /// <summary>
-        /// Get a DateTimeOffset object from a Unix timestamp
-        /// </summary>
+        /// <summary>Get a DateTimeOffset object from a Unix timestamp</summary>
         /// <param name="ut">Unix timestamp</param>
         /// <returns>DateTimeOffset</returns>
         public static DateTimeOffset GetDateTimeOffset(double ut) => DateTimeOffset.FromUnixTimeMilliseconds((long)ut);
 
-        /// <summary>
-        /// Get a DateTime object from a Unix timestamp
-        /// </summary>
+        /// <summary>Get a DateTime object from a Unix timestamp</summary>
         /// <param name="ut">Unix timestamp</param>
         /// <returns>DateTimeOffset</returns>
         public static DateTime GetDateTime(double ut) => GetDateTimeOffset(ut).UtcDateTime;

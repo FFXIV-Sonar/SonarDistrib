@@ -20,8 +20,14 @@ The sonar source code is contained as multiple components
 ### SonarPlugin
 The plugin part of Sonar. This is what's installed when installing Sonar under Dalamud.
 
+### SonarDiagnostics
+Diagnostics and troubleshooting plugin. Sonar repo only.
+
 ### Sonar
 Shared library providing the client, core functionality, communiucations, shared functionality and structures of Sonar. This includes a database containing information about Hunts, Fates, Zones, Worlds and Data Centers.
+
+### Sonar.Dalamud
+Additional functionality for SonarPlugin, and potentially common code for SonarDiagnostics.
 
 ### SonarResources
 Generate the resource files for Sonar to use, which contains hunts, fates and maps information.

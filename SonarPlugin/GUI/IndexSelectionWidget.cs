@@ -14,10 +14,12 @@ using Dalamud.Interface.Components;
 using Dalamud.Interface;
 using SonarPlugin.Game;
 using System.Diagnostics.CodeAnalysis;
+using DryIocAttributes;
 
 namespace SonarPlugin.GUI
 {
-    [TransientService]
+    [ExportEx]
+    [TransientReuse]
     public sealed class IndexSelectionWidget
     {
         private static int s_id;

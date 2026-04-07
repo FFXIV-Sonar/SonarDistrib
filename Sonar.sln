@@ -51,8 +51,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shortcuts", "Shortcuts", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonarDiagnostics", "SonarDiagnostics\SonarDiagnostics.csproj", "{CDA5339D-EE0C-0EA9-6640-5A3BB7CE8794}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sonar.Dalamud", "Sonar.Dalamud\Sonar.Dalamud.csproj", "{FB0279C3-C808-4CD6-A065-A226D1570601}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -105,10 +103,6 @@ Global
 		{CDA5339D-EE0C-0EA9-6640-5A3BB7CE8794}.Debug|x64.Build.0 = Debug|x64
 		{CDA5339D-EE0C-0EA9-6640-5A3BB7CE8794}.Release|x64.ActiveCfg = Release|x64
 		{CDA5339D-EE0C-0EA9-6640-5A3BB7CE8794}.Release|x64.Build.0 = Release|x64
-		{FB0279C3-C808-4CD6-A065-A226D1570601}.Debug|x64.ActiveCfg = Debug|x64
-		{FB0279C3-C808-4CD6-A065-A226D1570601}.Debug|x64.Build.0 = Debug|x64
-		{FB0279C3-C808-4CD6-A065-A226D1570601}.Release|x64.ActiveCfg = Release|x64
-		{FB0279C3-C808-4CD6-A065-A226D1570601}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

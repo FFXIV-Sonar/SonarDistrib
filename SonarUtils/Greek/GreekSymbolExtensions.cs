@@ -39,6 +39,10 @@ namespace SonarUtils.Greek
             /// <summary>Upper and lower case characters (<c>"Aa"</c>) for this <see cref="GreekSymbol"/> as a <see langword="string"/>.</summary>
             /// <remarks>Returns <see cref="string.Empty"/> if not valid.</remarks>
             public string Chars => s_attributes.TryGetValue(symbol, out var attribute) ? attribute.Chars : string.Empty;
+
+            /// <summary>Is this a valid symbol?</summary>
+            /// <remarks>Invalid symbols resolve to <c>\0</c> and <see cref="string.Empty"/>.</remarks>
+            public bool IsValid => s_attributes.ContainsKey(symbol);
         }
     }
 }

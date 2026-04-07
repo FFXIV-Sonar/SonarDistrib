@@ -1,16 +1,10 @@
 ﻿using DryIocAttributes;
 using Sonar.Models;
-using SonarUtils.Collections;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Sonar.Numerics;
 using static Sonar.SonarConstants;
 using Sonar.Extensions;
+using System.Collections.Immutable;
 
 namespace Sonar
 {
@@ -19,6 +13,9 @@ namespace Sonar
     public sealed class SonarMeta
     {
         internal SpinLock _lock = new(false);
+        private ImmutableArray<Action<PlayerInfo>> _infoHandlers = [];
+        private ImmutableArray<Action<PlayerPosition>> _placeHandlers = [];
+        private ImmutableArray<Action<PlayerPosition>> _positionHandlers = [];
 
         private SonarClient Client { get; }
 
@@ -58,18 +55,20 @@ namespace Sonar
         public bool UpdatePlayerInfo(PlayerInfo? playerInfo)
         {
             if (playerInfo is null || playerInfo.Equals(this.PlayerInfo)) return false;
-            var lockTaken = false;
-            this._lock.Enter(ref lockTaken);
-            try
+
+            this.PlayerInfo = playerInfo;
+            this.Client.Connection.SendIfConnected(playerInfo);
+
+            foreach (var handler in this._infoHandlers)
             {
-                if (playerInfo.Equals(this.PlayerInfo)) return false;
-                this.PlayerInfo = playerInfo;
-                this.PlayerInfoChanged?.Invoke(this.PlayerInfo);
-                this.Client.Connection.SendIfConnected(playerInfo);
-            }
-            finally
-            {
-                this._lock.Exit();
+                try
+                {
+                    handler(playerInfo);
+                }
+                catch (Exception ex)
+                {
+                    this.Client.LogError(ex, "Exception occured at PlayerInfoChanged handler");
+                }
             }
             return true;
         }
@@ -91,23 +90,39 @@ namespace Sonar
             var positionUpdated = placeUpdated || playerPosition.Coords.Delta(this.PlayerPosition!.Coords).LengthSquared() >= RoughDistanceSquared;
             if (!placeUpdated && !positionUpdated) return (false, false);
 
-            var lockTaken = false;
-            this._lock.Enter(ref lockTaken);
-            try
-            {
-                placeUpdated = this.PlayerPosition is null || !playerPosition.WorldZoneInstanceEquals(this.PlayerPosition);
-                positionUpdated = placeUpdated || playerPosition.Coords.Delta(this.PlayerPosition!.Coords).LengthSquared() >= RoughDistanceSquared;
-                if (!placeUpdated && !positionUpdated) return (false, false);
+            this.PlayerPosition = playerPosition;
+            this.Client.Connection.SendIfConnected(playerPosition);
 
-                this.PlayerPosition = playerPosition;
-                this.PlayerPositionChanged?.Invoke(playerPosition);
-                if (placeUpdated) this.PlayerPlaceChanged?.Invoke(playerPosition);
-                this.Client.Connection.SendIfConnected(playerPosition);
-            }
-            finally
+            if (positionUpdated)
             {
-                this._lock.Exit();
+                foreach (var handler in this._positionHandlers)
+                {
+                    try
+                    {
+                        handler(playerPosition);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Client.LogError(ex, "Exception occured at PlayerInfoChanged handler");
+                    }
+                }
             }
+
+            if (placeUpdated)
+            {
+                foreach (var handler in this._placeHandlers)
+                {
+                    try
+                    {
+                        handler(playerPosition);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Client.LogError(ex, "Exception occured at PlayerPlaceChanged handler");
+                    }
+                }
+            }
+
             return (placeUpdated, positionUpdated);
         }
 
@@ -116,9 +131,41 @@ namespace Sonar
             this.Client.Connection.SendIfConnected(new LodestoneVerificationRequest());
         }
 
-        internal event Action<PlayerInfo>? PlayerInfoChanged;
-        internal event Action<PlayerPosition>? PlayerPlaceChanged;
-        internal event Action<PlayerPosition>? PlayerPositionChanged;
+        public event Action<PlayerInfo>? InfoChanged
+        {
+            add
+            {
+                if (value is not null) ImmutableInterlocked.Update(ref this._infoHandlers, (handlers, handler) => handlers.Add(handler), value);
+            }
+            remove
+            {
+                if (value is not null) ImmutableInterlocked.Update(ref this._infoHandlers, (handlers, handler) => handlers.Remove(handler), value);
+            }
+        }
+
+        public event Action<PlayerPosition>? PlaceChanged
+        {
+            add
+            {
+                if (value is not null) ImmutableInterlocked.Update(ref this._placeHandlers, (handlers, handler) => handlers.Add(handler), value);
+            }
+            remove
+            {
+                if (value is not null) ImmutableInterlocked.Update(ref this._placeHandlers, (handlers, handler) => handlers.Remove(handler), value);
+            }
+        }
+
+        public event Action<PlayerPosition>? PositionChanged
+        {
+            add
+            {
+                if (value is not null) ImmutableInterlocked.Update(ref this._positionHandlers, (handlers, handler) => handlers.Add(handler), value);
+            }
+            remove
+            {
+                if (value is not null) ImmutableInterlocked.Update(ref this._positionHandlers, (handlers, handler) => handlers.Remove(handler), value);
+            }
+        }
 
         public event Action<SonarMeta, LodestoneVerificationNeeded>? VerificationNeeded;
         public event Action<SonarMeta, LodestoneVerificationResult>? VerificationResult;
