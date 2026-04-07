@@ -1,4 +1,4 @@
-﻿using AG.EnumLocalization.Attributes;
+using AG.EnumLocalization.Attributes;
 
 namespace Sonar.Relays
 {
@@ -10,7 +10,7 @@ namespace Sonar.Relays
         Unknown,
 
         [EnumLoc(Fallback = "준비중")]
-        [RelayStatusMeta(1, 1, 0, 0, 0, RelayType.Fate, RelayType.Event))]
+        [RelayStatusMeta(1, 1, 0, 0, 0, RelayType.Fate, RelayType.Event)]
         Preparing,
 
         [EnumLoc(Fallback = "생존")]
@@ -34,15 +34,15 @@ namespace Sonar.Relays
         Dead,
 
         [EnumLoc(Fallback = "완료")]
-        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate, RelayType.Event))]
+        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate, RelayType.Event)]
         Complete,
 
         [EnumLoc(Fallback = "실패")]
-        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate, RelayType.Event))]
+        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate, RelayType.Event)]
         Failed,
 
         [EnumLoc(Fallback = "실패")]
-        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate, RelayType.Event))]
+        [RelayStatusMeta(0, 0, 0, 1, 0, RelayType.Fate, RelayType.Event)]
         Expired,
 
         [RelayStatusMeta(1, 1, 0, 0, 0, RelayType.Manual)]
