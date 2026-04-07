@@ -6,18 +6,18 @@ namespace Sonar.Enums
     public enum FateStatus : byte
     {
         [EnumLocAlias<RelayStatus>(RelayStatus.Unknown)]
-        Unknown, // 0
+        알수없음, // 0
 
         [EnumLocAlias<RelayStatus>(RelayStatus.Preparing)]
-        Preparation, // 1
+        준비중, // 1
 
         [EnumLocAlias<RelayStatus>(RelayStatus.Running)]
-        Running, // 2
+        진행중, // 2
 
         [EnumLocAlias<RelayStatus>(RelayStatus.Complete)]
-        Complete, // 3
+        완료, // 3
 
         [EnumLocAlias<RelayStatus>(RelayStatus.Failed)]
-        Failed, // 4
+        실패, // 4
     }
 }

@@ -47,7 +47,7 @@ namespace SonarPlugin.GUI
         {
             this.Windows = windows;
             this.Client = client;
-            this.modalTitleWithId = $"Sonar Support Result##{id:X}";
+            this.modalTitleWithId = $"Sonar Support 결과##{id:X}";
             this.Flags = ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings;
             this.Size = new(0, 0);
 
@@ -86,14 +86,14 @@ namespace SonarPlugin.GUI
             var bodyText = this.Messaage.Body ?? string.Empty;
             var playerText = this.Messaage.Player ?? string.Empty;
 
-            ImGui.Text("* = required");
-            ImGui.Combo("Type", ref supportTypeIndex, GetSupportTypesStrings(SonarLanguage.English), supportTypes.Length);
-            ImGui.InputText($"Contact{(this.Messaage.FromRequired ? "*" : string.Empty)}", ref contactText, SupportMessage.MaximumContactLength);
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip("We cannot contact you in-game.\nProvide an external method of contact.");
-            ImGui.InputText("Title", ref titleText, SupportMessage.MaximumTitleLength);
-            ImGui.InputTextMultiline("Body*", ref bodyText, SupportMessage.MaximumContentLength, new(0, 0));
-            ImGui.InputText($"Player Name{(this.Messaage.PlayerRequired ? "*" : string.Empty)}", ref playerText, SupportMessage.MaximumPlayerNameLength);
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip($"{(this.Messaage.PlayerRequired ? "(Required) " : string.Empty)}Provide character and world name");
+            ImGui.Text("* - 필수 작성");
+            ImGui.Combo("분류", ref supportTypeIndex, GetSupportTypesStrings(SonarLanguage.English), supportTypes.Length);
+            ImGui.InputText($"연락처{(this.Messaage.FromRequired ? "*" : string.Empty)}", ref contactText, SupportMessage.MaximumContactLength);
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("인게임에서 연락할 수는 없으므로\n게임 외부에서 연락 가능한 연락처를 작성해 주세요.");
+            ImGui.InputText("제목", ref titleText, SupportMessage.MaximumTitleLength);
+            ImGui.InputTextMultiline("내용*", ref bodyText, SupportMessage.MaximumContentLength, new(0, 0));
+            ImGui.InputText($"플레이어 이름{(this.Messaage.PlayerRequired ? "*" : string.Empty)}", ref playerText, SupportMessage.MaximumPlayerNameLength);
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip($"{(this.Messaage.PlayerRequired ? "(필수) " : string.Empty)}캐릭터 및 서버 이름을 작성해 주세요");
 
             this.Messaage.Type = supportTypes[supportTypeIndex];
             this.Messaage.Contact = contactText;
@@ -101,7 +101,7 @@ namespace SonarPlugin.GUI
             this.Messaage.Body = bodyText;
             this.Messaage.Player = playerText;
 
-            if (ImGui.Button("Send"))
+            if (ImGui.Button("전송"))
             {
                 var logs = this.Messaage.Logs;
                 if (!this.AddLogs) this.Messaage.Logs = string.Empty; // Respect user not wanting to add logs
@@ -120,12 +120,12 @@ namespace SonarPlugin.GUI
 
             ImGui.SameLine();
 
-            if (ImGui.Button("Cancel"))
+            if (ImGui.Button("취소"))
             {
                 this.IsOpen = false;
             }
 
-            ImGui.Checkbox("Add Logs or Additional Text", ref this._logsVisible);
+            ImGui.Checkbox("로그 첨부 혹은 추가 내용 작성", ref this._logsVisible);
 
             ImGui.EndGroup();
         }
@@ -135,7 +135,7 @@ namespace SonarPlugin.GUI
             ImGui.BeginGroup();
 
             var logs = this.Messaage.Logs;
-            ImGui.InputTextMultiline("Logs", ref logs, SupportMessage.MaximumLogsLength, new(0, 0));
+            ImGui.InputTextMultiline("로그", ref logs, SupportMessage.MaximumLogsLength, new(0, 0));
             this.Messaage.Logs = logs;
 
             ImGui.EndGroup();
@@ -157,7 +157,7 @@ namespace SonarPlugin.GUI
                     ImGui.TextUnformatted(this.responseException);
                     ImGui.Unindent();
                 }
-                if (ImGui.Button("Close")) this._responseVisible = false;
+                if (ImGui.Button("닫기")) this._responseVisible = false;
             }
             else
             {
@@ -188,12 +188,12 @@ namespace SonarPlugin.GUI
             {
                 supportTypesLanguageStrings[lang] = ret = new()
                 {
-                    { SupportType.Feedback, "Feedback" },
-                    { SupportType.Suggestion, "Suggestion" },
-                    { SupportType.BugReport, "Bug Report" },
-                    { SupportType.Question, "Question" },
-                    { SupportType.PlayerReport, "Player Report" },
-                    { SupportType.Appeal, "Appeal" },
+                    { SupportType.Feedback, "피드백" },
+                    { SupportType.Suggestion, "제안" },
+                    { SupportType.BugReport, "버그 신고" },
+                    { SupportType.Question, "질문" },
+                    { SupportType.PlayerReport, "플레이어 신고" },
+                    { SupportType.Appeal, "항소" },
                 };
             }
             return ret;

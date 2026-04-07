@@ -136,6 +136,11 @@
           "System.Management": "10.0.3"
         }
       },
+      "DnsClient": {
+        "type": "Transitive",
+        "resolved": "1.8.0",
+        "contentHash": "RRwtaCXkXWsx0mmsReGDqCbRLtItfUbkRJlet1FpdciVhyMGKcPd57T1+8Jki9ojHlq9fntVhXQroOOgRak8DQ=="
+      },
       "DryIoc.MefAttributedModel.dll": {
         "type": "Transitive",
         "resolved": "7.0.2",
