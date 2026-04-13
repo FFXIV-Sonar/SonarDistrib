@@ -16,11 +16,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		AI-DECLARATION.md = AI-DECLARATION.md
 		deploy.sh = deploy.sh
 		plogonbuild.sh = plogonbuild.sh
 		post-build.sh = post-build.sh
 		pre-build.sh = pre-build.sh
 		Private notes.txt = Private notes.txt
+		README.md = README.md
 		SecretMeta.targets = SecretMeta.targets
 		SonarCommon.props = SonarCommon.props
 	EndProjectSection
@@ -44,12 +46,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{35C5
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shortcuts", "Shortcuts", "{1C52BF27-7EB8-4E90-882D-47C00E3899D9}"
-	ProjectSection(SolutionItems) = preProject
-		C:\Users\Administrator\AppData\Roaming\XIVLauncher\addon\Hooks\dev\targets\Dalamud.Plugin.targets = C:\Users\Administrator\AppData\Roaming\XIVLauncher\addon\Hooks\dev\targets\Dalamud.Plugin.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonarDiagnostics", "SonarDiagnostics\SonarDiagnostics.csproj", "{CDA5339D-EE0C-0EA9-6640-5A3BB7CE8794}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "distrib", "distrib", "{0B51FB1D-8965-4AD5-9B6C-EC2A97C1D62A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,7 +108,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{35C5F924-32BF-4CCD-B1FD-52FFF8A5139B} = {8F7B1230-AB17-4773-A174-A23DB0B121D3}
-		{1C52BF27-7EB8-4E90-882D-47C00E3899D9} = {8F7B1230-AB17-4773-A174-A23DB0B121D3}
+		{0B51FB1D-8965-4AD5-9B6C-EC2A97C1D62A} = {8F7B1230-AB17-4773-A174-A23DB0B121D3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F039DA17-64AE-4558-8887-BA8C2D0CDCE2}
