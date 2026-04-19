@@ -1,4 +1,4 @@
-﻿using Dalamud.Plugin.Services;
+using Dalamud.Plugin.Services;
 using DryIocAttributes;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using Microsoft.Extensions.Hosting;
@@ -87,7 +87,6 @@ namespace SonarPlugin.Trackers
                 if (duration is 0) continue;
 
                 var position = fate->Location;
-                if (position.X is 0 || position.Y is 0 || position.Z is 0) continue;
 
                 currentFateIds.Add(id);
                 this.Tracker.FeedRelay(new FateRelay()
