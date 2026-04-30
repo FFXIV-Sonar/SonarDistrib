@@ -1,4 +1,4 @@
-﻿using Sonar.Extensions;
+using Sonar.Extensions;
 using Sonar.Messages;
 using System;
 using System.Collections.Generic;
@@ -33,9 +33,16 @@ namespace Sonar.Sockets
 
         protected async Task ProcessReceivedBytesAsync(byte[] bytes)
         {
-            var message = this.ConvertBytesToMessage(bytes);
-            await this.DispatchEventPairAsync(this.RawReceived, this.RawReceivedAsync, bytes); // This is after conversion to ensure its a valid message
-            await this.ProcessMessageAsync(message);
+            try
+            {
+                var message = this.ConvertBytesToMessage(bytes);
+                await this.DispatchEventPairAsync(this.RawReceived, this.RawReceivedAsync, bytes); // This is after conversion to ensure its a valid message
+                await this.ProcessMessageAsync(message);
+            }
+            catch (Exception ex)
+            {
+                this.DispatchExceptionEvent(ex);
+            }
         }
 
         private async Task ProcessMessageAsync(ISonarMessage message)

@@ -1,4 +1,4 @@
-﻿using Dalamud.Game;
+using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Logging;
@@ -80,7 +80,6 @@ namespace SonarPlugin.Trackers
                 if (!Database.Hunts.ContainsKey(id)) continue;
 
                 var position = Unsafe.As<CSVector3, Vector3>(ref character->Position);
-                if (position.X is 0 || position.Y is 0 || position.Z is 0) continue;
 
                 this.Tracker.FeedRelay(new HuntRelay()
                 {

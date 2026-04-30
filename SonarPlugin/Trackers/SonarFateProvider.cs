@@ -81,13 +81,8 @@ namespace SonarPlugin.Trackers
                 if (!Database.Fates.ContainsKey(id)) continue;
 
                 var startTimeEpoch = fate->StartTimeEpoch;
-                if (startTimeEpoch is 0) continue;
-
                 var duration = fate->Duration;
-                if (duration is 0) continue;
-
                 var position = fate->Location;
-                if (position.X is 0 || position.Y is 0 || position.Z is 0) continue;
 
                 currentFateIds.Add(id);
                 this.Tracker.FeedRelay(new FateRelay()

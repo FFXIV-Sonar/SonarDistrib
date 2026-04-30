@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SonarUtils
 {
@@ -29,10 +30,12 @@ namespace SonarUtils
                         var file = new FileInfo(fsInfo.FullName);
                         var name = NormalizePath(Path.GetRelativePath(root, file.FullName));
 
-                        await using var stream = file.OpenRead();
-                        var hash = await SonarHashing.HMacSha256Async(stream, key, cancellationToken).ConfigureAwait(false);
-
-                        yield return KeyValuePair.Create(name, ImmutableCollectionsMarshal.AsImmutableArray(hash));
+                        var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous | FileOptions.SequentialScan);
+                        await using (stream.ConfigureAwait(false))
+                        {
+                            var hash = await SonarHashing.HMacSha256Async(stream, key, cancellationToken).ConfigureAwait(false);
+                            yield return KeyValuePair.Create(name, ImmutableCollectionsMarshal.AsImmutableArray(hash));
+                        }
                     }
                 }
             }
@@ -45,24 +48,29 @@ namespace SonarUtils
                 var name = NormalizePath(entry.FullName);
                 if (name.EndsWith('/')) continue; // Skip directory entries
 
-                await using var stream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
-                var hash = await SonarHashing.HMacSha256Async(stream, key, cancellationToken).ConfigureAwait(false);
-
-                yield return KeyValuePair.Create(name, ImmutableCollectionsMarshal.AsImmutableArray(hash));
+                var stream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
+                await using (stream.ConfigureAwait(false))
+                {
+                    var hash = await SonarHashing.HMacSha256Async(stream, key, cancellationToken).ConfigureAwait(false);
+                    yield return KeyValuePair.Create(name, ImmutableCollectionsMarshal.AsImmutableArray(hash));
+                }
             }
         }
 
         public static async IAsyncEnumerable<KeyValuePair<string, ImmutableArray<byte>>> GenerateHashesAsync(FileInfo archive, ReadOnlyMemory<byte> key, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var zip = await ZipFile.OpenReadAsync(archive.FullName, cancellationToken).ConfigureAwait(false);
-            await foreach (var item in GenerateHashesAsync(zip, key, cancellationToken)) yield return item;
+            await using (zip.ConfigureAwait(false))
+            {
+                await foreach (var item in GenerateHashesAsync(zip, key, cancellationToken).ConfigureAwait(false)) yield return item;
+            }
         }
 
         public static async IAsyncEnumerable<KeyValuePair<string, ImmutableArray<byte>>> GenerateHashesAsync(string path, ReadOnlyMemory<byte> key, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var attributes = File.GetAttributes(path);
             var items = (attributes & FileAttributes.Directory) is FileAttributes.Directory ? GenerateHashesAsync(new DirectoryInfo(path), key, cancellationToken) : GenerateHashesAsync(new FileInfo(path), key, cancellationToken);
-            await foreach (var item in items) yield return item;
+            await foreach (var item in items.ConfigureAwait(false)) yield return item;
         }
 
         private static string NormalizePath(string path)

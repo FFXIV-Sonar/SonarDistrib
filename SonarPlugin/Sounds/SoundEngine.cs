@@ -1,4 +1,4 @@
-﻿using AG.EnumLocalization;
+using AG.EnumLocalization;
 using AG.EnumLocalization.Attributes;
 using Dalamud.Plugin.Services;
 using DryIocAttributes;
@@ -104,7 +104,7 @@ namespace SonarPlugin.Sounds
             return this.PlaySound(config.Sound);
         }
 
-        public bool PlaySound(string sound)
+        public unsafe bool PlaySound(string sound)
         {
             if (TryParseSoundId(sound, out var id))
             {

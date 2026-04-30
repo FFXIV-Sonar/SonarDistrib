@@ -15,8 +15,12 @@
     <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
     <PackageReference Include="Farmhash.Sharp" Version="0.9.0" />
     <PackageReference Include="IPAddressRange" Version="6.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.269">
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.275">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

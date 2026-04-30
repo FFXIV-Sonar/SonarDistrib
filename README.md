@@ -12,7 +12,7 @@ To build SonarPlugin, you can:
 ## Support
 Support is provided exclusively at the [Sonar Support Discord](https://discord.gg/K7y24Rr)
 Issues and Pull Requests are welcome, however I tend not to check often (even with email notifications! :sob:)
-If you need immediate attention join the Discord
+If you need immediate attention join the Discord!
 
 ## Components
 The sonar source code is contained as multiple components
@@ -25,9 +25,6 @@ Diagnostics and troubleshooting plugin. Sonar repo only.
 
 ### Sonar
 Shared library providing the client, core functionality, communiucations, shared functionality and structures of Sonar. This includes a database containing information about Hunts, Fates, Zones, Worlds and Data Centers.
-
-### Sonar.Dalamud
-Additional functionality for SonarPlugin, and potentially common code for SonarDiagnostics.
 
 ### SonarResources
 Generate the resource files for Sonar to use, which contains hunts, fates and maps information.

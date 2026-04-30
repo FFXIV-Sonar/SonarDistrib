@@ -1,4 +1,4 @@
-﻿<Project Sdk="Dalamud.NET.Sdk/14.0.2">
+﻿<Project Sdk="Dalamud.NET.Sdk/15.0.0">
   <Import Project="..\SonarCommon.props" />
 
   <PropertyGroup>
@@ -62,7 +62,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2">
+    <PackageReference Include="ConfigureAwait.Fody" Version="3.4.0">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DryIoc.dll" Version="5.4.3" />

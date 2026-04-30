@@ -1,4 +1,4 @@
-﻿using SonarUtils;
+using SonarUtils;
 using Sonar.Messages;
 using System;
 using System.Collections.Generic;
