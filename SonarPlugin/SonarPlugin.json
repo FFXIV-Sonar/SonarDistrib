@@ -1,9 +1,9 @@
 ﻿{
   "Author": "Sonar Team",
   "Name": "Sonar",
-  "Punchline": "Automatically send and receive hunt and fate relays.",
-  "Description": "Automatically send and receive hunt and fate relays. /sonar to open, /sonarconfig to configure. Support is only provided in the Sonar Support discord.",
-  "Changelog": "See https://news.ffxivsonar.com for more information",
+  "Punchline": "마물, 돌발 전파를 자동으로 주고받습니다.",
+  "Description": "마물, 돌발 전파를 자동으로 주고받습니다. /sonar 명령어로 알림 오버레이를 열고, /sonarconfig 으로 설정 창을 엽니다. 지원은 Sonar Support Discord에서만 제공됩니다.",
+  "Changelog": "추가 정보는 다음의 웹사이트를 참고하세요 https://news.ffxivsonar.com",
   "InternalName": "SonarPlugin",
   "Tags": [
     "Sonar",
@@ -32,8 +32,8 @@
   "supportInfo": {
     "supportLink": "https://discord.gg/K7y24Rr",
     "supportLinkLabel": "Sonar Support Discord",
-    "supportText": "Support is provided exclusively at the Sonar Support discord. You can also create a ticket if privacy is desired. To send feedback please do so via /sonarsupport or join the Discord."
+    "supportText": "지원은 Sonar Support Discord에서만 제공합니다. 프라이버시가 필요하다면 티켓을 생성할 수도 있어요. 피드백을 보내려면 /sonarsupport 명령어를 사용하거나 Discord 서버에 가입해 주세요."
   },
   "AcceptsFeedback": false,
-  "AcceptsFeedbackComment": "To send feedback, type /sonarsupport to send feedback or let us know in the Sonar Support discord"
+  "AcceptsFeedbackComment": "피드백을 보내려면 /sonarsupport 명령어를 사용하거나 Sonar Support Discord를 사용해 주세요"
 }

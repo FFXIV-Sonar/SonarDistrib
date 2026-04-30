@@ -10,34 +10,34 @@ namespace SonarPlugin.Localization
     [EnumLocStrings("Config")]
     public enum ConfigLoc
     {
-        [EnumLoc("Contribute.Global", Fallback = "Global Contribute")]
+        [EnumLoc("Contribute.Global", Fallback = "모든 전파 기여")]
         GlobalContribute,
 
-        [EnumLoc("Contribute.GlobalTooltip", Fallback = "Disable this to disable contributing both hunts and fates.\nAccessible via /sonaron and /sonaroff commands.")]
+        [EnumLoc("Contribute.GlobalTooltip", Fallback = "마물과 돌발 전파 기여를 모두 비활성화 합니다.\n또한 /sonaron 와 /sonaroff 명령어로도 활성화 및 비활성화가 가능합니다.")]
         GlobalContributeTooltip,
 
-        [EnumLoc("Contribute.Hunts", Fallback = "Contribute Hunts")]
+        [EnumLoc("Contribute.Hunts", Fallback = "마물 전파 기여")]
         ContributeHunts,
 
-        [EnumLoc("Contribute.Fates", Fallback = "Contribute Fates")]
+        [EnumLoc("Contribute.Fates", Fallback = "돌발 전파 기여")]
         ContributeFates,
 
-        [EnumLoc("Contribute.Tooltip", Fallback = "Contributing reports is required in order to receive reports from other Sonar users.\nIf disabled Sonar will continue to work in local mode, where you'll see what's detected within your game but you'll not receive from others.")]
+        [EnumLoc("Contribute.Tooltip", Fallback = "다른 Sonar 유저들로부터 전파 정보를 수신하려면 마물 전파 기여 활성화를 요구합니다.\n기여를 비활성화할 경우 로컬 모드로 작동하고 자신이 직접 발견한 항목만 확인할 수 있으며 다른 유저들로부터 전파 정보를 수신할 수 없습니다.")]
         ContributeTooltip,
 
-        [EnumLoc("Contribute.GlobalDisabled", Fallback = "Global Disabled")]
+        [EnumLoc("Contribute.GlobalDisabled", Fallback = "모든 전파 비활성화")]
         ContributeGlobalDisabled,
 
-        [EnumLoc("TrackAll.Hunts", Fallback = "Track All Hunts")]
+        [EnumLoc("TrackAll.Hunts", Fallback = "모든 마물 추적")]
         TrackAllHunts,
 
-        [EnumLoc("TrackAll.Fates", Fallback = "Track All Fates")]
+        [EnumLoc("TrackAll.Fates", Fallback = "모든 돌발 추적")]
         TrackAllFates,
 
-        [EnumLoc("TrackAll.Tooltip", Fallback = "Checked: Track all reports regardless of jurisdiction settings.\nUnchecked: Track reports within jurisdiction settings only.")]
+        [EnumLoc("TrackAll.Tooltip", Fallback = "사용 시: 관할구역 설정에 상관없이 모든 전파를 추적합니다.\n미사용 시: 설정한 관할구역에 포함되는 전파만 추적합니다.")]
         TrackAllTooltip,
 
-        [EnumLoc(Fallback = "Receive Jurisdiction")]
+        [EnumLoc(Fallback = "수신 관할구역")]
         ReceiveJurisdiction,
 
     }

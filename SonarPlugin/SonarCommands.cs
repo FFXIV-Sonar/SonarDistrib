@@ -47,7 +47,7 @@ namespace SonarPlugin
         }
 
         [Command("/sonar")]
-        [HelpMessage("Open/close Sonar's main window")]
+        [HelpMessage("Sonar 메인 창")]
         [ShowInHelp]
         private void ToggleMainWindowCommand(string command, string args)
         {
@@ -56,7 +56,7 @@ namespace SonarPlugin
 
         [Command("/sonarconfig")]
         [Aliases("/sonarcfg")]
-        [HelpMessage("Open/close Sonar's configuration")]
+        [HelpMessage("Sonar 설정")]
         [ShowInHelp]
         private void ToggleConfigWindowCommand(string command, string args)
         {
@@ -64,7 +64,7 @@ namespace SonarPlugin
         }
 
         [Command("/sonartracker")]
-        [HelpMessage("Open/close Sonar's tracker")]
+        [HelpMessage("Sonar 트래커")]
         [DoNotShowInHelp]
         private void ToggleTrackerWindowCommand(string command, string args)
         {
@@ -72,7 +72,7 @@ namespace SonarPlugin
         }
 
         [Command("/sonarerror")]
-        [HelpMessage("Open/close Sonar errors window")]
+        [HelpMessage("Sonar 오류 창")]
         [DoNotShowInHelp]
         private void ToggleErrorWindowCommand(string command, string args)
         {
@@ -80,7 +80,7 @@ namespace SonarPlugin
         }
 
         [Command("/sonarsupport")]
-        [HelpMessage("Contact Sonar Support")]
+        [HelpMessage("Sonar Support 폼 작성")]
         [ShowInHelp]
         private void SonarSupportCommand(string command, string args)
         {
@@ -89,7 +89,7 @@ namespace SonarPlugin
 
         [Command("/sonaron")]
         [Aliases("/sonarenable")]
-        [HelpMessage("Turn Global Contribute on")]
+        [HelpMessage("전파 기여 활성화")]
         [ShowInHelp]
         private void SonarOnCommand(string command, string args)
         {
@@ -102,7 +102,7 @@ namespace SonarPlugin
 
         [Command("/sonaroff")]
         [Aliases("/sonardisable")]
-        [HelpMessage("Turn Global Contribute off")]
+        [HelpMessage("전파 기여 비활성화")]
         [ShowInHelp]
         private void SonarOffCommand(string command, string args)
         {
@@ -114,7 +114,7 @@ namespace SonarPlugin
         }
 
         [Command("/sonartoggle")]
-        [HelpMessage("Toggle Global Contribute on/off")]
+        [HelpMessage("전파 기여 활성화/비활성화")]
         [ShowInHelp]
         private void SonarToggleCommand(string command, string args)
         {

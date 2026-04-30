@@ -9,7 +9,7 @@ namespace Sonar.Relays
 
         Hunt,
 
-        [EnumLoc(Fallback = "FATE")]
+        [EnumLoc(Fallback = "돌발")]
         Fate,
 
         Manual,
