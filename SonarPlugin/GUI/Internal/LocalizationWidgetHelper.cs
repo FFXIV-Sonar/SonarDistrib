@@ -1,4 +1,4 @@
-﻿using AG.EnumLocalization;
+using AG.EnumLocalization;
 using Dalamud.Interface.ImGuiFileDialog;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Bindings.ImGui;
@@ -206,27 +206,21 @@ namespace SonarPlugin.GUI.Internal
         private static void ShowTooltip(string? langCode, Assembly assembly)
         {
             using var tooltip = ImRaii.Tooltip();
-            if (tooltip.Success)
-            {
-                ImGui.TextUnformatted(EnumLoc.GetLocString(MetaLanguageKey, langCode, assembly));
-                ImGui.Spacing();
-                ImGui.TextUnformatted(EnumLoc.GetLocString(MetaAuthorKey, langCode, assembly));
-                ImGui.Spacing();
-                ImGui.TextUnformatted(EnumLoc.GetLocString(MetaNotesKey, langCode, assembly));
-            }
+            ImGui.TextUnformatted(EnumLoc.GetLocString(MetaLanguageKey, langCode, assembly));
+            ImGui.Spacing();
+            ImGui.TextUnformatted(EnumLoc.GetLocString(MetaAuthorKey, langCode, assembly));
+            ImGui.Spacing();
+            ImGui.TextUnformatted(EnumLoc.GetLocString(MetaNotesKey, langCode, assembly));
         }
 
         private static void ShowTooltip(Assembly assembly)
         {
             using var tooltip = ImRaii.Tooltip();
-            if (tooltip.Success)
-            {
-                ImGui.TextUnformatted(EnumLoc.GetLocFallback(MetaLanguageKey, assembly));
-                ImGui.Spacing();
-                ImGui.TextUnformatted(EnumLoc.GetLocFallback(MetaAuthorKey, assembly));
-                ImGui.Spacing();
-                ImGui.TextUnformatted(EnumLoc.GetLocFallback(MetaNotesKey, assembly));
-            }
+            ImGui.TextUnformatted(EnumLoc.GetLocFallback(MetaLanguageKey, assembly));
+            ImGui.Spacing();
+            ImGui.TextUnformatted(EnumLoc.GetLocFallback(MetaAuthorKey, assembly));
+            ImGui.Spacing();
+            ImGui.TextUnformatted(EnumLoc.GetLocFallback(MetaNotesKey, assembly));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
 using System;
@@ -75,7 +75,7 @@ namespace SonarUtils
         public static async ValueTask<byte[]> Sha256Async(Stream input, CancellationToken cancellationToken = default)
         {
             var result = new byte[Sha256Size];
-            await Sha256Async(input, result, cancellationToken);
+            await Sha256Async(input, result, cancellationToken).ConfigureAwait(false);
             return result;
         }
 
@@ -90,7 +90,7 @@ namespace SonarUtils
                 do
                 {
                     sha256.BlockUpdate(buffer.AsSpan(0, result));
-                    result = await input.ReadAsync(buffer, cancellationToken);
+                    result = await input.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
                 }
                 while (result > 0);
             }
@@ -164,7 +164,7 @@ namespace SonarUtils
                 do
                 {
                     hmac.BlockUpdate(buffer.AsSpan(0, result));
-                    result = await input.ReadAsync(buffer, cancellationToken);
+                    result = await input.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
                 }
                 while (result > 0);
             }
@@ -179,14 +179,14 @@ namespace SonarUtils
         public static async ValueTask<byte[]> HMacSha256Async(Stream input, ReadOnlyMemory<byte> key, CancellationToken cancellationToken = default)
         {
             var result = new byte[HMacSha256Size];
-            await HMacSha256Async(input, key, result, cancellationToken);
+            await HMacSha256Async(input, key, result, cancellationToken).ConfigureAwait(false);
             return result;
         }
 
         public static void KMac256(ReadOnlySpan<byte> bytes, ReadOnlySpan<byte> key, Span<byte> output, ReadOnlySpan<byte> customizationString = default)
         {
             EnsureOutputLength(output, KMacSize);
-            var kmac = CreateKmac([.. customizationString]);
+            var kmac = CreateKmac(customizationString);
             kmac.Init(new KeyParameter(key));
             kmac.BlockUpdate(bytes);
             kmac.DoFinal(output);
@@ -202,7 +202,7 @@ namespace SonarUtils
         public static void KMac256(Stream input, ReadOnlySpan<byte> key, Span<byte> output, ReadOnlySpan<byte> customizationString = default)
         {
             EnsureOutputLength(output, KMacSize);
-            var kmac = CreateKmac([.. customizationString]);
+            var kmac = CreateKmac(customizationString);
             kmac.Init(new KeyParameter(key));
 
             var buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
@@ -233,7 +233,7 @@ namespace SonarUtils
         public static async ValueTask KMac256Async(Stream input, ReadOnlyMemory<byte> key, Memory<byte> output, ReadOnlyMemory<byte> customizationString = default, CancellationToken cancellationToken = default)
         {
             EnsureOutputLength(output.Span, KMacSize);
-            var kmac = CreateKmac([.. customizationString.Span]);
+            var kmac = CreateKmac(customizationString.Span);
             kmac.Init(new KeyParameter(key.Span));
 
             var buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
@@ -243,7 +243,7 @@ namespace SonarUtils
                 do
                 {
                     kmac.BlockUpdate(buffer.AsSpan(0, result));
-                    result = await input.ReadAsync(buffer, cancellationToken);
+                    result = await input.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
                 }
                 while (result > 0);
             }
@@ -257,7 +257,7 @@ namespace SonarUtils
         public static async ValueTask<byte[]> KMac256Async(Stream input, ReadOnlyMemory<byte> key, ReadOnlyMemory<byte> customizationString = default, CancellationToken cancellationToken = default)
         {
             var result = new byte[KMacSize];
-            await KMac256Async(input, key, result, customizationString, cancellationToken);
+            await KMac256Async(input, key, result, customizationString, cancellationToken).ConfigureAwait(false);
             return result;
         }
 
