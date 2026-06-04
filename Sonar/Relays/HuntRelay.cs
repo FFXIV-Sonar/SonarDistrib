@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using Sonar.Data;
 using Sonar.Data.Extensions;
 using Sonar.Enums;
@@ -13,6 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using Sonar.Localization;
 using AG.EnumLocalization;
+using System.Globalization;
 
 namespace Sonar.Relays
 {
@@ -184,8 +185,8 @@ namespace Sonar.Relays
 
                 "players" => StringUtils.GetNumber(this.Players),
 
-                "curhp" => this.CurrentHp.ToString(),
-                "maxhp" => this.MaxHp.ToString(),
+                "curhp" => this.CurrentHp.ToString(CultureInfo.InvariantCulture),
+                "maxhp" => this.MaxHp.ToString(CultureInfo.InvariantCulture),
 
                 "actorid" or "objectid" => $"{this.ActorId:X8}",
 

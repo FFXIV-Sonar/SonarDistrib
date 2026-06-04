@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Lumina;
 using Lumina.Data;
 using Lumina.Excel.Sheets;
@@ -18,16 +18,16 @@ namespace SonarResources.Readers
     [SingletonReuse]
     public sealed class DatacenterReader
     {
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
         private SonarDb Db { get; }
 
-        public DatacenterReader(LuminaManager luminas, SonarDb db, RegionProvider _)
+        public DatacenterReader(GameDataManager luminas, SonarDb db, RegionProvider _)
         {
             this.Luminas = luminas;
             this.Db = db;
 
             Console.WriteLine("Reading all data centers");
-            foreach (var entry in this.Luminas.GetAllDatas())
+            foreach (var entry in this.Luminas.Datas)
             {
                 Program.WriteProgress(this.Read(entry) ? "+" : ".");
             }
@@ -52,7 +52,7 @@ namespace SonarResources.Readers
                 if (!this.Db.Datacenters.TryGetValue(id, out var dc))
                 {
                     result = true;
-                    var region = this.Db.Regions[dcRow.Region];
+                    var region = this.Db.Regions[dcRow.Region.RowId];
                     this.Db.Datacenters[id] = dc = new()
                     {
                         Id = id,

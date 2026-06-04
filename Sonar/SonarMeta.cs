@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Sonar.Models;
 using System;
 using System.Threading;
@@ -59,7 +59,7 @@ namespace Sonar
             this.PlayerInfo = playerInfo;
             this.Client.Connection.SendIfConnected(playerInfo);
 
-            foreach (var handler in this._infoHandlers)
+            foreach (var handler in this._infoHandlers.AsSpan())
             {
                 try
                 {
@@ -95,7 +95,7 @@ namespace Sonar
 
             if (positionUpdated)
             {
-                foreach (var handler in this._positionHandlers)
+                foreach (var handler in this._positionHandlers.AsSpan())
                 {
                     try
                     {
@@ -103,14 +103,14 @@ namespace Sonar
                     }
                     catch (Exception ex)
                     {
-                        this.Client.LogError(ex, "Exception occured at PlayerInfoChanged handler");
+                        this.Client.LogError(ex, "Exception occured at PlayerPositionChanged handler");
                     }
                 }
             }
 
             if (placeUpdated)
             {
-                foreach (var handler in this._placeHandlers)
+                foreach (var handler in this._placeHandlers.AsSpan())
                 {
                     try
                     {

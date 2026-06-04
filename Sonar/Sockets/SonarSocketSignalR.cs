@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.SignalR.Client;
 using Sonar.Messages;
 using System;
 using System.Net.WebSockets;
@@ -44,7 +44,7 @@ namespace Sonar.Sockets
         {
             try
             {
-                await this._connection.SendAsync(message.method, message.obj, this._cts.Token);
+                await this._connection.SendAsync(message.method, message.obj, this._cts.Token).ConfigureAwait(false);
             }
             catch (OperationCanceledException) { /* Swallow */ }
             catch (Exception ex)
@@ -110,16 +110,16 @@ namespace Sonar.Sockets
             if (Interlocked.CompareExchange(ref this._disposed, true, false)) return;
             try
             {
-                try { await this._cts.CancelAsync(); } catch (ObjectDisposedException) { /* Swallow */ }
+                try { await this._cts.CancelAsync().ConfigureAwait(false); } catch (ObjectDisposedException) { /* Swallow */ }
                 this._cts.Dispose();
-                await this._connection.DisposeAsync();
+                await this._connection.DisposeAsync().ConfigureAwait(false);
                 this._sendBlock.Complete();
             }
             catch
             {
                 /* Swallow */
             }
-            await base.DisposeAsync();
+            await base.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

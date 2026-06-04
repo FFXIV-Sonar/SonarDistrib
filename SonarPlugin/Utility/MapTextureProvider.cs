@@ -1,4 +1,4 @@
-﻿using Dalamud.Data;
+using Dalamud.Data;
 using Dalamud.Interface;
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Textures.TextureWraps;
@@ -11,8 +11,10 @@ using Lumina;
 using Lumina.Data.Files;
 using MessagePack.Resolvers;
 using Sonar.Utilities;
+using SonarUtils.Threading;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +28,7 @@ namespace SonarPlugin.Utility
         private readonly Tasker _tasker = new();
         private readonly Dictionary<string, IDalamudTextureWrap> _textures = new();
         private readonly HashSet<string> _loading = new();
-        private readonly object _texturesLock = new();
+        private SpinLock _texturesLock = new(false);
 
         private IDataManager Data { get; }
         private ITextureProvider Textures { get; }
@@ -44,13 +46,17 @@ namespace SonarPlugin.Utility
         public IDalamudTextureWrap? GetMapTexture(string path)
         {
             if (string.IsNullOrWhiteSpace(path)) return null;
-            lock (this._texturesLock)
+
+            var taken = false;
+            this._texturesLock.Enter(ref taken);
+            try
             {
-                if (this._textures.ContainsKey(path)) return this._textures[path];
-                if (this._loading.Add(path))
-                {
-                    this._tasker.AddTask(this.LoadMapTextureAsync(path));
-                }
+                if (this._textures.TryGetValue(path, out var texture)) return texture;
+                if (this._loading.Add(path)) this._tasker.AddTask(this.LoadMapTextureAsync(path));
+            }
+            finally
+            {
+                this._texturesLock.Exit();
             }
             return null;
         }
@@ -60,7 +66,10 @@ namespace SonarPlugin.Utility
             await Task.Yield();
             var texture = this.BuildMapImage(path, "m");
             if (texture is null) return;
-            lock (this._texturesLock)
+
+            var taken = false;
+            this._texturesLock.Enter(ref taken);
+            try
             {
                 if (this._disposed != 0)
                 {
@@ -68,6 +77,10 @@ namespace SonarPlugin.Utility
                     return;
                 }
                 this._textures[path] = texture;
+            }
+            finally
+            {
+                this._texturesLock.Exit();
             }
         }
 
@@ -77,8 +90,8 @@ namespace SonarPlugin.Utility
             const string MapFileFormat = "ui/map/{0}/{1}{2}_{3}.tex";
             var fileName = mapId.Replace("/", "");
 
-            var filePath = string.Format(MapFileFormat, mapId, fileName, string.Empty, size);
-            var maskPath = string.Format(MapFileFormat, mapId, fileName, "m", size);
+            var filePath = string.Format(CultureInfo.InvariantCulture, MapFileFormat, mapId, fileName, string.Empty, size);
+            var maskPath = string.Format(CultureInfo.InvariantCulture, MapFileFormat, mapId, fileName, "m", size);
 
             try
             {
@@ -161,13 +174,20 @@ namespace SonarPlugin.Utility
         {
             if (Interlocked.CompareExchange(ref this._disposed, 1, 0) != 0) return;
             this._tasker.Dispose();
-            lock (this._texturesLock)
+            
+            var taken = false;
+            this._texturesLock.Enter(ref taken);
+            try
             {
                 foreach (var tex in this._textures.Values)
                 {
                     tex.Dispose();
                 }
                 this._textures.Clear();
+            }
+            finally
+            {
+                this._texturesLock.Exit();
             }
         }
         #endregion

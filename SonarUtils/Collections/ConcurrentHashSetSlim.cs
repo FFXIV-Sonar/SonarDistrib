@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -133,9 +133,9 @@ namespace SonarUtils.Collections
 
         public void IntersectWith(IEnumerable<T> other)
         {
-            foreach (var item in this)
+            foreach (var item in other)
             {
-                if (!other.Contains(item)) this.Remove(item);
+                if (!this.Contains(item)) this.Remove(item);
             }
         }
 

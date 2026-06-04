@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Humanizer;
 using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
@@ -15,22 +15,22 @@ namespace SonarResources.Readers
     [SingletonReuse]
     public sealed class WeatherReader
     {
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
         private SonarDb Db { get; }
-        public WeatherReader(LuminaManager luminas, SonarDb db)
+        public WeatherReader(GameDataManager luminas, SonarDb db)
         {
             this.Luminas = luminas;
             this.Db = db;
 
             Console.WriteLine("Reading all weathers");
-            foreach (var entry in this.Luminas.GetAllLuminasEntries())
+            foreach (var entry in this.Luminas.Entries)
             {
                 Program.WriteProgress(this.Read(entry) ? "+" : ".");
             }
             Program.WriteProgressLine($" ({this.Db.Weathers.Count})");
         }
 
-        private bool Read(LuminaEntry lumina)
+        private bool Read(GameDataEntry lumina)
         {
             var weatherSheet = lumina.Data.GetExcelSheet<Weather>(lumina.LuminaLanguage);
             if (weatherSheet is null) return false;

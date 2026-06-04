@@ -4,9 +4,11 @@ using Org.BouncyCastle.Crypto.Parameters;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,11 +28,11 @@ namespace SonarUtils
         public static readonly int HMacSha256Size = new HMac(new Sha256Digest()).GetMacSize();
         public static readonly int KMacSize = new KMac(KMacBits, "Gem was here"u8.ToArray()).GetMacSize();
 
-        public static byte[] Sha256(ReadOnlySpan<byte> input)
+        public static ImmutableArray<byte> Sha256(ReadOnlySpan<byte> input)
         {
             var result = new byte[Sha256Size];
             Sha256(input, result);
-            return result;
+            return ImmutableCollectionsMarshal.AsImmutableArray(result);
         }
 
         public static void Sha256(ReadOnlySpan<byte> input, Span<byte> output)
@@ -42,11 +44,11 @@ namespace SonarUtils
             s_sha256Bag.Add(sha256);
         }
 
-        public static byte[] Sha256(Stream input)
+        public static ImmutableArray<byte> Sha256(Stream input)
         {
             var result = new byte[Sha256Size];
             Sha256(input, result);
-            return result;
+            return ImmutableCollectionsMarshal.AsImmutableArray(result);
         }
 
         public static void Sha256(Stream input, Span<byte> output)
@@ -72,11 +74,11 @@ namespace SonarUtils
             s_sha256Bag.Add(sha256);
         }
 
-        public static async ValueTask<byte[]> Sha256Async(Stream input, CancellationToken cancellationToken = default)
+        public static async ValueTask<ImmutableArray<byte>> Sha256Async(Stream input, CancellationToken cancellationToken = default)
         {
             var result = new byte[Sha256Size];
             await Sha256Async(input, result, cancellationToken).ConfigureAwait(false);
-            return result;
+            return ImmutableCollectionsMarshal.AsImmutableArray(result);
         }
 
         public static async ValueTask Sha256Async(Stream input, Memory<byte> output, CancellationToken cancellationToken = default)
@@ -112,11 +114,11 @@ namespace SonarUtils
             s_hmacSha256Bag.Add(hmac);
         }
 
-        public static byte[] HMacSha256(ReadOnlySpan<byte> bytes, ReadOnlySpan<byte> key)
+        public static ImmutableArray<byte> HMacSha256(ReadOnlySpan<byte> bytes, ReadOnlySpan<byte> key)
         {
             var result = new byte[HMacSha256Size];
             HMacSha256(bytes, key, result);
-            return result;
+            return ImmutableCollectionsMarshal.AsImmutableArray(result);
         }
 
         public static void HMacSha256(Stream input, ReadOnlySpan<byte> key, Span<byte> output)
@@ -144,11 +146,11 @@ namespace SonarUtils
             s_hmacSha256Bag.Add(hmac);
         }
 
-        public static byte[] HMacSha256(Stream input, ReadOnlySpan<byte> key)
+        public static ImmutableArray<byte> HMacSha256(Stream input, ReadOnlySpan<byte> key)
         {
             var result = new byte[HMacSha256Size];
             HMacSha256(input, key, result);
-            return result;
+            return ImmutableCollectionsMarshal.AsImmutableArray(result);
         }
 
         public static async ValueTask HMacSha256Async(Stream input, ReadOnlyMemory<byte> key, Memory<byte> output, CancellationToken cancellationToken = default)
@@ -176,11 +178,11 @@ namespace SonarUtils
             s_hmacSha256Bag.Add(hmac);
         }
 
-        public static async ValueTask<byte[]> HMacSha256Async(Stream input, ReadOnlyMemory<byte> key, CancellationToken cancellationToken = default)
+        public static async ValueTask<ImmutableArray<byte>> HMacSha256Async(Stream input, ReadOnlyMemory<byte> key, CancellationToken cancellationToken = default)
         {
             var result = new byte[HMacSha256Size];
             await HMacSha256Async(input, key, result, cancellationToken).ConfigureAwait(false);
-            return result;
+            return ImmutableCollectionsMarshal.AsImmutableArray(result);
         }
 
         public static void KMac256(ReadOnlySpan<byte> bytes, ReadOnlySpan<byte> key, Span<byte> output, ReadOnlySpan<byte> customizationString = default)
@@ -192,11 +194,11 @@ namespace SonarUtils
             kmac.DoFinal(output);
         }
 
-        public static byte[] KMac256(ReadOnlySpan<byte> bytes, ReadOnlySpan<byte> key, ReadOnlySpan<byte> customizationString = default)
+        public static ImmutableArray<byte> KMac256(ReadOnlySpan<byte> bytes, ReadOnlySpan<byte> key, ReadOnlySpan<byte> customizationString = default)
         {
             var result = new byte[KMacSize];
             KMac256(bytes, key, result, customizationString);
-            return result;
+            return ImmutableCollectionsMarshal.AsImmutableArray(result);
         }
 
         public static void KMac256(Stream input, ReadOnlySpan<byte> key, Span<byte> output, ReadOnlySpan<byte> customizationString = default)
@@ -223,11 +225,11 @@ namespace SonarUtils
             kmac.DoFinal(output);
         }
 
-        public static byte[] KMac256(Stream input, ReadOnlySpan<byte> key, ReadOnlySpan<byte> customizationString = default)
+        public static ImmutableArray<byte> KMac256(Stream input, ReadOnlySpan<byte> key, ReadOnlySpan<byte> customizationString = default)
         {
             var result = new byte[KMacSize];
             KMac256(input, key, result, customizationString);
-            return result;
+            return ImmutableCollectionsMarshal.AsImmutableArray(result);
         }
 
         public static async ValueTask KMac256Async(Stream input, ReadOnlyMemory<byte> key, Memory<byte> output, ReadOnlyMemory<byte> customizationString = default, CancellationToken cancellationToken = default)
@@ -254,11 +256,11 @@ namespace SonarUtils
             kmac.DoFinal(output.Span);
         }
 
-        public static async ValueTask<byte[]> KMac256Async(Stream input, ReadOnlyMemory<byte> key, ReadOnlyMemory<byte> customizationString = default, CancellationToken cancellationToken = default)
+        public static async ValueTask<ImmutableArray<byte>> KMac256Async(Stream input, ReadOnlyMemory<byte> key, ReadOnlyMemory<byte> customizationString = default, CancellationToken cancellationToken = default)
         {
             var result = new byte[KMacSize];
             await KMac256Async(input, key, result, customizationString, cancellationToken).ConfigureAwait(false);
-            return result;
+            return ImmutableCollectionsMarshal.AsImmutableArray(result);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

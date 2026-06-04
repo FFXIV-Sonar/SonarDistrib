@@ -1,4 +1,4 @@
-﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Services;
 using DryIocAttributes;
@@ -31,15 +31,17 @@ namespace SonarPlugin.Events.Providers
 
         private SonarEventManager Events { get; }
         private SonarPlugin Plugin { get; }
+        private SonarFramework Framework { get; }
         private SonarClient Client { get; }
         private IClientState ClientState { get; }
         private IGameGui GameGui { get; }
         private ILogger Logger { get; }
         
-        public CosmicEventProvider(SonarEventManager events, SonarPlugin plugin, SonarClient client, IClientState clientState, IGameGui gameGui, ILogger<CosmicEventProvider> logger)
+        public CosmicEventProvider(SonarEventManager events, SonarPlugin plugin, SonarFramework framework, SonarClient client, IClientState clientState, IGameGui gameGui, ILogger<CosmicEventProvider> logger)
         {
             this.Events = events;
             this.Plugin = plugin;
+            this.Framework = framework;
             this.Client = client;
             this.ClientState = clientState;
             this.GameGui = gameGui;
@@ -54,7 +56,7 @@ namespace SonarPlugin.Events.Providers
             this.Logger.LogDebug("Detected Cosmic Zones: {zones}", string.Join(", ", this._cosmicZoneIds.Select(zoneId => Database.Zones.TryGetValue(zoneId, out var zone) ? $"{zone.Name} ({zone.Id})" : $"{zoneId}")));
         }
 
-        public void FrameworkHandler(IFramework _)
+        public void FrameworkTick(SonarFramework _)
         {
             if (!this._cosmicZoneIds.Contains(this.ClientState.TerritoryType)) return;
             this.FrameworkHandlerCore();
@@ -149,13 +151,13 @@ namespace SonarPlugin.Events.Providers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.FrameworkTick += this.FrameworkHandler;
+            this.Framework.Tick += this.FrameworkTick;
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.FrameworkTick -= this.FrameworkHandler;
+            this.Framework.Tick -= this.FrameworkTick;
             return Task.CompletedTask;
         }
     }

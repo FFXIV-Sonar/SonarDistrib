@@ -1,4 +1,4 @@
-﻿using DryIoc.FastExpressionCompiler.LightExpression;
+using DryIoc.FastExpressionCompiler.LightExpression;
 using DryIocAttributes;
 using Lumina;
 using Lumina.Data.Files;
@@ -39,13 +39,13 @@ namespace SonarResources.Lgb
         private readonly Dictionary<uint, Dictionary<uint, LgbInstance>> _zoneInstances = new();
         private readonly List<(LgbInstanceFile File, Exception Exception)> _exceptions = new();
 
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
 
-        public LgbInstancesReader(LuminaManager luminas)
+        public LgbInstancesReader(GameDataManager luminas)
         {
             this.Luminas = luminas;
             Console.WriteLine("Determining LGB filenames");
-            foreach (var data in this.Luminas.GetAllDatas())
+            foreach (var data in this.Luminas.Datas)
             {
                 Program.WriteProgress(this.ReadFilenames(data) ? "+" : ".");
             }

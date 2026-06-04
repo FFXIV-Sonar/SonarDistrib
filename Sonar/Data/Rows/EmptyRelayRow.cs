@@ -1,4 +1,4 @@
-﻿using Sonar.Enums;
+using Sonar.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +9,16 @@ namespace Sonar.Data.Rows
 {
     public sealed class EmptyRelayRow : IRelayDataRow
     {
-        public static readonly EmptyRelayRow Instance = new EmptyRelayRow();
+        public static readonly EmptyRelayRow Instance = new();
 
         private EmptyRelayRow() { }
-        public int Level { get; } =  0;
+        public int Level { get; }
         public ExpansionPack Expansion { get; } = ExpansionPack.Unknown;
         public HuntRank Rank { get; } = HuntRank.None;
-        public uint GroupId { get; } = 0;
+        public uint GroupId { get; }
         public bool GroupMain { get; } = true;
         public IReadOnlyCollection<uint> ZoneIds { get; } = [];
         public LanguageStrings Name => new() { { SonarLanguage.English, string.Empty } };
-        public uint Id { get; } = 0;
+        public uint Id { get; }
     }
 }

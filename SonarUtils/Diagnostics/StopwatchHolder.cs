@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SonarUtils.Diagnostics
 {
     /// <summary>Holds a pooled <see cref="Stopwatch"/> instance.</summary>
     /// <remarks>Intended to be used in a <see langword="using"/> context.</remarks>
+    [SuppressMessage("Performance", "CA1815", Justification = "Not applicable.")]
     public struct StopwatchHolder : IDisposable
     {
         private static readonly ConcurrentBag<Stopwatch> s_watches = [];

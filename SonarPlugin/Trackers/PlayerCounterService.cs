@@ -1,4 +1,4 @@
-﻿using Dalamud.Plugin.Services;
+using Dalamud.Plugin.Services;
 using DryIocAttributes;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
@@ -23,11 +23,13 @@ namespace SonarPlugin.Trackers
         private readonly Dictionary<uint, Vector3> _players = [];
 
         private SonarPlugin Plugin { get; }
+        private SonarFramework Framework { get; }
         private SonarMeta Meta { get; }
 
-        public PlayerCounterService(SonarPlugin plugin, SonarMeta meta)
+        public PlayerCounterService(SonarPlugin plugin, SonarFramework framework, SonarMeta meta)
         {
             this.Plugin = plugin;
+            this.Framework = framework;
             this.Meta = meta;
         }
 
@@ -70,21 +72,23 @@ namespace SonarPlugin.Trackers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.FrameworkTick += this.CountPlayers;
+            this.Framework.Tick += this.FrameworkTick;
             this.Meta.PlaceChanged += this.ZoneChanged;
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.FrameworkTick -= this.CountPlayers;
+            this.Framework.Tick -= this.FrameworkTick;
             this.Meta.PlaceChanged -= this.ZoneChanged;
             return Task.CompletedTask;
         }
 
-        // Intentionally done this way to avoid IEnumerable and LINQ overhead
-        private unsafe void CountPlayers(IFramework framework)
+        private unsafe void FrameworkTick(SonarFramework framework)
         {
+            if (!framework.IsSafe()) return;
+
+            // Intentionally done this way to avoid IEnumerable and LINQ overhead
             var manager = CharacterManager.Instance();
             if (manager is null) return;
             var characters = manager->BattleCharas;

@@ -1,4 +1,4 @@
-﻿using CheapLoc;
+using CheapLoc;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
@@ -40,9 +40,10 @@ namespace SonarPlugin.Notifiers
         private IRelayTracker<HuntRelay> Tracker { get; }
         private IChatGui Chat { get; }
         private SoundEngine Sounds { get; }
+        private SonarFramework Framework { get; }
         private IPluginLog Logger { get; }
 
-        public HuntNotifier(SonarPlugin plugin, IClientState clientState, SonarClient client, RelayTrackerViews views, IChatGui chat, SoundEngine sounds, IPluginLog logger)
+        public HuntNotifier(SonarPlugin plugin, IClientState clientState, SonarClient client, RelayTrackerViews views, IChatGui chat, SoundEngine sounds, SonarFramework framework, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.ClientState = clientState;
@@ -50,6 +51,7 @@ namespace SonarPlugin.Notifiers
             this.Tracker = views.Hunts;
             this.Chat = chat;
             this.Sounds = sounds;
+            this.Framework = framework;
             this.Logger = logger;
 
             this.Logger.Information("Hunt Notifier Initialized");
@@ -59,8 +61,8 @@ namespace SonarPlugin.Notifiers
         {
             if (!this.ClientState.IsLoggedIn) return;
             if (this.Plugin.Configuration.SSMinionReportingMode == NotifyMode.Single && state.GetRank() == HuntRank.SSMinion && !this.CheckSSMinionSpawn(state)) return;
-            var allowChat = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
-            var allowSound = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableSoundInDuty);
+            var allowChat = !(this.Framework.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
+            var allowSound = !(this.Framework.IsDuty && this.Plugin.Configuration.DisableSoundInDuty);
 
             if (allowChat && this.Plugin.Configuration.EnableGameChatReports) this.SendToChat(state);
 
@@ -76,7 +78,7 @@ namespace SonarPlugin.Notifiers
         private void HuntDead(RelayState<HuntRelay> state)
         {
             if (!this.ClientState.IsLoggedIn) return;
-            var allowChat = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
+            var allowChat = !(this.Framework.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
             if (allowChat && this.Plugin.Configuration.EnableGameChatReports && this.Plugin.Configuration.EnableGameChatReportsDeaths) this.SendToChat(state);
         }
 

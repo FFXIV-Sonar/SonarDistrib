@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -310,12 +310,15 @@ namespace Sonar
             this._ticker.Tick -= this.Ticker_Tick;
             this._pinger.Pong -= this.Pinger_Pong;
 
-            await this._ticker.DisposeAsync();
-            await this._pinger.DisposeAsync();
+            await this._ticker.DisposeAsync().ConfigureAwait(false);
+            await this._pinger.DisposeAsync().ConfigureAwait(false);
 
             this.baseLogger.LogMessage -= this.LogHandler;
             this._container.Dispose();
+
+            GC.SuppressFinalize(this);
         }
+        [SuppressMessage("Usage", "CA1816", Justification = "Called in DisposeAsync")]
         public void Dispose() => this.DisposeAsync().AsTask().Wait();
         ~SonarClient()
         {

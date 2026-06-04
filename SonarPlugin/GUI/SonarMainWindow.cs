@@ -1,4 +1,4 @@
-﻿using AG.EnumLocalization;
+using AG.EnumLocalization;
 using CheapLoc;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Game.Gui;
@@ -75,7 +75,7 @@ namespace SonarPlugin.GUI
         private static Vector2 maximumWindowSize = new(float.MaxValue, float.MaxValue);
         private static Vector2 mapSize = new(300, 300);
         private static Vector2 iconSize = new(16, 16);
-        private static readonly float detailLabelOffset = 100.0f;
+        private const float detailLabelOffset = 100.0f;
 
         private readonly IDalamudTextureWrap _redFlag;
 

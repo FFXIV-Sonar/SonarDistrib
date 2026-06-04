@@ -1,5 +1,6 @@
-﻿using NetTools;
+using NetTools;
 using System;
+using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
@@ -38,9 +39,8 @@ namespace SonarUtils
             /// <item><b>IPv6:</b> Loopback, link local, site local, multicast, unique local and private IPv4 mapped to IPv6.</item>
             /// </list>
             /// </remarks>
-            /// <param name="ipAddress">The IP address.</param>
             /// <returns><see langword="true"/> if the IP address was in a private, broadcast or multicast range.</returns>
-            /// <example><code>bool isPrivate = IPAddress.Parse("127.0.0.1").IsPrivate();</code></example>
+            /// <example><c>bool isPrivate = IPAddress.Parse("127.0.0.1").IsPrivate();</c></example>
             public bool IsPrivate()
             {
                 // Map back to IPv4 if mapped to IPv6, for example "::ffff:1.2.3.4" to "1.2.3.4".
@@ -60,6 +60,27 @@ namespace SonarUtils
 
                 ThrowNotSupported(family);
                 return default; // Not reached
+            }
+
+            /// <summary>Gets a <see langword="ulong"/> ID representing this IP address.</summary>
+            /// <remarks>
+            /// <list type="bullet">
+            /// <item><b>For IPv4:</b> Represents all numerical values of the <see cref="IPAddress"/>.</item>
+            /// <item><b>For IPv6:</b> Represents the first half of the <see cref="IPAddress"/>.</item>
+            /// <item><b>For all others:</b> <see cref="ulong.MaxValue"/>.</item>
+            /// <item>Due to <see cref="IPAddress"/> innerworkings, this method allocates.</item>
+            /// </list>
+            /// </remarks>
+            /// <returns><see langword="ulong"/> ID representing this IP address.</returns>
+            public ulong GetId()
+            {
+                var family = ipAddress.AddressFamily;
+                return family switch
+                {
+                    AddressFamily.InterNetwork => GetIdCoreIPv4(ipAddress),
+                    AddressFamily.InterNetworkV6 => GetIdCoreIPv6(ipAddress),
+                    _ => ulong.MaxValue
+                };
             }
         }
 
@@ -83,6 +104,22 @@ namespace SonarUtils
                 if (range.Contains(ipAddress)) return true;
             }
             return false;
+        }
+
+        private static ulong GetIdCoreIPv4(IPAddress ipAddress)
+        {
+            Debug.Assert(ipAddress.AddressFamily is AddressFamily.InterNetwork);
+            var bytes = ipAddress.GetAddressBytes();
+            Debug.Assert(bytes.Length is 4);
+            return BinaryPrimitives.ReadUInt32BigEndian(bytes);
+        }
+
+        private static ulong GetIdCoreIPv6(IPAddress ipAddress)
+        {
+            Debug.Assert(ipAddress.AddressFamily is AddressFamily.InterNetworkV6);
+            var bytes = ipAddress.GetAddressBytes();
+            Debug.Assert(bytes.Length is 16);
+            return BinaryPrimitives.ReadUInt64BigEndian(bytes);
         }
 
         [DoesNotReturn]

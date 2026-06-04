@@ -1,4 +1,4 @@
-﻿using Lumina;
+using Lumina;
 using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using SonarResources.Lgb;
@@ -23,18 +23,18 @@ namespace SonarResources.Aetherytes
     [SingletonReuse]
     public sealed class AetheryteReader
     {
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
         private SonarDb Db { get; }
         private LgbInstancesReader Lgb { get; }
 
-        public AetheryteReader(LuminaManager luminas, SonarDb db, LgbInstancesReader lgb, ZoneReader _)
+        public AetheryteReader(GameDataManager luminas, SonarDb db, LgbInstancesReader lgb, ZoneReader _)
         {
             this.Luminas = luminas;
             this.Db = db;
             this.Lgb = lgb;
 
             Console.WriteLine("Reading all aetherytes");
-            foreach (var entry in this.Luminas.GetAllLuminasEntries())
+            foreach (var entry in this.Luminas.Entries)
             {
                 try
                 {
@@ -48,7 +48,7 @@ namespace SonarResources.Aetherytes
             Program.WriteProgressLine($" ({this.Db.Aetherytes.Count})");
 
             Console.WriteLine("Scanning aetheryte coordinates through map markers");
-            foreach (var data in this.Luminas.GetAllDatas())
+            foreach (var data in this.Luminas.Datas)
             {
                 Program.WriteProgress(this.ScanMapMarkers(data) ? "+" : ".");
             }
@@ -67,7 +67,7 @@ namespace SonarResources.Aetherytes
             Program.WriteProgressLine($"Teleportable aetherytes: {this.Db.Aetherytes.Values.Count(aetheryte => aetheryte.Teleportable)}");
         }
 
-        private bool Read(LuminaEntry lumina)
+        private bool Read(GameDataEntry lumina)
         {
             var aetheryteSheet = lumina.Data.GetExcelSheet<Aetheryte>(lumina.LuminaLanguage);
             if (aetheryteSheet is null || aetheryteSheet.Language != lumina.LuminaLanguage) return false;

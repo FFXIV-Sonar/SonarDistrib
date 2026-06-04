@@ -1,10 +1,11 @@
-﻿using Sonar.Enums;
+using Sonar.Enums;
+using System.Globalization;
 
 namespace Sonar.Utilities
 {
     public static class ExpansionPackHelper
     {
-        public static ExpansionPack GetExpansionPack(string expac) => expac.ToUpper() switch
+        public static ExpansionPack GetExpansionPack(string expac) => expac.ToUpperInvariant() switch
         {
             // Long strings (as received from XIVAPI)
             "A REALM REBORN" => ExpansionPack.ARealmReborn,

@@ -1,4 +1,4 @@
-﻿using CheapLoc;
+using CheapLoc;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
@@ -21,32 +21,21 @@ namespace SonarPlugin
     [SingletonReuse]
     public sealed class SonarPlugin : IDisposable
     {
-        private ImmutableArray<Action<IFramework>> _frameworkUpdateHandlers = [];
-        private ImmutableArray<Action<IFramework>> _frameworkTickHandlers = [];
-        private bool _tick;
         private IDalamudPluginInterface PluginInterface { get; }
         private SonarClient Client { get; }
-        private IFramework Framework { get; }
         private IChatGui Chat { get; }
-        private ICondition Condition { get; }
         private AudioPlaybackEngine Audio { get; }
         private IPluginLog Logger { get; }
 
-        public bool IsDuty { get; private set; }
-
-        public SonarPlugin(IDalamudPluginInterface pluginInterface, SonarClient client, IFramework framework, IChatGui chat, ICondition condition, AudioPlaybackEngine audio, IPluginLog logger)
+        public SonarPlugin(IDalamudPluginInterface pluginInterface, SonarClient client, IChatGui chat, AudioPlaybackEngine audio, IPluginLog logger)
         {
             this.PluginInterface = pluginInterface;
             this.Client = client;
-            this.Framework = framework;
             this.Chat = chat;
-            this.Condition = condition;
             this.Audio = audio;
             this.Logger = logger;
 
             this.Initialize();
-
-            this.Client.Tick += this.Client_Tick;
         }
 
         public WindowSystem Windows { get; } = new(nameof(SonarPlugin));
@@ -77,9 +66,6 @@ namespace SonarPlugin
             // Set volume of alerts to current config, this also will initialize the Instance of the audio service
             this.Audio.Volume = this.Configuration.SoundVolume;
 
-            // Framework OnUpdateEvent handlers
-            this.Framework.Update += this.Framework_Update;
-
             // Start Sonar.NET client
             this.Client.ServerMessage += this.Events_OnSonarMessage;
             this.Client.LogMessage += this.ClientLogHandler;
@@ -97,65 +83,6 @@ namespace SonarPlugin
             });
             this.Logger.Information("Sonar Message Received: {message}");
         }
-
-        #region OnBuildUi and Framework event and tick manager
-        public bool SafeToReadTables { get; private set; }
-
-        // FrameworkEvent
-        
-        /// <summary>Triggers every framework update after checks.</summary>
-        public event Action<IFramework>? FrameworkUpdate
-        {
-            add
-            {
-                if (value is not null) ImmutableInterlocked.Update(ref this._frameworkUpdateHandlers, (handlers, handler) => handlers.Add(handler), value);
-            }
-            remove
-            {
-                if (value is not null) ImmutableInterlocked.Update(ref this._frameworkUpdateHandlers, (handlers, handler) => handlers.Remove(handler), value);
-            }
-        }
-
-        /// <summary>Triggers every framework update after checks, but only once per Sonar tick (400ms).</summary>
-        public event Action<IFramework>? FrameworkTick
-        {
-            add
-            {
-                if (value is not null) ImmutableInterlocked.Update(ref this._frameworkTickHandlers, (handlers, handler) => handlers.Add(handler), value);
-            }
-            remove
-            {
-                if (value is not null) ImmutableInterlocked.Update(ref this._frameworkTickHandlers, (handlers, handler) => handlers.Remove(handler), value);
-            }
-        }
-
-        private void Framework_Update(IFramework framework)
-        {
-            this.SafeToReadTables = !this.Condition[ConditionFlag.BetweenAreas51]; // TODO: Move the condition checks to their respective places
-            this.IsDuty = this.Condition[ConditionFlag.BoundByDuty56];
-
-            this.Framework_UpdateCore(this._frameworkUpdateHandlers.AsSpan(), framework);
-            if (!Interlocked.CompareExchange(ref this._tick, false, true)) return;
-            this.Framework_UpdateCore(this._frameworkTickHandlers.AsSpan(), framework);
-        }
-
-        private void Framework_UpdateCore(ReadOnlySpan<Action<IFramework>> handlers, IFramework framework)
-        {
-            foreach (var handler in handlers)
-            {
-                try
-                {
-                    handler(framework);
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.Error(ex, "Framework handler exception");
-                }
-            }
-        }
-
-        private void Client_Tick(SonarClient source) => Volatile.Write(ref this._tick, true);
-        #endregion
 
         [SuppressMessage("Major Code Smell", "S112", Justification = "No suitable exception")]
         public void LoadConfiguration(bool isReset = false)
@@ -242,13 +169,12 @@ namespace SonarPlugin
         }
 
         #region IDisposable Support
-        private int _disposed; // Interlocked
-        public bool IsDisposed => this._disposed != 0;
+        private bool _disposed; // Interlocked
+        public bool IsDisposed => this._disposed;
 
         public void Dispose()
         {
-            if (Interlocked.CompareExchange(ref this._disposed, 1, 0) != 0) return;
-            this.Client.Tick -= this.Client_Tick;
+            if (Interlocked.CompareExchange(ref this._disposed, true, false)) return;
 
             this.SaveConfiguration();
 
@@ -263,7 +189,6 @@ namespace SonarPlugin
             {
                 // Logged in / out handlers
                 this.PluginInterface.UiBuilder.Draw -= this.Windows.Draw;
-                this.Framework.Update -= this.Framework_Update;
             }
         }
         #endregion

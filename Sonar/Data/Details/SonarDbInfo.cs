@@ -1,6 +1,7 @@
-﻿using MessagePack;
+using MessagePack;
 using Sonar.Messages;
-using System;
+using System.Buffers.Text;
+using System.Collections.Immutable;
 
 namespace Sonar.Data.Details
 {
@@ -8,13 +9,13 @@ namespace Sonar.Data.Details
     public sealed class SonarDbInfo : ISonarMessage
     {
         [Key(0)]
-        public double Timestamp { get; set; }
+        public double Timestamp { get; init; }
 
         [Key(1)]
-        public byte[] Hash { get; set; } = default!;
+        public ImmutableArray<byte> Hash { get; init; }
 
         [IgnoreMember]
-        public string HashString => Convert.ToBase64String(this.Hash).Replace("=", string.Empty);
+        public string HashString => Base64Url.EncodeToString(this.Hash.AsSpan());
 
         public override string ToString() => $"Sonar DB Timestamp: {this.Timestamp}, Hash: {this.HashString}";
     }

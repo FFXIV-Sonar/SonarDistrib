@@ -1,4 +1,4 @@
-﻿using Dalamud.Configuration;
+using Dalamud.Configuration;
 using Dalamud.Game.Text;
 using Dalamud.Logging;
 using Dalamud.Plugin.Services;
@@ -18,6 +18,7 @@ namespace SonarPlugin.Config
 {
     [JsonObject]
     [SuppressMessage(null!, "S1104", Justification = "Intentional")]
+    [SuppressMessage(null!, "CA1805")] // Variables initialized to default
     public class SonarConfiguration : IPluginConfiguration
     {
         // Sonar configuration version

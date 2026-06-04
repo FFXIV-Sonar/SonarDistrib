@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Sonar.Data.Extensions;
 using MessagePack;
 using Sonar.Messages;
@@ -217,7 +217,7 @@ namespace Sonar.Relays
             if (ReferenceEquals(left, right)) return true;
             if (left is null || right is null) return false;
             if (left.GetType() != right.GetType()) return false;
-            return string.Equals(left.RelayKey, right.RelayKey);
+            return left.RelayKey == right.RelayKey;
         }
         public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is Relay relay && Equals(this, relay));
 

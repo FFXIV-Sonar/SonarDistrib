@@ -1,4 +1,4 @@
-﻿using Dalamud.Logging;
+using Dalamud.Logging;
 using Dalamud.Plugin.Services;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
@@ -31,7 +31,7 @@ namespace SonarPlugin.Utility
             this.Player.Init(this.VolumeProvider);
             this.Player.Play();
 
-            this.DisposingTask().ContinueWith(t => { /* Empty */ });
+            _ = this.DisposingTask();
         }
 
         private async Task DisposingTask()

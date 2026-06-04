@@ -1,13 +1,10 @@
-﻿using AG.Collections.Concurrent;
+using AG.Collections.Concurrent;
 using SonarUtils.Collections;
 using SonarUtils.Text;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SonarUtils
 {
@@ -45,8 +42,8 @@ namespace SonarUtils
         /// <returns><paramref name="number"/> as a string.</returns>
         public static string GetNumber(long number)
         {
-            if (number is < short.MinValue or > short.MaxValue) return number.ToString();
-            return s_integerCache[number - short.MinValue] ??= Intern(number.ToString());
+            if (number is < short.MinValue or > short.MaxValue) return number.ToString(CultureInfo.InvariantCulture);
+            return s_integerCache[number - short.MinValue] ??= Intern(number.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>Gets a string out of an <see cref="int"/>.</summary>
@@ -56,7 +53,7 @@ namespace SonarUtils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetNumber(ulong number)
         {
-            if (number is > (ulong)short.MaxValue) return number.ToString();
+            if (number is > (ulong)short.MaxValue) return number.ToString(CultureInfo.InvariantCulture);
             return GetNumber((long)number);
         }
 
@@ -72,10 +69,18 @@ namespace SonarUtils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void EnsureOrdinalOrder(ref string stringA, ref string stringB)
         {
-            if (stringA.CompareTo(stringB) >= 0) (stringA, stringB) = (stringB, stringA);
+            if (stringA.CompareTo(stringB, StringComparison.Ordinal) >= 0) (stringA, stringB) = (stringB, stringA);
         }
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool AreCharsInclusive(ReadOnlySpan<char> chars, ReadOnlySpan<char> validChars)
+        {
+            foreach (var ch in chars)
+            {
+                if (!validChars.Contains(ch)) return false;
+            }
+            return true;
+        }
 
         /// <summary>Resets interned strings</summary>
         public static void Reset()

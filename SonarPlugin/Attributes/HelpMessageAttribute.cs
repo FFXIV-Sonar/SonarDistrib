@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 
 namespace SonarPlugin.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class HelpMessageAttribute : Attribute
+    public sealed class HelpMessageAttribute : Attribute
     {
         public string HelpMessage { get; }
 

@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xoshiro.PRNG64;
 
 namespace SonarUtils.Random
 {
     public static partial class RandomExtensions
     {
+        [SuppressMessage("", "CA5394", Justification = "Intended.")]
         public static string GetString(this XoShiRo256starstar random, int length, string chars = RandomChars.Base64Url)
         {
             ArgumentException.ThrowIfNullOrEmpty(nameof(chars));

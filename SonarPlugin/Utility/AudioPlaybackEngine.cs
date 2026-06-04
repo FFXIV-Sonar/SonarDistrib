@@ -1,4 +1,4 @@
-﻿using Dalamud.Plugin.Services;
+using Dalamud.Plugin.Services;
 using DryIocAttributes;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -15,7 +15,7 @@ namespace SonarPlugin.Utility
     [SingletonReuse]
     public sealed class AudioPlaybackEngine : IDisposable
     {
-        private readonly Dictionary<string, byte[]?> _cache = new();
+        private readonly Dictionary<string, byte[]?> _cache = [];
         private readonly ResettableLazy<AudioEngineCore> _core;
         private AudioEngineCore Core => this._core.Value;
         private IPluginLog Logger { get; }

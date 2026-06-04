@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ using System.Collections.Frozen;
 using SonarUtils.Text.Placeholders.Providers;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using System.Globalization;
 
 namespace Sonar.Trackers
 {
@@ -365,10 +366,10 @@ namespace Sonar.Trackers
         {
             var result = name switch
             {
-                "lastfound" => this.GetLastFoundDateTimeOffset().ToString(),
-                "lastkilled" => this.GetLastKilledDateTimeOffset().ToString(),
-                "lastseen" => this.GetLastSeenDateTimeOffset().ToString(),
-                "lastuntouched" => this.GetLastUntouchedDateTimeOffset().ToString(),
+                "lastfound" => this.GetLastFoundDateTimeOffset().ToString(CultureInfo.InvariantCulture),
+                "lastkilled" => this.GetLastKilledDateTimeOffset().ToString(CultureInfo.InvariantCulture),
+                "lastseen" => this.GetLastSeenDateTimeOffset().ToString(CultureInfo.InvariantCulture),
+                "lastuntouched" => this.GetLastUntouchedDateTimeOffset().ToString(CultureInfo.InvariantCulture),
 
                 "sincefound" => $"{this.LastFoundAgo / 1000:F2}s",
                 "sincekilled" => $"{this.LastKilledAgo / 1000:F2}s",

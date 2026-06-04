@@ -1,4 +1,4 @@
-﻿using Dalamud.Game.Gui;
+using Dalamud.Game.Gui;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -29,21 +29,21 @@ namespace SonarPlugin.Notifiers
     public sealed class FateNotifier : IHostedService
     {
         private SonarPlugin Plugin { get; }
+        private SonarFramework Framework { get; }
         private IClientState ClientState { get; }
         private SonarClient Client { get; }
         private IRelayTracker<FateRelay> Tracker { get; }
-        private PlayerProvider Player { get; }
         private IChatGui Chat { get; }
         private SoundEngine Sounds { get; }
         private IPluginLog Logger { get; }
         
-        public FateNotifier(SonarPlugin plugin, IClientState clientState, SonarClient client, IRelayTracker<FateRelay> tracker, PlayerProvider player, IChatGui chat, SoundEngine sounds, IPluginLog logger)
+        public FateNotifier(SonarPlugin plugin, SonarFramework framework, IClientState clientState, SonarClient client, IRelayTracker<FateRelay> tracker, IChatGui chat, SoundEngine sounds, IPluginLog logger)
         {
             this.Plugin = plugin;
+            this.Framework = framework;
             this.ClientState = clientState;
             this.Client = client;
             this.Tracker = tracker;
-            this.Player = player;
             this.Chat = chat;
             this.Sounds = sounds;
             this.Logger = logger;
@@ -54,8 +54,8 @@ namespace SonarPlugin.Notifiers
         private void FateFound(RelayState<FateRelay> state)
         {
             if (!this.ClientState.IsLoggedIn) return;
-            var allowChat = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
-            var allowSound = !(this.Plugin.IsDuty && this.Plugin.Configuration.DisableSoundInDuty);
+            var allowChat = !(this.Framework.IsDuty && this.Plugin.Configuration.DisableChatInDuty);
+            var allowSound = !(this.Framework.IsDuty && this.Plugin.Configuration.DisableSoundInDuty);
 
             if (allowChat && this.Plugin.Configuration.EnableFateChatReports && this.Plugin.Configuration.SendFateToChat.Contains(state.Relay.Id)) this.SendToChat(state);
             if (allowSound && this.Plugin.Configuration.SendFateToSound.Contains(state.Relay.Id)) this.Sounds.PlaySound(this.Plugin.Configuration.SoundFileFatesConfig);

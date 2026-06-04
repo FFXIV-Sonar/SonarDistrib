@@ -2,17 +2,14 @@ using Sonar.Extensions;
 using Sonar.Messages;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SonarUtils;
-using DryIoc;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using DryIoc.FastExpressionCompiler.LightExpression;
 
 namespace Sonar.Sockets
 {
@@ -36,8 +33,8 @@ namespace Sonar.Sockets
             try
             {
                 var message = this.ConvertBytesToMessage(bytes);
-                await this.DispatchEventPairAsync(this.RawReceived, this.RawReceivedAsync, bytes); // This is after conversion to ensure its a valid message
-                await this.ProcessMessageAsync(message);
+                await this.DispatchEventPairAsync(this.RawReceived, this.RawReceivedAsync, bytes).ConfigureAwait(false); // This is after conversion to ensure its a valid message
+                await this.ProcessMessageAsync(message).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -47,17 +44,37 @@ namespace Sonar.Sockets
 
         private async Task ProcessMessageAsync(ISonarMessage message)
         {
-            if (message is null) // Should never happen but... its happening with very old versions of Sonar
+            // Should never happen but... its happening with very old versions of Sonar.
+            if (message is null)
             {
-                this.DispatchExceptionEvent(ExceptionDispatchInfo.SetCurrentStackTrace(new NullReferenceException("message is null")));
+                this.DispatchExceptionEvent(ExceptionDispatchInfo.SetCurrentStackTrace(new NullReferenceException($"{nameof(message)} is null")));
                 return;
             }
+
+            // Raw message contains a raw MessagePack message to be deserialized.
+            if (message is RawMessage rawMessage)
+            {
+                try
+                {
+                    // NOTE: Do not add DispatchEventPairAsync here
+                    // as bytes may not be encoded the same way.
+                    await this.ProcessMessageAsync(rawMessage.Deserialize()).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    this.DispatchExceptionEvent(ex);
+                }
+            }
+
+            // MessageList contain multiple messages, which needs to be processed individually.
             if (message is MessageList messages)
             {
-                foreach (var item in messages) await this.ProcessMessageAsync(item);
+                foreach (var item in messages) await this.ProcessMessageAsync(item).ConfigureAwait(false);
                 return;
             }
-            await this.ProcessMessageCoreAsync(message);
+
+            // All other messages are passed to handlers.
+            await this.ProcessMessageCoreAsync(message).ConfigureAwait(false);
         }
 
         private async Task ProcessMessageCoreAsync(ISonarMessage message)
@@ -65,13 +82,13 @@ namespace Sonar.Sockets
             var types = message.GetAllTypes();
             foreach (var type in types)
             {
-                if (this._messageHandlers.TryGetValue(type, out var handlers) && !handlers.IsEmpty)
+                if (this._messageHandlers.TryGetValue(type, out var handlers))
                 {
-                    for (var i = 0; i < handlers.Length; i++)
+                    foreach (var handler in handlers.AsSpan())
                     {
                         try
                         {
-                            Unsafe.As<Action<ISonarSocket, ISonarMessage>>(handlers[i])(this, message);
+                            Unsafe.As<Action<ISonarSocket, ISonarMessage>>(handler)(this, message);
                         }
                         catch (Exception ex)
                         {
@@ -80,13 +97,13 @@ namespace Sonar.Sockets
                     }
                 }
 
-                if (this._asyncMessageHandlers.TryGetValue(type, out var asyncHandlers) && !asyncHandlers.IsEmpty)
+                if (this._asyncMessageHandlers.TryGetValue(type, out var asyncHandlers))
                 {
-                    for (var i = 0; i < asyncHandlers.Length; i++)
+                    foreach (var handler in asyncHandlers)
                     {
                         try
                         {
-                            await Unsafe.As<Func<ISonarSocket, ISonarMessage, Task>>(asyncHandlers[i])(this, message);
+                            await Unsafe.As<Func<ISonarSocket, ISonarMessage, Task>>(handler)(this, message).ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {
@@ -99,12 +116,12 @@ namespace Sonar.Sockets
 
         public void AddHandler(Type type, Action<ISonarSocket, ISonarMessage> handler)
         {
-            this._messageHandlers.AddOrUpdate(type, static (type, handler) => ImmutableArray.Create((object)handler), static (type, handlers, handler) => handlers.Add(handler), handler);
+            this._messageHandlers.AddOrUpdate(type, static (type, handler) => [handler], static (type, handlers, handler) => handlers.Add(handler), handler);
         }
 
         public void AddHandler(Type type, Func<ISonarSocket, ISonarMessage, Task> handler)
         {
-            this._asyncMessageHandlers.AddOrUpdate(type, static (type, handler) => ImmutableArray.Create((object)handler), (type, handlers, handler) => handlers.Add(handler), handler);
+            this._asyncMessageHandlers.AddOrUpdate(type, static (type, handler) => [handler], (type, handlers, handler) => handlers.Add(handler), handler);
         }
 
         public void AddHandler<T>(Action<ISonarSocket, T> handler) where T : ISonarMessage
@@ -151,7 +168,7 @@ namespace Sonar.Sockets
 
         protected async Task ProcessReceivedTextAsync(string text)
         {
-            await this.DispatchEventPairAsync(this.TextReceived, this.TextReceivedAsync, text);
+            await this.DispatchEventPairAsync(this.TextReceived, this.TextReceivedAsync, text).ConfigureAwait(false);
         }
 
         public abstract void Start();
@@ -220,7 +237,7 @@ namespace Sonar.Sockets
                 {
                     try
                     {
-                        await task;
+                        await task.ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {

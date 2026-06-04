@@ -1,4 +1,4 @@
-﻿using SonarUtils;
+using SonarUtils;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -17,7 +17,7 @@ namespace Sonar.Connections
         private readonly NonBlocking.NonBlockingHashSet<SonarUrl> _urls = [];
         private SonarUrl[]? _urlArray;
 
-        private SonarUrl[] GetSonarUrls() => this._urlArray ??= this._urls.ToArray();
+        private SonarUrl[] GetSonarUrls() => this._urlArray ??= [.. this._urls];
 
         public SonarUrlManager()
         {
@@ -28,6 +28,7 @@ namespace Sonar.Connections
         /// <param name="proxy">Allow proxy URLs</param>
         /// <param name="reconnect">Allow reconnect only restricted URLs, for reconnects only</param>
         /// <param name="retries">Number of retries to return a URL with specified properties. Should this happen a completely random URL is returned instead. (You must really have bad luck for this to happen)</param>
+        [SuppressMessage("Security", "CA5394", Justification = "Not applicable.")] // Used for url randomization
         public SonarUrl GetRandomUrl(bool proxy = false, bool reconnect = false, int retries = 255)
         {
             var urls = this.GetSonarUrls();
@@ -55,18 +56,18 @@ namespace Sonar.Connections
 
         /// <summary>Read URLs from Sonar assets server</summary>
         [SuppressMessage("Minor Code Smell", "S1075", Justification = "Well known url")]
+        [SuppressMessage("Security", "CA5394", Justification = "Not applicable.")] // Used for Task.Delay variation
         private async Task BootstrapWebTask(CancellationToken cancellationToken)
         {
-            await Task.Yield();
             while (!cancellationToken.IsCancellationRequested)
             {
                 using var httpClient = HappyHttpUtils.CreateRandomlyHappyClient();
                 try
                 {
-                    var response = await httpClient.GetAsync("https://assets.ffxivsonar.com/bootstrap/Urls.data", cancellationToken);
+                    var response = await httpClient.GetAsync("https://assets.ffxivsonar.com/bootstrap/Urls.data", cancellationToken).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
-                    this.ProcessBytes(await response.Content.ReadAsByteArrayAsync(cancellationToken));
-                    await Task.Delay(TimeSpan.FromHours(6 * (SonarStatic.Random.NextDouble() + 0.5)), cancellationToken);
+                    this.ProcessBytes(await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false));
+                    await Task.Delay(TimeSpan.FromHours(6 * (SonarStatic.Random.NextDouble() + 0.5)), cancellationToken).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException) { return; }
                 catch (ObjectDisposedException) { return; }
@@ -74,7 +75,7 @@ namespace Sonar.Connections
                 {
                     try
                     {
-                        await Task.Delay(TimeSpan.FromMinutes(6 * (SonarStatic.Random.NextDouble() + 0.5)), cancellationToken);
+                        await Task.Delay(TimeSpan.FromMinutes(6 * (SonarStatic.Random.NextDouble() + 0.5)), cancellationToken).ConfigureAwait(false);
                     }
                     catch (OperationCanceledException) { return; }
                     catch (ObjectDisposedException) { return; }
@@ -102,8 +103,8 @@ namespace Sonar.Connections
 
         public async ValueTask DisposeAsync()
         {
-            await this._cts.CancelAsync();
-            await this._bootstrapTask;
+            await this._cts.CancelAsync().ConfigureAwait(false);
+            await this._bootstrapTask.ConfigureAwait(false);
             this._cts.Dispose();
             GC.SuppressFinalize(this);
         }

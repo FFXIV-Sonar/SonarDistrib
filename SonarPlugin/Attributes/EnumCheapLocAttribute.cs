@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +11,7 @@ using SonarPlugin.Config;
 namespace SonarPlugin.Attributes
 {
     [AttributeUsage(AttributeTargets.Enum | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-    public class EnumCheapLocAttribute : Attribute
+    public sealed class EnumCheapLocAttribute : Attribute
     {
         public string Key { get; }
         public string Fallback { get; }

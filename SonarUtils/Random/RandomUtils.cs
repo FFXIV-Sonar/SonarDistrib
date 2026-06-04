@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -19,7 +19,7 @@ namespace SonarUtils.Random
         public static XoShiRo256starstar CreateRandom()
         {
             var state = s_stateArray.Value!;
-            GetThreadCryptoRandom().GetBytes(MemoryMarshal.AsBytes(state.AsSpan()));
+            GetOrCreateThreadCryptoRandom().GetBytes(MemoryMarshal.AsBytes(state.AsSpan()));
             return new(state);
         }
 
@@ -28,7 +28,10 @@ namespace SonarUtils.Random
             return RandomNumberGenerator.Create();
         }
 
-        public static XoShiRo256starstar GetThreadRandom() => s_random.Value!;
-        public static RandomNumberGenerator GetThreadCryptoRandom() => s_cryptoRandom.Value!;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024", Justification = "Intended.")]
+        public static XoShiRo256starstar GetOrCreateThreadRandom() => s_random.Value!;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024", Justification = "Intended.")]
+        public static RandomNumberGenerator GetOrCreateThreadCryptoRandom() => s_cryptoRandom.Value!;
     }
 }

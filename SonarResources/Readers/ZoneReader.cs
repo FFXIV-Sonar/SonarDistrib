@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Humanizer;
 using Lumina;
 using Lumina.Excel.Sheets;
@@ -19,16 +19,16 @@ namespace SonarResources.Readers
     [SingletonReuse]
     public sealed class ZoneReader
     {
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
         private SonarDb Db { get; }
 
-        public ZoneReader(LuminaManager luminas, SonarDb db, MapReader _)
+        public ZoneReader(GameDataManager luminas, SonarDb db, MapReader _)
         {
             this.Luminas = luminas;
             this.Db = db;
 
             Console.WriteLine("Reading all zones");
-            foreach (var entry in this.Luminas.GetAllLuminasEntries())
+            foreach (var entry in this.Luminas.Entries)
             {
                 Program.WriteProgress(this.Read(entry) ? "+" : ".");
             }
@@ -38,7 +38,7 @@ namespace SonarResources.Readers
             this.SetupZones();
         }
 
-        public bool Read(LuminaEntry lumina)
+        public bool Read(GameDataEntry lumina)
         {
             var territorySheet = lumina.Data.GetExcelSheet<TerritoryType>();
             if (territorySheet is null) return false;
@@ -114,6 +114,7 @@ namespace SonarResources.Readers
             this.Db.Zones[1237].IsField = true; // Sinus Ardorum
             this.Db.Zones[1291].IsField = true; // Phaenna
             this.Db.Zones[1310].IsField = true; // Oizys
+            this.Db.Zones[1319].IsField = true; // Auxesia
 
             // Occult Crescent - South Horn
             this.Db.Zones[1252].IsField = true;

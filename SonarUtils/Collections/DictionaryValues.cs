@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 namespace SonarUtils.Collections
 {
     /// <summary>Non-snapshotting dictionary Values</summary>
+    [SuppressMessage("Naming", "CA1710", Justification = "Intended.")]
     public sealed class DictionaryValues<TKey, TValue> : ICollection<TValue>, IReadOnlyCollection<TValue>
     {
         private readonly IDictionary<TKey, TValue> _backingDictionary;

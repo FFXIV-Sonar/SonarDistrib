@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Humanizer;
 using Lumina;
 using Lumina.Excel.Sheets;
@@ -20,16 +20,16 @@ namespace SonarResources.Readers
     [SingletonReuse]
     public sealed class HuntReader
     {
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
         private SonarDb Db { get; }
         
-        public HuntReader(LuminaManager luminas, SonarDb db, ZoneReader _)
+        public HuntReader(GameDataManager luminas, SonarDb db, ZoneReader _)
         {
             this.Luminas = luminas;
             this.Db = db;
 
             Console.WriteLine("Reading all hunts");
-            foreach (var entry in this.Luminas.GetAllLuminasEntries())
+            foreach (var entry in this.Luminas.Entries)
             {
                 Program.WriteProgress(this.Read(entry) ? "+" : ".");
             }
@@ -42,7 +42,7 @@ namespace SonarResources.Readers
             this.SetAllHuntZones();
         }
 
-        private bool Read(LuminaEntry lumina)
+        private bool Read(GameDataEntry lumina)
         {
             var nmSheet = lumina.Data.GetExcelSheet<NotoriousMonster>(lumina.LuminaLanguage)?
                 .Where(nm => nm.BNpcName.RowId != 0 && nm.BNpcBase.RowId != 0);

@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using SonarResources.Lgb;
@@ -23,24 +23,24 @@ namespace SonarResources.Readers
     [SingletonReuse]
     public sealed class FateReader
     {
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
         private SonarDb Db { get; }
         private LgbInstancesReader Lgb { get; }
 
-        public FateReader(LuminaManager luminas, SonarDb db, LgbInstancesReader lgb, ZoneReader _)
+        public FateReader(GameDataManager luminas, SonarDb db, LgbInstancesReader lgb, ZoneReader _)
         {
             this.Luminas = luminas;
             this.Db = db;
             this.Lgb = lgb;
 
             Console.WriteLine("Reading Fates (Stage 1)");
-            foreach (var entry in this.Luminas.GetAllLuminasEntries())
+            foreach (var entry in this.Luminas.Entries)
             {
                 Program.WriteProgress(this.Stage1(entry) ? "+" : ".");
             }
 
             Console.WriteLine("Reading Fates (Stage 2)");
-            foreach (var entry in this.Luminas.GetAllLuminasEntries())
+            foreach (var entry in this.Luminas.Entries)
             {
                 Program.WriteProgress(this.Stage2(entry) ? "+" : ".");
             }
@@ -54,7 +54,7 @@ namespace SonarResources.Readers
             this.GroupFates();
         }
 
-        public bool Stage1(LuminaEntry lumina)
+        public bool Stage1(GameDataEntry lumina)
         {
             var fateSheet = lumina.Data.GetExcelSheet<global::Lumina.Excel.Sheets.Fate>(lumina.LuminaLanguage);
             if (fateSheet is null) return false;
@@ -90,7 +90,7 @@ namespace SonarResources.Readers
             return true;
         }
 
-        public bool Stage2(LuminaEntry lumina)
+        public bool Stage2(GameDataEntry lumina)
         {
             var fateSheet = lumina.Data.GetExcelSheet<global::Lumina.Excel.Sheets.Fate>(lumina.LuminaLanguage)?
                 .Where(fate => fate.Location != 0);

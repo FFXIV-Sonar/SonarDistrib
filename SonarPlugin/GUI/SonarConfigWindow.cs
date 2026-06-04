@@ -1,4 +1,4 @@
-﻿using AG.EnumLocalization;
+using AG.EnumLocalization;
 using CheapLoc;
 using Dalamud.Data;
 using Dalamud.Game.Text;
@@ -39,6 +39,8 @@ using Dalamud.Interface;
 using SonarPlugin.Sounds;
 using Dalamud.Plugin.VersionInfo;
 using DryIocAttributes;
+using SonarUtils.Threading;
+using System.Globalization;
 
 namespace SonarPlugin.GUI
 {
@@ -529,10 +531,10 @@ namespace SonarPlugin.GUI
                     this.Plugin.Configuration.AllSRankSettings = value;
                     if (!value)
                     {
-                        foreach (ExpansionPack expansion in Enum.GetValues(typeof(ExpansionPack)))
+                        foreach (var expansion in Enum.GetValues<ExpansionPack>())
                         {
-                            SonarJurisdiction jurisdiction = this.Client.Configuration.HuntConfig.GetJurisdiction(expansion, HuntRank.S);
-                            foreach (HuntRank rank in new HuntRank[] { HuntRank.SS, HuntRank.SSMinion })
+                            var jurisdiction = this.Client.Configuration.HuntConfig.GetJurisdiction(expansion, HuntRank.S);
+                            foreach (var rank in new HuntRank[] { HuntRank.SS, HuntRank.SSMinion })
                             {
                                 this.Client.Configuration.HuntConfig.SetJurisdiction(expansion, rank, jurisdiction);
                             }
@@ -546,10 +548,10 @@ namespace SonarPlugin.GUI
                     this.Plugin.Configuration.AdvancedHuntReportSettings = value;
                     if (!value)
                     {
-                        foreach (HuntRank rank in Enum.GetValues<HuntRank>())
+                        foreach (var rank in Enum.GetValues<HuntRank>())
                         {
-                            SonarJurisdiction jurisdiction = this.Client.Configuration.HuntConfig.GetJurisdiction(ExpansionPack.ARealmReborn, rank);
-                            foreach (ExpansionPack expansion in Enum.GetValues(typeof(ExpansionPack)))
+                            var jurisdiction = this.Client.Configuration.HuntConfig.GetJurisdiction(ExpansionPack.ARealmReborn, rank);
+                            foreach (var expansion in Enum.GetValues<ExpansionPack>())
                             {
                                 this.Client.Configuration.HuntConfig.SetJurisdiction(expansion, rank, jurisdiction);
                             }
@@ -666,7 +668,7 @@ namespace SonarPlugin.GUI
             if (ImGui.Combo($"##hunt{rank}", ref index, this.jurisdictionsCombo.Values.ToArray(), this.jurisdictionsCombo.Count))
             {
                 this._save = this._server = true;
-                foreach (ExpansionPack expansion in Enum.GetValues(typeof(ExpansionPack)))
+                foreach (var expansion in Enum.GetValues<ExpansionPack>())
                 {
                     this.Client.Configuration.HuntConfig.SetJurisdiction(expansion, rank, this.jurisdictionsCombo.Keys.ToList()[index]);
                     if (!this.Plugin.Configuration.AllSRankSettings && (rank == HuntRank.S))
@@ -682,7 +684,7 @@ namespace SonarPlugin.GUI
         {
             if (ImGui.TreeNodeEx($"##Rank{rank}", ImGuiTreeNodeFlags.CollapsingHeader, this.rankStrings[rank]))
             {
-                foreach (ExpansionPack expansion in Enum.GetValues(typeof(ExpansionPack)))
+                foreach (var expansion in Enum.GetValues<ExpansionPack>())
                 {
                     if (expansion == ExpansionPack.Unknown) continue;
                     if (rank is HuntRank.SSMinion or HuntRank.SS && expansion <= ExpansionPack.Stormblood) continue;
@@ -841,7 +843,7 @@ namespace SonarPlugin.GUI
                     .Where(fate => fate is not null)
                     .DistinctBy(fate => fate!.GroupId)
                     .Count();
-                ImGui.Text(string.Format(Loc.Localize("SelectedFatesToChatText", "{0} fate(s) selected to chat"), selectedFates));
+                ImGui.Text(string.Format(CultureInfo.InvariantCulture, Loc.Localize("SelectedFatesToChatText", "{0} fate(s) selected to chat"), selectedFates));
                 ImGui.SameLine();
                 ImGui.Text(" | ");
                 ImGui.SameLine();
@@ -850,7 +852,7 @@ namespace SonarPlugin.GUI
                     .Where(fate => fate is not null)
                     .DistinctBy(fate => fate!.GroupId)
                     .Count();
-                ImGui.Text(string.Format(Loc.Localize("SelectedFatesToSoundText", "{0} fate(s) selected to sound"), selectedFates));
+                ImGui.Text(string.Format(CultureInfo.InvariantCulture, Loc.Localize("SelectedFatesToSoundText", "{0} fate(s) selected to sound"), selectedFates));
                 ImGui.SameLine();
                 ImGui.Text(" | ");
                 ImGui.SameLine();
@@ -860,7 +862,7 @@ namespace SonarPlugin.GUI
                     .Where(fate => fate is not null)
                     .DistinctBy(fate => fate!.GroupId)
                     .Count();
-                ImGui.Text(string.Format(Loc.Localize("SelectedFatesToNonDefaultJurisdiction", "{0} fate(s) not set to default jurisdiction"), selectedFates));
+                ImGui.Text(string.Format(CultureInfo.InvariantCulture, Loc.Localize("SelectedFatesToNonDefaultJurisdiction", "{0} fate(s) not set to default jurisdiction"), selectedFates));
 
 
                 ImGui.Spacing();

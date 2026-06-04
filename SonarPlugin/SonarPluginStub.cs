@@ -1,4 +1,4 @@
-﻿using Dalamud.Game.Command;
+using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using DryIoc;
@@ -24,7 +24,7 @@ namespace SonarPlugin
         public string PluginName { get; } = "SonarPlugin";
 
         /// <summary>Sonar flavor</summary>
-        public string? Flavor { get; } = null;
+        public string? Flavor { get; }
 
         /// <summary>SonarPlugin's IoC class.</summary>
         private SonarPluginIoC? Plugin;
@@ -71,13 +71,13 @@ namespace SonarPlugin
         private void SonarLoadCommand(string? _ = null, string? __ = null)
         {
             this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload are not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
-            Task.Factory.StartNew(this.InitializeSonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
+            Task.Factory.StartNew(this.InitializeSonar, CancellationToken.None, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
         }
 
         private void SonarUnloadCommand(string? _ = null, string? __ = null)
         {
             this.Chat.PrintError("WARNING: /sonarload, /sonarunload and /sonarreload are not yet fixed! Use /sonaron, /sonaroff, /sonarenable and /sonardisable instead.");
-            Task.Factory.StartNew(this.DestroySonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
+            Task.Factory.StartNew(this.DestroySonar, CancellationToken.None, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
         }
 
         private void SonarReloadCommand(string? _ = null, string? __ = null)
@@ -86,7 +86,7 @@ namespace SonarPlugin
 #if !DEBUG
             return; // TODO: Remove once fixed
 #endif
-            Task.Factory.StartNew(this.ReloadSonar, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
+            Task.Factory.StartNew(this.ReloadSonar, CancellationToken.None, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
         }
 
         private void InitializeSonar()
@@ -123,8 +123,8 @@ namespace SonarPlugin
                 try
                 {
                     this.Logger.Debug("Stopping Sonar");
-                    this.Plugin?.StopServices();
-                    this.Plugin?.Dispose();
+                    this.Plugin.StopServices();
+                    this.Plugin.Dispose();
                     this.Plugin = null;
                 }
                 catch (Exception ex)
