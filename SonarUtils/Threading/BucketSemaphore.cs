@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -121,7 +121,7 @@ namespace SonarUtils.Threading
 
         public async Task WaitAsync(long cost)
         {
-            if (await this.TryWaitAsync(cost)) return;
+            if (await this.TryWaitAsync(cost).ConfigureAwait(false)) return;
             ObjectDisposedException.ThrowIf(Volatile.Read(ref this._disposed) != 0, this);
             throw new OperationCanceledException(); // Should never happen
         }
@@ -168,7 +168,7 @@ namespace SonarUtils.Threading
                             await Task.Yield();
                             break;
                         case 1:
-                            await Task.Delay(1, cancellationToken);
+                            await Task.Delay(1, cancellationToken).ConfigureAwait(false);
                             break;
                     }
                     yieldType ^= 1;

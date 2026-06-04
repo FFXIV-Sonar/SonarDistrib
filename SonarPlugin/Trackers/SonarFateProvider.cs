@@ -23,7 +23,7 @@ namespace SonarPlugin.Trackers
     public sealed class SonarFateProvider : IHostedService
     {
         private PlayerCounterService Players { get; }
-        private SonarPlugin Plugin { get; }
+        private SonarFramework Framework { get; }
         private SonarMeta Meta { get; }
         private IRelayTracker<FateRelay> Tracker { get; }
         private IPluginLog Logger { get; }
@@ -33,11 +33,11 @@ namespace SonarPlugin.Trackers
         /// </summary>
         /// <param name="plugin">Sonar Plugin object</param>
         /// <param name="debug">(Optional) Output debug logging</param>
-        public SonarFateProvider(PlayerCounterService players, SonarPlugin plugin, SonarMeta meta, IRelayTracker<FateRelay> tracker, IPluginLog logger)
+        public SonarFateProvider(PlayerCounterService players, SonarFramework framework, SonarMeta meta, IRelayTracker<FateRelay> tracker, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
             this.Players = players;
-            this.Plugin = plugin;
+            this.Framework = framework;
             this.Meta = meta;
             this.Tracker = tracker;
             this.Logger = logger;
@@ -48,10 +48,10 @@ namespace SonarPlugin.Trackers
 
         private List<uint> _nextFateIds = [];
         private List<uint> _lastFateIds = [];
-        private unsafe void Framework(IFramework framework)
+        private unsafe void FrameworkTick(SonarFramework framework)
         {
             // Don't proceed if the structures aren't ready
-            if (!this.Plugin.SafeToReadTables) goto Fail;
+            if (!framework.IsSafe()) goto Fail;
 
             // Fate Manager
             var manager = FateManager.Instance();
@@ -81,8 +81,12 @@ namespace SonarPlugin.Trackers
                 if (!Database.Fates.ContainsKey(id)) continue;
 
                 var startTimeEpoch = fate->StartTimeEpoch;
+                if (startTimeEpoch is 0 && state is not FateState.Preparing) continue;
+                if (startTimeEpoch is not 0 && state is FateState.Preparing) continue;
+
                 var duration = fate->Duration;
                 var position = fate->Location;
+                if (position.X is 0 && position.Y is 0 && position.Z is 0) continue;
 
                 currentFateIds.Add(id);
                 this.Tracker.FeedRelay(new FateRelay()
@@ -106,18 +110,15 @@ namespace SonarPlugin.Trackers
             // Determine and mark disappeared fates as failed
             var lastFateIds = this._lastFateIds;
             var missingFates = lastFateIds.Except(currentFateIds);
-            if (missingFates.Any())
+            var fateStates = this.Tracker.Data.States;
+            foreach (var fateId in missingFates)
             {
-                var fateStates = this.Tracker.Data.States;
-                foreach (var fateId in missingFates)
-                {
-                    var fateKey = IndexUtils.GetWorldZoneInstanceIndexKey(worldId, fateId, instanceId); // NOTE: Key formats are the same
-                    var fateState = fateStates.GetValueOrDefault(fateKey);
-                    if (fateState is null) continue;
-                    var fate = fateState.Relay.Clone();
-                    fate.Status = FateStatus.실패;
-                    this.Tracker.FeedRelay(fate);
-                }
+                var fateKey = IndexUtils.GetWorldZoneInstanceIndexKey(worldId, fateId, instanceId); // NOTE: Key formats are the same
+                var fateState = fateStates.GetValueOrDefault(fateKey);
+                if (fateState is null) continue;
+                var fate = fateState.Relay.Clone();
+                fate.Status = FateStatus.실패;
+                this.Tracker.FeedRelay(fate);
             }
             this._lastFateIds = currentFateIds;
 
@@ -132,13 +133,13 @@ namespace SonarPlugin.Trackers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.FrameworkUpdate += this.Framework;
+            this.Framework.Update += this.FrameworkTick;
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.FrameworkUpdate -= this.Framework;
+            this.Framework.Update -= this.FrameworkTick;
             return Task.CompletedTask;
         }
     }

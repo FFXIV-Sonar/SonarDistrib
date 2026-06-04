@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -11,6 +11,7 @@ namespace SonarUtils.Collections
     /// <typeparam name="TKey">Key type</typeparam>
     /// <typeparam name="TValue">Value type</typeparam>
     /// <typeparam name="TSourceValue">Backing dictionary's value type</typeparam>
+    [SuppressMessage("csharpsquid", "S2436", Justification = "Intended.")] // A bit misleading, the Create methods contain generics.
     public sealed partial class TransformDictionary<TKey, TValue, TSourceValue> : IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue> where TKey : notnull
     {
         private readonly IDictionary<TKey, TSourceValue> _backingDictionary;
@@ -129,6 +130,7 @@ namespace SonarUtils.Collections
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }
 
+    [SuppressMessage("Naming", "CA1711", Justification = "Non-generic static utilities.")] // A bit misleading, the Create methods contain generics.
     public static class TransformDictionary
     {
         public static TransformDictionary<TKey, TValue, TSourceValue> Create<TKey, TValue, TSourceValue>(IDictionary<TKey, TSourceValue> backingDictionary, Func<TSourceValue, TValue> getterTransformFunc) where TKey : notnull => new(backingDictionary, getterTransformFunc);

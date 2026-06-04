@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Buffers.Text;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace SonarUtils.Secrets
@@ -12,6 +13,7 @@ namespace SonarUtils.Secrets
         /// <summary>Raw bytes.</summary>
         public ImmutableArray<byte>? Bytes { get; }
 
+        [SuppressMessage("Design", "CA1019", Justification = "Done, as raw bytes.")]
         public SecretMetaAttribute(string? base64UrlBytes)
         {
             try
@@ -24,6 +26,7 @@ namespace SonarUtils.Secrets
             }
         }
 
+        [SuppressMessage("Design", "CA1019", Justification = "Done.")]
         public SecretMetaAttribute(byte[]? bytes)
         {
             this.Bytes = bytes?.ToImmutableArray();

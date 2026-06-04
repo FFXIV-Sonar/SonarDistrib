@@ -52,7 +52,7 @@ namespace Sonar.Sockets
         {
             try
             {
-                await this.WebSocket.SendAsync(message.bytes, message.type, WebSocketMessageFlags.EndOfMessage | WebSocketMessageFlags.DisableCompression, this._cts.Token);
+                await this.WebSocket.SendAsync(message.bytes, message.type, WebSocketMessageFlags.EndOfMessage | WebSocketMessageFlags.DisableCompression, this._cts.Token).ConfigureAwait(false);
             }
             catch (OperationCanceledException) { /* Swallow */ }
             catch (WebSocketException ex) when (ex.WebSocketErrorCode == WebSocketError.InvalidState) { /* Swallow */ }
@@ -109,7 +109,7 @@ namespace Sonar.Sockets
                     while (true)
                     {
                         // Read into receive buffer (empty buffer on first iteration only).
-                        result = await this.WebSocket.ReceiveAsync(receiveBuffer.AsMemory(), cancellationToken);
+                        result = await this.WebSocket.ReceiveAsync(receiveBuffer.AsMemory(), cancellationToken).ConfigureAwait(false);
                         if (result.EndOfMessage || result.Count > 0) break;
 
                         // Rent a receive buffer.
@@ -119,7 +119,7 @@ namespace Sonar.Sockets
                     // Step 2: Assemble message
                     if ((messageBuffer?.Count ?? 0) + result.Count > this._maxMessageBytes)
                     {
-                        await this.WebSocket.CloseAsync(WebSocketCloseStatus.MessageTooBig, $"Maximum Message Size is {this._maxMessageBytes}", cancellationToken);
+                        await this.WebSocket.CloseAsync(WebSocketCloseStatus.MessageTooBig, $"Maximum Message Size is {this._maxMessageBytes}", cancellationToken).ConfigureAwait(false);
                         break;
                     }
 
@@ -142,17 +142,17 @@ namespace Sonar.Sockets
                         switch (result.MessageType)
                         {
                             case WebSocketMessageType.Binary:
-                                await this.ProcessReceivedBytesAsync(messageBuffer is not null ? [.. messageBuffer] : []);
+                                await this.ProcessReceivedBytesAsync(messageBuffer is not null ? [.. messageBuffer] : []).ConfigureAwait(false);
                                 break;
                             case WebSocketMessageType.Text:
-                                await this.ProcessReceivedTextAsync(Encoding.UTF8.GetString(CollectionsMarshal.AsSpan(messageBuffer)));
+                                await this.ProcessReceivedTextAsync(Encoding.UTF8.GetString(CollectionsMarshal.AsSpan(messageBuffer))).ConfigureAwait(false);
                                 break;
                             case WebSocketMessageType.Close:
                                 if (this.WebSocket.CloseStatus is not WebSocketCloseStatus.NormalClosure and not WebSocketCloseStatus.EndpointUnavailable)
                                 {
                                     this.DispatchExceptionEvent(ExceptionDispatchInfo.SetCurrentStackTrace(new WebSocketException($"{this.WebSocket.CloseStatus}: {this.WebSocket.CloseStatusDescription}")));
                                 }
-                                await this.WebSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cancellationToken);
+                                await this.WebSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cancellationToken).ConfigureAwait(false);
                                 break;
                             default:
                                 this.DispatchExceptionEvent(new WebSocketException(WebSocketError.InvalidMessageType, $"{result.MessageType}"));
@@ -168,7 +168,7 @@ namespace Sonar.Sockets
             catch (OperationCanceledException)
             {
                 using var cts = new CancellationTokenSource(1000);
-                try { await this.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cts.Token); } catch { /* Swallow */ }
+                try { await this.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cts.Token).ConfigureAwait(false); } catch { /* Swallow */ }
             }
             catch (WebSocketException ex) when ((uint)ex.HResult == 0x80004005)
             {
@@ -184,7 +184,7 @@ namespace Sonar.Sockets
                 ReturnReceiveBuffer(receiveBuffer);
                 ReturnMessageBuffer(messageBuffer);
 
-                await this.DisposeAsync();
+                await this.DisposeAsync().ConfigureAwait(false);
 
                 try
                 {
@@ -219,7 +219,7 @@ namespace Sonar.Sockets
             if (Interlocked.CompareExchange(ref this._disposed, true, false)) return;
             try
             {
-                await this._cts.CancelAsync();
+                await this._cts.CancelAsync().ConfigureAwait(false);
                 this._cts.Dispose();
                 this.WebSocket.Dispose();
                 this._sendBlock.Complete();
@@ -228,7 +228,7 @@ namespace Sonar.Sockets
             {
                 /* Swallow */
             }
-            await base.DisposeAsync();
+            await base.DisposeAsync().ConfigureAwait(false);
         }
 
         public override void Start()

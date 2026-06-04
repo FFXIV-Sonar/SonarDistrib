@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Cryptography;
 using Xoshiro.PRNG64;
 
@@ -11,11 +11,7 @@ namespace SonarUtils.Random
         {
             var result = 0;
             var buffer = new Span<byte>(&result, sizeof(int));
-            do
-            {
-                random.GetBytes(buffer);
-            }
-            while (result == int.MaxValue);
+            random.GetBytes(buffer);
             return result & 0x7FFFFFFF;
         }
 

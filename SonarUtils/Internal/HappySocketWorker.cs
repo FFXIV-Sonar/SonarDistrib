@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -125,11 +126,12 @@ namespace SonarUtils.Internal
                 return;
             }
             
-            var addresses = await Dns.GetHostAddressesAsync(this._host, cancellationToken);
-            foreach (var address in addresses) await writer.WriteAsync(address, cancellationToken);
+            var addresses = await Dns.GetHostAddressesAsync(this._host, cancellationToken).ConfigureAwait(false);
+            foreach (var address in addresses) await writer.WriteAsync(address, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>Attempts a connection to an IP <paramref name="address"/>.</summary>
+        [SuppressMessage("Reliability", "CA2000", Justification = "Not applicable.")]
         private async Task ConnectWorkerAsync(IPAddress address, CancellationToken cancellationToken)
         {
             var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
@@ -141,8 +143,10 @@ namespace SonarUtils.Internal
             }
             finally
             {
+#pragma warning disable CA1849 // Justification = Already completed
                 // Dispose of the socket if not returned.
                 if (!this._tcs.Task.IsCompletedSuccessfully || this._tcs.Task.Result != socket) socket.Dispose();
+#pragma warning restore CA1849
             }
         }
 

@@ -6,6 +6,7 @@ using Dalamud.Plugin.Services;
 using DryIocAttributes;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using Microsoft.Extensions.Hosting;
 using Sonar;
 using Sonar.Data;
@@ -29,32 +30,30 @@ namespace SonarPlugin.Trackers
     {
         private PlayerCounterService Players { get; }
         private IRelayTracker<HuntRelay> Tracker { get; }
-        private SonarPlugin Plugin { get; }
+        private SonarFramework Framework { get; }
         private SonarMeta Meta { get; }
-        private IClientState ClientState { get; }
         private IPluginLog Logger { get; }
 
         /// <summary>
         /// Initialize monster tracker
         /// </summary>
-        public SonarHuntProvider(PlayerCounterService players, IRelayTracker<HuntRelay> tracker, SonarPlugin plugin, SonarMeta meta, IClientState clientState, IPluginLog logger)
+        public SonarHuntProvider(PlayerCounterService players, IRelayTracker<HuntRelay> tracker, SonarFramework framework, SonarMeta meta, IPluginLog logger)
         {
             // Get Sonar and Plugin Interface
             this.Players = players;
             this.Tracker = tracker;
-            this.Plugin = plugin;
+            this.Framework = framework;
             this.Meta = meta;
-            this.ClientState = clientState;
             this.Logger = logger;
 
             // Initialization feedback
             this.Logger.Information("MobTracker Initialized");
         }
 
-        private unsafe void FrameworkTick(IFramework framework)
+        private unsafe void FrameworkTick(SonarFramework framework)
         {
             // Don't proceed if the structures aren't ready
-            if (!this.Plugin.SafeToReadTables) return;
+            if (!framework.IsSafe()) return;
 
             // Character Manager
             var manager = CharacterManager.Instance();
@@ -99,13 +98,13 @@ namespace SonarPlugin.Trackers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.FrameworkUpdate += this.FrameworkTick;
+            this.Framework.Update += this.FrameworkTick;
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.Plugin.FrameworkUpdate -= this.FrameworkTick;
+            this.Framework.Update -= this.FrameworkTick;
             return Task.CompletedTask;
         }
     }

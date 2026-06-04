@@ -15,10 +15,10 @@ namespace Sonar
     /// <summary>
     /// Handles serialization of all sonar messages sent between client and server and data resources
     /// </summary>
-    public static class SonarSerializer
+    public static class SonarSerializerOld
     {
         public static readonly MessagePackSerializerOptions MessagePackOptions = MessagePackSerializerOptions.Standard
-            .WithResolver(CompositeResolver.Create([new ImmutableArrayFormatter()], [ContractlessStandardResolver.Instance]))
+            .WithResolver(ContractlessStandardResolver.Instance)
             .WithCompression(MessagePackCompression.None) // Compression is handled separately
             .WithSecurity(MessagePackSecurity.TrustedData.WithMaximumObjectGraphDepth(100));
 

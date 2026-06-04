@@ -17,17 +17,17 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "GetThreadRandom()")]
         public void GetThreadRandom()
         {
-            var random = RandomUtils.GetThreadRandom();
+            var random = RandomUtils.GetOrCreateThreadRandom();
             Assert.NotNull(random);
-            Assert.Same(random, RandomUtils.GetThreadRandom());
+            Assert.Same(random, RandomUtils.GetOrCreateThreadRandom());
         }
 
         [Fact(DisplayName = "GetThreadCryptoRandom()")]
         public void GetThreadCryptoRandom()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             Assert.NotNull(random);
-            Assert.Same(random, RandomUtils.GetThreadCryptoRandom());
+            Assert.Same(random, RandomUtils.GetOrCreateThreadCryptoRandom());
         }
 
         [Fact(DisplayName = "CreateRandom()")]
@@ -49,7 +49,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "Next() returns values between 0 and int.MaxValue")]
         public void Next_1()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.Next();
@@ -60,7 +60,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "Next() can return different values")]
         public void Next_2()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.Next();
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -78,7 +78,7 @@ namespace SonarUtils.Tests
         [InlineData(int.MaxValue)]
         public void Next_3(int maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.Next(maxValue);
@@ -93,7 +93,7 @@ namespace SonarUtils.Tests
         [InlineData(int.MaxValue)]
         public void Next_4(int maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.Next(maxValue);
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -108,7 +108,7 @@ namespace SonarUtils.Tests
         [InlineData(1)]
         public void Next_5(int maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var result = random.Next(maxValue);
@@ -122,7 +122,7 @@ namespace SonarUtils.Tests
         [InlineData(-41245249)]
         public void Next_6(int maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             Assert.Throws<ArgumentOutOfRangeException>(() => random.Next(maxValue));
         }
 
@@ -133,7 +133,7 @@ namespace SonarUtils.Tests
         [InlineData(int.MinValue, int.MaxValue)]
         public void Next_7(int minValue, int maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.Next(minValue, maxValue);
@@ -148,7 +148,7 @@ namespace SonarUtils.Tests
         [InlineData(int.MinValue, int.MaxValue)]
         public void Next_8(int minValue, int maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.Next(minValue, maxValue);
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -161,7 +161,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "NextU() can return different values")]
         public void NextU_1()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.NextU();
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -179,7 +179,7 @@ namespace SonarUtils.Tests
         [InlineData(int.MaxValue)]
         public void NextU_2(uint maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.NextU(maxValue);
@@ -194,7 +194,7 @@ namespace SonarUtils.Tests
         [InlineData(int.MaxValue)]
         public void NextU_3(uint maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.NextU(maxValue);
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -209,7 +209,7 @@ namespace SonarUtils.Tests
         [InlineData(1)]
         public void NextU_4(uint maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var result = random.NextU(maxValue);
@@ -224,7 +224,7 @@ namespace SonarUtils.Tests
         [InlineData(uint.MinValue, uint.MaxValue)]
         public void NextU_7(uint minValue, uint maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.NextU(minValue, maxValue);
@@ -239,7 +239,7 @@ namespace SonarUtils.Tests
         [InlineData(uint.MinValue, uint.MaxValue)]
         public void NextU_8(uint minValue, uint maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.NextU(minValue, maxValue);
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -252,7 +252,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "Next64() returns values between 0 and long.MaxValue")]
         public void Next64_1()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.Next64();
@@ -263,7 +263,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "Next64() can return different values")]
         public void Next64_2()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.Next64();
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -281,7 +281,7 @@ namespace SonarUtils.Tests
         [InlineData(long.MaxValue)]
         public void Next64_3(long maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.Next64(maxValue);
@@ -296,7 +296,7 @@ namespace SonarUtils.Tests
         [InlineData(long.MaxValue)]
         public void Next64_4(long maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.Next64(maxValue);
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -311,7 +311,7 @@ namespace SonarUtils.Tests
         [InlineData(1)]
         public void Next64_5(long maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var result = random.Next64(maxValue);
@@ -325,7 +325,7 @@ namespace SonarUtils.Tests
         [InlineData(-41245249)]
         public void Next64_6(long maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             Assert.Throws<ArgumentOutOfRangeException>(() => random.Next64(maxValue));
         }
 
@@ -336,7 +336,7 @@ namespace SonarUtils.Tests
         [InlineData(long.MinValue, long.MaxValue)]
         public void Next64_7(long minValue, long maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.Next64(minValue, maxValue);
@@ -351,7 +351,7 @@ namespace SonarUtils.Tests
         [InlineData(long.MinValue, long.MaxValue)]
         public void Next64_8(long minValue, long maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.Next64(minValue, maxValue);
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -364,7 +364,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "Next64U() can return different values")]
         public void Next64U_1()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.Next64U();
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -382,7 +382,7 @@ namespace SonarUtils.Tests
         [InlineData(long.MaxValue)]
         public void Next64U_2(ulong maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.Next64U(maxValue);
@@ -397,7 +397,7 @@ namespace SonarUtils.Tests
         [InlineData(long.MaxValue)]
         public void Next64U_3(ulong maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.Next64U(maxValue);
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -412,7 +412,7 @@ namespace SonarUtils.Tests
         [InlineData(1)]
         public void Next64U_4(ulong maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var result = random.Next64U(maxValue);
@@ -427,7 +427,7 @@ namespace SonarUtils.Tests
         [InlineData(ulong.MinValue, ulong.MaxValue)]
         public void Next64U_7(ulong minValue, ulong maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.Next64U(minValue, maxValue);
@@ -442,7 +442,7 @@ namespace SonarUtils.Tests
         [InlineData(ulong.MinValue, ulong.MaxValue)]
         public void Next64U_8(ulong minValue, ulong maxValue)
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var value = random.Next64U(minValue, maxValue);
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -455,7 +455,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "NextInt() can return positive and negative values")]
         public void NextInt()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var pos = false;
             var neg = false;
             var zero = false; // NOTE: This is not checked
@@ -477,7 +477,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "NextInt64() can return positive and negative values")]
         public void NextInt64()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var pos = false;
             var neg = false;
             var zero = false; // NOTE: This is not checked
@@ -499,7 +499,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "NextInt() can only return positive values")]
         public void NextIntNonNegative()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.NextIntNonNegative();
@@ -510,7 +510,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "NextInt64() can only return positive values")]
         public void NextInt64NonNegative()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             for (var loop = 0; loop < LoopCount; loop++)
             {
                 var value = random.NextInt64NonNegative();
@@ -521,7 +521,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "NextFloat() tests")]
         public void NextFloat()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var buckets = new int[256];
             for (var loop = 0; loop < LoopCount; loop++)
             {
@@ -545,7 +545,7 @@ namespace SonarUtils.Tests
         [Fact(DisplayName = "NextDouble() tests")]
         public void NextDouble()
         {
-            var random = RandomUtils.GetThreadCryptoRandom();
+            var random = RandomUtils.GetOrCreateThreadCryptoRandom();
             var buckets = new int[256];
             for (var loop = 0; loop < LoopCount; loop++)
             {

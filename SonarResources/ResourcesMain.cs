@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Sonar.Data.Details;
 using Sonar.Data.Rows;
 using SonarResources.Aetherytes;
@@ -26,7 +26,7 @@ namespace SonarResources
     public sealed class ResourcesMain
     {
         private SonarDb Db { get; }
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
         
         // Argument order doesn't matter, only their presence
         public ResourcesMain(
@@ -49,7 +49,7 @@ namespace SonarResources
             WorldTravelProvider _12,
 
             // Database
-            LuminaManager luminas,
+            GameDataManager luminas,
             SonarDb db
             )
         {
@@ -170,9 +170,16 @@ namespace SonarResources
             }
 
             var generator = new MapsGenerator();
-            foreach (var data in this.Luminas.GetAllDatas())
+            foreach (var data in this.Luminas.Datas)
             {
-                await generator.GenerateAllMapImagesAsync(data, this.Db, parallel, cancellationToken);
+                try
+                {
+                    await generator.GenerateAllMapImagesAsync(data, this.Db, parallel, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"{data.DataPath.FullName}: {ex}");
+                }
             }
 
             Console.WriteLine("Propagating blurhash from maps to zones");
@@ -182,9 +189,9 @@ namespace SonarResources
             }
             
             if (!zones) return;
-            foreach (var data in this.Luminas.GetAllDatas())
+            foreach (var data in this.Luminas.Datas)
             {
-                await generator.GenerateAllZoneImagesAsync(data, cancellationToken);
+                await generator.GenerateAllZoneImagesAsync(data, cancellationToken).ConfigureAwait(false);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using DryIoc;
@@ -42,7 +42,7 @@ namespace SonarPlugin.GUI
         {
             this._indexWidget.DrawBreadcrumb();
             ImGui.Text($"Index key: {this._indexWidget.IndexKey}");
-            ImGui.Text($"마물: {this.Hunts.Data.GetIndexStates(this._indexWidget.IndexKey).Count()} | 돌발: {this.Fates.Data.GetIndexStates(this._indexWidget.IndexKey).Count()}");
+            ImGui.Text($"마물: {this.Hunts.Data.GetIndexStates(this._indexWidget.IndexKey).Count} | 돌발: {this.Fates.Data.GetIndexStates(this._indexWidget.IndexKey).Count}");
             ImGui.Spacing();
             ImGui.Text("이 기능을 찾으신걸 축하드립니다!");
             ImGui.TextWrapped("현재 이 창에서 쓸만한 기능을 찾으실 수는 없겠지만 추후의 버전을 기약해 주세요.\n그동안은 필터링 선택기와 마물/돌발 개수 표시기를 즐겨주시길");

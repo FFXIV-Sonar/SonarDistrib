@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 using System.Reflection;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.IO;
 using System.Security.Cryptography;
 using Sonar.Messages;
 using SonarUtils;
+using System.Buffers.Text;
 
 namespace Sonar.Models
 {
@@ -103,7 +104,7 @@ namespace Sonar.Models
             try
             {
                 using var stream = File.OpenRead(assembly.Location);
-                return Convert.ToBase64String(SonarHashing.Sha256(stream));
+                return Base64Url.EncodeToString(SonarHashing.Sha256(stream).AsSpan());
             }
             catch (Exception ex)
             {

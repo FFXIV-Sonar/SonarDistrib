@@ -1,4 +1,4 @@
-﻿using Lumina;
+using Lumina;
 using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
 using System;
@@ -24,22 +24,22 @@ namespace SonarResources.Readers
 
         private readonly Dictionary<uint, uint> _fateAchievement = new();
         private SonarDb Db { get; }
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
 
-        public AchievementsReader(LuminaManager luminas, SonarDb db, FateReader _)
+        public AchievementsReader(GameDataManager luminas, SonarDb db, FateReader _)
         {
             this.Db = db;
             this.Luminas = luminas;
 
             Console.WriteLine("Reading fate achievements");
-            foreach (var data in this.Luminas.GetAllDatas())
+            foreach (var data in this.Luminas.Datas)
             {
                 Program.WriteProgress(this.ReadFateAchievements(data) ? "+" : ".");
             }
             Program.WriteProgressLine($" ({this._fateAchievement.Values.Distinct().Count()})");
 
             Console.WriteLine("Applying fate achievements");
-            foreach (var entry in this.Luminas.GetAllLuminasEntries())
+            foreach (var entry in this.Luminas.Entries)
             {
                 Program.WriteProgress(this.ApplyFateAchievements(entry) ? "+" : ".");
             }
@@ -88,7 +88,7 @@ namespace SonarResources.Readers
             return result;
         }
 
-        private bool ApplyFateAchievements(LuminaEntry lumina)
+        private bool ApplyFateAchievements(GameDataEntry lumina)
         {
             var achievementSheet = lumina.Data.GetExcelSheet<Achievement>(lumina.LuminaLanguage);
             if (achievementSheet is null) return false;

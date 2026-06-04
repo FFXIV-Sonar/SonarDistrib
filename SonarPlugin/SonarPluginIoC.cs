@@ -1,4 +1,4 @@
-﻿using Sonar;
+using Sonar;
 using System;
 using DryIoc;
 using System.Threading.Tasks;
@@ -72,7 +72,7 @@ namespace SonarPlugin
                 if (name is "ChineseSimplified") return SonarLanguage.ChineseSimplified;
                 if (name is "ChineseTraditional") return SonarLanguage.ChineseSimplified; // TODO: Change to .ChineseTraditional once done
 
-                this.Logger.LogWarning($"Unable to determine ClientLanguage {num}");
+                this.Logger.LogWarning("Unable to determine ClientLanguage: {num}", num);
                 return
                     num is 4 ? SonarLanguage.ChineseSimplified :
                     num is 5 ? SonarLanguage.ChineseSimplified : // TODO: Change to .ChineseTraditional once done
@@ -165,7 +165,7 @@ namespace SonarPlugin
 
         private FileDialogManager GetOrCreateFileDialogManager()
         {
-            if (this._fileDialogs is null && Interlocked.CompareExchange(ref this._fileDialogs, new(), null) == null)
+            if (this._fileDialogs is null && Interlocked.CompareExchange(ref this._fileDialogs, new(), null) is null)
             {
                 this.PluginInterface.UiBuilder.Draw += this._fileDialogs.Draw;
             }

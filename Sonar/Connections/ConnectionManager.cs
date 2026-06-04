@@ -1,4 +1,4 @@
-﻿using Sonar.Messages;
+using Sonar.Messages;
 using Sonar.Models;
 using Sonar.Sockets;
 using Sonar.Utilities;
@@ -38,6 +38,7 @@ namespace Sonar.Connections
         private readonly NonBlocking.NonBlockingDictionary<ISonarSocket, SonarConnectionInformation> _sockets = new();
         private volatile int _failCount;
         private volatile bool _reconnect;
+        private int? _lastExceptionTicks;
 
         private SonarClient Client { get; }
 
@@ -102,7 +103,7 @@ namespace Sonar.Connections
             try
             {
                 // Initial delay
-                await Task.Delay(InitialDelayMs, token);
+                await Task.Delay(InitialDelayMs, token).ConfigureAwait(false);
 
                 // Snapshot this._failCount and begin loop
                 var failCount = this._failCount;
@@ -135,7 +136,7 @@ namespace Sonar.Connections
                         var startTicks = System.Environment.TickCount;
                         var ticks = endTicks - startTicks;
                         if (ticks <= 0) break;
-                        await Task.Delay(GetVariedIntervalMs(RecheckIntervalMs), token);
+                        await Task.Delay(GetVariedIntervalMs(RecheckIntervalMs), token).ConfigureAwait(false);
                         this.EnsureConnectionIfAvailable();
                     }
 
@@ -149,45 +150,64 @@ namespace Sonar.Connections
         private Task ConnectAttemptTask()
         {
             var url = this._urls.GetRandomUrl(this._reconnect || this._failCount >= FailureThreshold, this._reconnect);
-            return url.Type switch
+            try
             {
-                ConnectionType.WebSocket => this.ConnectionAttemptWebSocket(url),
-                ConnectionType.SignalR => this.ConnectionAttemptSignalR(url),
-                _ => throw new ArgumentException($"Invalid Connection Type for {url.Key}: {url.Type}")
-            };
-
+                return url.Type switch
+                {
+                    ConnectionType.WebSocket => this.ConnectionAttemptWebSocket(url),
+                    ConnectionType.SignalR => this.ConnectionAttemptSignalR(url),
+                    _ => throw new ArgumentException($"Invalid Connection Type for {url.Key}: {url.Type}")
+                };
+            }
+            catch (OperationCanceledException) { /* Swallow */ }
+            catch (Exception ex)
+            {
+                // Only log exception if not connected.
+                if (this._socket is null && this._failCount >= FailureThreshold)
+                {
+                    // Lets not spam the logs: Only log an exception once every ExceptionLogIntervalMs
+                    var currentTicks = System.Environment.TickCount;
+                    var lastTicks = this._lastExceptionTicks;
+                    if (lastTicks is null || (currentTicks - lastTicks) >= ExceptionLogIntervalMs)
+                    {
+                        this._lastExceptionTicks = currentTicks;
+                        this.Client.LogError(ex, $"Connection exception at {url.Key} ({url.Type})");
+                    }
+                }
+            }
+            return Task.CompletedTask;
         }
 
+        [SuppressMessage("Reliability", "CA2000", Justification = "Ownership passed to SonarSocket.")]
         private async Task ConnectionAttemptWebSocket(SonarUrl url)
         {
+            Debug.Assert(url.Type is ConnectionType.WebSocket);
             using var cts = new CancellationTokenSource(ConnectTimeoutMs);
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(this._cts.Token, cts.Token);
             var token = linkedCts.Token;
 
             var webSocket = new ClientWebSocket();
-
             var socket = SonarSocketWebSocket.CreateClientSocket(webSocket); // webSocket is now "owned" by this SonarSocket
             this.PrepareSocket(socket, url);
 
             try
             {
-                await webSocket.ConnectAsync(url, HappyHttpUtils.CreateRandomlyHappyClient(), token);
+                await webSocket.ConnectAsync(url, HappyHttpUtils.CreateRandomlyHappyClient(), token).ConfigureAwait(false);
                 socket.Start();
-                await Task.Delay(ReadyTimeoutMs, token);
+                await Task.Delay(ReadyTimeoutMs, token).ConfigureAwait(false);
                 if (this._sockets.TryGetValue(socket, out var info) && !info.Id.HasValue) this.DisposeSocket(socket);
             }
-            catch (Exception ex)
+            catch
             {
-                // Only log exception if not connected.
-                if (this._socket is null && ex is not OperationCanceledException) this.Client.LogError(ex, $"Connection exception at {url.Key} ({url.Type})");
-
-                // Dispose of faulty socket
+                // Dispose faulty socket
                 this.DisposeSocket(socket);
+                throw;
             }
         }
 
         private async Task ConnectionAttemptSignalR(SonarUrl url)
         {
+            Debug.Assert(url.Type is ConnectionType.SignalR);
             using var cts = new CancellationTokenSource(ConnectTimeoutMs);
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(this._cts.Token, cts.Token);
             var token = linkedCts.Token;
@@ -202,18 +222,16 @@ namespace Sonar.Connections
 
             try
             {
-                await connection.StartAsync(token);
+                await connection.StartAsync(token).ConfigureAwait(false);
                 socket.Start();
-                await Task.Delay(ReadyTimeoutMs, token);
+                await Task.Delay(ReadyTimeoutMs, token).ConfigureAwait(false);
                 if (this._sockets.TryGetValue(socket, out var info) && !info.Id.HasValue) this.DisposeSocket(socket);
             }
-            catch (Exception ex)
+            catch
             {
-                // Only log exception if not connected.
-                if (this._socket is null && ex is not OperationCanceledException) this.Client.LogError(ex, $"Connection exception at {url.Key} ({url.Type})");
-
-                // Dispose of faulty socket
+                // Dispose faulty socket
                 this.DisposeSocket(socket);
+                throw;
             }
         }
 
@@ -288,14 +306,14 @@ namespace Sonar.Connections
             {
                 info.Id = ready.ConnectionId;
                 info.Type = ready.ConnectionType;
-                await socket.SendAsync(ready);
+                await socket.SendAsync(ready).ConfigureAwait(false);
 
                 var key = ready.Challenge;
                 var challengeHandler = this.Client.StartInfo.ChallengeHandler;
                 if (!key.IsDefault && challengeHandler is not null)
                 {
                     var results = await challengeHandler(key, CancellationToken.None).ConfigureAwait(false);
-                    if (results is not null) await socket.SendAsync(new ChallengeResults() { Key = key, Answers = results });
+                    if (results is not null) await socket.SendAsync(new ChallengeResults() { Key = key, Answers = results }).ConfigureAwait(false);
                 }
                 this.EnsureConnectionIfAvailable();
             }
@@ -327,11 +345,11 @@ namespace Sonar.Connections
 
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
-            await this._cts.CancelAsync();
-            await Task.WhenAll(this._sockets.Keys.Select(s => s.DisposeAsync().AsTask()));
+            await this._cts.CancelAsync().ConfigureAwait(false);
+            await Task.WhenAll(this._sockets.Keys.Select(s => s.DisposeAsync().AsTask())).ConfigureAwait(false);
             this.Client.LogDebug(() => $"{nameof(SonarConnectionManager)} disposed (async)");
             this._cts.Dispose();
-            await this._urls.DisposeAsync();
+            await this._urls.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

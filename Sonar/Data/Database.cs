@@ -1,4 +1,4 @@
-﻿using Sonar.Data.Rows;
+using Sonar.Data.Rows;
 using Sonar.Enums;
 using System.Collections.Generic;
 using Sonar.Data.Details;
@@ -51,7 +51,7 @@ namespace Sonar.Data
         public static event Action<SonarDb>? DbLoaded;
 
         /// <summary>Warning: Slow</summary>
-        public static byte[] ComputeHash() => Instance.ComputeHash();
+        public static ImmutableArray<byte> ComputeHash() => Instance.ComputeHash();
 
         /// <summary>Warning: Slow</summary>
         public static bool VerifyHash() => Instance.VerifyHash();
@@ -99,7 +99,7 @@ namespace Sonar.Data
         #endregion
 
         public static double Timestamp => Instance.Timestamp;
-        public static ReadOnlySpan<byte> Hash => Instance.Hash;
+        public static ReadOnlySpan<byte> Hash => Instance.Hash.AsSpan();
         public static string HashString => Instance.HashString;
         public static SonarDbIndexesFacade Indexes => Instance.Indexes;
 

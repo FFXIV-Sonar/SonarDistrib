@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Lumina;
 using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
@@ -20,16 +20,16 @@ namespace SonarResources.Readers
     [SingletonReuse]
     public sealed class WorldReader
     {
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
         private SonarDb Db { get; }
 
-        public WorldReader(LuminaManager luminas, SonarDb db, DatacenterReader _)
+        public WorldReader(GameDataManager luminas, SonarDb db, DatacenterReader _)
         {
             this.Luminas = luminas;
             this.Db = db;
 
             Console.WriteLine("Reading all worlds");
-            foreach (var data in this.Luminas.GetAllDatas())
+            foreach (var data in this.Luminas.Datas)
             {
                 Program.WriteProgress(this.Read(data) ? "+" : ".");
             }

@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using Sonar.Models;
 using Sonar.Config;
 using System.Collections.Generic;
@@ -90,6 +90,7 @@ namespace Sonar.Messages
     [Union(0xe1, typeof(SonarHeartbeat))]
 
     // Multiple Messages (Warning: Potentially infinitely recursive. Infinite recursion is avoided in the MessageList itself but the possibility is still there.)
+    [Union(0xfe, typeof(RawMessage))]
     [Union(0xff, typeof(MessageList))]
 
     public interface ISonarMessage

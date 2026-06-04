@@ -1,4 +1,4 @@
-﻿using AG;
+using AG;
 using AG.EnumLocalization;
 using Sonar;
 using System;
@@ -35,7 +35,7 @@ namespace SonarPlugin.Utility
         public static void SetLanguage(Assembly assembly, string? langCode)
         {
             EnumLoc.SetDefaultLanguage(langCode, assembly);
-            if (langCode?.StartsWith("file:") is true)
+            if (langCode?.StartsWith("file:", StringComparison.Ordinal) is true)
             {
                 try
                 {
@@ -58,7 +58,7 @@ namespace SonarPlugin.Utility
                 {
                     SetupAssemblyCore(assembly, debug);
                     var langCode = EnumLoc.GetDefaultLanguage(assembly);
-                    if (langCode?.StartsWith("file:") is true) SetLanguageCore(assembly, langCode);
+                    if (langCode?.StartsWith("file:", StringComparison.Ordinal) is true) SetLanguageCore(assembly, langCode);
                 }
                 catch (Exception ex)
                 {
@@ -94,10 +94,10 @@ namespace SonarPlugin.Utility
         /// <summary>Precondition: <paramref name="name"/> starts with <c>file:</c></summary>
         private static void SetLanguageCore(Assembly assembly, string? name)
         {
-            Debug.Assert(name?.StartsWith("file:") is true);
+            Debug.Assert(name?.StartsWith("file:", StringComparison.Ordinal) is true);
             try
             {
-                var stream = File.OpenRead(name[5..]);
+                using var stream = File.OpenRead(name[5..]);
                 ThrowHelper.ThrowIf(stream is null, () => new NullReferenceException("Opened stream was null."));
                 LoadLanguageCore(assembly, name, stream);
             }

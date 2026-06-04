@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Sonar.Utilities
@@ -24,7 +24,7 @@ namespace Sonar.Utilities
         }
 
         /// <summary>Time synchronization offset relative to server (+ = behind, - = ahead)</summary>
-        public static double UnixTimeOffset { get; internal set; } = 0;
+        public static double UnixTimeOffset { get; internal set; }
 
         /// <summary>Synchronized time using Unix Epoch (in Milliseconds)</summary>
         public static double SyncedUnixNow => UnixNow + UnixTimeOffset;

@@ -1,15 +1,17 @@
-﻿using System;
-using System.Numerics;
 using MessagePack;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
+using System.Text.Json.Serialization;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
-using System.Text.Json.Serialization;
 
 namespace Sonar.Numerics
 {
     [MessagePackObject]
     [Serializable]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1104:Fields should not have public accessibility", Justification = "Intentional")]
+    [SuppressMessage("Minor Code Smell", "S1104", Justification = "Intentional.")]
+    [SuppressMessage("Usage", "CA2225", Justification = "Goodness.")]
     public struct SonarVector3 : IEquatable<SonarVector3>
     {
         public const double MessagePackAccuracy = 10;

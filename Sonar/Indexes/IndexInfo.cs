@@ -1,8 +1,9 @@
-﻿using Sonar.Data;
+using Sonar.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -78,8 +79,8 @@ namespace Sonar.Indexes
 
         private static uint? ParseUintOrNull(string? s)
         {
-            if (s == null) return null;
-            return uint.Parse(s);
+            if (s is null) return null;
+            return uint.Parse(s, CultureInfo.InvariantCulture);
         }
 
         public static bool TryParse(string indexKey, [MaybeNullWhen(false)] out IndexInfo indexInfo)

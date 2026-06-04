@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Humanizer;
 using Lumina.Excel.Sheets;
 using Sonar.Data.Details;
@@ -14,23 +14,33 @@ namespace SonarResources.Readers
     [SingletonReuse]
     public sealed class MapReader
     {
-        private LuminaManager Luminas { get; }
+        private GameDataManager Luminas { get; }
         private SonarDb Db { get; }
 
-        public MapReader(LuminaManager luminas, SonarDb db)
+        public MapReader(GameDataManager luminas, SonarDb db)
         {
             this.Luminas = luminas;
             this.Db = db;
 
             Console.WriteLine("Reading all maps");
-            foreach (var entry in this.Luminas.GetAllLuminasEntries())
+            var exceptions = new List<string>();
+            foreach (var entry in this.Luminas.Entries)
             {
-                Program.WriteProgress(this.Read(entry) ? "+" : ".");
+                try
+                {
+                    Program.WriteProgress(this.Read(entry) ? "+" : ".");
+                }
+                catch (Exception ex)
+                {
+                    Program.WriteProgress("e");
+                    exceptions.Add($"{entry.Data.DataPath.FullName}: {ex}");
+                }
             }
             Program.WriteProgressLine($" ({this.Db.Maps.Count})");
+            foreach (var exception in exceptions) Console.WriteLine(exceptions);
         }
 
-        public bool Read(LuminaEntry lumina)
+        public bool Read(GameDataEntry lumina)
         {
             var mapSheet = lumina.Data.GetExcelSheet<Map>(lumina.LuminaLanguage);
             if (mapSheet is null) return false;

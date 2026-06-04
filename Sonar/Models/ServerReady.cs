@@ -1,7 +1,6 @@
-﻿using Sonar.Messages;
+using Sonar.Messages;
 using MessagePack;
 using Sonar.Connections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace Sonar.Models

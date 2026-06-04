@@ -1,4 +1,4 @@
-﻿using Dalamud.Utility;
+using Dalamud.Utility;
 using Sonar.Data;
 using Sonar.Data.Rows;
 using System;
@@ -12,8 +12,8 @@ namespace SonarPlugin.Config
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public sealed class CityStateMetaAttribute : Attribute
     {
-        public uint AetheryteId { get; init; }
-        public uint ZoneId { get; init; }
+        public uint AetheryteId { get; }
+        public uint ZoneId { get; }
 
         public CityStateMetaAttribute(uint aetheryteId, uint zoneId)
         {

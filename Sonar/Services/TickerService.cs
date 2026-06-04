@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -125,7 +125,7 @@ namespace Sonar.Services
         public async ValueTask DisposeAsync()
         {
             this._tickStates = [];
-            await this._timer.DisposeAsync();
+            await this._timer.DisposeAsync().ConfigureAwait(false);
         }
 
         public void Dispose()

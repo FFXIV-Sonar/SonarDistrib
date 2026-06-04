@@ -1,4 +1,4 @@
-﻿using SonarPlugin.Attributes;
+using SonarPlugin.Attributes;
 
 namespace SonarPlugin.Config
 {

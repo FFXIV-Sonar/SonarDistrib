@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
 using Sonar.Data.Details;
@@ -25,13 +25,13 @@ namespace SonarResources.Cosmic
     {
         private readonly Lazy<Task> _workerTask;
 
-        private LuminaManager DataSources { get; }
+        private GameDataManager DataSources { get; }
         private LgbInstancesReader Lgb { get; }
         private SonarDb Db { get; }
 
         public Task WorkerTask => this._workerTask.Value;
 
-        public EmergencyReader(LuminaManager datas, SonarDb db, LgbInstancesReader lgb)
+        public EmergencyReader(GameDataManager datas, SonarDb db, LgbInstancesReader lgb)
         {
             this.DataSources = datas;
             this.Lgb = lgb;
@@ -79,7 +79,7 @@ namespace SonarResources.Cosmic
         public void ReadGameData(Dictionary<uint, EventRow> events, CancellationToken cancellationToken = default)
         {
             Console.WriteLine("Reading Cosmic Emergencies...");
-            foreach (var dataSource in this.DataSources.GetAllLuminasEntries())
+            foreach (var dataSource in this.DataSources.Entries)
             {
                 var data = dataSource.Data;
                 var dataLang = dataSource.LuminaLanguage;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
@@ -72,7 +72,7 @@ namespace Sonar
             Memory<byte> src = new byte[bufferSize];
             Memory<byte> dst = new byte[bufferSize];
 
-            int bytesRead = await inStream.ReadAsync(src, token);
+            int bytesRead = await inStream.ReadAsync(src, token).ConfigureAwait(false);
             while (bytesRead > 0)
             {
                 int srcPos = 0;
@@ -81,16 +81,16 @@ namespace Sonar
                     var result = encoder.Compress(src[srcPos..bytesRead], dst, out int consumed, out int written, false);
                     if (result == OperationStatus.InvalidData) throw new InvalidOperationException("Invalid Data");
                     srcPos += consumed;
-                    await outStream.WriteAsync(dst[..written], token);
+                    await outStream.WriteAsync(dst[..written], token).ConfigureAwait(false);
                     if (result == OperationStatus.Done) break;
                 }
-                bytesRead = await inStream.ReadAsync(src, token);
+                bytesRead = await inStream.ReadAsync(src, token).ConfigureAwait(false);
             }
 
             while (true)
             {
                 var result = encoder.Flush(dst, out int written);
-                await outStream.WriteAsync(dst[..written], token);
+                await outStream.WriteAsync(dst[..written], token).ConfigureAwait(false);
                 if (result == OperationStatus.Done) break;
             }
         }
@@ -123,7 +123,7 @@ namespace Sonar
             Memory<byte> src = new byte[bufferSize];
             Memory<byte> dst = new byte[bufferSize];
 
-            int bytesRead = await inStream.ReadAsync(src, token);
+            int bytesRead = await inStream.ReadAsync(src, token).ConfigureAwait(false);
             OperationStatus result = default;
             while (bytesRead > 0)
             {
@@ -133,10 +133,10 @@ namespace Sonar
                     result = decoder.Decompress(src[srcPos..bytesRead], dst, out int consumed, out int written);
                     if (result == OperationStatus.InvalidData) throw new InvalidOperationException("Invalid Data");
                     srcPos += consumed;
-                    await outStream.WriteAsync(dst[..written], token);
+                    await outStream.WriteAsync(dst[..written], token).ConfigureAwait(false);
                     if (result == OperationStatus.Done) break;
                 }
-                bytesRead = await inStream.ReadAsync(src, token);
+                bytesRead = await inStream.ReadAsync(src, token).ConfigureAwait(false);
             }
             if (result == OperationStatus.NeedMoreData) throw new InvalidOperationException("Need more data");
         }

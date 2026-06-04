@@ -1,6 +1,8 @@
-﻿using MessagePack;
+using MessagePack;
 using Sonar.Messages;
 using System;
+using System.Buffers.Text;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,7 +18,7 @@ namespace Sonar.Models
 
         /// <summary>Secret hash</summary>
         [Key(1)]
-        public required byte[]? SecretHash { get; init; } // = HashSecret(this.SecretName)
+        public required ImmutableArray<byte> SecretHash { get; init; }
 
         /// <summary>Secret comment</summary>
         [Key(2)]
@@ -25,13 +27,13 @@ namespace Sonar.Models
         /// <summary>Validate secret</summary>
         public bool Validate()
         {
-            if (this.SecretName is null || this.SecretHash is null) return false;
+            if (this.SecretName is null || this.SecretHash.IsDefaultOrEmpty) return false;
             return this.SecretHash.SequenceEqual(HashSecret(this.SecretName));
         }
 
         public override string ToString()
         {
-            return $"{this.SecretName}: {Convert.ToBase64String(this.SecretHash ?? Array.Empty<byte>())} ({(this.Comment is null ? string.Empty : this.Comment.Length > 32 ? this.Comment[..32] : this.Comment)})";
+            return $"{this.SecretName}: {Base64Url.EncodeToString(this.SecretHash.AsSpan())} ({(this.Comment is null ? string.Empty : this.Comment.Length > 32 ? this.Comment[..32] : this.Comment)})";
         }
     }
 }

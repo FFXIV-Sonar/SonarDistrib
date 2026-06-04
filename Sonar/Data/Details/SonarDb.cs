@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using Sonar.Data.Rows;
 using System;
 using System.Linq;
@@ -11,10 +11,13 @@ using System.Collections.Frozen;
 using SonarUtils.Text;
 using SonarUtils;
 using System.Buffers.Text;
+using System.Diagnostics.CodeAnalysis;
+using System.Collections.Immutable;
 
 namespace Sonar.Data.Details
 {
     [MessagePackObject]
+    [SuppressMessage("Usage", "CA2227", Justification = "Intended.")]
     public sealed class SonarDb : ISonarMessage
     {
         public SonarDb()
@@ -27,10 +30,10 @@ namespace Sonar.Data.Details
         public double Timestamp { get; set; }
 
         [Key(1)]
-        public byte[] Hash { get; set; } = [];
+        public ImmutableArray<byte> Hash { get; set; } = [];
 
         [IgnoreMember]
-        public string HashString => Base64Url.EncodeToString(this.Hash);
+        public string HashString => Base64Url.EncodeToString(this.Hash.AsSpan());
 
         [IgnoreMember]
         public SonarDbIndexesFacade Indexes { get; private set; }
@@ -118,7 +121,7 @@ namespace Sonar.Data.Details
         }
 
         /// <summary>Warning: Slow</summary>
-        public byte[] ComputeHash()
+        public ImmutableArray<byte> ComputeHash()
         {
             var byteList = new InternalList<byte>(1048576);
             byteList.AddRange(MessagePackSerializer.Serialize(this.Worlds.OrderBy(kvp => kvp.Key).AsEnumerable(), MessagePackSerializerOptions.Standard));

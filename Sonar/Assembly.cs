@@ -1,7 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Reliability", "CA2007", Justification = "Handled by Fody")]
 [assembly: SuppressMessage("Globalization", "CA1303", Justification = "<Pending>")]
 [assembly: SuppressMessage("Design", "CA1040", Justification = "MessagePack and identification")]
 [assembly: SuppressMessage("Design", "CA1028", Justification = "")]

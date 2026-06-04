@@ -129,7 +129,7 @@ namespace SonarPlugin.GUI.Internal
 
             var preview = 
                 language is null ? PluginLoc.Fallbacks.GetLocString() :
-                language.StartsWith("file:") ? language :
+                language.StartsWith("file:", StringComparison.Ordinal) ? language :
                 EnumLoc.GetLocString(MetaLanguageKey, language, assembly);
 
             using (var combo = ImRaii.Combo($"{label}###{id}", preview))
@@ -153,7 +153,7 @@ namespace SonarPlugin.GUI.Internal
                         else if (ImGui.IsItemHovered()) ShowTooltip(lang, assembly);
                     }
 
-                    if (language?.StartsWith("file:") is true)
+                    if (language?.StartsWith("file:", StringComparison.Ordinal) is true)
                     {
                         if (ImGui.Selectable(language, true))
                         {

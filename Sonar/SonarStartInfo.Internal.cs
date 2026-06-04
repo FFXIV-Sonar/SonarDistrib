@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
@@ -41,10 +41,10 @@ namespace Sonar
 		internal async Task<byte[]?> ReadFileBytesAsync(string filename, int maxSize = DefaultMaxSize)
 		{
 			Debug.Assert(this.Locked);
-			var result = await ReadFileBytesCoreAsync(this.GetFilePath(filename), maxSize);
+			var result = await ReadFileBytesCoreAsync(this.GetFilePath(filename), maxSize).ConfigureAwait(false);
 			if (result is not null) return result;
-			var bytes = await ReadFileBytesCoreAsync(GetDefaultFilePath(filename), maxSize); // Fall-back for old versions
-            if (bytes is not null) await this.WriteFileBytesAsync(filename, bytes);
+			var bytes = await ReadFileBytesCoreAsync(GetDefaultFilePath(filename), maxSize).ConfigureAwait(false); // Fall-back for old versions
+            if (bytes is not null) await this.WriteFileBytesAsync(filename, bytes).ConfigureAwait(false);
 			return bytes;
 		}
 
@@ -91,7 +91,7 @@ namespace Sonar
 				var totalRead = 0;
 				while (totalRead < stream.Length)
 				{
-					var read = await stream.ReadAsync(bytes.AsMemory(totalRead, (int)stream.Length - totalRead));
+					var read = await stream.ReadAsync(bytes.AsMemory(totalRead, (int)stream.Length - totalRead)).ConfigureAwait(false);
 					if (read == 0) return null;
 					totalRead += read;
 				}
@@ -117,7 +117,7 @@ namespace Sonar
 		{
 			try
 			{
-				await File.WriteAllBytesAsync(path, bytes);
+				await File.WriteAllBytesAsync(path, bytes).ConfigureAwait(false);
 				return true;
 			}
 			catch

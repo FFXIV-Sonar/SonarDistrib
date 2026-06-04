@@ -14,15 +14,25 @@
     <PackageReference Include="DryIoc.MefAttributedModel.dll" Version="7.0.2" />
     <PackageReference Include="FileSystemLinks" Version="1.0.3" />
     <PackageReference Include="Humanizer" Version="3.0.10" />
-    <PackageReference Include="Lumina" Version="7.3.0" />
-    <PackageReference Include="Lumina.Excel" Version="7.4.3" />
-    <PackageReference Include="Magick.NET-Q8-x64" Version="14.13.0" />
-    <PackageReference Include="MessagePack" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="10.0.7" />
+    <PackageReference Include="Magick.NET-Q8-x64" Version="14.13.1" />
+    <PackageReference Include="MessagePack" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="10.0.8" />
     <PackageReference Include="Spectre.Console" Version="0.55.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Sonar\Sonar.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BCnEncoder">
+      <HintPath>..\SonarResources.libs\BCnEncoder.dll</HintPath>
+    </Reference>
+    <Reference Include="Lumina">
+      <HintPath>..\SonarResources.libs\Lumina.dll</HintPath>
+    </Reference>
+    <Reference Include="Lumina.Excel">
+      <HintPath>..\SonarResources.libs\Lumina.Excel.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

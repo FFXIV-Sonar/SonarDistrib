@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace SonarUtils.Collections
 {
-    public struct InternalList<T> : IEnumerable<T>, ICloneable // NOTE: Do not add IList<T>
+    public struct InternalList<T> : IEnumerable<T>, ICloneable, IEquatable<InternalList<T>> // NOTE: Do not add IList<T>
     {
         /// <summary>Internal <see cref="Array"/> used by this <see cref="InternalList{T}"/></summary>
         /// <remarks>Setting an array smaller than <see cref="Count"/> will result in undefined behavior</remarks>
@@ -105,7 +105,7 @@ namespace SonarUtils.Collections
 
         /// <summary>Insert a <paramref name="items"/> at a specified <paramref name="index"/></summary>
         /// <param name="index">Index to add the items into</param>
-        /// <param name="item">Item to add</param>
+        /// <param name="items">Items to add</param>
         public void InsertRange(int index, IEnumerable<T> items)
         {
             if (!items.TryGetNonEnumeratedCount(out var count))
@@ -237,31 +237,11 @@ namespace SonarUtils.Collections
             this.Count = count;
         }
 
-        public readonly override int GetHashCode()
-        {
-            var count = this.Count;
-            var hash = count.GetHashCode();
-            for (var index = 0; index < count; index++)
-            {
-                hash ^= this[index]?.GetHashCode() ?? 0;
-            }
-            return hash;
-        }
+        public readonly override int GetHashCode() => HashCode.Combine(this.Count.GetHashCode(), this.InternalArray.GetHashCode());
 
-        public readonly bool Equals(InternalList<T> other)
-        {
-            var count = this.Count;
-            if (count != other.Count) return false;
-            if (ReferenceEquals(this.InternalArray, other.InternalArray)) return true;
-            var comparer = EqualityComparer<T>.Default;
-            for (var index = 0; index < count; index++)
-            {
-                if (!comparer.Equals(this[index], other[index])) return false;
-            }
-            return true;
-        }
+        public readonly bool Equals(InternalList<T> other) => InternalList.Equals(this, other);
 
-        public readonly override bool Equals(object? obj) => obj is InternalList<T> list && this.Equals(list);
+        public readonly override bool Equals(object? obj) => obj is InternalList<T> other && this.Equals(other);
 
         public readonly InternalList<T> Clone()
         {
@@ -300,6 +280,22 @@ namespace SonarUtils.Collections
 
         public static bool operator ==(InternalList<T> left, InternalList<T> right) => left.Equals(right);
 
-        public static bool operator !=(InternalList<T> left, InternalList<T> right) => !(left == right);
+        public static bool operator !=(InternalList<T> left, InternalList<T> right) => !left.Equals(right);
+    }
+
+    public static class InternalList
+    {
+        public static bool Equals<T>(InternalList<T> left, InternalList<T> right)
+        {
+            var count = left.Count;
+            if (count != right.Count) return false;
+            if (ReferenceEquals(left.InternalArray, right.InternalArray)) return true;
+            var comparer = EqualityComparer<T>.Default;
+            for (var index = 0; index < count; index++)
+            {
+                if (!comparer.Equals(left[index], right[index])) return false;
+            }
+            return true;
+        }
     }
 }

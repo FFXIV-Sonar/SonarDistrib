@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Microsoft.Extensions.Logging;
 using Sonar.Relays;
 using System;
@@ -58,7 +58,7 @@ namespace SonarPlugin.Events
                 task.ContinueWith(task =>
                 {
                     if (task.IsFaulted) this.Logger.LogError(task.Exception, "Event relay handler exception");
-                });
+                }, TaskScheduler.Default);
             }
         }
     }

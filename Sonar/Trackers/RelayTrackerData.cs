@@ -1,4 +1,4 @@
-﻿using Sonar.Indexes;
+using Sonar.Indexes;
 using Sonar.Relays;
 using System;
 using System.Collections.Generic;
@@ -121,7 +121,7 @@ namespace Sonar.Trackers
         public IReadOnlyCollection<RelayState<T>> GetIndexStates(string indexKey)
         {
             this.ThrowIfNotIndexing();
-            if (indexKey == "all") return this.States.GetNonSnapshottingValues(); // NOTE: This is the cause why this method cannot return an IReadOnlySet
+            if (indexKey is "all") return this.States.GetNonSnapshottingValues(); // NOTE: This is the cause why this method cannot return an IReadOnlySet
             return this.Index.GetValueOrDefault(indexKey) ?? [];
         }
 

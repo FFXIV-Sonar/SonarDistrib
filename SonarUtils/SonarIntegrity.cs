@@ -34,7 +34,7 @@ namespace SonarUtils
                         await using (stream.ConfigureAwait(false))
                         {
                             var hash = await SonarHashing.HMacSha256Async(stream, key, cancellationToken).ConfigureAwait(false);
-                            yield return KeyValuePair.Create(name, ImmutableCollectionsMarshal.AsImmutableArray(hash));
+                            yield return KeyValuePair.Create(name, hash);
                         }
                     }
                 }
@@ -52,7 +52,7 @@ namespace SonarUtils
                 await using (stream.ConfigureAwait(false))
                 {
                     var hash = await SonarHashing.HMacSha256Async(stream, key, cancellationToken).ConfigureAwait(false);
-                    yield return KeyValuePair.Create(name, ImmutableCollectionsMarshal.AsImmutableArray(hash));
+                    yield return KeyValuePair.Create(name, hash);
                 }
             }
         }
