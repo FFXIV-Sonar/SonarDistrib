@@ -117,7 +117,7 @@ namespace SonarPlugin.Trackers
                 var fateState = fateStates.GetValueOrDefault(fateKey);
                 if (fateState is null) continue;
                 var fate = fateState.Relay.Clone();
-                fate.Status = FateStatus.Failed;
+                fate.Status = FateStatus.실패;
                 this.Tracker.FeedRelay(fate);
             }
             this._lastFateIds = currentFateIds;

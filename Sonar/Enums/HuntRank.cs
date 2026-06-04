@@ -14,11 +14,12 @@ namespace Sonar.Enums
 
         S = 3,
 
-        [EnumLoc(Fallback = "SS Minion")]
+        [EnumLoc(Fallback = "SS급 부하")]
         SSMinion = 4,
 
         SS = 5,
 
+        [EnumLoc(Fallback = "돌발")]
         [EnumLocAlias<RelayType>(RelayType.Fate)]
         Fate = 128,
 

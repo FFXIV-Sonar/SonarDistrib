@@ -6,22 +6,22 @@ namespace SonarPlugin.Sounds
     [EnumLocStrings("Sounds")]
     public enum SoundsLoc : uint
     {
-        [EnumLoc("Config.PlaySounds", Fallback = "Play Sound")]
+        [EnumLoc("Config.PlaySounds", Fallback = "알림음 사용")]
         PlaySound,
 
-        [EnumLoc("Config.Sounds", Fallback = "Sounds")]
+        [EnumLoc("Config.Sounds", Fallback = "알림음")]
         Sounds,
 
-        [EnumLoc("Config.GameSound", Fallback = "Game sound effect")]
+        [EnumLoc("Config.GameSound", Fallback = "게임 효과음")]
         GameSound,
 
-        [EnumLoc("Config.Resource", Fallback = "Legacy sound")]
+        [EnumLoc("Config.Resource", Fallback = "구버전 효과음")]
         Resource,
 
-        [EnumLoc("Config.Custom", Fallback = "Custom")]
+        [EnumLoc("Config.Custom", Fallback = "사용자")]
         Custom,
 
-        [EnumLoc("Config.Unknown", Fallback = "Unknown")]
+        [EnumLoc("Config.Unknown", Fallback = "알 수 없음")]
         Unknown,
 
         [EnumLoc("Config.GameSoundTooltip", Fallback = "Uses FFXIV's audio engine to play the game's built in sound effects.\nUses FFXIV's system sounds volume.")]
@@ -36,13 +36,13 @@ namespace SonarPlugin.Sounds
         [EnumLoc("Config.UnknownTooltip", Fallback = "Contact Sonar Support should this appear")]
         UnknownTooltip,
 
-        [EnumLoc("Config.SelectFile", Fallback = "Select file...")]
+        [EnumLoc("Config.SelectFile", Fallback = "파일 선택...")]
         SelectFile,
 
-        [EnumLoc("Config.SelectFilePrompt", Fallback = "Custom sound file")]
+        [EnumLoc("Config.SelectFilePrompt", Fallback = "사용자 알림음 파일")]
         SelectFilePrompt,
 
-        [EnumLoc("Config.SelectFilePromptFilter.SoundFiles", Fallback = "Sound files")]
+        [EnumLoc("Config.SelectFilePromptFilter.SoundFiles", Fallback = "알림음 파일")]
         SelectFilePromptSoundFiles,
 
         #region Sound Effect Fallbacks
@@ -50,7 +50,7 @@ namespace SonarPlugin.Sounds
         // This is used to define fallbacks
         // More information at SoundEngine.GetSoundName
 
-        [EnumLoc(Fallback = "Sound <id>")] // Generic fallback for non-existent SoundXY entries
+        [EnumLoc(Fallback = "알림음 <id>")] // Generic fallback for non-existent SoundXY entries
         SoundGeneric,
 
         [EnumLoc(Fallback = "Chat Sounds <se.1>")]
@@ -103,31 +103,31 @@ namespace SonarPlugin.Sounds
         #endregion
 
         #region Resource Sound Fallbacks
-        [EnumLoc("Resources.EnterChat", Fallback = "Enter Chat")]
+        [EnumLoc("Resources.EnterChat", Fallback = "대화 창 입력")]
         ResEnterChat,
 
-        [EnumLoc("Resources.Fanfare", Fallback = "Fanfare")]
+        [EnumLoc("Resources.Fanfare", Fallback = "팡파레")]
         ResFanfare,
 
-        [EnumLoc("Resources.FeatureUnlocked", Fallback = "Feature Unlocked")]
+        [EnumLoc("Resources.FeatureUnlocked", Fallback = "도전 가능")]
         ResFeatureUnlocked,
 
-        [EnumLoc("Resources.IncomingTell1", Fallback = "Incoming Tell 1")]
+        [EnumLoc("Resources.IncomingTell1", Fallback = "효과음 1")]
         ResIncomingTell1,
 
-        [EnumLoc("Resources.IncomingTell2", Fallback = "Incoming Tell 2")]
+        [EnumLoc("Resources.IncomingTell2", Fallback = "효과음 2")]
         ResIncomingTell2,
 
-        [EnumLoc("Resources.LimitBreakCharged", Fallback = "Limit Break Charged")]
+        [EnumLoc("Resources.LimitBreakCharged", Fallback = "리미트 브레이크 충전")]
         ResLimitBreakCharged,
 
-        [EnumLoc("Resources.LimitBreakUnlocked", Fallback = "Limit Break Unlocked")]
+        [EnumLoc("Resources.LimitBreakUnlocked", Fallback = "리미트 브레이크 잠금해제")]
         ResLimitBreakUnlocked,
 
-        [EnumLoc("Resources.LinkshellTransmission", Fallback = "Linkshell Transmission")]
+        [EnumLoc("Resources.LinkshellTransmission", Fallback = "링크셸 통신")]
         ResLinkshellTransmission,
 
-        [EnumLoc("Resources.Notification", Fallback = "Notification")]
+        [EnumLoc("Resources.Notification", Fallback = "알림음")]
         ResNotification,
         #endregion
     }
