@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
 using MessagePack;
@@ -214,7 +214,7 @@ namespace Sonar.Relays
         /// </summary>
         /// <param name="relay">Relay to check</param>
         [SuppressMessage("Major Bug", "S1244", Justification = "Intended")]
-        public bool IsSameEntity(FateRelay relay) => this.StatusDirect == FateStatus.진행중 && this.StartTime is 0 || this.StartTime is not 0 && this.StartTime == relay.StartTime;
+        public bool IsSameEntity(FateRelay relay) => this.StatusDirect == FateStatus.준비중 && this.StartTime is 0 || this.StartTime is not 0 && this.StartTime == relay.StartTime;
 
         /// <summary>
         /// Check if another relay regards the same fate (only Start time is checked)
