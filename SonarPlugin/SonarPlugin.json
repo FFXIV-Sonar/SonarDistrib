@@ -1,10 +1,12 @@
-﻿{
+{
   "Author": "Sonar Team",
   "Name": "Sonar",
   "Punchline": "Automatically send and receive hunt and fate relays.",
   "Description": "Automatically send and receive hunt and fate relays. /sonar to open, /sonarconfig to configure. Support is only provided in the Sonar Support discord.",
   "Changelog": "See https://news.ffxivsonar.com for more information",
   "InternalName": "SonarPlugin",
+  "LoadSync": false,
+  "CanUnloadAsync": true,
   "Tags": [
     "Sonar",
     "Hunt",

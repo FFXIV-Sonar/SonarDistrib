@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +13,7 @@ namespace Sonar.Services
 {
     public sealed class PingService : IAsyncDisposable, IDisposable
     {
-        private Timer timer;
+        private readonly Timer _timer;
         private uint pingSequence; // Interlocked
         private double pingTimestamp;
         private double lastMessageTimestamp;
@@ -29,7 +29,7 @@ namespace Sonar.Services
             this.Client.Connection.MessageReceived += this.MessageHandler;
 
             this.lastMessageTimestamp = UnixNow;
-            this.timer = new(this.TimerHandler, null, (int)EarthSecond * 5, (int)EarthSecond * 5);
+            this._timer = new(this.TimerHandler, null, (int)EarthSecond * 5, (int)EarthSecond * 5);
         }
 
         private void TimerHandler(object? _)
@@ -86,7 +86,7 @@ namespace Sonar.Services
         public async ValueTask DisposeAsync()
         {
             this.Client.Connection.MessageReceived -= this.MessageHandler;
-            await this.timer.DisposeAsync();
+            await this._timer.DisposeAsync();
         }
 
         public void Dispose()

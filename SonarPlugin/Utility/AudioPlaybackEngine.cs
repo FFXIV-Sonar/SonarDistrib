@@ -3,11 +3,11 @@ using DryIocAttributes;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using SonarPlugin.NAudio.Wave;
-using SonarUtils.Threading;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using SonarUtils.Threading;
 
 namespace SonarPlugin.Utility
 {
@@ -153,7 +153,7 @@ namespace SonarPlugin.Utility
             var waveProvider = sampler.ToSampleProvider().ToWaveProvider();
             var sourceBytes = new List<byte>();
 
-            int samplesRead; while ((samplesRead = waveProvider.Read(buffer, 0, 1024)) > 0) sourceBytes.AddRange(buffer[0..samplesRead]);
+            int samplesRead; while ((samplesRead = waveProvider.Read(buffer)) > 0) sourceBytes.AddRange(buffer[0..samplesRead]);
             return sourceBytes.ToArray();
         }
 
@@ -163,7 +163,7 @@ namespace SonarPlugin.Utility
             var waveProvider = sampler.ToWaveProvider();
             var sourceBytes = new List<byte>();
 
-            int samplesRead; while ((samplesRead = waveProvider.Read(buffer, 0, 1024)) > 0) sourceBytes.AddRange(buffer[0..samplesRead]);
+            int samplesRead; while ((samplesRead = waveProvider.Read(buffer)) > 0) sourceBytes.AddRange(buffer[0..samplesRead]);
             return sourceBytes.ToArray();
         }
 
@@ -173,7 +173,7 @@ namespace SonarPlugin.Utility
             var waveProvider = sampler.ToSampleProvider().ToWaveProvider();
             var sourceBytes = new List<byte>();
 
-            int samplesRead; while ((samplesRead = waveProvider.Read(buffer, 0, 1024)) > 0) sourceBytes.AddRange(buffer[0..samplesRead]);
+            int samplesRead; while ((samplesRead = waveProvider.Read(buffer)) > 0) sourceBytes.AddRange(buffer[0..samplesRead]);
             return sourceBytes.ToArray();
         }
 

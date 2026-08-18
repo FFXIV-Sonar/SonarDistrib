@@ -1,4 +1,4 @@
-﻿using AG.EnumLocalization;
+using AG.EnumLocalization;
 using Sonar;
 using Sonar.Data;
 using Sonar.Enums;
@@ -41,8 +41,8 @@ namespace SonarPlugin.Config
         [SuppressMessage("Performance", "CA1822", Justification = "Intended.")]
         public string? Plugin
         {
-            get => EnumLoc.GetDefaultLanguage(typeof(SonarPlugin).Assembly);
-            set => EnumLocUtils.SetLanguage(typeof(SonarPlugin).Assembly, value);
+            get => EnumLoc.GetDefaultLanguage(typeof(SonarPluginIoC).Assembly);
+            set => EnumLocUtils.SetLanguage(typeof(SonarPluginIoC).Assembly, value);
         }
 
         /// <summary>Sonar language.</summary>
@@ -73,7 +73,7 @@ namespace SonarPlugin.Config
         /// <returns>Plugin languages.</returns>
         [SuppressMessage("Minor Code Smell", "S2325", Justification = "Intended.")]
         [SuppressMessage("Performance", "CA1822", Justification = "Intended.")]
-        public ImmutableArray<string> GetAvailablePluginLanguages() => EnumLocUtils.GetLanguageResources(typeof(SonarPlugin).Assembly);
+        public ImmutableArray<string> GetAvailablePluginLanguages() => EnumLocUtils.GetLanguageResources(typeof(SonarPluginIoC).Assembly);
 
         /// <summary>Get available sonar Languages.</summary>
         /// <returns>Sonar languages.</returns>

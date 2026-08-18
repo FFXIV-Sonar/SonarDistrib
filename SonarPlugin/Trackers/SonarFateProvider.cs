@@ -106,7 +106,6 @@ namespace SonarPlugin.Trackers
                 });
             }
 
-
             // Determine and mark disappeared fates as failed
             var lastFateIds = this._lastFateIds;
             var missingFates = lastFateIds.Except(currentFateIds);

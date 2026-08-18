@@ -51,7 +51,7 @@ namespace SonarPlugin.Utility
 
         private static void SetupCore(bool debug)
         {
-            Span<Assembly> assemblies = [typeof(SonarPlugin).Assembly, typeof(SonarClient).Assembly];
+            Span<Assembly> assemblies = [typeof(SonarPluginIoC).Assembly, typeof(SonarClient).Assembly];
             foreach (var assembly in assemblies)
             {
                 try

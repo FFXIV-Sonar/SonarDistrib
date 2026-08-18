@@ -50,7 +50,7 @@ namespace SonarUtils.Internal
                     {
                         // DNS queries
                         var dnsTasks = new List<Task>();
-                        dnsTasks.Add(Task.Run(() => this.DnsWorkerAsync(this._cts.Token))); // .NET built-in resolver
+                        dnsTasks.Add(Task.Run(() => this.DnsWorkerAsync(this._cts.Token).WithExceptionObserved())); // .NET built-in resolver
                         this._tasks.AddRange(dnsTasks);
 
                         // DNS watcher
@@ -58,13 +58,13 @@ namespace SonarUtils.Internal
                         {
                             await Task.WhenAll(dnsTasks).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
                             this._ipAddresses.Writer.TryComplete();
-                        });
+                        }).WithExceptionObserved();
 
                         // Connection loop
-                        this._tasks.Add(Task.Run(() => this.ConnectLoopAsync(this._cts.Token)));
+                        this._tasks.Add(Task.Run(() => this.ConnectLoopAsync(this._cts.Token).WithExceptionObserved()));
 
                         // Tasks watcher
-                        _ = Task.Run(this.TaskWatcher);
+                        _ = this.TaskWatcher();
                     }
                 }
             }
@@ -110,7 +110,7 @@ namespace SonarUtils.Internal
             await foreach (var address in reader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
             {
                 // Start and addsa new connect worker to this._tasks.
-                lock (this._tasks) this._tasks.Add(Task.Run(() => this.ConnectWorkerAsync(address, cancellationToken), cancellationToken));
+                lock (this._tasks) this._tasks.Add(Task.Run(() => this.ConnectWorkerAsync(address, cancellationToken).WithExceptionObserved(), cancellationToken));
 
                 // Wait this._attemptDelay before awaiting and attempting another connection.
                 await Task.Delay(this._attemptDelay, cancellationToken).ConfigureAwait(false);

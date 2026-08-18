@@ -28,7 +28,7 @@ namespace SonarPlugin.Notifiers
     [SingletonReuse]
     public sealed class FateNotifier : IHostedService
     {
-        private SonarPlugin Plugin { get; }
+        private SonarPluginIoC Plugin { get; }
         private SonarFramework Framework { get; }
         private IClientState ClientState { get; }
         private SonarClient Client { get; }
@@ -37,7 +37,7 @@ namespace SonarPlugin.Notifiers
         private SoundEngine Sounds { get; }
         private IPluginLog Logger { get; }
         
-        public FateNotifier(SonarPlugin plugin, SonarFramework framework, IClientState clientState, SonarClient client, IRelayTracker<FateRelay> tracker, IChatGui chat, SoundEngine sounds, IPluginLog logger)
+        public FateNotifier(SonarPluginIoC plugin, SonarFramework framework, IClientState clientState, SonarClient client, IRelayTracker<FateRelay> tracker, IChatGui chat, SoundEngine sounds, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Framework = framework;

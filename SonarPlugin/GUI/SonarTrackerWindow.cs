@@ -25,11 +25,11 @@ namespace SonarPlugin.GUI
     {
         private readonly IndexSelectionWidget _indexWidget;
 
-        private WindowSystem Windows { get; }
+        private IWindowSystem Windows { get; }
         private IRelayTracker<HuntRelay> Hunts { get; }
         private IRelayTracker<FateRelay> Fates { get; }
 
-        public SonarTrackerWindow(WindowSystem windows, IRelayTracker<HuntRelay> hunts, IRelayTracker<FateRelay> fates, Container container) : base("Sonar Tracker (UNDER DEVELOPMENT!!!)") // TODO
+        public SonarTrackerWindow(IWindowSystem windows, IRelayTracker<HuntRelay> hunts, IRelayTracker<FateRelay> fates, Container container) : base("Sonar Tracker (UNDER DEVELOPMENT!!!)") // TODO
         {
             this._indexWidget = container.Resolve<IndexSelectionWidget>();
             this.Windows = windows;

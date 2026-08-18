@@ -116,9 +116,11 @@ namespace SonarResources.Readers
             this.Db.Zones[1310].IsField = true; // Oizys
             this.Db.Zones[1319].IsField = true; // Auxesia
 
-            // Occult Crescent - South Horn
-            this.Db.Zones[1252].IsField = true;
+            // Occult Crescent
+            this.Db.Zones[1252].IsField = true; // South Horn
             this.Db.Zones[1252].LocalOnly = true;
+            this.Db.Zones[1346].IsField = true; // North Horn
+            this.Db.Zones[1346].LocalOnly = true;
         }
 
         public static ExpansionPack GetZoneExpansion(string bg)

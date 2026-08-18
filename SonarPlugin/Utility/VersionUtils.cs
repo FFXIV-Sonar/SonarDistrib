@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sonar.Models;
@@ -23,7 +23,7 @@ namespace SonarPlugin.Utility
         /// Get Sonar Plugin Version
         /// </summary>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static string GetSonarPluginVersion() => typeof(SonarPlugin).Assembly.GetName().Version?.ToString() ?? "Unknown";
+        public static string GetSonarPluginVersion() => typeof(SonarPluginIoC).Assembly.GetName().Version?.ToString() ?? "Unknown";
 
         /// <summary>
         /// Get Dalamud Hash

@@ -1,25 +1,69 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Sonar.Utilities
 {
     public static class UnixTimeHelper
     {
-        private static int s_lastTickCount;
-        private static double s_lastUnixNow;
+        private const long UpdateIntervalMs = 1;
 
-        /// <summary>Current time using Unix Epoch (in Milliseconds)</summary>
+        private static SpinLock s_lock = new(false);
+        private static long s_lastTicks;
+        private static long s_unixNowLong;
+        private static double s_unixNow;
+
+        /// <summary>Current time using Unix Epoch (in Milliseconds) as a <see langword="long"/>.</summary>
+        public static long UnixNowLong
+        {
+            get
+            {
+                EnsureUpdated();
+                return Volatile.Read(ref s_unixNowLong);
+            }
+        }
+
+        /// <summary>Current time using Unix Epoch (in Milliseconds) as a <see langword="double"/>.</summary>
+        // TODO: Figure out if its safe to just change this to long instead of having both double and long paths
         public static double UnixNow
         {
             get
             {
-                var currentTicks = Environment.TickCount;
-                if (currentTicks != s_lastTickCount)
+                EnsureUpdated();
+                return Volatile.Read(ref s_unixNow);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void EnsureUpdated()
+        {
+            var currentTicks = Environment.TickCount;
+            var lastTicks = Volatile.Read(ref s_lastTicks);
+            var ticksDelta = currentTicks - lastTicks;
+            if (ticksDelta is >= UpdateIntervalMs or <= -UpdateIntervalMs) EnsureUpdatedSlow(currentTicks);
+        }
+
+        private static void EnsureUpdatedSlow(long currentTicks)
+        {
+            var lockTaken = false;
+            s_lock.Enter(ref lockTaken);
+            Debug.Assert(lockTaken);
+            try
+            {
+                var lastTicks = Volatile.Read(ref s_lastTicks);
+                var ticksDelta = currentTicks - lastTicks;
+                if (ticksDelta is >= UpdateIntervalMs or <= -UpdateIntervalMs)
                 {
-                    s_lastTickCount = currentTicks;
-                    s_lastUnixNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    Volatile.Write(ref s_lastTicks, currentTicks);
+                    var unixNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    s_unixNowLong = unixNow;
+                    s_unixNow = unixNow;
                 }
-                return s_lastUnixNow;
+            }
+            finally
+            {
+                s_lock.Exit(false);
             }
         }
 

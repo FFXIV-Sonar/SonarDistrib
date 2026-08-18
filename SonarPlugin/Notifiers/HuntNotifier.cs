@@ -34,7 +34,7 @@ namespace SonarPlugin.Notifiers
         private const double SSMinionNotificationThreshold = EarthHour;
         private readonly Dictionary<string, double> _lastSSMinionSignals = new();
 
-        private SonarPlugin Plugin { get; }
+        private SonarPluginIoC Plugin { get; }
         private IClientState ClientState { get; }
         private SonarClient Client { get; }
         private IRelayTracker<HuntRelay> Tracker { get; }
@@ -43,7 +43,7 @@ namespace SonarPlugin.Notifiers
         private SonarFramework Framework { get; }
         private IPluginLog Logger { get; }
 
-        public HuntNotifier(SonarPlugin plugin, IClientState clientState, SonarClient client, RelayTrackerViews views, IChatGui chat, SoundEngine sounds, SonarFramework framework, IPluginLog logger)
+        public HuntNotifier(SonarPluginIoC plugin, IClientState clientState, SonarClient client, RelayTrackerViews views, IChatGui chat, SoundEngine sounds, SonarFramework framework, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.ClientState = clientState;

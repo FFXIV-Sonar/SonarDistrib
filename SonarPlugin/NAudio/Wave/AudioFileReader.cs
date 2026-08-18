@@ -1,6 +1,8 @@
-﻿using NAudio.Wave.SampleProviders;
+using NAudio.Wave.SampleProviders;
 using NAudio.Wave;
 using System;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace SonarPlugin.NAudio.Wave
 {
@@ -103,9 +105,9 @@ namespace SonarPlugin.NAudio.Wave
         /// <returns>Number of bytes read</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            var waveBuffer = new WaveBuffer(buffer);
+            var waveBuffer = MemoryMarshal.Cast<byte, float>(buffer);
             int samplesRequired = count / 4;
-            int samplesRead = Read(waveBuffer.FloatBuffer, offset / 4, samplesRequired);
+            int samplesRead = Read(waveBuffer.Slice(offset / 4, samplesRequired));
             return samplesRead * 4;
         }
 
@@ -118,11 +120,18 @@ namespace SonarPlugin.NAudio.Wave
         /// <returns>Number of samples read</returns>
         public int Read(float[] buffer, int offset, int count)
         {
+            return this.Read(buffer.AsSpan(offset, count));
+        }
+
+        public int Read(Span<float> buffer)
+        {
             lock (lockObject)
             {
-                return sampleChannel.Read(buffer, offset, count);
+                return this.sampleChannel.Read(buffer);
             }
         }
+        
+        public int Read(ReadOnlySpan<float> buffer) => this.Read(MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in buffer[0]), buffer.Length));
 
         /// <summary>
         /// Gets or Sets the Volume of this AudioFileReader. 1.0f is full volume

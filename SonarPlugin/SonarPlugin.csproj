@@ -24,48 +24,49 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\en.plugin.lang.json" />
+    <Content Include="SonarPlugin.json" />
   </ItemGroup>
 
   <ItemGroup>
-  <EmbeddedResource Include="Resources\Flavor.data" />
-  <EmbeddedResource Include="Resources\Icons\redflag.png">
-    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-  </EmbeddedResource>
-  <EmbeddedResource Include="Resources\Sounds\FFXIV_Enter_Chat.mp3">
-		<LogicalName>Enter Chat</LogicalName>
-	</EmbeddedResource>
+    <EmbeddedResource Include="Resources\en.plugin.lang.json" />
+    <EmbeddedResource Include="Resources\Flavor.data" />
+    <EmbeddedResource Include="Resources\Icons\redflag.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Sounds\FFXIV_Enter_Chat.mp3">
+		  <LogicalName>Enter Chat</LogicalName>
+	  </EmbeddedResource>
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Fanfare.mp3">
-		<LogicalName>Fanfare</LogicalName>
-	</EmbeddedResource>
+		  <LogicalName>Fanfare</LogicalName>
+	  </EmbeddedResource>
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Feature_Unlocked.mp3">
-		<LogicalName>Feature Unlocked</LogicalName>
-	</EmbeddedResource>
+		  <LogicalName>Feature Unlocked</LogicalName>
+	  </EmbeddedResource>
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Incoming_Tell_1.mp3">
-		<LogicalName>Incoming Tell 1</LogicalName>
-	</EmbeddedResource>
+		  <LogicalName>Incoming Tell 1</LogicalName>
+	  </EmbeddedResource>
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Incoming_Tell_2.mp3">
-		<LogicalName>Incoming Tell 2</LogicalName>
-	</EmbeddedResource>	
+		  <LogicalName>Incoming Tell 2</LogicalName>
+	  </EmbeddedResource>	
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Limit_Break_Charged.mp3">
-		<LogicalName>Limit Break Charged</LogicalName>
-	</EmbeddedResource>	
+		  <LogicalName>Limit Break Charged</LogicalName>
+	  </EmbeddedResource>	
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Limit_Break_Unlocked.mp3">
-		<LogicalName>Limit Break Unlocked</LogicalName>
-	</EmbeddedResource>	
+		  <LogicalName>Limit Break Unlocked</LogicalName>
+	  </EmbeddedResource>	
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Linkshell_Transmission.mp3">
-		<LogicalName>Linkshell Transmission</LogicalName>
-	</EmbeddedResource>	
+		  <LogicalName>Linkshell Transmission</LogicalName>
+	  </EmbeddedResource>	
     <EmbeddedResource Include="Resources\Sounds\FFXIV_Notification.mp3">
-		<LogicalName>Notification</LogicalName>
-	</EmbeddedResource>	
+		  <LogicalName>Notification</LogicalName>
+	  </EmbeddedResource>	
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DryIoc.dll" Version="5.4.3" />
-    <PackageReference Include="NAudio.Core" Version="2.3.0" />
-    <PackageReference Include="NAudio.Wasapi" Version="2.3.0" />
-    <PackageReference Include="NAudio.WinMM" Version="2.3.0" />
+    <PackageReference Include="NAudio.Core" Version="3.0.0" />
+    <PackageReference Include="NAudio.Wasapi" Version="3.0.0" />
+    <PackageReference Include="NAudio.WinMM" Version="3.0.0" />
     <PackageReference Include="AG" Version="0.1.2-alpha" />
   </ItemGroup>
 

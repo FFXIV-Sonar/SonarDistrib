@@ -1,4 +1,4 @@
-﻿using Dalamud.Plugin.Services;
+using Dalamud.Plugin.Services;
 using DryIocAttributes;
 using Sonar.Data;
 using Sonar.Models;
@@ -22,11 +22,11 @@ namespace SonarPlugin.Managers
     {
         private IClientState ClientState { get; }
         private IObjectTable ObjectTable { get; }
-        private SonarPlugin Plugin { get; }
+        private SonarPluginIoC Plugin { get; }
         private SonarConfiguration Configuration => this.Plugin.Configuration;
         private IPluginLog Logger { get; }
 
-        public AetheryteManager(IClientState clientState, IObjectTable objectTable, SonarPlugin plugin, IPluginLog logger)
+        public AetheryteManager(IClientState clientState, IObjectTable objectTable, SonarPluginIoC plugin, IPluginLog logger)
         {
             this.ClientState = clientState;
             this.ObjectTable = objectTable;
