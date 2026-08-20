@@ -15,37 +15,37 @@ namespace SonarPlugin.Config
     [EnumLocStrings("RelaySortingMode")]
     public enum RelayStateSortingMode
     {
-        [EnumLoc(Fallback = "Default")]
+        [EnumLoc(Fallback = "기본값")]
         Default,
 
-        [EnumLoc(Fallback = "Last Found")]
+        [EnumLoc(Fallback = "마지막 발견")]
         LastFound,
 
-        [EnumLoc(Fallback = "Last Updated")]
+        [EnumLoc(Fallback = "마지막 갱신")]
         LastUpdated,
 
-        [EnumLoc(Fallback = "Alphabetical")]
+        [EnumLoc(Fallback = "이름")]
         Alphabetical,
 
-        [EnumLoc(Fallback = "Data Center ID")]
+        [EnumLoc(Fallback = "데이터 센터 ID")]
         Datacenter,
 
-        [EnumLoc(Fallback = "World ID")]
+        [EnumLoc(Fallback = "서버 ID")]
         World,
 
-        [EnumLoc(Fallback = "Zone ID")]
+        [EnumLoc(Fallback = "지역 ID")]
         Zone,
 
-        [EnumLoc(Fallback = "World then Zone then Instance then Relay IDs")]
+        [EnumLoc(Fallback = "서버, 지역, 인스턴스, 릴레이 ID")]
         WorldZoneInstanceRelay,
 
-        [EnumLoc(Fallback = "Zone then Instance then Relay IDs")]
+        [EnumLoc(Fallback = "지역, 인스턴스, 릴레이 ID")]
         ZoneInstanceRelay,
 
-        [EnumLoc(Fallback = "Jurisdiction")]
+        [EnumLoc(Fallback = "관할구역")]
         Jurisdiction,
 
-        [EnumLoc(Fallback = "Jurisdiction then World then Zone then Instance then Relay IDs")]
+        [EnumLoc(Fallback = "관할구역, 서버, 인스턴스, 릴레이 ID")]
         JurisdictionWorldZoneInstanceRelay,
     }
 

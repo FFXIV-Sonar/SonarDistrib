@@ -4,13 +4,13 @@ namespace SonarPlugin.Config
 {
     public enum NotifyMode
     {
-        [EnumCheapLoc("NotifyModeDefault", "Default")]
+        [EnumCheapLoc("NotifyModeDefault", "기본값")]
         Default,
 
-        [EnumCheapLoc("NotifyModeSingle", "Single")]
+        [EnumCheapLoc("NotifyModeSingle", "한번")]
         Single,
 
-        [EnumCheapLoc("NotifyModeMultiple", "Multiple")]
+        [EnumCheapLoc("NotifyModeMultiple", "여러번")]
         Multiple
     }
 }

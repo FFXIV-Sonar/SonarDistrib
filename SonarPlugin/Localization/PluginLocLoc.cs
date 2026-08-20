@@ -16,10 +16,10 @@ namespace SonarPlugin.Localization
         [EnumLoc(Fallback = "Export language file")]
         ExportPrompt,
 
-        [EnumLoc(Fallback = "Debug fallbacks")]
+        [EnumLoc(Fallback = "디버그 기본값")]
         DebugFallbacks,
 
-        [EnumLoc(Fallback = "Use debug fallbacks, showing the keys.")]
+        [EnumLoc(Fallback = "디버그 기본값 사용, 키 표시.")]
         DebugFallbacksTooltip,
 
         [EnumLoc(Fallback = "Minified export")]

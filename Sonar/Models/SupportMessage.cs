@@ -15,7 +15,7 @@ namespace Sonar.Models
         public const int MaximumPlayerNameLength = 64;
         public const int MaximumContentLength = 4096;
         public const int MaximumLogsLength = 65536;
-        public const string Notes = "Provide as much detail as possible. Use english if possible.";
+        public const string Notes = "최대한 자세히, 그리고 가능하면 영어로 작성해 주세요.";
 
         /// <summary>
         /// Randomly generated for <see cref="SupportResponse"/> association.
@@ -108,14 +108,14 @@ namespace Sonar.Models
         /// </summary>
         public void ThrowIfInvalid()
         {
-            if (string.IsNullOrWhiteSpace(this.Body)) ThrowInvalidException($"{nameof(this.Body)} must not be empty");
+            if (string.IsNullOrWhiteSpace(this.Body)) ThrowInvalidException($"{nameof(this.Body)}은(는) 필수 작성 항목입니다.");
 
             ThrowIfTooLong(nameof(this.Contact), this.Contact, MaximumContactLength);
             ThrowIfTooLong(nameof(this.Title), this.Title, MaximumTitleLength);
             ThrowIfTooLong(nameof(this.Body), this.Body, MaximumContentLength);
             ThrowIfTooLong(nameof(this.Player), this.Player, MaximumPlayerNameLength);
             ThrowIfTooLong(nameof(this.Logs), this.Body, MaximumLogsLength);
-            if (!string.IsNullOrEmpty(this.Meta)) ThrowInvalidException($"{nameof(this.Meta)} must be empty");
+            if (!string.IsNullOrEmpty(this.Meta)) ThrowInvalidException($"{nameof(this.Meta)}은(는) 비어있어야 합니다");
 
             ThrowIfNotText(nameof(this.Contact), this.Contact);
             ThrowIfNotText(nameof(this.Title), this.Title);
@@ -128,8 +128,8 @@ namespace Sonar.Models
             var enumName = Enum.GetName(this.Type)!;
             var meta = enumType.GetField(enumName)!.GetCustomAttributes(false).OfType<SupportTypeMetaAttribute>().First();
 
-            if (meta.RequireContact && string.IsNullOrWhiteSpace(this.Contact)) ThrowInvalidException($"{nameof(this.Contact)} required for this message type");
-            if (meta.RequirePlayerName && string.IsNullOrWhiteSpace(this.Player)) ThrowInvalidException($"{nameof(this.Player)} required for this message type");
+            if (meta.RequireContact && string.IsNullOrWhiteSpace(this.Contact)) ThrowInvalidException($"해당 유형의 문의에는 {nameof(this.Contact)}가 필요합니다");
+            if (meta.RequirePlayerName && string.IsNullOrWhiteSpace(this.Player)) ThrowInvalidException($"해당 유형의 문의에는 {nameof(this.Player)}이 필요합니다");
         }
 
         [IgnoreMember]
@@ -171,12 +171,12 @@ namespace Sonar.Models
 
         private static void ThrowTooLong(string name, int length)
         {
-            throw new SupportMessageException($"{name} is too long. Maximum length is {length}");
+            throw new SupportMessageException($"{name}은(는) 너무 깁니다. 최대 길이는 {length}입니다");
         }
 
         private static void ThrowNotText(string name)
         {
-            throw new SupportMessageException($"{name} is not a valid text");
+            throw new SupportMessageException($"{name}은(는) 유효한 내용이 아닙니다");
         }
 
         public static bool IsValidText(string text)
