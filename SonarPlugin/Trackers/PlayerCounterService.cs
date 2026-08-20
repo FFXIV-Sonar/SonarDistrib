@@ -22,11 +22,11 @@ namespace SonarPlugin.Trackers
     {
         private readonly Dictionary<uint, Vector3> _players = [];
 
-        private SonarPlugin Plugin { get; }
+        private SonarPluginIoC Plugin { get; }
         private SonarFramework Framework { get; }
         private SonarMeta Meta { get; }
 
-        public PlayerCounterService(SonarPlugin plugin, SonarFramework framework, SonarMeta meta)
+        public PlayerCounterService(SonarPluginIoC plugin, SonarFramework framework, SonarMeta meta)
         {
             this.Plugin = plugin;
             this.Framework = framework;

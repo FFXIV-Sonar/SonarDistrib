@@ -1,0 +1,114 @@
+<#@ template debug="true" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using AG.Collections.Concurrent;
+using SonarUtils.Collections;
+using SonarUtils.Text;
+
+namespace SonarUtils
+{
+<# const int MaxArgs = 4; #>
+    /// <content>Interning functionality.</content>
+    public static partial class StringUtils
+    {
+        private static readonly ConcurrentTrieSet<string> s_strings = new(comparer: FarmHashStringComparer.Instance);
+        private static readonly ConcurrentDictionarySlim<int, string> s_spansCache = [];
+
+        /// <summary>Intern <see langword="string"/>s.</summary>
+        /// <param name="str"><see langword="string"/> to be interned.</param>
+        /// <returns>Interned <see langword="string"/>s.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string Intern(string str) => s_strings.GetOrAdd(str);
+
+<#
+for (var count = 2; count <= MaxArgs; count++)
+{
+    var args = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"string str{arg}"));
+    var results = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"string Result{arg}"));
+    var interns = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"Intern(str{arg})"));
+#>
+        /// <summary>Intern <see langword="string"/>s.</summary>
+<# for (var arg = 1; arg <= count; arg++) { #>
+        /// <param name="str<#= arg #>"><see langword="string"/> to be interned.</param>
+<# } #>
+        /// <returns>Interned <see langword="string"/>s.</returns>
+        public static (<#= results #>) Intern(<#= args #>) => (<#= interns #>);
+
+<# } #>
+        /// <summary>Intern <see langword="string"/>s.</summary>
+        /// <param name="str"><see langword="string"/> to be interned.</param>
+        /// <returns>Interned <see langword="string"/>s.</returns>
+        public static string Intern(ReadOnlySpan<char> str)
+        {
+            var hash = FarmHashStringComparer.GetHashCodeStatic(str);
+            if (s_spansCache.TryGetValue(hash, out var result) && str.SequenceEqual(result.AsSpan())) return result;
+            s_spansCache[hash] = result = Intern(new string(str));
+            return result;
+        }
+
+<#
+for (var count = 2; count <= MaxArgs; count++)
+{
+    var args = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"ReadOnlySpan<char> str{arg}"));
+    var results = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"string Result{arg}"));
+    var interns = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"Intern(str{arg})"));
+#>
+        /// <summary>Intern <see langword="string"/>s.</summary>
+<# for (var arg = 1; arg <= count; arg++) { #>
+        /// <param name="str<#= arg #>"><see langword="string"/> to be interned.</param>
+<# } #>
+        /// <returns>Interned <see langword="string"/>s.</returns>
+        public static (<#= results #>) Intern(<#= args #>) => (<#= interns #>);
+
+<# } #>
+        /// <summary>Intern <see langword="string"/>s.</summary>
+        /// <param name="str"><see langword="string"/> to be interned.</param>
+        /// <returns>Interned <see langword="string"/>s.</returns>
+        public static string Intern(ReadOnlyMemory<char> str) => Intern(str.Span);
+
+<#
+for (var count = 2; count <= MaxArgs; count++)
+{
+    var args = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"ReadOnlyMemory<char> str{arg}"));
+    var results = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"string Result{arg}"));
+    var interns = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"str{arg}.Span"));
+#>
+        /// <summary>Intern <see langword="string"/>s.</summary>
+<# for (var arg = 1; arg <= count; arg++) { #>
+        /// <param name="str<#= arg #>"><see langword="string"/> to be interned.</param>
+<# } #>
+        /// <returns>Interned <see langword="string"/>s.</returns>
+        public static (<#= results #>) Intern(<#= args #>) => Intern(<#= interns #>);
+
+<# } #>
+<#
+for (var count = 1; count <= MaxArgs; count++)
+{
+    var args = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"ref string str{arg}"));
+    var interns = string.Join(", ", Enumerable.Range(1, count).Select(arg => $"str{arg}"));
+#>
+        /// <summary>Intern <see langword="string"/>s.</summary>
+<# for (var arg = 1; arg <= count; arg++) { #>
+        /// <param name="str<#= arg #>"><see langword="string"/> reference to ensure is interned.</param>
+<# } #>
+        public static void EnsureInterned(<#= args #>) => (<#= interns #>) = Intern(<#= interns #>);
+
+<# } #>
+        /// <summary>Interns all <see langword="string"/>s contained in <paramref name="span"/>.</summary>
+        /// <param name="span"><see cref="ReadOnlySpan{T}"/> of <see langword="string"/>s.</param>
+        /// <remarks>This mutates <paramref name="span"/>!</remarks>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public static void EnsureInterned(ReadOnlySpan<string> span)
+        {
+            foreach (ref readonly var input in span)
+            {
+                ref var str = ref Unsafe.AsRef(in input);
+                EnsureInterned(ref str);
+            }
+        }
+    }
+}

@@ -1,10 +1,12 @@
-﻿{
+{
   "Author": "Sonar Team",
   "Name": "Sonar",
   "Punchline": "마물, 돌발 전파를 자동으로 주고받습니다.",
   "Description": "마물, 돌발 전파를 자동으로 주고받습니다. /sonar 명령어로 알림 오버레이를 열고, /sonarconfig 으로 설정 창을 엽니다. 지원은 Sonar Support Discord에서만 제공됩니다.",
   "Changelog": "추가 정보는 다음의 웹사이트를 참고하세요 https://news.ffxivsonar.com",
   "InternalName": "SonarPlugin",
+  "LoadSync": false,
+  "CanUnloadAsync": true,
   "Tags": [
     "Sonar",
     "Hunt",

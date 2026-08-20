@@ -1,4 +1,4 @@
-﻿using Dalamud.Interface.Windowing;
+using Dalamud.Interface.Windowing;
 using DryIoc.ImTools;
 using Dalamud.Bindings.ImGui;
 using Sonar;
@@ -18,7 +18,7 @@ namespace SonarPlugin.GUI
     public sealed class SupportWindow : Window
     {
         private static int s_nextId; // Interlocked
-        public static SupportWindow CreateWindow(WindowSystem windows, SonarClient client) => new(windows, client, Interlocked.Increment(ref s_nextId));
+        public static SupportWindow CreateWindow(IWindowSystem windows, SonarClient client) => new(windows, client, Interlocked.Increment(ref s_nextId));
 
         private bool _logsVisible;
         private bool _responseVisible;
@@ -40,10 +40,10 @@ namespace SonarPlugin.GUI
         }
         public SupportMessage Messaage { get; } = new();
 
-        private WindowSystem Windows { get; }
+        private IWindowSystem Windows { get; }
         private SonarClient Client { get; }
 
-        private SupportWindow(WindowSystem windows, SonarClient client, int id) : base($"Sonar Support##{id}")
+        private SupportWindow(IWindowSystem windows, SonarClient client, int id) : base($"Sonar Support##{id}")
         {
             this.Windows = windows;
             this.Client = client;

@@ -53,7 +53,7 @@ namespace SonarPlugin.GUI.Internal
                     ImGui.Spacing(); ImGui.Spacing(); ImGui.Spacing();
 
                     var plugin = config.Plugin;
-                    if (LanguageSelector("plugin", PluginLoc.Plugin.GetLocString(), ref plugin, config.GetAvailablePluginLanguages(), fileDialogs, typeof(SonarPlugin).Assembly))
+                    if (LanguageSelector("plugin", PluginLoc.Plugin.GetLocString(), ref plugin, config.GetAvailablePluginLanguages(), fileDialogs, typeof(SonarPluginIoC).Assembly))
                     {
                         config.Plugin = plugin;
                         result = true;
@@ -101,7 +101,7 @@ namespace SonarPlugin.GUI.Internal
 #pragma warning restore CA1869
 
                 var assembly =
-                    export.Id == "plugin" ? typeof(SonarPlugin).Assembly :
+                    export.Id == "plugin" ? typeof(SonarPluginIoC).Assembly :
                     export.Id == "sonar" ? typeof(SonarClient).Assembly :
                     null; // ASSERT: Should never happen
                 Debug.Assert(assembly is not null);

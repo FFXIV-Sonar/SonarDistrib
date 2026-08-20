@@ -56,7 +56,7 @@ namespace SonarPlugin.GUI
             set => this._visible = value;
         }
 
-        private SonarPlugin Plugin { get; }
+        private SonarPluginIoC Plugin { get; }
         private SonarClient Client { get; }
         private RelayTrackerViews Views { get; }
         private HuntNotifier HuntNotifier { get; }
@@ -79,7 +79,7 @@ namespace SonarPlugin.GUI
 
         private readonly IDalamudTextureWrap _redFlag;
 
-        public SonarMainWindow(SonarPlugin plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, AetheryteManager aetherytes, MapTextureProvider mapTextures, ResourceHelper resources, PlaceholderFormatter formatter, IUiBuilder ui, IGameGui gameGui, IFramework framework, IDalamudPluginInterface pluginInterface, IPluginLog logger)
+        public SonarMainWindow(SonarPluginIoC plugin, SonarClient client, RelayTrackerViews views, HuntNotifier huntsNotifier, FateNotifier fateNotifier, AetheryteManager aetherytes, MapTextureProvider mapTextures, ResourceHelper resources, PlaceholderFormatter formatter, IUiBuilder ui, IGameGui gameGui, IFramework framework, IDalamudPluginInterface pluginInterface, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;

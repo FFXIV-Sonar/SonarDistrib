@@ -1,5 +1,6 @@
-﻿using Dalamud.Plugin;
+using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,9 +13,9 @@ namespace SonarPlugin.Utility
 {
     internal static class FlavorUtils
     {
-        public static string? DetermineFlavor(IDalamudPluginInterface pluginInterface, IPluginLog logger)
+        public static string? DetermineFlavor(IDalamudPluginInterface pluginInterface, ILogger logger)
         {
-            logger.Debug("Determining Flavor");
+            logger.LogDebug("Determining Flavor");
 
             // Attempt #1: Flavor resource
             var flavor = GetFlavorResource(logger);
@@ -29,7 +30,7 @@ namespace SonarPlugin.Utility
             if (flavor is not null) return flavor;
 
             // Attempt #5: Give up
-            logger.Warning("Unable to determine flavor");
+            logger.LogWarning("Unable to determine flavor");
             return null;
         }
 
@@ -56,14 +57,14 @@ namespace SonarPlugin.Utility
             return input;
         }
 
-        private static string? GetFlavorResource(IPluginLog logger)
+        private static string? GetFlavorResource(ILogger logger)
         {
             // Open the Flavor.data embedded resource stream
-            var assembly = typeof(SonarPluginStub).Assembly;
+            var assembly = typeof(SonarPluginIoC).Assembly;
             var stream = assembly.GetManifestResourceStream("SonarPlugin.Resources.Flavor.data");
             if (stream is null)
             {
-                logger.Warning("Flavor resource not found!");
+                logger.LogWarning("Flavor resource not found!");
                 return null;
             }
 
@@ -75,7 +76,7 @@ namespace SonarPlugin.Utility
             var flavor = Encoding.UTF8.GetString(bytes);
             if (string.IsNullOrWhiteSpace(flavor))
             {
-                logger.Debug("Resource flavor is empty");
+                logger.LogDebug("Resource flavor is empty");
                 return null;
             }
             return flavor;

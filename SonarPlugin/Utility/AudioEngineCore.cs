@@ -38,7 +38,7 @@ namespace SonarPlugin.Utility
         {
             do
             {
-                await Task.Delay(1000);
+                await Task.Delay(1000).ConfigureAwait(false);
                 this.Logger.Debug($"Mixer Inputs: {this.MixingProvider.MixerInputs.Count()}");
             }
             while (this.Player.PlaybackState != PlaybackState.Stopped && this.MixingProvider.MixerInputs.Any() && this._disposed == 0);
@@ -54,27 +54,19 @@ namespace SonarPlugin.Utility
             IWavePlayer ret;
             try
             {
-                this.Logger.Verbose($"Attempting to create WavePlayer using {nameof(WasapiOut)}");
-                ret = new WasapiOut(AudioClientShareMode.Shared, 100);
+                this.Logger.Verbose($"Attempting to create WavePlayer using {nameof(WasapiPlayer)}");
+                ret = new WasapiPlayerBuilder().WithSharedMode().WithLatency(100).Build();
             }
             catch (Exception ex1)
             {
                 try
                 {
-                    this.Logger.Verbose($"Attempting to create WavePlayer using {nameof(DirectSoundOut)}");
-                    ret = new DirectSoundOut(100);
+                    this.Logger.Verbose($"Attempting to create WavePlayer using {nameof(WaveOut)}");
+                    ret = new WaveOut();
                 }
                 catch (Exception ex2)
                 {
-                    try
-                    {
-                        this.Logger.Verbose($"Attempting to create WavePlayer using {nameof(WaveOutEvent)}");
-                        ret = new WaveOutEvent();
-                    }
-                    catch (Exception ex3)
-                    {
-                        throw new AggregateException(ex1, ex2, ex3);
-                    }
+                    throw new AggregateException(ex1, ex2);
                 }
             }
             ret.PlaybackStopped += this.PlaybackStoppedHandler;

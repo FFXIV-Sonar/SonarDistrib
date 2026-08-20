@@ -1,4 +1,4 @@
-﻿using Dalamud.Interface.Windowing;
+using Dalamud.Interface.Windowing;
 using Dalamud.Bindings.ImGui;
 using Sonar;
 using Sonar.Config;
@@ -34,10 +34,10 @@ namespace SonarPlugin.GUI
         private SonarConfig Config { get; }
         private SonarConfiguration Configuration { get; }
         private SonarClient Client { get; }
-        private WindowSystem Windows { get; }
+        private IWindowSystem Windows { get; }
 
         [SuppressMessage("Critical Code Smell", "S3265", Justification = "Its a flag!")]
-        public LodestoneVerifyWindow(SonarConfig config, SonarPlugin plugin, SonarClient client, WindowSystem windows) : base("Sonar Lodestone Verification")
+        public LodestoneVerifyWindow(SonarConfig config, SonarPluginIoC plugin, SonarClient client, IWindowSystem windows) : base("Sonar Lodestone Verification")
         {
             this.Config = config;
             this.Configuration = plugin.Configuration;

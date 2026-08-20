@@ -60,12 +60,12 @@ namespace SonarPlugin.Sounds
 
         private async Task DebugSounds()
         {
-            await Task.Delay(15000);
+            await Task.Delay(15000).ConfigureAwait(false);
             for (var index = 0; index < this.Sounds.Length; index++)
             {
                 this.Logger.Debug("Playing {sound}: {name}", this.Sounds[index], this.SoundNames[index]);
                 this.PlaySound(this.Sounds[index]);
-                await Task.Delay(2000);
+                await Task.Delay(2000).ConfigureAwait(false);
             }
         }
 
@@ -95,7 +95,7 @@ namespace SonarPlugin.Sounds
         //       This is probably not the BEST way of handling this but makes the logic of display and getting at the sound file easier for now.
         private static IEnumerable<string> Ctor_InitializeSoundResources()
             => typeof(SoundsWidgetHelper).Assembly.GetManifestResourceNames()
-                .Where(resource => Path.GetExtension(resource) == string.Empty)
+                .Where(resource => string.IsNullOrEmpty(Path.GetExtension(resource)))
                 .Select(resource => $"res:{resource}");
 
         public bool PlaySound(SoundConfig config)

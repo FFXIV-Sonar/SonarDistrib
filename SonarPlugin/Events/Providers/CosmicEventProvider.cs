@@ -30,14 +30,14 @@ namespace SonarPlugin.Events.Providers
         private readonly FrozenSet<uint> _cosmicZoneIds;
 
         private SonarEventManager Events { get; }
-        private SonarPlugin Plugin { get; }
+        private SonarPluginIoC Plugin { get; }
         private SonarFramework Framework { get; }
         private SonarClient Client { get; }
         private IClientState ClientState { get; }
         private IGameGui GameGui { get; }
         private ILogger Logger { get; }
         
-        public CosmicEventProvider(SonarEventManager events, SonarPlugin plugin, SonarFramework framework, SonarClient client, IClientState clientState, IGameGui gameGui, ILogger<CosmicEventProvider> logger)
+        public CosmicEventProvider(SonarEventManager events, SonarPluginIoC plugin, SonarFramework framework, SonarClient client, IClientState clientState, IGameGui gameGui, ILogger<CosmicEventProvider> logger)
         {
             this.Events = events;
             this.Plugin = plugin;

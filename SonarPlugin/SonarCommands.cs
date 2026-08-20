@@ -1,4 +1,4 @@
-﻿using Dalamud.Game.Command;
+using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin.Services;
@@ -22,9 +22,9 @@ namespace SonarPlugin
     {
         private PluginCommandManager<SonarCommands>? _commandManager;
 
-        private SonarPlugin Plugin { get; }
+        private SonarPluginIoC Plugin { get; }
         private SonarClient Client { get; }
-        private WindowSystem Windows { get; }
+        private IWindowSystem Windows { get; }
         private SonarMainWindow MainWindow { get; }
         private SonarConfigWindow ConfigWindow { get; }
         private SonarTrackerWindow TrackerWindow { get; }
@@ -32,7 +32,7 @@ namespace SonarPlugin
         private IChatGui Chat { get; }
         private IPluginLog Logger { get; }
 
-        public SonarCommands(SonarPlugin plugin, SonarClient client, WindowSystem windows, SonarMainWindow mainWindow, IChatGui chat, ICommandManager commands, SonarConfigWindow configWindow, SonarTrackerWindow trackerWindow, IPluginLog logger)
+        public SonarCommands(SonarPluginIoC plugin, SonarClient client, IWindowSystem windows, SonarMainWindow mainWindow, IChatGui chat, ICommandManager commands, SonarConfigWindow configWindow, SonarTrackerWindow trackerWindow, IPluginLog logger)
         {
             this.Plugin = plugin;
             this.Client = client;

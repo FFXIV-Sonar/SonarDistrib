@@ -1,4 +1,4 @@
-﻿using DryIocAttributes;
+using DryIocAttributes;
 using Lumina.Excel.Sheets;
 using Sonar;
 using Sonar.Data;
@@ -24,7 +24,7 @@ namespace SonarPlugin.Trackers
         private readonly Dictionary<HuntRank, IRelayTrackerView<HuntRelay>> _huntViews = new();
         private readonly IRelayTrackerView<FateRelay> _fateView;
 
-        private SonarPlugin Plugin { get; }
+        private SonarPluginIoC Plugin { get; }
         private SonarClient Client { get; }
         public IRelayTracker<HuntRelay> HuntsTracker { get; }
         public IRelayTracker<FateRelay> FatesTracker { get; }
@@ -34,7 +34,7 @@ namespace SonarPlugin.Trackers
         public IRelayTracker<FateRelay> Fates => this._fateView;
 
 
-        public RelayTrackerViews(SonarPlugin plugin, SonarClient client, IRelayTracker<HuntRelay> hunts, IRelayTracker<FateRelay> fates)
+        public RelayTrackerViews(SonarPluginIoC plugin, SonarClient client, IRelayTracker<HuntRelay> hunts, IRelayTracker<FateRelay> fates)
         {
             this.Plugin = plugin;
             this.Client = client;

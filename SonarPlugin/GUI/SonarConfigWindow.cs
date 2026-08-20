@@ -41,12 +41,14 @@ using Dalamud.Plugin.VersionInfo;
 using DryIocAttributes;
 using SonarUtils.Threading;
 using System.Globalization;
+using Microsoft.Extensions.Hosting;
+using System.Threading;
 
 namespace SonarPlugin.GUI
 {
     [ExportMany]
     [SingletonReuse]
-    public sealed class SonarConfigWindow : Window, IDisposable
+    public sealed class SonarConfigWindow : Window, IHostedService, IDisposable
     {
         private Task _debugHuntTask = Task.CompletedTask;
         private Task _debugFateTask = Task.CompletedTask;
@@ -54,13 +56,14 @@ namespace SonarPlugin.GUI
 
         private bool fatesNeedSorting = true;
 
-        private SonarPlugin Plugin { get; }
-        private SonarPluginStub Stub { get; }
-        private IDalamudPluginInterface PluginInterface { get; }
+        private SonarPluginIoC Plugin { get; }
+
         private SonarClient Client { get; }
         private IDataManager Data { get; }
         private IDalamudVersionInfo DalamudVersion { get; }
         private SoundEngine Sounds { get; }
+        private IUiBuilder Ui { get; }
+        private IWindowSystem Windows { get; }
         private FileDialogManager FileDialogs { get; }
         private IndexProvider Index { get; }
         private IPluginLog Logger { get; }
@@ -78,21 +81,19 @@ namespace SonarPlugin.GUI
         private readonly Dictionary<uint, string> _fateZonesCache = new();
         private readonly int fateTableColumnCount = Enum.GetNames(typeof(FateSelectionColumns)).Length;
 
-        public SonarConfigWindow(SonarPlugin plugin, SonarPluginStub stub, IDalamudPluginInterface pluginInterface, SonarClient client, IDataManager data, IDalamudVersionInfo dalamudVersion, AudioPlaybackEngine audio, SoundEngine sounds, FileDialogManager fileDialogs, IndexProvider index, IPluginLog logger) : base("Sonar Configuration")
+        public SonarConfigWindow(SonarPluginIoC plugin, SonarClient client, IDataManager data, IDalamudVersionInfo dalamudVersion, AudioPlaybackEngine audio, SoundEngine sounds, IUiBuilder ui, IWindowSystem windows, FileDialogManager fileDialogs, IndexProvider index, IPluginLog logger) : base("Sonar Configuration")
         {
             this.Plugin = plugin;
-            this.Stub = stub;
-            this.PluginInterface = pluginInterface;
             this.Client = client;
             this.Data = data;
             this.DalamudVersion = dalamudVersion;
             this.Sounds = sounds;
             this.Audio = audio;
+            this.Ui = ui;
+            this.Windows = windows;
             this.FileDialogs = fileDialogs;
             this.Index = index;
             this.Logger = logger;
-
-            this.Plugin.Windows.AddWindow(this);
 
             this.SizeConstraints = new()
             {
@@ -122,7 +123,20 @@ namespace SonarPlugin.GUI
                 .DistinctBy(fate => fate.GroupId)
                 .ToList();
 
-            this.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfig;
+        }
+
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            this.Windows.AddWindow(this);
+            this.Ui.OpenConfigUi += this.OpenConfig;
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            this.Windows.RemoveWindow(this);
+            this.Ui.OpenConfigUi -= this.OpenConfig;
+            return Task.CompletedTask;
         }
 
         private void OpenConfig()
@@ -1010,7 +1024,7 @@ namespace SonarPlugin.GUI
         {
             ImGui.BeginChild("##aboutTabScrollRegion");
             {
-                ImGui.Text($"{this.Stub.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
+                ImGui.Text($"{this.Plugin.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
                 ImGui.Text($"{Loc.Localize("AboutSonarBroughtBy", "Sonar 팀이 제공합니다")}");
 
                 if (ImGui.Button("Sonar Support Discord##SonarDiscord"))
@@ -1067,7 +1081,7 @@ namespace SonarPlugin.GUI
                 ImGui.Text("버전 정보");
                 ImGui.BeginChild("##debugVersionInfo", new Vector2(0, 100 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
-                    ImGui.Text($"{this.Stub.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
+                    ImGui.Text($"{this.Plugin.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
                     ImGui.Text($"Dalamud {this.DalamudVersion.Version} (Git: {this.DalamudVersion.GitHash})");
                     ImGui.Text($"FFXIV {VersionUtils.GetGameVersion(this.Data)}");
 
@@ -1373,8 +1387,6 @@ namespace SonarPlugin.GUI
         #region IDisposable Support
         public void Dispose()
         {
-            this.Plugin.Windows.RemoveWindow(this);
-            this.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfig;
             this._tasker?.Dispose();
         }
         #endregion

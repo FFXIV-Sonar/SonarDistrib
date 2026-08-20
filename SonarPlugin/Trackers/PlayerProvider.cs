@@ -50,15 +50,15 @@ namespace SonarPlugin.Trackers
 
         private unsafe void FrameworkTick(SonarFramework framework)
         {
-            // Safety level
-            var safetyLevel = framework.SafetyLevel;
-            if (safetyLevel is 0) return;
+            // Safe frames
+            var safeFrames = framework.SafeFrames;
+            if (safeFrames is 0) return;
 
             // Common variables
             var player = GetPlayerCharacter();
 
             // Player Information
-            if (safetyLevel is <= 60) this.UpdatePlayerInformation(player);
+            if (safeFrames is <= 60) this.UpdatePlayerInformation(player);
 
             // Player Position
             this.UpdatePlayerPosition(player);

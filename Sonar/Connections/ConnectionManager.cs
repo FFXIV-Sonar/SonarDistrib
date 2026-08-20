@@ -118,7 +118,7 @@ namespace Sonar.Connections
                     // Attempting connecting if there is no active socket
                     if (this._socket is null)
                     {
-                        _ = this.ConnectAttemptTask();
+                        _ = this.ConnectAttemptTask().WithExceptionObserved();
                         failCount = Interlocked.Increment(ref this._failCount); // await boundary of ConnectAttemptTask() is after getting url so this is safe
                     }
                     else
