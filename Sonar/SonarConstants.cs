@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ namespace Sonar
         /// <summary>
         /// Is this a debug release?
         /// </summary>
+        [SuppressMessage("Maintainability", "CA1508", Justification = "Environment uses DEBUG define.")]
         public const bool DebugBuild = Environment == SonarBuildEnvironment.Debug;
 
         /// <summary>

@@ -1,22 +1,24 @@
 using MessagePack;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using static Sonar.Utilities.UnixTimeHelper;
+using Sonar.Data.Rows;
+using Sonar.Indexes;
 using Sonar.Messages;
+using Sonar.Numerics;
+using Sonar.Relays;
+using SonarUtils.CustomData;
+using SonarUtils.Text.Placeholders.Providers;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Frozen;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
+using System.Threading;
+using static Sonar.Utilities.UnixTimeHelper;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
-using Sonar.Numerics;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using Sonar.Indexes;
-using Sonar.Relays;
-using Sonar.Data.Rows;
-using System.Collections.Frozen;
-using SonarUtils.Text.Placeholders.Providers;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
-using System.Globalization;
 
 namespace Sonar.Trackers
 {
@@ -28,7 +30,7 @@ namespace Sonar.Trackers
     [Serializable]
     [SuppressMessage("Naming", "CA1721", Justification = "GetLastSeen, Found and Killed are Datetime getters")]
     [SuppressMessage("Major Code Smell", "S4035", Justification = "Intended. RelayState<T> is sealed.")]
-    public abstract class RelayState : ISonarMessage, ITrackerIndexable, IEquatable<RelayState>
+    public abstract class RelayState : ISonarMessage, ITrackerIndexable, ICustomData, IEquatable<RelayState>
     {
         /// <summary>
         /// Grace period before a dead <see cref="RelayState"/> can be alive again
@@ -335,6 +337,10 @@ namespace Sonar.Trackers
         public static bool operator !=(RelayState left, RelayState right) => !Equals(left, right);
 
         public string GetIndexKey(IndexType type) => this.Relay.GetIndexKey(type);
+
+        /// <inheritdoc/>
+        [SuppressMessage("Design", "CA1033")]
+        ConcurrentDictionary<object, object?> ICustomData.CustomData { get => CustomDataUtils.FieldGetterImpl(ref field); } = default!;
     }
 
     /// <summary>Represents a relay with state information. This class is managed by <see cref="RelayTracker{T}"/> and its not intended to be created manually.</summary>

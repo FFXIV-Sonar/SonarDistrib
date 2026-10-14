@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,7 +44,7 @@ namespace SonarUtils.Text
             {
                 ref readonly var item = ref items[i];
                 var text = this._getter(item);
-                var match = KeywordTextIndex.s_tokenizerRegex.Match(text);
+                var match = KeywordTextIndex.TokenizerRegex.Match(text);
                 while (match.Success)
                 {
                     var wordSpan = match.Groups["keyword"].ValueSpan;
@@ -77,12 +77,12 @@ namespace SonarUtils.Text
         {
             var sets = new List<ImmutableArray<int>>();
 
-            var match = KeywordTextIndex.s_tokenizerRegex.Match(keywords);
+            var match = KeywordTextIndex.TokenizerRegex.Match(keywords);
             while (match.Success)
             {
                 foreach (var keyword in this.SearchCoreInternal(match.Groups["keyword"].ValueSpan))
                 {
-                    if (!this._index.TryGetValue(keyword.ToString(), out var set)) return []; // TODO: AlternativeComparer
+                    if (!this._index.GetAlternateLookup<ReadOnlySpan<char>>().TryGetValue(keyword, out var set)) return [];
                     sets.Add(set);
                 }
                 match = match.NextMatch();
@@ -120,14 +120,12 @@ namespace SonarUtils.Text
 
     public static partial class KeywordTextIndex
     {
-        internal static readonly Regex s_tokenizerRegex = GetTokenizerRegex();
-
         public static KeywordTextIndex<T> Create<T>(IEnumerable<T> items, int minLength = 1, int maxLength = int.MaxValue, Func<T, string>? getter = null, IEqualityComparer<string>? comparer = null)
         {
             return new(items, minLength, maxLength, getter, comparer);
         }
 
         [GeneratedRegex(@"\b(?<keyword>\S+?)\b", RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.CultureInvariant)]
-        private static partial Regex GetTokenizerRegex();
+        public static partial Regex TokenizerRegex { get; }
     }
 }

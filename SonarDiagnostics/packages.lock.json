@@ -79,10 +79,20 @@
           "System.ComponentModel.Composition": "4.7.0"
         }
       },
+      "F23.StringSimilarity": {
+        "type": "Transitive",
+        "resolved": "7.0.1",
+        "contentHash": "wl2YHtop+VfyqGCZvfIeLO/LabuMlGgGQWHbXdT1UQxFDvKW2QfocgpcJefZ2U++Hlm9BTcEFyXL3q7yOPJ06Q=="
+      },
       "Farmhash.Sharp": {
         "type": "Transitive",
         "resolved": "0.9.0",
         "contentHash": "6Ij80JrfPyiDRM4QqdlEIjev4Q97eqEakh7wFJZYmbUkWVoCJb1+YdSdoXpzvn+Fs2dXH8THRsn+uUvrhMNKpQ=="
+      },
+      "Fastenshtein": {
+        "type": "Transitive",
+        "resolved": "1.0.12",
+        "contentHash": "PDVMsXX8UqqXNL8wfX7QU/0hy+DdK/zz+GZXGy2ZhcnqTvkQ90OsZTeuotqQvWxttNxYCUetTlnvWmbbExQ+Sw=="
       },
       "IPAddressRange": {
         "type": "Transitive",
@@ -392,7 +402,9 @@
           "DryIoc.MefAttributedModel.dll": "[7.0.2, )",
           "DryIoc.Microsoft.DependencyInjection": "[6.2.0, )",
           "DryIoc.dll": "[5.4.3, )",
+          "F23.StringSimilarity": "[7.0.1, )",
           "Farmhash.Sharp": "[0.9.0, )",
+          "Fastenshtein": "[1.0.12, )",
           "IPAddressRange": "[6.3.0, )",
           "Microsoft.Extensions.Hosting": "[10.0.11, )",
           "XoshiroPRNG.Net": "[1.6.0, )"

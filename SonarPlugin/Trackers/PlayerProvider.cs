@@ -66,7 +66,7 @@ namespace SonarPlugin.Trackers
 
         private unsafe void UpdatePlayerInformation(BattleChara* player)
         {
-            var info = player is not null ? new PlayerInfo() { LoggedIn = true, Name = SeString.Parse(player->Name).TextValue, HomeWorldId = player->HomeWorld, Hash1 = AG.SplitHash64.Compute(player->ContentId), Hash2 = AG.SplitHash64.Compute(player->AccountId) } : new PlayerInfo() { LoggedIn = false, Name = null, HomeWorldId = 0, Hash1 = 0, Hash2 = 0 };
+            var info = player is not null ? new PlayerInfo() { LoggedIn = true, Name = SeString.Parse(player->Name).TextValue, HomeWorldId = player->HomeWorld, Hash1 = AG.SplitHash64.Compute(player->ContentId), Hash2 = 0 } : new PlayerInfo() { LoggedIn = false, Name = null, HomeWorldId = 0, Hash1 = 0, Hash2 = 0 };
             if (this.Client.Meta.UpdatePlayerInfo(info))
             {
                 if (info.LoggedIn is true) this.Logger.Verbose("Logged in as {player:X16}", AG.SplitHash64.Compute(info.ToString()));
