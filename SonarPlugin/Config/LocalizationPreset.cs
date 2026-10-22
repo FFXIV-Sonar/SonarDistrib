@@ -1,4 +1,4 @@
-﻿using AG.EnumLocalization.Attributes;
+using AG.EnumLocalization.Attributes;
 using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
@@ -23,11 +23,11 @@ namespace SonarPlugin.Config
 
         French,
 
-        //[EnumLoc(Fallback = "Chinese Simplified")]
+        [EnumLoc(Fallback = "Chinese Simplified")]
         Chinese, // Simplified
 
-        //[EnumLoc(Fallback = "Chinese Traditional")]
-        // ChineseTraditional? // Traditional
+        [EnumLoc(Fallback = "Chinese Traditional")]
+        ChineseTraditional, // Traditional
 
         Korean = 8,
     }

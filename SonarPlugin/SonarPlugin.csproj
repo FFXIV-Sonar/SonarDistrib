@@ -29,6 +29,10 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\en.plugin.lang.json" />
+    <EmbeddedResource Include="Resources\cn.plugin.lang.json" />
+    <EmbeddedResource Include="Resources\cn.cheaploc.json" />
+    <EmbeddedResource Include="Resources\tw.plugin.lang.json" />
+    <EmbeddedResource Include="Resources\tw.cheaploc.json" />
     <EmbeddedResource Include="Resources\Flavor.data" />
     <EmbeddedResource Include="Resources\Icons\redflag.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

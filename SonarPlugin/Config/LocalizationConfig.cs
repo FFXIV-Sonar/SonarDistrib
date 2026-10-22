@@ -85,6 +85,13 @@ namespace SonarPlugin.Config
         {
             foreach (var (preset, config) in s_presets)
             {
+                // Chinese presets only differ by their bundled language packs; the game data language (Db) is a separate choice.
+                if (preset is LocalizationPreset.Chinese or LocalizationPreset.ChineseTraditional)
+                {
+                    if (this.Plugin == config.Plugin && this.Sonar == config.Dll) return preset;
+                    continue;
+                }
+
                 if (this.Db == config.Db && this.Plugin == config.Plugin && this.Sonar == config.Dll) return preset;
             }
             return LocalizationPreset.Undefined;

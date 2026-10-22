@@ -1,0 +1,650 @@
+{
+    "AboutSonarBroughtBy":  {
+                                "Message":  "由 Sonar 团队为您带来",
+                                "Description":  ""
+                            },
+    "AboutSonarPatreon":  {
+                              "Message":  "在 Patreon 上支持 Sonar。\n收益将用于 Sonar 服务器和 Discord 机器人的托管费用。",
+                              "Description":  ""
+                          },
+    "AboutSonarSupport":  {
+                              "Message":  "请在 Sonar Support Discord 服务器提问和报告错误。\n注意：Sonar 不在其他 Discord 提供支持。",
+                              "Description":  ""
+                          },
+    "AboutSonarDiscordButton":  {
+                                    "Message":  "Sonar 支持 Discord",
+                                    "Description":  ""
+                                },
+    "AboutSonarPatreonButton":  {
+                                    "Message":  "Sonar Patreon",
+                                    "Description":  ""
+                                },
+    "AdvancedHuntReportingSettings":  {
+                                          "Message":  "细化狩猎报告设置",
+                                          "Description":  ""
+                                      },
+    "AllSRankSettings":  {
+                             "Message":  "将 SS 级与宠物怪从 S 级中分离",
+                             "Description":  ""
+                         },
+    "HuntNotifications":  {
+                              "Message":  "狩猎报告通知",
+                              "Description":  ""
+                          },
+    "SSMinionNotificationMode":  {
+                                     "Message":  "SS 宠物怪通知模式",
+                                     "Description":  ""
+                                 },
+    "NotifyModeDefault":  {
+                              "Message":  "默认",
+                              "Description":  ""
+                          },
+    "NotifyModeSingle":  {
+                             "Message":  "单次",
+                             "Description":  ""
+                         },
+    "NotifyModeMultiple":  {
+                               "Message":  "多次",
+                               "Description":  ""
+                           },
+    "HuntDisplayTimers":  {
+                              "Message":  "狩猎显示计时",
+                              "Description":  ""
+                          },
+    "FateDisplayTimers":  {
+                              "Message":  "危命显示计时",
+                              "Description":  ""
+                          },
+    "DisplayTimersHelpText":  {
+                                  "Message":  "所有计时单位为秒。按住 Ctrl 并点击可直接输入。",
+                                  "Description":  ""
+                              },
+    "HuntDeadTimer":  {
+                          "Message":  "距死亡的时间（S 和 A）",
+                          "Description":  ""
+                      },
+    "HuntUpdateTimer":  {
+                            "Message":  "距最近更新的时间（S 和 A）",
+                            "Description":  ""
+                        },
+    "HuntUpdateOtherTimer":  {
+                                 "Message":  "距最近更新的时间（B）",
+                                 "Description":  ""
+                             },
+    "HuntsDisplayLimit":  {
+                              "Message":  "狩猎显示数量上限",
+                              "Description":  ""
+                          },
+    "FateDeadTimer":  {
+                          "Message":  "距完成或失败的时间",
+                          "Description":  ""
+                      },
+    "FateUpdateTimer":  {
+                            "Message":  "距最近更新的时间",
+                            "Description":  ""
+                        },
+    "FatesDisplayLimit":  {
+                              "Message":  "危命显示数量上限",
+                              "Description":  ""
+                          },
+    "FateSelection":  {
+                          "Message":  "危命选择",
+                          "Description":  ""
+                      },
+    "DefaultReportJurisdiction":  {
+                                      "Message":  "默认报告范围",
+                                      "Description":  ""
+                                  },
+    "SearchText":  {
+                       "Message":  "搜索",
+                       "Description":  ""
+                   },
+    "SelectedFatesToChatText":  {
+                                    "Message":  "{0} 个危命已选中聊天通知",
+                                    "Description":  ""
+                                },
+    "SelectedFatesToSoundText":  {
+                                     "Message":  "{0} 个危命已选中声音通知",
+                                     "Description":  ""
+                                 },
+    "SelectedFatesToNonDefaultJurisdiction":  {
+                                                  "Message":  "{0} 个危命未使用默认接收范围",
+                                                  "Description":  ""
+                                              },
+    "SendToChat":  {
+                       "Message":  "发送到聊天",
+                       "Description":  ""
+                   },
+    "SendToSound":  {
+                        "Message":  "播放声音",
+                        "Description":  ""
+                    },
+    "FateTableChatColumn":  {
+                                "Message":  "聊天",
+                                "Description":  ""
+                            },
+    "FateTableSoundColumn":  {
+                                 "Message":  "声音",
+                                 "Description":  ""
+                             },
+    "FateTableJurisdictionColumn":  {
+                                        "Message":  "范围",
+                                        "Description":  ""
+                                    },
+    "FateTableLevelColumn":  {
+                                 "Message":  "等级",
+                                 "Description":  ""
+                             },
+    "FateTableNameColumn":  {
+                                "Message":  "名称",
+                                "Description":  ""
+                            },
+    "FateTableZoneColumn":  {
+                                "Message":  "区域",
+                                "Description":  ""
+                            },
+    "FateTableExpansionColumn":  {
+                                     "Message":  "资料片",
+                                     "Description":  ""
+                                 },
+    "FateTableAchievementColumn":  {
+                                       "Message":  "成就",
+                                       "Description":  ""
+                                   },
+    "UnknownText":  {
+                        "Message":  "未知",
+                        "Description":  ""
+                    },
+    "ARealmRebornText":  {
+                             "Message":  "重生之境",
+                             "Description":  ""
+                         },
+    "HeavenswardText":  {
+                            "Message":  "苍穹之禁城",
+                            "Description":  ""
+                        },
+    "StormbloodText":  {
+                           "Message":  "红莲之狂潮",
+                           "Description":  ""
+                       },
+    "ShadowbringersText":  {
+                               "Message":  "暗影之逆焰",
+                               "Description":  ""
+                           },
+    "EndwalkerText":  {
+                          "Message":  "晓月之终途",
+                          "Description":  ""
+                      },
+    "DawntrailText":  {
+                          "Message":  "金曦之遗辉",
+                          "Description":  ""
+                      },
+    "DefaultJurisdictionText":  {
+                                    "Message":  "默认",
+                                    "Description":  ""
+                                },
+    "NoneJurisdictionText":  {
+                                 "Message":  "无",
+                                 "Description":  ""
+                             },
+    "InstanceJurisdictionText":  {
+                                     "Message":  "副本",
+                                     "Description":  ""
+                                 },
+    "ZoneJurisdictionText":  {
+                                 "Message":  "区域",
+                                 "Description":  ""
+                             },
+    "WorldJurisdictionText":  {
+                                  "Message":  "世界",
+                                  "Description":  ""
+                              },
+    "DatacenterJurisdictionText":  {
+                                       "Message":  "大区",
+                                       "Description":  ""
+                                   },
+    "RegionJurisdictionText":  {
+                                   "Message":  "地区",
+                                   "Description":  ""
+                               },
+    "AudienceJurisdictionText":  {
+                                     "Message":  "服务区域",
+                                     "Description":  ""
+                                 },
+    "AllJurisdictionText":  {
+                                "Message":  "全部",
+                                "Description":  ""
+                            },
+    "NoRankText":  {
+                       "Message":  "无",
+                       "Description":  ""
+                   },
+    "RankBText":  {
+                      "Message":  "B 级",
+                      "Description":  ""
+                  },
+    "RankAText":  {
+                      "Message":  "A 级",
+                      "Description":  ""
+                  },
+    "RankSText":  {
+                      "Message":  "S 级",
+                      "Description":  ""
+                  },
+    "RankSSMinionText":  {
+                             "Message":  "SS 级（宠物）",
+                             "Description":  ""
+                         },
+    "RankSSText":  {
+                       "Message":  "SS 级",
+                       "Description":  ""
+                   },
+    "SonarStatus":  {
+                        "Message":  "Sonar 状态",
+                        "Description":  ""
+                    },
+    "SonarConnected":  {
+                           "Message":  "已连接",
+                           "Description":  ""
+                       },
+    "SonarDisconnected":  {
+                              "Message":  "未连接",
+                              "Description":  ""
+                          },
+    "SonarDisconnectedTooltip":  {
+                                     "Message":  "Sonar 将自动尝试重新连接",
+                                     "Description":  ""
+                                 },
+    "SonarReconnect":  {
+                           "Message":  "重新连接",
+                           "Description":  ""
+                       },
+    "SonarReconnectTooltip":  {
+                                  "Message":  "让 Sonar 尝试重新连接服务器",
+                                  "Description":  ""
+                              },
+    "DebugVersionInfo":  {
+                             "Message":  "版本信息",
+                             "Description":  ""
+                         },
+    "DebugClientHash":  {
+                            "Message":  "客户端哈希：",
+                            "Description":  ""
+                        },
+    "DebugHide":  {
+                      "Message":  "隐藏",
+                      "Description":  ""
+                  },
+    "DebugShow":  {
+                      "Message":  "显示",
+                      "Description":  ""
+                  },
+    "DebugCopy":  {
+                      "Message":  "复制",
+                      "Description":  ""
+                  },
+    "DebugPlayerTracker":  {
+                               "Message":  "玩家追踪",
+                               "Description":  ""
+                           },
+    "DebugZone":  {
+                      "Message":  "区域：",
+                      "Description":  ""
+                  },
+    "DebugHuntsTracker":  {
+                              "Message":  "狩猎追踪",
+                              "Description":  ""
+                          },
+    "DebugFatesTracker":  {
+                              "Message":  "危命追踪",
+                              "Description":  ""
+                          },
+    "DebugCountIndex":  {
+                            "Message":  "数量: {0} | 索引: {1}",
+                            "Description":  ""
+                        },
+    "DebugClear":  {
+                       "Message":  "清除",
+                       "Description":  ""
+                   },
+    "DebugCheck":  {
+                       "Message":  "检查",
+                       "Description":  ""
+                   },
+    "DebugCheckTooltip":  {
+                              "Message":  "对索引执行一致性检查\n结果输出到 /xllog",
+                              "Description":  ""
+                          },
+    "DebugRebuild":  {
+                         "Message":  "重建",
+                         "Description":  ""
+                     },
+    "DebugRebuildTooltip":  {
+                                "Message":  "重建索引\n结果输出到 /xllog\n\n警告：可能会出现卡顿",
+                                "Description":  ""
+                            },
+    "DebugBusy":  {
+                      "Message":  "处理中",
+                      "Description":  ""
+                  },
+    "DebugRequestRelayData":  {
+                                  "Message":  "请求中继数据",
+                                  "Description":  ""
+                              },
+    "DebugRequestRelayDataTooltip":  {
+                                         "Message":  "请求接收全部中继信息。\n将自动为狩猎和危命开启「追踪全部」。\n此操作只能执行一次。\n\n警告：你会收到 Sonar 服务器已知的全部数据！\n此功能目前处于测试阶段。",
+                                         "Description":  ""
+                                     },
+    "LogLevel":  {
+                     "Message":  "日志等级",
+                     "Description":  ""
+                 },
+    "SonarLogLevelVerbose":  {
+                                 "Message":  "详细",
+                                 "Description":  ""
+                             },
+    "SonarLogLevelDebug":  {
+                               "Message":  "调试",
+                               "Description":  ""
+                           },
+    "SonarLogLevelInformation":  {
+                                     "Message":  "信息",
+                                     "Description":  ""
+                                 },
+    "SonarLogLevelWarning":  {
+                                 "Message":  "警告",
+                                 "Description":  ""
+                             },
+    "SonarLogLevelError":  {
+                               "Message":  "错误",
+                               "Description":  ""
+                           },
+    "SonarLogLevelFatal":  {
+                               "Message":  "严重",
+                               "Description":  ""
+                           },
+    "LocalizationInDevelopment":  {
+                                      "Message":  "本地化功能仍在开发中！",
+                                      "Description":  ""
+                                  },
+    "LocalizationNotCovered":  {
+                                   "Message":  "· 仍有大量文本尚未覆盖",
+                                   "Description":  ""
+                               },
+    "LocalizationMayChange":  {
+                                  "Message":  "· 文本可能随版本变动",
+                                  "Description":  ""
+                              },
+    "LocalizationAtOwnRisk":  {
+                                  "Message":  "使用本地化功能请自行承担风险！",
+                                  "Description":  ""
+                              },
+    "DebugVersionInformation":  {
+                                    "Message":  "版本信息",
+                                    "Description":  ""
+                                },
+    "DebugCount":  {
+                       "Message":  "数量",
+                       "Description":  ""
+                   },
+    "DebugIndex":  {
+                       "Message":  "索引",
+                       "Description":  ""
+                   },
+    "SupportTitle":  {
+                         "Message":  "Sonar 技术支持",
+                         "Description":  ""
+                     },
+    "SupportResultTitle":  {
+                               "Message":  "Sonar 技术支持结果",
+                               "Description":  ""
+                           },
+    "SupportRequiredHint":  {
+                                "Message":  "* 为必填项",
+                                "Description":  ""
+                            },
+    "SupportTypeLabel":  {
+                             "Message":  "类型",
+                             "Description":  ""
+                         },
+    "SupportContactLabel":  {
+                                "Message":  "联系方式",
+                                "Description":  ""
+                            },
+    "SupportContactTooltip":  {
+                                  "Message":  "我们无法在游戏内联系你。\n请提供一个游戏外的联系方式。",
+                                  "Description":  ""
+                              },
+    "SupportTitleFieldLabel":  {
+                                   "Message":  "标题",
+                                   "Description":  ""
+                               },
+    "SupportBodyLabel":  {
+                             "Message":  "内容",
+                             "Description":  ""
+                         },
+    "SupportPlayerNameLabel":  {
+                                   "Message":  "角色名",
+                                   "Description":  ""
+                               },
+    "SupportPlayerNameRequiredPrefix":  {
+                                            "Message":  "（必填）",
+                                            "Description":  ""
+                                        },
+    "SupportPlayerNameTooltip":  {
+                                     "Message":  "请填写角色名与服务器名",
+                                     "Description":  ""
+                                 },
+    "SupportSend":  {
+                        "Message":  "发送",
+                        "Description":  ""
+                    },
+    "CommonCancel":  {
+                         "Message":  "取消",
+                         "Description":  ""
+                     },
+    "SupportAddLogs":  {
+                           "Message":  "附加日志或其他文本",
+                           "Description":  ""
+                       },
+    "SupportLogsLabel":  {
+                             "Message":  "日志",
+                             "Description":  ""
+                         },
+    "SupportExceptionDetails":  {
+                                    "Message":  "异常详情",
+                                    "Description":  ""
+                                },
+    "CommonClose":  {
+                        "Message":  "关闭",
+                        "Description":  ""
+                    },
+    "LodestoneWindowTitle":  {
+                                 "Message":  "Sonar 角色验证",
+                                 "Description":  ""
+                             },
+    "LodestoneNeeded":  {
+                            "Message":  "当前登录的角色需要进行角色验证：",
+                            "Description":  ""
+                        },
+    "LodestoneSuppressHint":  {
+                                  "Message":  "可在 /sonarconfig 的「通用」标签页、角色验证设置中关闭此提示。",
+                                  "Description":  ""
+                              },
+    "LodestoneReasonUnknown":  {
+                                   "Message":  "未提供具体原因。",
+                                   "Description":  ""
+                               },
+    "LodestoneContactSupport":  {
+                                    "Message":  "请联系 Sonar 技术支持寻求帮助。",
+                                    "Description":  ""
+                                },
+    "LodestoneNotVerified":  {
+                                 "Message":  "你的角色目前尚未通过验证。",
+                                 "Description":  ""
+                             },
+    "LodestoneNotFound":  {
+                              "Message":  "未找到你的角色在 Lodestone 上的资料页。",
+                              "Description":  ""
+                          },
+    "LodestoneMakeSearchable":  {
+                                    "Message":  "请将角色的 Lodestone 资料页设为可搜索且公开。验证完成后可以再改回私密。",
+                                    "Description":  ""
+                                },
+    "LodestonePrivate":  {
+                             "Message":  "你的角色 Lodestone 资料页是私密的。",
+                             "Description":  ""
+                         },
+    "LodestoneMakePublic":  {
+                                "Message":  "请将 Lodestone 资料页设为公开以便验证。验证完成后可以再改回私密。",
+                                "Description":  ""
+                            },
+    "LodestoneRenamed":  {
+                             "Message":  "你的角色改过名，且角色 Lodestone 资料页是私密的。",
+                             "Description":  ""
+                         },
+    "LodestoneHashMismatch":  {
+                                  "Message":  "角色校验值不匹配，且角色 Lodestone 资料页是私密的。",
+                                  "Description":  ""
+                              },
+    "LodestoneStale":  {
+                           "Message":  "Sonar 存储的角色 Lodestone 信息已过期。",
+                           "Description":  ""
+                       },
+    "LodestoneUnableReason":  {
+                                  "Message":  "无法提供具体原因。",
+                                  "Description":  ""
+                              },
+    "LodestoneUpdatePlugin":  {
+                                  "Message":  "请更新 Sonar 插件，或联系技术支持寻求帮助。",
+                                  "Description":  ""
+                              },
+    "LodestoneAddCode":  {
+                             "Message":  "请把下面的验证码写进角色 Lodestone 资料页的自我介绍里：",
+                             "Description":  ""
+                         },
+    "LodestoneCopyCode":  {
+                              "Message":  "复制",
+                              "Description":  ""
+                          },
+    "LodestoneOpenProfile":  {
+                                 "Message":  "打开 Lodestone 资料页",
+                                 "Description":  ""
+                             },
+    "LodestoneOpenWebsite":  {
+                                 "Message":  "打开 Lodestone 网站",
+                                 "Description":  ""
+                             },
+    "LodestoneRequired":  {
+                              "Message":  "该验证目前是必须完成的。",
+                              "Description":  ""
+                          },
+    "LodestoneRequirementDays":  {
+                                     "Message":  "该验证将在 {0} 天后成为必须完成的项目。",
+                                     "Description":  ""
+                                 },
+    "LodestoneRequirementHours":  {
+                                      "Message":  "该验证将在 {0} 小时后成为必须完成的项目。",
+                                      "Description":  ""
+                                  },
+    "LodestoneRequirementMinutes":  {
+                                        "Message":  "该验证将在 {0} 分钟后成为必须完成的项目。",
+                                        "Description":  ""
+                                    },
+    "LodestoneRequirementSoon":  {
+                                     "Message":  "该验证将在 5 分钟内成为必须完成的项目。",
+                                     "Description":  ""
+                                 },
+    "LodestoneNotRequired":  {
+                                 "Message":  "该验证目前不是必须完成的项目。",
+                                 "Description":  ""
+                             },
+    "LodestoneVerify":  {
+                            "Message":  "开始验证",
+                            "Description":  ""
+                        },
+    "LodestoneTimeout":  {
+                             "Message":  "验证超时",
+                             "Description":  ""
+                         },
+    "LodestoneInProgress":  {
+                                "Message":  "正在验证",
+                                "Description":  ""
+                            },
+    "LodestoneFailed":  {
+                            "Message":  "验证失败",
+                            "Description":  ""
+                        },
+    "LodestoneLocalModeHint":  {
+                                   "Message":  "如果在成为必须项目前仍未完成验证，你将只能使用 Sonar 的本地模式。",
+                                   "Description":  ""
+                               },
+    "TrackerIndexKey":  {
+                            "Message":  "索引键：",
+                            "Description":  ""
+                        },
+    "TrackerCounts":  {
+                          "Message":  "狩猎：{0} | 危命：{1}",
+                          "Description":  ""
+                      },
+    "TrackerCongrats":  {
+                            "Message":  "恭喜你发现了这个窗口！",
+                            "Description":  ""
+                        },
+    "TrackerNothingYet":  {
+                              "Message":  "这个窗口目前还没有实际用途，下个版本我会继续完善。先玩玩上面的筛选器和狩猎/危命计数吧。",
+                              "Description":  ""
+                          },
+    "CommonUnknown":  {
+                          "Message":  "未知",
+                          "Description":  ""
+                      },
+    "TrackerTitle":  {
+                         "Message":  "Sonar 追踪器（开发中！！！）",
+                         "Description":  ""
+                     },
+    "CmdSonarHelp":  {
+                         "Message":  "打开/关闭 Sonar 主窗口",
+                         "Description":  ""
+                     },
+    "CmdSonarConfigHelp":  {
+                               "Message":  "打开/关闭 Sonar 设置",
+                               "Description":  ""
+                           },
+    "CmdSonarTrackerHelp":  {
+                                "Message":  "打开/关闭 Sonar 追踪器",
+                                "Description":  ""
+                            },
+    "CmdSonarErrorsHelp":  {
+                               "Message":  "打开/关闭 Sonar 错误窗口",
+                               "Description":  ""
+                           },
+    "CmdSonarSupportHelp":  {
+                                "Message":  "联系 Sonar 技术支持",
+                                "Description":  ""
+                            },
+    "CmdSonarOnHelp":  {
+                           "Message":  "开启全局数据共享",
+                           "Description":  ""
+                       },
+    "CmdSonarOffHelp":  {
+                            "Message":  "关闭全局数据共享",
+                            "Description":  ""
+                        },
+    "CmdSonarToggleHelp":  {
+                               "Message":  "切换全局数据共享开关",
+                               "Description":  ""
+                           },
+    "AboutPluginDisplayName":  {
+                                   "Message":  "Sonar CN",
+                                   "Description":  ""
+                               },
+    "AboutSupportDiscordButton":  {
+                                      "Message":  "Sonar 技术支持 Discord",
+                                      "Description":  ""
+                                  },
+    "AboutPatreonButton":  {
+                               "Message":  "Sonar 赞助 Patreon",
+                               "Description":  ""
+                           }
+}
