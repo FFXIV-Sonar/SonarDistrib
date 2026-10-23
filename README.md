@@ -3,6 +3,7 @@ SonarPlugin's Source Code mirror and all dependencies.
 - [Sonar News](https://news.ffxivsonar.com)
 - [Sonar Support Discord](https://discord.gg/K7y24Rr)
 - [Sonar Patreon](https://www.patreon.com/ffxivsonar)
+- [Privacy Policy](https://wiki.ffxivsonar.com/legal/privacy)
 
 ## Building
 To build SonarPlugin, you can:

@@ -13,7 +13,7 @@ namespace SonarPlugin.Utility
     /// </summary>
     public static class CheapLocSetup
     {
-        private const string DefaultLanguageCode = "cn";
+        private const string DefaultLanguageCode = "en";
 
         /// <summary>Language code currently applied to the plugin UI (for example <c>cn</c> or <c>tw</c>).</summary>
         public static string CurrentCode { get; private set; } = DefaultLanguageCode;

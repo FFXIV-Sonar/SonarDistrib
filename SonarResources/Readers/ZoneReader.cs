@@ -131,6 +131,7 @@ namespace SonarResources.Readers
             if (bg.StartsWith("ex3", StringComparison.InvariantCultureIgnoreCase)) return ExpansionPack.Shadowbringers;
             if (bg.StartsWith("ex4", StringComparison.InvariantCultureIgnoreCase)) return ExpansionPack.Endwalker;
             if (bg.StartsWith("ex5", StringComparison.InvariantCultureIgnoreCase)) return ExpansionPack.Dawntrail;
+            if (bg.StartsWith("ex6", StringComparison.InvariantCultureIgnoreCase)) return ExpansionPack.Evercold;
             return ExpansionPack.Unknown;
         }
     }

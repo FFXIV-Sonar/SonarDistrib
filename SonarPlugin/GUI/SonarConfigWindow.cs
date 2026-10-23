@@ -494,7 +494,7 @@ namespace SonarPlugin.GUI
                         // TODO: might need to do extra checks here and default to Echo channel on failure.
                         // TODO: Chat types localization
                         this.EnsureChatTypeLabels();
-                var selectedChat = Array.IndexOf(this._chatTypeValues, this.Plugin.Configuration.HuntOutputChannel);
+                        var selectedChat = Array.IndexOf(this._chatTypeValues, this.Plugin.Configuration.HuntOutputChannel);
 
                         if (ImGui.Combo("###chatTypes", ref selectedChat, this._chatTypeLabels, this._chatTypeLabels.Length))
                         {
@@ -543,7 +543,7 @@ namespace SonarPlugin.GUI
                     }
                 }
             }
-            
+
             ImGui.Spacing();
 
             if (ImGui.TreeNodeEx("##huntTabReportNotifications", ImGuiTreeNodeFlags.CollapsingHeader | ImGuiTreeNodeFlags.DefaultOpen, $"{Loc.Localize("HuntNotifications", "Hunt Report Notifications")}"))
@@ -658,6 +658,7 @@ namespace SonarPlugin.GUI
             { ExpansionPack.Shadowbringers, $"{Loc.Localize("ShadowbringersText", "Shadowbringers")}" },
             { ExpansionPack.Endwalker, $"{Loc.Localize("EndwalkerText", "Endwalker")}" },
             { ExpansionPack.Dawntrail, $"{Loc.Localize("DawntrailText", "Dawntrail")}" },
+            { ExpansionPack.Evercold, $"{Loc.Localize("EvercoldText", "Evercold")}" }
         };
 
         private readonly Dictionary<SonarJurisdiction, string> jurisdictionsCombo = new Dictionary<SonarJurisdiction, string>()
@@ -777,7 +778,7 @@ namespace SonarPlugin.GUI
                         // TODO: Chat types localization
 
                         this.EnsureChatTypeLabels();
-                var selectedChat = Array.IndexOf(this._chatTypeValues, this.Plugin.Configuration.FateOutputChannel);
+                        var selectedChat = Array.IndexOf(this._chatTypeValues, this.Plugin.Configuration.FateOutputChannel);
                         if (ImGui.Combo("###chatTypes", ref selectedChat, this._chatTypeLabels, this._chatTypeLabels.Length))
                         {
                             this._save = true;
@@ -846,7 +847,7 @@ namespace SonarPlugin.GUI
                     this.filteredFateData = this.Index.Fates.Search(this.fateSearchText)
                         .DistinctBy(fate => fate.GroupId)
                         .ToList();
-                    
+
                     //this.filteredFateData = _fateData
                     //    .Where(o => o.GetZone()?.IsField ?? false)
                     //    .Where(o => $"{o.Name}".IndexOf(fateSearchText, StringComparison.OrdinalIgnoreCase) != -1 ||
@@ -1014,10 +1015,10 @@ namespace SonarPlugin.GUI
         {
             ImGui.BeginChild("##aboutTabScrollRegion");
             {
-                ImGui.Text($"{Loc.Localize("AboutPluginDisplayName", "Sonar CN")} v{Assembly.GetExecutingAssembly().GetName().Version}");
+                ImGui.Text($"{this.Plugin.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
                 ImGui.Text($"{Loc.Localize("AboutSonarBroughtBy", "Brought to you by the Sonar Team")}");
 
-                if (ImGui.Button($"{Loc.Localize("AboutSupportDiscordButton", "Sonar 技术支持 Discord")}##SonarDiscord"))
+                if (ImGui.Button($"{Loc.Localize("AboutSupportDiscordButton", "Sonar Support Discord")}##SonarDiscord"))
                 {
                     this._tasker.AddTask(Task.Run(() => { ShellExecute("https://discord.gg/K7y24Rr"); }));
                 }
@@ -1025,7 +1026,7 @@ namespace SonarPlugin.GUI
 
                 ImGui.SameLine();
 
-                if (ImGui.Button($"{Loc.Localize("AboutPatreonButton", "Sonar 赞助 Patreon")}##SonarPatreon"))
+                if (ImGui.Button($"{Loc.Localize("AboutPatreonButton", "Sonar Patreon")}##SonarPatreon"))
                 {
                     this._tasker.AddTask(Task.Run(() => { ShellExecute("https://www.patreon.com/ffxivsonar"); }));
                 }
@@ -1071,7 +1072,7 @@ namespace SonarPlugin.GUI
                 ImGui.Text(Loc.Localize("DebugVersionInformation", "Version Information"));
                 ImGui.BeginChild("##debugVersionInfo", new Vector2(0, 100 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
-                    ImGui.Text($"{Loc.Localize("AboutPluginDisplayName", "Sonar CN")} v{Assembly.GetExecutingAssembly().GetName().Version}");
+                    ImGui.Text($"{this.Plugin.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
                     ImGui.Text($"Dalamud {this.DalamudVersion.Version} (Git: {this.DalamudVersion.GitHash})");
                     ImGui.Text($"FFXIV {VersionUtils.GetGameVersion(this.Data)}");
 
@@ -1231,9 +1232,9 @@ namespace SonarPlugin.GUI
                 this.Client.LogLevel = this.logLevelCombo.Keys.ToList()[index]; // This also updates configuration
             }
 
-            #if DEBUG
-            #pragma warning disable S1215
-            #pragma warning disable S125
+#if DEBUG
+#pragma warning disable S1215
+#pragma warning disable S125
             if (ImGui.Button("GC.Collect"))
             {
                 GC.Collect();
@@ -1246,9 +1247,9 @@ namespace SonarPlugin.GUI
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
             }
-            #pragma warning restore S125
-            #pragma warning restore S1215
-            #endif
+#pragma warning restore S125
+#pragma warning restore S1215
+#endif
 
             ImGui.EndChild(); // debugTabScrollRegion
         }

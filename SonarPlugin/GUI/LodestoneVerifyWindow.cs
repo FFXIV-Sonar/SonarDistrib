@@ -197,7 +197,7 @@ namespace SonarPlugin.GUI
             };
 
 
-            if (this._need.LodestoneId !=-1)
+            if (this._need.LodestoneId != -1)
             {
                 if (ImGui.Button(Loc.Localize("LodestoneOpenProfile", "Open Lodestone Profile"))) _ = Task.Run(() => ShellUtils.ShellExecute($"{baseUrl}/character/{this._need.LodestoneId}/"));
                 ImGui.SameLine();

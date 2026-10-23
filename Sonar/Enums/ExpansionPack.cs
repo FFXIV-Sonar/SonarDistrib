@@ -1,4 +1,4 @@
-﻿using AG.EnumLocalization.Attributes;
+using AG.EnumLocalization.Attributes;
 
 namespace Sonar.Enums
 {
@@ -19,5 +19,7 @@ namespace Sonar.Enums
         Endwalker,
         
         Dawntrail,
+
+        Evercold,
     }
 }

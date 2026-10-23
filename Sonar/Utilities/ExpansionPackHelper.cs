@@ -14,6 +14,7 @@ namespace Sonar.Utilities
             "SHADOWBRINGERS" => ExpansionPack.Shadowbringers,
             "ENDWALKER" => ExpansionPack.Endwalker,
             "DAWNTRAIL" => ExpansionPack.Dawntrail,
+            "EVERCOLD" => ExpansionPack.Evercold,
 
             // Short strings (as we players abbreviate)
             "ARR" => ExpansionPack.ARealmReborn,
@@ -22,6 +23,7 @@ namespace Sonar.Utilities
             "SHB" => ExpansionPack.Shadowbringers,
             "EW" => ExpansionPack.Endwalker,
             "DT" => ExpansionPack.Dawntrail,
+            "EC" => ExpansionPack.Evercold,
 
             // Alternative abbreviations (because we players don't agree on one) and names
             "AREALMREBORN" => ExpansionPack.ARealmReborn, // Because of the enum
@@ -34,6 +36,7 @@ namespace Sonar.Utilities
             "SHADOWBRINGER" => ExpansionPack.Shadowbringers, // <== who knows...
             "ENDWALKERS" => ExpansionPack.Endwalker,
             "DAWNTRAILS" => ExpansionPack.Dawntrail,
+            "EVERCOLDS" => ExpansionPack.Evercold,
 
             // In case we decide to use short names
             "REALM" => ExpansionPack.ARealmReborn,
@@ -51,6 +54,8 @@ namespace Sonar.Utilities
             "DAWN" => ExpansionPack.Dawntrail,
             "TRAIL" => ExpansionPack.Dawntrail,
             "TRAILS" => ExpansionPack.Dawntrail,
+            "EVER" => ExpansionPack.Evercold,
+            "COLD" => ExpansionPack.Evercold,
 
             // Unable to determnine
             _ => ExpansionPack.Unknown
@@ -64,6 +69,7 @@ namespace Sonar.Utilities
             ExpansionPack.Shadowbringers => "Shadowbringers",
             ExpansionPack.Endwalker => "Endwalker",
             ExpansionPack.Dawntrail => "Dawntrail",
+            ExpansionPack.Evercold => "Evercold",
             ExpansionPack.Unknown => "Unknown",
             _ => "INVALID"
         };
@@ -77,6 +83,7 @@ namespace Sonar.Utilities
             ExpansionPack.Shadowbringers => "ShB",
             ExpansionPack.Endwalker => "EW",
             ExpansionPack.Dawntrail => "DT",
+            ExpansionPack.Evercold => "EC",
             ExpansionPack.Unknown => "Unknown",
             _ => "INVALID"
         };

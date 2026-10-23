@@ -444,7 +444,8 @@ namespace SonarResources.Readers
             if (nmId >= 82 && nmId <= 111) return ExpansionPack.Stormblood;
             if (nmId >= 112 && nmId <= 171) return ExpansionPack.Shadowbringers;
             if (nmId >= 172 && nmId <= 231) return ExpansionPack.Endwalker;
-            if (nmId >= 232 && nmId <= 9999 /* TODO */) return ExpansionPack.Dawntrail;
+            if (nmId >= 232 && nmId <= 291) return ExpansionPack.Dawntrail;
+            if (nmId >= 292 && nmId <= 9999 /* TODO */) return ExpansionPack.Evercold;
             return ExpansionPack.Unknown;
         }
 
@@ -458,6 +459,7 @@ namespace SonarResources.Readers
                 ExpansionPack.Shadowbringers => 80,
                 ExpansionPack.Endwalker => 90,
                 ExpansionPack.Dawntrail => 100,
+                ExpansionPack.Evercold => 110,
                 _ => 0
             };
         }

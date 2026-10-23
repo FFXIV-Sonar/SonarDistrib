@@ -13,8 +13,8 @@ namespace SonarPlugin.Attributes
 
         public HelpMessageAttribute(string key, string helpMessage)
         {
-            Key = key;
-            HelpMessage = helpMessage;
+            this.Key = key;
+            this.HelpMessage = helpMessage;
         }
     }
 }

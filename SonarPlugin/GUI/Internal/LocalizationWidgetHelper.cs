@@ -13,7 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using System.Threading;
 using SonarPlugin.Utility;
 
 namespace SonarPlugin.GUI.Internal
@@ -129,7 +128,7 @@ namespace SonarPlugin.GUI.Internal
                 result = true;
             }
 
-            var preview = 
+            var preview =
                 language is null ? PluginLoc.Fallbacks.GetLocString() :
                 language.StartsWith("file:", StringComparison.Ordinal) ? language :
                 EnumLoc.GetLocString(MetaLanguageKey, language, assembly);
