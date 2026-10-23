@@ -85,6 +85,7 @@ namespace SonarPlugin
             this.Logger.LogInformation("Setting up localization");
             EnumLocUtils.Setup(this.Configuration.Localization.DebugFallbacks);
             CheapLoc.Loc.SetupWithFallbacks();
+            this.SetupCheapLoc();
 
             try
             {
@@ -107,6 +108,20 @@ namespace SonarPlugin
 
         /// <summary>Sonar name</summary>
         public string Name { get; } = "Sonar";
+
+        /// <summary>Load the embedded CheapLoc overrides matching the selected language.</summary>
+        private void SetupCheapLoc()
+        {
+            try
+            {
+                var code = CheapLocSetup.Apply(this.Configuration.Localization.Plugin);
+                this.Logger.LogInformation("Loaded CheapLoc overrides for language {code}", code);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Failed to load CheapLoc overrides");
+            }
+        }
 
         /// <summary>PluginName</summary>
         public string PluginName { get; } = "SonarPlugin";

@@ -62,7 +62,7 @@ namespace Sonar.Data
         public static SonarLanguage DefaultLanguage
         {
             get => s_defaultLanguage;
-            set => s_defaultLanguage = ResolveLanguage(value);
+            set => s_defaultLanguage = ResolveLanguage(value is SonarLanguage.ChineseTraditional ? SonarLanguage.ChineseSimplified : value);
         }
 
         public static IEnumerable<SonarLanguage> Languages => s_languages;

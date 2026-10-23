@@ -1,4 +1,5 @@
 using Dalamud.Bindings.ImGui;
+using CheapLoc;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using DryIoc;
@@ -29,7 +30,7 @@ namespace SonarPlugin.GUI
         private IRelayTracker<HuntRelay> Hunts { get; }
         private IRelayTracker<FateRelay> Fates { get; }
 
-        public SonarTrackerWindow(IWindowSystem windows, IRelayTracker<HuntRelay> hunts, IRelayTracker<FateRelay> fates, Container container) : base("Sonar Tracker (UNDER DEVELOPMENT!!!)") // TODO
+        public SonarTrackerWindow(IWindowSystem windows, IRelayTracker<HuntRelay> hunts, IRelayTracker<FateRelay> fates, Container container) : base(Loc.Localize("TrackerTitle", "Sonar Tracker (UNDER DEVELOPMENT!!!)")) // TODO
         {
             this._indexWidget = container.Resolve<IndexSelectionWidget>();
             this.Windows = windows;
@@ -41,11 +42,11 @@ namespace SonarPlugin.GUI
         public override void Draw()
         {
             this._indexWidget.DrawBreadcrumb();
-            ImGui.Text($"Index key: {this._indexWidget.IndexKey}");
-            ImGui.Text($"Hunts: {this.Hunts.Data.GetIndexStates(this._indexWidget.IndexKey).Count} | Fates: {this.Fates.Data.GetIndexStates(this._indexWidget.IndexKey).Count}");
+            ImGui.Text($"{Loc.Localize("TrackerIndexKey", "Index key:")}{this._indexWidget.IndexKey}");
+            ImGui.Text(string.Format(Loc.Localize("TrackerCounts", "Hunts: {0} | Fates: {1}"), this.Hunts.Data.GetIndexStates(this._indexWidget.IndexKey).Count, this.Fates.Data.GetIndexStates(this._indexWidget.IndexKey).Count));
             ImGui.Spacing();
-            ImGui.Text("Congratulations finding this!");
-            ImGui.TextWrapped("Right now there's nothing useful in this window but I'll be working on this next release. In the meantime enjoy the filtering selector and hunt/fates counts");
+            ImGui.Text(Loc.Localize("TrackerCongrats", "Congratulations finding this!"));
+            ImGui.TextWrapped(Loc.Localize("TrackerNothingYet", "Right now there's nothing useful in this window but I'll be working on this next release. In the meantime enjoy the filtering selector and hunt/fates counts"));
         }
 
         public void Dispose()

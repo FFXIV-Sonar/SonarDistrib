@@ -47,7 +47,7 @@ namespace SonarPlugin
         }
 
         [Command("/sonar")]
-        [HelpMessage("Open/close Sonar's main window")]
+        [HelpMessage("CmdSonarHelp", "Open/close Sonar's main window")]
         [ShowInHelp]
         private void ToggleMainWindowCommand(string command, string args)
         {
@@ -56,7 +56,7 @@ namespace SonarPlugin
 
         [Command("/sonarconfig")]
         [Aliases("/sonarcfg")]
-        [HelpMessage("Open/close Sonar's configuration")]
+        [HelpMessage("CmdSonarConfigHelp", "Open/close Sonar's configuration")]
         [ShowInHelp]
         private void ToggleConfigWindowCommand(string command, string args)
         {
@@ -64,7 +64,7 @@ namespace SonarPlugin
         }
 
         [Command("/sonartracker")]
-        [HelpMessage("Open/close Sonar's tracker")]
+        [HelpMessage("CmdSonarTrackerHelp", "Open/close Sonar's tracker")]
         [DoNotShowInHelp]
         private void ToggleTrackerWindowCommand(string command, string args)
         {
@@ -72,7 +72,7 @@ namespace SonarPlugin
         }
 
         [Command("/sonarerror")]
-        [HelpMessage("Open/close Sonar errors window")]
+        [HelpMessage("CmdSonarErrorsHelp", "Open/close Sonar errors window")]
         [DoNotShowInHelp]
         private void ToggleErrorWindowCommand(string command, string args)
         {
@@ -80,7 +80,7 @@ namespace SonarPlugin
         }
 
         [Command("/sonarsupport")]
-        [HelpMessage("Contact Sonar Support")]
+        [HelpMessage("CmdSonarSupportHelp", "Contact Sonar Support")]
         [ShowInHelp]
         private void SonarSupportCommand(string command, string args)
         {
@@ -89,7 +89,7 @@ namespace SonarPlugin
 
         [Command("/sonaron")]
         [Aliases("/sonarenable")]
-        [HelpMessage("Turn Global Contribute on")]
+        [HelpMessage("CmdSonarOnHelp", "Turn Global Contribute on")]
         [ShowInHelp]
         private void SonarOnCommand(string command, string args)
         {
@@ -102,7 +102,7 @@ namespace SonarPlugin
 
         [Command("/sonaroff")]
         [Aliases("/sonardisable")]
-        [HelpMessage("Turn Global Contribute off")]
+        [HelpMessage("CmdSonarOffHelp", "Turn Global Contribute off")]
         [ShowInHelp]
         private void SonarOffCommand(string command, string args)
         {
@@ -114,7 +114,7 @@ namespace SonarPlugin
         }
 
         [Command("/sonartoggle")]
-        [HelpMessage("Toggle Global Contribute on/off")]
+        [HelpMessage("CmdSonarToggleHelp", "Toggle Global Contribute on/off")]
         [ShowInHelp]
         private void SonarToggleCommand(string command, string args)
         {

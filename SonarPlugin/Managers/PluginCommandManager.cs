@@ -1,4 +1,4 @@
-﻿using SonarPlugin.Attributes;
+using SonarPlugin.Attributes;
 using Dalamud.Game.Command;
 using Dalamud.Logging;
 using System;
@@ -69,7 +69,7 @@ namespace SonarPlugin.Managers
 
             var commandInfo = new CommandInfo(handlerDelegate)
             {
-                HelpMessage = helpMessage?.HelpMessage ?? string.Empty,
+                HelpMessage = helpMessage is null ? string.Empty : CheapLoc.Loc.Localize(helpMessage.Key, helpMessage.HelpMessage),
                 ShowInHelp = showInHelp is not null,
             };
 

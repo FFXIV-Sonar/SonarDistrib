@@ -74,7 +74,9 @@ namespace SonarPlugin.GUI
 
         private readonly Tasker _tasker = new();
 
-        private readonly string[] _chatTypes;
+        private readonly XivChatType[] _chatTypeValues;
+        private string[] _chatTypeLabels;
+        private string _chatTypeLanguageCode = string.Empty;
         private string fateSearchText = string.Empty;
 
         private List<FateRow> filteredFateData;
@@ -105,10 +107,11 @@ namespace SonarPlugin.GUI
             this.BgAlpha = this.Plugin.Configuration.Opacity;
 
             // Chat Types for determining which chat log to send text messages into the chat window
-            this._chatTypes = Enum.GetValues<XivChatType>()
-                .Select(t => t.GetDetails()?.FancyName ?? t.ToString())
-                .Where(n => !string.IsNullOrWhiteSpace(n))
-                .ToArray()!;
+            this._chatTypeValues = Enum.GetValues<XivChatType>()
+                .Where(t => !string.IsNullOrWhiteSpace(t.GetDetails()?.FancyName ?? t.ToString()))
+                .ToArray();
+            this._chatTypeLabels = this._chatTypeValues.Select(t => t.GetDisplayName()).ToArray();
+            this._chatTypeLanguageCode = CheapLocSetup.CurrentCode;
 
             // Set initial fate information
             this.filteredFateData = Database.Fates.Values
@@ -175,6 +178,14 @@ namespace SonarPlugin.GUI
 
             if (this._save) this.Plugin.SaveConfiguration(this._server);
             this._save = this._server = false;
+        }
+
+        /// <summary>Rebuild cached chat type labels when the UI language changes at runtime.</summary>
+        private void EnsureChatTypeLabels()
+        {
+            if (this._chatTypeLanguageCode == CheapLocSetup.CurrentCode) return;
+            this._chatTypeLanguageCode = CheapLocSetup.CurrentCode;
+            this._chatTypeLabels = this._chatTypeValues.Select(t => t.GetDisplayName()).ToArray();
         }
 
         private void DrawGeneralTab()
@@ -348,10 +359,10 @@ namespace SonarPlugin.GUI
                     using var indent = ImRaii.PushIndent();
                     using (var color = ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudYellow))
                     {
-                        ImGui.TextUnformatted("Localization is still in development!");
-                        ImGui.TextUnformatted("- Lots of strings are still not covered");
-                        ImGui.TextUnformatted("- Strings may change between releases");
-                        ImGui.TextUnformatted("Use localization at your own risk!");
+                        ImGui.TextUnformatted(Loc.Localize("LocalizationInDevelopment", "Localization is still in development!"));
+                        ImGui.TextUnformatted(Loc.Localize("LocalizationNotCovered", "- Lots of strings are still not covered"));
+                        ImGui.TextUnformatted(Loc.Localize("LocalizationMayChange", "- Strings may change between releases"));
+                        ImGui.TextUnformatted(Loc.Localize("LocalizationAtOwnRisk", "Use localization at your own risk!"));
                     }
                     this._save |= SonarWidgets.Localization(this.Plugin.Configuration.Localization, this.FileDialogs);
                 }
@@ -482,14 +493,13 @@ namespace SonarPlugin.GUI
                         using var indent2 = ImRaii.PushIndent();
                         // TODO: might need to do extra checks here and default to Echo channel on failure.
                         // TODO: Chat types localization
-                        var currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.HuntOutputChannel)?.FancyName ?? this.Plugin.Configuration.HuntOutputChannel.ToString();
-                        var selectedChat = Array.IndexOf(this._chatTypes, currentChat);
+                        this.EnsureChatTypeLabels();
+                var selectedChat = Array.IndexOf(this._chatTypeValues, this.Plugin.Configuration.HuntOutputChannel);
 
-                        if (ImGui.Combo("###chatTypes", ref selectedChat, this._chatTypes, this._chatTypes.Length))
+                        if (ImGui.Combo("###chatTypes", ref selectedChat, this._chatTypeLabels, this._chatTypeLabels.Length))
                         {
                             this._save = true;
-                            var value = XivChatTypeUtils.GetValueFromInfoAttribute(this._chatTypes[selectedChat]);
-                            this.Plugin.Configuration.HuntOutputChannel = value;
+                            this.Plugin.Configuration.HuntOutputChannel = this._chatTypeValues[selectedChat];
                         }
 
                         this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableItalics.GetLocString()}###huntChatEnableItalic", ref this.Plugin.Configuration.EnableGameChatItalicFont);
@@ -766,13 +776,12 @@ namespace SonarPlugin.GUI
                         // TODO: might need to do extra checks here and default to Echo channel on failure.
                         // TODO: Chat types localization
 
-                        var currentChat = XivChatTypeExtensions.GetDetails(this.Plugin.Configuration.FateOutputChannel)?.FancyName ?? this.Plugin.Configuration.FateOutputChannel.ToString();
-                        var selectedChat = Array.IndexOf(this._chatTypes, currentChat);
-                        if (ImGui.Combo("###chatTypes", ref selectedChat, this._chatTypes, this._chatTypes.Length))
+                        this.EnsureChatTypeLabels();
+                var selectedChat = Array.IndexOf(this._chatTypeValues, this.Plugin.Configuration.FateOutputChannel);
+                        if (ImGui.Combo("###chatTypes", ref selectedChat, this._chatTypeLabels, this._chatTypeLabels.Length))
                         {
                             this._save = true;
-                            var value = XivChatTypeUtils.GetValueFromInfoAttribute(this._chatTypes[selectedChat]);
-                            this.Plugin.Configuration.FateOutputChannel = value;
+                            this.Plugin.Configuration.FateOutputChannel = this._chatTypeValues[selectedChat];
                         }
 
                         this._save |= ImGui.Checkbox($"{ConfigWindowLoc.ChatEnableItalics.GetLocString()}###fateChatEnableItalic", ref this.Plugin.Configuration.EnableFateChatItalicFont);
@@ -1005,10 +1014,10 @@ namespace SonarPlugin.GUI
         {
             ImGui.BeginChild("##aboutTabScrollRegion");
             {
-                ImGui.Text($"{this.Plugin.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
+                ImGui.Text($"{Loc.Localize("AboutPluginDisplayName", "Sonar CN")} v{Assembly.GetExecutingAssembly().GetName().Version}");
                 ImGui.Text($"{Loc.Localize("AboutSonarBroughtBy", "Brought to you by the Sonar Team")}");
 
-                if (ImGui.Button("Sonar Support Discord##SonarDiscord"))
+                if (ImGui.Button($"{Loc.Localize("AboutSupportDiscordButton", "Sonar 技术支持 Discord")}##SonarDiscord"))
                 {
                     this._tasker.AddTask(Task.Run(() => { ShellExecute("https://discord.gg/K7y24Rr"); }));
                 }
@@ -1016,7 +1025,7 @@ namespace SonarPlugin.GUI
 
                 ImGui.SameLine();
 
-                if (ImGui.Button("Sonar Patreon##SonarPatreon"))
+                if (ImGui.Button($"{Loc.Localize("AboutPatreonButton", "Sonar 赞助 Patreon")}##SonarPatreon"))
                 {
                     this._tasker.AddTask(Task.Run(() => { ShellExecute("https://www.patreon.com/ffxivsonar"); }));
                 }
@@ -1059,41 +1068,41 @@ namespace SonarPlugin.GUI
         {
             ImGui.BeginChild("##debugTabScrollRegion");
             {
-                ImGui.Text("Version Information");
+                ImGui.Text(Loc.Localize("DebugVersionInformation", "Version Information"));
                 ImGui.BeginChild("##debugVersionInfo", new Vector2(0, 100 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
-                    ImGui.Text($"{this.Plugin.PluginName} v{Assembly.GetExecutingAssembly().GetName().Version}");
+                    ImGui.Text($"{Loc.Localize("AboutPluginDisplayName", "Sonar CN")} v{Assembly.GetExecutingAssembly().GetName().Version}");
                     ImGui.Text($"Dalamud {this.DalamudVersion.Version} (Git: {this.DalamudVersion.GitHash})");
                     ImGui.Text($"FFXIV {VersionUtils.GetGameVersion(this.Data)}");
 
-                    ImGui.Text($"Client Hash: ");
+                    ImGui.Text(Loc.Localize("DebugClientHash", "Client Hash: "));
                     ImGui.SameLine();
                     if (this._showClientHash)
                     {
-                        ImGui.Text($"{this.Client.ClientHash ?? "Unknown"}");
+                        ImGui.Text($"{this.Client.ClientHash ?? Loc.Localize("CommonUnknown", "Unknown")}");
                         ImGui.SameLine();
                     }
 
-                    if (ImGui.Button($"{(this._showClientHash ? "Hide" : "Show")}")) this._showClientHash = !this._showClientHash;
+                    if (ImGui.Button(this._showClientHash ? Loc.Localize("DebugHide", "Hide") : Loc.Localize("DebugShow", "Show"))) this._showClientHash = !this._showClientHash;
                     ImGui.SameLine();
-                    if (ImGui.Button($"Copy")) ImGui.SetClipboardText(this.Client.ClientHash);
+                    if (ImGui.Button(Loc.Localize("DebugCopy", "Copy"))) ImGui.SetClipboardText(this.Client.ClientHash);
                 }
                 ImGui.EndChild(); // debugVersionInfo
 
                 ImGui.Spacing();
 
-                ImGui.Text("Player Tracker");
+                ImGui.Text(Loc.Localize("DebugPlayerTracker", "Player Tracker"));
                 ImGui.BeginChild("##DebugPlayerTracker", new Vector2(0, 35 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
-                    ImGui.Text($"Zone: {this.Client.Meta.PlayerPosition}");
+                    ImGui.Text($"{Loc.Localize("DebugZone", "Zone: ")}{this.Client.Meta.PlayerPosition}");
                 }
                 ImGui.EndChild(); // debugPlayerTracker
                 ImGui.Spacing();
 
-                ImGui.Text("Hunts Tracker");
+                ImGui.Text(Loc.Localize("DebugHuntsTracker", "Hunts Tracker"));
                 ImGui.BeginChild("##DebugHuntTracker", new Vector2(0, 80 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
-                    ImGui.Text($"Count: {this.Client.Trackers.Hunts.Data.Count} | Index: {this.Client.Trackers.Hunts.Data.IndexCount}");
+                    ImGui.Text($"{Loc.Localize("DebugCount", "Count")}: {this.Client.Trackers.Hunts.Data.Count} | {Loc.Localize("DebugIndex", "Index")}: {this.Client.Trackers.Hunts.Data.IndexCount}");
 
                     ImGui.Spacing();
                     ImGui.Separator();
@@ -1101,13 +1110,13 @@ namespace SonarPlugin.GUI
 
                     if (this._debugHuntTask.IsCompleted)
                     {
-                        if (ImGui.Button("Clear"))
+                        if (ImGui.Button(Loc.Localize("DebugClear", "Clear")))
                         {
                             this.Client.Trackers.Hunts.Data.Clear();
                             this.Logger.Information("Hunts Tracker Reset");
                         }
                         ImGui.SameLine();
-                        if (ImGui.Button("Check"))
+                        if (ImGui.Button(Loc.Localize("DebugCheck", "Check")))
                         {
                             this._debugHuntTask = Task.Run(() =>
                             {
@@ -1123,9 +1132,9 @@ namespace SonarPlugin.GUI
                                 }
                             });
                         }
-                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Perform a consistency check of the index\nOutput will be at /xllog");
+                        if (ImGui.IsItemHovered()) ImGui.SetTooltip(Loc.Localize("DebugCheckTooltip", "Perform a consistency check of the index\nOutput will be at /xllog"));
                         ImGui.SameLine();
-                        if (ImGui.Button("Rebuild"))
+                        if (ImGui.Button(Loc.Localize("DebugRebuild", "Rebuild")))
                         {
                             this._debugHuntTask = Task.Run(() =>
                             {
@@ -1134,20 +1143,20 @@ namespace SonarPlugin.GUI
                                 this.Logger.Information("Hunt index debug rebuild complete");
                             });
                         }
-                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Rebuild index\nOutput will be at /xllog\n\nWarning: You may experience stuttering");
+                        if (ImGui.IsItemHovered()) ImGui.SetTooltip(Loc.Localize("DebugRebuildTooltip", "Rebuild index\nOutput will be at /xllog\n\nWarning: You may experience stuttering"));
                     }
                     else
                     {
-                        ImGui.Text("Busy");
+                        ImGui.Text(Loc.Localize("DebugBusy", "Busy"));
                     }
                 }
                 ImGui.EndChild(); // debugHuntTracker
                 ImGui.Spacing();
 
-                ImGui.Text("Fates Tracker");
+                ImGui.Text(Loc.Localize("DebugFatesTracker", "Fates Tracker"));
                 ImGui.BeginChild("##DebugFateTracker", new Vector2(0, 80 * ImGui.GetIO().FontGlobalScale), true, ImGuiWindowFlags.None);
                 {
-                    ImGui.Text($"Count: {this.Client.Trackers.Fates.Data.Count} | Index: {this.Client.Trackers.Fates.Data.IndexCount}");
+                    ImGui.Text($"{Loc.Localize("DebugCount", "Count")}: {this.Client.Trackers.Fates.Data.Count} | {Loc.Localize("DebugIndex", "Index")}: {this.Client.Trackers.Fates.Data.IndexCount}");
 
                     ImGui.Spacing();
                     ImGui.Separator();
@@ -1155,13 +1164,13 @@ namespace SonarPlugin.GUI
 
                     if (this._debugFateTask.IsCompleted)
                     {
-                        if (ImGui.Button("Clear"))
+                        if (ImGui.Button(Loc.Localize("DebugClear", "Clear")))
                         {
                             this.Client.Trackers.Fates.Data.Clear();
                             this.Logger.Information("Fates Tracker Reset");
                         }
                         ImGui.SameLine();
-                        if (ImGui.Button("Check"))
+                        if (ImGui.Button(Loc.Localize("DebugCheck", "Check")))
                         {
                             this._debugFateTask = Task.Run(() =>
                             {
@@ -1177,9 +1186,9 @@ namespace SonarPlugin.GUI
                                 }
                             });
                         }
-                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Perform a consistency check of the index\nOutput will be at /xllog");
+                        if (ImGui.IsItemHovered()) ImGui.SetTooltip(Loc.Localize("DebugCheckTooltip", "Perform a consistency check of the index\nOutput will be at /xllog"));
                         ImGui.SameLine();
-                        if (ImGui.Button("Rebuild"))
+                        if (ImGui.Button(Loc.Localize("DebugRebuild", "Rebuild")))
                         {
                             this._debugFateTask = Task.Run(() =>
                             {
@@ -1188,17 +1197,17 @@ namespace SonarPlugin.GUI
                                 this.Logger.Information("Fate index debug rebuild complete");
                             });
                         }
-                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Rebuild index\nOutput will be at /xllog\n\nWarning: You may experience stuttering");
+                        if (ImGui.IsItemHovered()) ImGui.SetTooltip(Loc.Localize("DebugRebuildTooltip", "Rebuild index\nOutput will be at /xllog\n\nWarning: You may experience stuttering"));
                     }
                     else
                     {
-                        ImGui.Text("Busy");
+                        ImGui.Text(Loc.Localize("DebugBusy", "Busy"));
                     }
                 }
                 ImGui.EndChild(); // debugFateTracker
                 ImGui.Spacing();
 
-                if (ImGui.Button("Request Relay Data"))
+                if (ImGui.Button(Loc.Localize("DebugRequestRelayData", "Request Relay Data")))
                 {
                     this.Plugin.Configuration.SonarConfig.HuntConfig.TrackAll = true;
                     this.Plugin.Configuration.SonarConfig.FateConfig.TrackAll = true;
@@ -1207,7 +1216,7 @@ namespace SonarPlugin.GUI
                 }
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip("Request all relay information to be received.\nTrack All options will automatically be enabled for both Hunts and Fates.\nThis can only be done once.\n\nWarning: You'll receive everything the Sonar server knows!\nThis is currently under testing.");
+                    ImGui.SetTooltip(Loc.Localize("DebugRequestRelayDataTooltip", "Request all relay information to be received.\nTrack All options will automatically be enabled for both Hunts and Fates.\nThis can only be done once.\n\nWarning: You'll receive everything the Sonar server knows!\nThis is currently under testing."));
                 }
             }
 

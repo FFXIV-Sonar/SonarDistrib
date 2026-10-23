@@ -15,6 +15,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Db.data" />
     <EmbeddedResource Include="Resources\en.sonar.lang.json" />
+    <EmbeddedResource Include="Resources\cn.sonar.lang.json" />
+    <EmbeddedResource Include="Resources\tw.sonar.lang.json" />
     <EmbeddedResource Include="Resources\Urls.data" />
   </ItemGroup>
 

@@ -1,0 +1,650 @@
+{
+    "AboutSonarBroughtBy":  {
+                                "Message":  "由 Sonar 團隊爲您帶來",
+                                "Description":  ""
+                            },
+    "AboutSonarPatreon":  {
+                              "Message":  "在 Patreon 上支持 Sonar。\n收益將用於 Sonar 伺服器和 Discord 機器人的託管費用。",
+                              "Description":  ""
+                          },
+    "AboutSonarSupport":  {
+                              "Message":  "請在 Sonar Support Discord 伺服器提問和報告錯誤。\n注意：Sonar 不在其他 Discord 提供支持。",
+                              "Description":  ""
+                          },
+    "AboutSonarDiscordButton":  {
+                                    "Message":  "Sonar 支持 Discord",
+                                    "Description":  ""
+                                },
+    "AboutSonarPatreonButton":  {
+                                    "Message":  "Sonar Patreon",
+                                    "Description":  ""
+                                },
+    "AdvancedHuntReportingSettings":  {
+                                          "Message":  "細化狩獵報告設定",
+                                          "Description":  ""
+                                      },
+    "AllSRankSettings":  {
+                             "Message":  "將 SS 級與寵物怪從 S 級中分離",
+                             "Description":  ""
+                         },
+    "HuntNotifications":  {
+                              "Message":  "狩獵報告通知",
+                              "Description":  ""
+                          },
+    "SSMinionNotificationMode":  {
+                                     "Message":  "SS 寵物怪通知模式",
+                                     "Description":  ""
+                                 },
+    "NotifyModeDefault":  {
+                              "Message":  "預設",
+                              "Description":  ""
+                          },
+    "NotifyModeSingle":  {
+                             "Message":  "單次",
+                             "Description":  ""
+                         },
+    "NotifyModeMultiple":  {
+                               "Message":  "多次",
+                               "Description":  ""
+                           },
+    "HuntDisplayTimers":  {
+                              "Message":  "狩獵顯示計時",
+                              "Description":  ""
+                          },
+    "FateDisplayTimers":  {
+                              "Message":  "危命顯示計時",
+                              "Description":  ""
+                          },
+    "DisplayTimersHelpText":  {
+                                  "Message":  "所有計時單位爲秒。按住 Ctrl 並點擊可直接輸入。",
+                                  "Description":  ""
+                              },
+    "HuntDeadTimer":  {
+                          "Message":  "距死亡的時間（S 和 A）",
+                          "Description":  ""
+                      },
+    "HuntUpdateTimer":  {
+                            "Message":  "距最近更新的時間（S 和 A）",
+                            "Description":  ""
+                        },
+    "HuntUpdateOtherTimer":  {
+                                 "Message":  "距最近更新的時間（B）",
+                                 "Description":  ""
+                             },
+    "HuntsDisplayLimit":  {
+                              "Message":  "狩獵顯示數量上限",
+                              "Description":  ""
+                          },
+    "FateDeadTimer":  {
+                          "Message":  "距完成或失敗的時間",
+                          "Description":  ""
+                      },
+    "FateUpdateTimer":  {
+                            "Message":  "距最近更新的時間",
+                            "Description":  ""
+                        },
+    "FatesDisplayLimit":  {
+                              "Message":  "危命顯示數量上限",
+                              "Description":  ""
+                          },
+    "FateSelection":  {
+                          "Message":  "危命選擇",
+                          "Description":  ""
+                      },
+    "DefaultReportJurisdiction":  {
+                                      "Message":  "預設報告範圍",
+                                      "Description":  ""
+                                  },
+    "SearchText":  {
+                       "Message":  "搜尋",
+                       "Description":  ""
+                   },
+    "SelectedFatesToChatText":  {
+                                    "Message":  "{0} 個危命已選中聊天通知",
+                                    "Description":  ""
+                                },
+    "SelectedFatesToSoundText":  {
+                                     "Message":  "{0} 個危命已選中聲音通知",
+                                     "Description":  ""
+                                 },
+    "SelectedFatesToNonDefaultJurisdiction":  {
+                                                  "Message":  "{0} 個危命未使用預設接收範圍",
+                                                  "Description":  ""
+                                              },
+    "SendToChat":  {
+                       "Message":  "發送到聊天",
+                       "Description":  ""
+                   },
+    "SendToSound":  {
+                        "Message":  "播放聲音",
+                        "Description":  ""
+                    },
+    "FateTableChatColumn":  {
+                                "Message":  "聊天",
+                                "Description":  ""
+                            },
+    "FateTableSoundColumn":  {
+                                 "Message":  "聲音",
+                                 "Description":  ""
+                             },
+    "FateTableJurisdictionColumn":  {
+                                        "Message":  "範圍",
+                                        "Description":  ""
+                                    },
+    "FateTableLevelColumn":  {
+                                 "Message":  "等級",
+                                 "Description":  ""
+                             },
+    "FateTableNameColumn":  {
+                                "Message":  "名稱",
+                                "Description":  ""
+                            },
+    "FateTableZoneColumn":  {
+                                "Message":  "區域",
+                                "Description":  ""
+                            },
+    "FateTableExpansionColumn":  {
+                                     "Message":  "資料片",
+                                     "Description":  ""
+                                 },
+    "FateTableAchievementColumn":  {
+                                       "Message":  "成就",
+                                       "Description":  ""
+                                   },
+    "UnknownText":  {
+                        "Message":  "未知",
+                        "Description":  ""
+                    },
+    "ARealmRebornText":  {
+                             "Message":  "重生之境",
+                             "Description":  ""
+                         },
+    "HeavenswardText":  {
+                            "Message":  "蒼穹之禁城",
+                            "Description":  ""
+                        },
+    "StormbloodText":  {
+                           "Message":  "紅蓮之狂潮",
+                           "Description":  ""
+                       },
+    "ShadowbringersText":  {
+                               "Message":  "暗影之逆焰",
+                               "Description":  ""
+                           },
+    "EndwalkerText":  {
+                          "Message":  "曉月之終途",
+                          "Description":  ""
+                      },
+    "DawntrailText":  {
+                          "Message":  "金曦之遺輝",
+                          "Description":  ""
+                      },
+    "DefaultJurisdictionText":  {
+                                    "Message":  "預設",
+                                    "Description":  ""
+                                },
+    "NoneJurisdictionText":  {
+                                 "Message":  "無",
+                                 "Description":  ""
+                             },
+    "InstanceJurisdictionText":  {
+                                     "Message":  "副本",
+                                     "Description":  ""
+                                 },
+    "ZoneJurisdictionText":  {
+                                 "Message":  "區域",
+                                 "Description":  ""
+                             },
+    "WorldJurisdictionText":  {
+                                  "Message":  "世界",
+                                  "Description":  ""
+                              },
+    "DatacenterJurisdictionText":  {
+                                       "Message":  "大區",
+                                       "Description":  ""
+                                   },
+    "RegionJurisdictionText":  {
+                                   "Message":  "地區",
+                                   "Description":  ""
+                               },
+    "AudienceJurisdictionText":  {
+                                     "Message":  "服務區域",
+                                     "Description":  ""
+                                 },
+    "AllJurisdictionText":  {
+                                "Message":  "全部",
+                                "Description":  ""
+                            },
+    "NoRankText":  {
+                       "Message":  "無",
+                       "Description":  ""
+                   },
+    "RankBText":  {
+                      "Message":  "B 級",
+                      "Description":  ""
+                  },
+    "RankAText":  {
+                      "Message":  "A 級",
+                      "Description":  ""
+                  },
+    "RankSText":  {
+                      "Message":  "S 級",
+                      "Description":  ""
+                  },
+    "RankSSMinionText":  {
+                             "Message":  "SS 級（寵物）",
+                             "Description":  ""
+                         },
+    "RankSSText":  {
+                       "Message":  "SS 級",
+                       "Description":  ""
+                   },
+    "SonarStatus":  {
+                        "Message":  "Sonar 狀態",
+                        "Description":  ""
+                    },
+    "SonarConnected":  {
+                           "Message":  "已連接",
+                           "Description":  ""
+                       },
+    "SonarDisconnected":  {
+                              "Message":  "未連接",
+                              "Description":  ""
+                          },
+    "SonarDisconnectedTooltip":  {
+                                     "Message":  "Sonar 將自動嘗試重新連接",
+                                     "Description":  ""
+                                 },
+    "SonarReconnect":  {
+                           "Message":  "重新連接",
+                           "Description":  ""
+                       },
+    "SonarReconnectTooltip":  {
+                                  "Message":  "讓 Sonar 嘗試重新連接伺服器",
+                                  "Description":  ""
+                              },
+    "DebugVersionInfo":  {
+                             "Message":  "版本訊息",
+                             "Description":  ""
+                         },
+    "DebugClientHash":  {
+                            "Message":  "客戶端哈希：",
+                            "Description":  ""
+                        },
+    "DebugHide":  {
+                      "Message":  "隱藏",
+                      "Description":  ""
+                  },
+    "DebugShow":  {
+                      "Message":  "顯示",
+                      "Description":  ""
+                  },
+    "DebugCopy":  {
+                      "Message":  "複製",
+                      "Description":  ""
+                  },
+    "DebugPlayerTracker":  {
+                               "Message":  "玩家追蹤",
+                               "Description":  ""
+                           },
+    "DebugZone":  {
+                      "Message":  "區域：",
+                      "Description":  ""
+                  },
+    "DebugHuntsTracker":  {
+                              "Message":  "狩獵追蹤",
+                              "Description":  ""
+                          },
+    "DebugFatesTracker":  {
+                              "Message":  "危命追蹤",
+                              "Description":  ""
+                          },
+    "DebugCountIndex":  {
+                            "Message":  "數量: {0} | 索引: {1}",
+                            "Description":  ""
+                        },
+    "DebugClear":  {
+                       "Message":  "清除",
+                       "Description":  ""
+                   },
+    "DebugCheck":  {
+                       "Message":  "檢查",
+                       "Description":  ""
+                   },
+    "DebugCheckTooltip":  {
+                              "Message":  "對索引執行一致性檢查\n結果輸出到 /xllog",
+                              "Description":  ""
+                          },
+    "DebugRebuild":  {
+                         "Message":  "重建",
+                         "Description":  ""
+                     },
+    "DebugRebuildTooltip":  {
+                                "Message":  "重建索引\n結果輸出到 /xllog\n\n警告：可能會出現卡頓",
+                                "Description":  ""
+                            },
+    "DebugBusy":  {
+                      "Message":  "處理中",
+                      "Description":  ""
+                  },
+    "DebugRequestRelayData":  {
+                                  "Message":  "請求中繼資料",
+                                  "Description":  ""
+                              },
+    "DebugRequestRelayDataTooltip":  {
+                                         "Message":  "請求接收全部中繼訊息。\n將自動爲狩獵和危命開啓「追蹤全部」。\n此操作只能執行一次。\n\n警告：你會收到 Sonar 伺服器已知的全部資料！\n此功能目前處於測試階段。",
+                                         "Description":  ""
+                                     },
+    "LogLevel":  {
+                     "Message":  "紀錄等級",
+                     "Description":  ""
+                 },
+    "SonarLogLevelVerbose":  {
+                                 "Message":  "詳細",
+                                 "Description":  ""
+                             },
+    "SonarLogLevelDebug":  {
+                               "Message":  "調試",
+                               "Description":  ""
+                           },
+    "SonarLogLevelInformation":  {
+                                     "Message":  "訊息",
+                                     "Description":  ""
+                                 },
+    "SonarLogLevelWarning":  {
+                                 "Message":  "警告",
+                                 "Description":  ""
+                             },
+    "SonarLogLevelError":  {
+                               "Message":  "錯誤",
+                               "Description":  ""
+                           },
+    "SonarLogLevelFatal":  {
+                               "Message":  "嚴重",
+                               "Description":  ""
+                           },
+    "LocalizationInDevelopment":  {
+                                      "Message":  "本地化功能仍在開發中！",
+                                      "Description":  ""
+                                  },
+    "LocalizationNotCovered":  {
+                                   "Message":  "· 仍有大量文本尚未覆蓋",
+                                   "Description":  ""
+                               },
+    "LocalizationMayChange":  {
+                                  "Message":  "· 文本可能隨版本變動",
+                                  "Description":  ""
+                              },
+    "LocalizationAtOwnRisk":  {
+                                  "Message":  "使用本地化功能請自行承擔風險！",
+                                  "Description":  ""
+                              },
+    "DebugVersionInformation":  {
+                                    "Message":  "版本訊息",
+                                    "Description":  ""
+                                },
+    "DebugCount":  {
+                       "Message":  "數量",
+                       "Description":  ""
+                   },
+    "DebugIndex":  {
+                       "Message":  "索引",
+                       "Description":  ""
+                   },
+    "SupportTitle":  {
+                         "Message":  "Sonar 技術支持",
+                         "Description":  ""
+                     },
+    "SupportResultTitle":  {
+                               "Message":  "Sonar 技術支持結果",
+                               "Description":  ""
+                           },
+    "SupportRequiredHint":  {
+                                "Message":  "* 爲必填項",
+                                "Description":  ""
+                            },
+    "SupportTypeLabel":  {
+                             "Message":  "類型",
+                             "Description":  ""
+                         },
+    "SupportContactLabel":  {
+                                "Message":  "聯繫方式",
+                                "Description":  ""
+                            },
+    "SupportContactTooltip":  {
+                                  "Message":  "我們無法在遊戲內聯繫你。\n請提供一個遊戲外的聯繫方式。",
+                                  "Description":  ""
+                              },
+    "SupportTitleFieldLabel":  {
+                                   "Message":  "標題",
+                                   "Description":  ""
+                               },
+    "SupportBodyLabel":  {
+                             "Message":  "內容",
+                             "Description":  ""
+                         },
+    "SupportPlayerNameLabel":  {
+                                   "Message":  "角色名",
+                                   "Description":  ""
+                               },
+    "SupportPlayerNameRequiredPrefix":  {
+                                            "Message":  "（必填）",
+                                            "Description":  ""
+                                        },
+    "SupportPlayerNameTooltip":  {
+                                     "Message":  "請填寫角色名與伺服器名",
+                                     "Description":  ""
+                                 },
+    "SupportSend":  {
+                        "Message":  "發送",
+                        "Description":  ""
+                    },
+    "CommonCancel":  {
+                         "Message":  "取消",
+                         "Description":  ""
+                     },
+    "SupportAddLogs":  {
+                           "Message":  "附加紀錄或其他文本",
+                           "Description":  ""
+                       },
+    "SupportLogsLabel":  {
+                             "Message":  "紀錄",
+                             "Description":  ""
+                         },
+    "SupportExceptionDetails":  {
+                                    "Message":  "異常詳情",
+                                    "Description":  ""
+                                },
+    "CommonClose":  {
+                        "Message":  "關閉",
+                        "Description":  ""
+                    },
+    "LodestoneWindowTitle":  {
+                                 "Message":  "Sonar 角色驗證",
+                                 "Description":  ""
+                             },
+    "LodestoneNeeded":  {
+                            "Message":  "當前登入的角色需要進行角色驗證：",
+                            "Description":  ""
+                        },
+    "LodestoneSuppressHint":  {
+                                  "Message":  "可在 /sonarconfig 的「通用」標籤頁、角色驗證設定中關閉此提示。",
+                                  "Description":  ""
+                              },
+    "LodestoneReasonUnknown":  {
+                                   "Message":  "未提供具體原因。",
+                                   "Description":  ""
+                               },
+    "LodestoneContactSupport":  {
+                                    "Message":  "請聯繫 Sonar 技術支持尋求幫助。",
+                                    "Description":  ""
+                                },
+    "LodestoneNotVerified":  {
+                                 "Message":  "你的角色目前尚未通過驗證。",
+                                 "Description":  ""
+                             },
+    "LodestoneNotFound":  {
+                              "Message":  "未找到你的角色在 Lodestone 上的資料頁。",
+                              "Description":  ""
+                          },
+    "LodestoneMakeSearchable":  {
+                                    "Message":  "請將角色的 Lodestone 資料頁設爲可搜尋且公開。驗證完成後可以再改回私密。",
+                                    "Description":  ""
+                                },
+    "LodestonePrivate":  {
+                             "Message":  "你的角色 Lodestone 資料頁是私密的。",
+                             "Description":  ""
+                         },
+    "LodestoneMakePublic":  {
+                                "Message":  "請將 Lodestone 資料頁設爲公開以便驗證。驗證完成後可以再改回私密。",
+                                "Description":  ""
+                            },
+    "LodestoneRenamed":  {
+                             "Message":  "你的角色改過名，且角色 Lodestone 資料頁是私密的。",
+                             "Description":  ""
+                         },
+    "LodestoneHashMismatch":  {
+                                  "Message":  "角色校驗值不匹配，且角色 Lodestone 資料頁是私密的。",
+                                  "Description":  ""
+                              },
+    "LodestoneStale":  {
+                           "Message":  "Sonar 存儲的角色 Lodestone 訊息已過期。",
+                           "Description":  ""
+                       },
+    "LodestoneUnableReason":  {
+                                  "Message":  "無法提供具體原因。",
+                                  "Description":  ""
+                              },
+    "LodestoneUpdatePlugin":  {
+                                  "Message":  "請更新 Sonar 插件，或聯繫技術支持尋求幫助。",
+                                  "Description":  ""
+                              },
+    "LodestoneAddCode":  {
+                             "Message":  "請把下面的驗證碼寫進角色 Lodestone 資料頁的自我介紹裏：",
+                             "Description":  ""
+                         },
+    "LodestoneCopyCode":  {
+                              "Message":  "複製",
+                              "Description":  ""
+                          },
+    "LodestoneOpenProfile":  {
+                                 "Message":  "打開 Lodestone 資料頁",
+                                 "Description":  ""
+                             },
+    "LodestoneOpenWebsite":  {
+                                 "Message":  "打開 Lodestone 網站",
+                                 "Description":  ""
+                             },
+    "LodestoneRequired":  {
+                              "Message":  "該驗證目前是必須完成的。",
+                              "Description":  ""
+                          },
+    "LodestoneRequirementDays":  {
+                                     "Message":  "該驗證將在 {0} 天后成爲必須完成的項目。",
+                                     "Description":  ""
+                                 },
+    "LodestoneRequirementHours":  {
+                                      "Message":  "該驗證將在 {0} 小時後成爲必須完成的項目。",
+                                      "Description":  ""
+                                  },
+    "LodestoneRequirementMinutes":  {
+                                        "Message":  "該驗證將在 {0} 分鐘後成爲必須完成的項目。",
+                                        "Description":  ""
+                                    },
+    "LodestoneRequirementSoon":  {
+                                     "Message":  "該驗證將在 5 分鐘內成爲必須完成的項目。",
+                                     "Description":  ""
+                                 },
+    "LodestoneNotRequired":  {
+                                 "Message":  "該驗證目前不是必須完成的項目。",
+                                 "Description":  ""
+                             },
+    "LodestoneVerify":  {
+                            "Message":  "開始驗證",
+                            "Description":  ""
+                        },
+    "LodestoneTimeout":  {
+                             "Message":  "驗證超時",
+                             "Description":  ""
+                         },
+    "LodestoneInProgress":  {
+                                "Message":  "正在驗證",
+                                "Description":  ""
+                            },
+    "LodestoneFailed":  {
+                            "Message":  "驗證失敗",
+                            "Description":  ""
+                        },
+    "LodestoneLocalModeHint":  {
+                                   "Message":  "如果在成爲必須項目前仍未完成驗證，你將只能使用 Sonar 的本地模式。",
+                                   "Description":  ""
+                               },
+    "TrackerIndexKey":  {
+                            "Message":  "索引鍵：",
+                            "Description":  ""
+                        },
+    "TrackerCounts":  {
+                          "Message":  "狩獵：{0} | 危命：{1}",
+                          "Description":  ""
+                      },
+    "TrackerCongrats":  {
+                            "Message":  "恭喜你發現了這個窗口！",
+                            "Description":  ""
+                        },
+    "TrackerNothingYet":  {
+                              "Message":  "這個窗口目前還沒有實際用途，下個版本我會繼續完善。先玩玩上面的篩選器和狩獵/危命計數吧。",
+                              "Description":  ""
+                          },
+    "CommonUnknown":  {
+                          "Message":  "未知",
+                          "Description":  ""
+                      },
+    "TrackerTitle":  {
+                         "Message":  "Sonar 追蹤器（開發中！！！）",
+                         "Description":  ""
+                     },
+    "CmdSonarHelp":  {
+                         "Message":  "打開/關閉 Sonar 主窗口",
+                         "Description":  ""
+                     },
+    "CmdSonarConfigHelp":  {
+                               "Message":  "打開/關閉 Sonar 設定",
+                               "Description":  ""
+                           },
+    "CmdSonarTrackerHelp":  {
+                                "Message":  "打開/關閉 Sonar 追蹤器",
+                                "Description":  ""
+                            },
+    "CmdSonarErrorsHelp":  {
+                               "Message":  "打開/關閉 Sonar 錯誤窗口",
+                               "Description":  ""
+                           },
+    "CmdSonarSupportHelp":  {
+                                "Message":  "聯繫 Sonar 技術支持",
+                                "Description":  ""
+                            },
+    "CmdSonarOnHelp":  {
+                           "Message":  "開啓全域資料共享",
+                           "Description":  ""
+                       },
+    "CmdSonarOffHelp":  {
+                            "Message":  "關閉全域資料共享",
+                            "Description":  ""
+                        },
+    "CmdSonarToggleHelp":  {
+                               "Message":  "切換全域資料共享開關",
+                               "Description":  ""
+                           },
+    "AboutPluginDisplayName":  {
+                                   "Message":  "Sonar CN",
+                                   "Description":  ""
+                               },
+    "AboutSupportDiscordButton":  {
+                                      "Message":  "Sonar 技術支持 Discord",
+                                      "Description":  ""
+                                  },
+    "AboutPatreonButton":  {
+                               "Message":  "Sonar 贊助 Patreon",
+                               "Description":  ""
+                           }
+}

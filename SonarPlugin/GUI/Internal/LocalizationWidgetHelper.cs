@@ -36,10 +36,11 @@ namespace SonarPlugin.GUI.Internal
             if (SonarWidgets.EnumCombo($"{PluginLoc.Presets.GetLocString()}###preset", ref preset, 100))
             {
                 config.Preset = preset;
+                CheapLocSetup.Apply(config.Plugin);
                 result = true;
             }
 
-            using (var node = ImRaii.TreeNode($"{PluginLoc.Advanced}###advanced"))
+            using (var node = ImRaii.TreeNode($"{PluginLoc.Advanced.GetLocString()}###advanced"))
             {
                 if (node.Success)
                 {
@@ -56,6 +57,7 @@ namespace SonarPlugin.GUI.Internal
                     if (LanguageSelector("plugin", PluginLoc.Plugin.GetLocString(), ref plugin, config.GetAvailablePluginLanguages(), fileDialogs, typeof(SonarPluginIoC).Assembly))
                     {
                         config.Plugin = plugin;
+                        CheapLocSetup.Apply(config.Plugin);
                         result = true;
                     }
 
@@ -165,7 +167,7 @@ namespace SonarPlugin.GUI.Internal
                 else if (ImGui.IsItemHovered()) ShowTooltip(null, assembly);
             }
 
-            if (ImGui.Button($"{PluginLoc.Import}###import-{id}"))
+            if (ImGui.Button($"{PluginLoc.Import.GetLocString()}###import-{id}"))
             {
                 fileDialogs.OpenFileDialog($"{PluginLocLoc.ImportPrompt}###import-{id}", $"{LanguageExtension}{{{LanguageExtension}}}", (success, path) =>
                 {
@@ -175,7 +177,7 @@ namespace SonarPlugin.GUI.Internal
 
             ImGui.SameLine();
 
-            if (ImGui.Button($"{PluginLoc.Export}###export-{id}"))
+            if (ImGui.Button($"{PluginLoc.Export.GetLocString()}###export-{id}"))
             {
                 fileDialogs.SaveFileDialog($"{PluginLocLoc.ExportPrompt}###export-{id}", $"{LanguageExtension}{{{LanguageExtension}}}", $"{id}.lang.json", LanguageExtension, (success, path) =>
                 {
@@ -185,7 +187,7 @@ namespace SonarPlugin.GUI.Internal
 
             ImGui.SameLine();
 
-            if (ImGui.Button($"{PluginLoc.ExportFallbacks}###exportfallbacks-{id}"))
+            if (ImGui.Button($"{PluginLoc.ExportFallbacks.GetLocString()}###exportfallbacks-{id}"))
             {
                 fileDialogs.SaveFileDialog($"{PluginLocLoc.ExportPrompt}###exportfallbacks-{id}", $"{LanguageExtension}{{{LanguageExtension}}}", $"{id}.lang.json", LanguageExtension, (success, path) =>
                 {
